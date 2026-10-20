@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "run_id": "example-2026-10-21-001",
+  "generated_at": "2026-10-21T09:30:00Z",
+  "as_of": "2026-10-20",
+  "market": "cn_a",
+  "query": "Low-debt banks with steady dividends",
+  "rules": {
+    "sharia": "off"
+  },
+  "rows": [
+    {
+      "symbol": "600036.SH",
+      "name": "China Merchants Bank",
+      "rank": 1,
+      "score": 1.82,
+      "factors": {
+        "low_leverage": 1.2,
+        "dividend_yield": 0.9
+      },
+      "sector": "Financials",
+      "sharia": "unknown",
+      "weight": 0.5
+    },
+    {
+      "symbol": "601166.SH",
+      "name": "Industrial Bank",
+      "rank": 2,
+      "score": 1.41,
+      "factors": {
+        "low_leverage": 0.7,
+        "dividend_yield": 0.6
+      },
+      "sector": "Financials",
+      "sharia": "unknown",
+      "weight": 0.5
+    }
+  ],
+  "backtest": {
+    "start": "2021-01-01",
+    "end": "2026-06-30",
+    "rebalance": "M",
+    "metrics": {
+      "annual_return": 0.128,
+      "max_drawdown": -0.184,
+      "sharpe": 0.91,
+      "turnover": 0.35
+    }
+  },
+  "warnings": [
+    "Example only. The numbers are illustrative and are not an investment recommendation."
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/arysaikyn/kfupm-quant-platform/docs/architecture/signals.schema.json",
+  "title": "Signals file",
+  "description": "The single data contract between model/ and web/.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "generated_at",
+    "as_of",
+    "market",
+    "query",
+    "rules",
+    "rows"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "market": {
+      "enum": ["cn_a", "hk", "us", "sa"]
+    },
+    "query": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rules": {
+      "type": "object",
+      "required": ["sharia"],
+      "additionalProperties": false,
+      "properties": {
+        "sharia": {
+          "enum": ["off", "compliant_only"]
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol", "name", "rank", "score", "factors"],
+        "additionalProperties": false,
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rank": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "score": {
+            "type": "number"
+          },
+          "factors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "sector": {
+            "type": "string"
+          },
+          "sharia": {
+            "enum": ["compliant", "non_compliant", "unknown"]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "backtest": {
+      "type": "object",
+      "required": ["start", "end", "rebalance", "metrics"],
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date"
+        },
+        "end": {
+          "type": "string",
+          "format": "date"
+        },
+        "rebalance": {
+          "enum": ["D", "W", "M", "Q", "A"]
+        },
+        "metrics": {
+          "type": "object",
+          "required": ["annual_return", "max_drawdown", "sharpe"],
+          "additionalProperties": {
+            "type": "number"
+          },
+          "properties": {
+            "annual_return": {
+              "type": "number"
+            },
+            "max_drawdown": {
+              "type": "number",
+              "maximum": 0
+            },
+            "sharpe": {
+              "type": "number"
+            }
+          }
+        },
+        "equity_curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["date", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "value": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["rules"],
+        "properties": {
+          "rules": {
+            "properties": {
+              "sharia": {
+                "const": "compliant_only"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "rows": {
+            "items": {
+              "required": ["sharia"]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

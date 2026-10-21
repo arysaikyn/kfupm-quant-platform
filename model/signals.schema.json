@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/arysaikyn/kfupm-quant-platform/model/signals.schema.json",
   "title": "Signals file",
-  "description": "The single data contract between model/ and web/.",
+  "description": "The single data contract between model/ and web/. Generated per run and not committed. Decimals are fractions: 0.12 means 12%. Dates use ISO 8601. max_drawdown is zero or negative.",
   "type": "object",
   "required": [
     "schema_version",

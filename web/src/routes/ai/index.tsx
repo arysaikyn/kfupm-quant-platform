@@ -8,6 +8,7 @@ import { strings } from './strings'
 import { canned, followUps } from './replies'
 import type { Reply } from './replies'
 import { AssistantMessage, TypingRow, UserBubble } from './messages'
+import { loadThread, saveThread } from './thread'
 import { toneOf, tokenize } from './chat'
 import type { CtxRef, Msg } from './chat'
 
@@ -67,15 +68,16 @@ export default function AiPage() {
   const { t, lang } = useI18n()
   const s = useStrings(strings)
 
-  const [msgs, setMsgs] = useState<Msg[]>([])
+  const restored = useRef(loadThread())
+  const [msgs, setMsgs] = useState<Msg[]>(() => restored.current?.msgs ?? [])
   const [input, setInput] = useState('')
-  const [chips, setChips] = useState<CtxRef[]>(INITIAL_CHIPS)
+  const [chips, setChips] = useState<CtxRef[]>(() => restored.current?.chips ?? INITIAL_CHIPS)
   const [sheet, setSheet] = useState(false)
   const [typing, setTyping] = useState(false)
   const [busy, setBusy] = useState(false)
 
   const seq = useRef(0)
-  const turn = useRef(0)
+  const turn = useRef(restored.current?.turn ?? 0)
   const shownRef = useRef(0)
   const timeoutRef = useRef(0)
   const intervalRef = useRef(0)
@@ -89,6 +91,12 @@ export default function AiPage() {
     },
     [],
   )
+
+  // Persist only settled threads: writing every streamed token would thrash.
+  useEffect(() => {
+    if (busy) return
+    saveThread({ msgs, chips, turn: turn.current })
+  }, [msgs, chips, busy])
 
   const last = msgs[msgs.length - 1]
   const lastShown = last && last.role === 'assistant' ? last.shown : 0
@@ -324,14 +332,21 @@ export default function AiPage() {
       {/* context sheet */}
       {sheet && (
         <>
-          <div className="scrim-enter fixed inset-0 z-40" onClick={() => setSheet(false)} aria-hidden />
+          <div
+            className="scrim-enter fixed inset-0 z-40"
+            style={{ background: 'rgba(4, 2, 10, 0.55)' }}
+            onClick={() => setSheet(false)}
+            aria-hidden
+          />
           <div
             role="dialog"
             aria-label={s('sheetTitle')}
-            className="sheet-enter fixed z-40 rounded-2xl border border-line bg-surface"
+            className="sheet-enter glass fixed z-40 rounded-2xl border border-line"
             style={{
               insetInline: 12,
               bottom: SHEET_OFFSET,
+              background: 'color-mix(in srgb, var(--color-bg) 97%, transparent)',
+              backdropFilter: 'blur(24px) saturate(180%)',
               maxHeight: '58vh',
               overflowY: 'auto',
               boxShadow: 'var(--shadow-float)',

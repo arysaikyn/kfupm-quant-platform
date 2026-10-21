@@ -261,8 +261,3 @@ export const equity: Equity = {
   bench: line(11, 60, 0.0009),
 }
 
-export function delay(ms = 520): Promise<void> {
-  const { promise, resolve } = Promise.withResolvers<void>()
-  setTimeout(resolve, ms)
-  return promise
-}

@@ -18,7 +18,9 @@ function Shell() {
   return (
     <>
       <ViewTransition>
-        <Outlet />
+        <div style={{ viewTransitionName: 'screen' }}>
+          <Outlet />
+        </div>
       </ViewTransition>
       <div
         aria-hidden

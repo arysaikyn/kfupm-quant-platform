@@ -12,8 +12,9 @@ const REDUCED_MOTION =
 
 /** Counts to the value on mount and on change; snaps when motion is reduced. */
 export function AnimatedNumber({ value, format, duration = 720 }: Props) {
-  const [shown, setShown] = useState(() => (REDUCED_MOTION ? value : 0))
-  const origin = useRef(REDUCED_MOTION ? value : 0)
+  // Start at the value: counting from 0 flashed 0.00 on every mount.
+  const [shown, setShown] = useState(value)
+  const origin = useRef(value)
 
   useEffect(() => {
     if (REDUCED_MOTION) {

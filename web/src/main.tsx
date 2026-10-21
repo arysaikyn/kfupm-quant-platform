@@ -5,9 +5,11 @@ import './styles.css'
 import App from './App'
 import { I18nProvider } from './i18n'
 import { ThemeProvider } from './theme'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <ErrorBoundary>
     <ThemeProvider>
       <I18nProvider>
         <BrowserRouter>
@@ -15,5 +17,6 @@ createRoot(document.getElementById('root')!).render(
         </BrowserRouter>
       </I18nProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   </StrictMode>,
 )

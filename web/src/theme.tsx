@@ -5,10 +5,26 @@ export type Theme = 'light' | 'dark'
 
 const STORAGE_KEY = 'app.theme'
 
+function readStoredTheme(): Theme | null {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    return saved === 'light' || saved === 'dark' ? saved : null
+  } catch {
+    return null
+  }
+}
+
 function detectTheme(): Theme {
-  const saved = localStorage.getItem(STORAGE_KEY)
-  if (saved === 'light' || saved === 'dark') return saved
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  // index.html already resolved this before paint; trust it first.
+  const applied = document.documentElement.dataset.theme
+  if (applied === 'light' || applied === 'dark') return applied
+  const saved = readStoredTheme()
+  if (saved) return saved
+  try {
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  } catch {
+    return 'dark'
+  }
 }
 
 type Ctx = { theme: Theme; setTheme: (t: Theme) => void }
@@ -20,7 +36,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
-    localStorage.setItem(STORAGE_KEY, theme)
+    try {
+      localStorage.setItem(STORAGE_KEY, theme)
+    } catch {
+      // Private browsing: keep the in-memory choice, skip persistence.
+    }
   }, [theme])
 
   const setTheme = useCallback((t: Theme) => setThemeState(t), [])

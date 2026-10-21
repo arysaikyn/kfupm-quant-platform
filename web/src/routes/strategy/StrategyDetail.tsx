@@ -248,7 +248,7 @@ export default function StrategyDetail() {
               tone={mdd < 0 ? 'text-down' : 'text-muted'}
             />
             <Metric
-              value={`${fmtNum(TURNOVER * 100, lang, 0)}%`}
+              value={fmtNum(TURNOVER * 100, lang, 0, '%')}
               name={s('mTurnover')}
               hint={s('mTurnoverHint')}
             />

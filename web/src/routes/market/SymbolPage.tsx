@@ -128,11 +128,11 @@ export default function SymbolPage() {
       title: move >= 0 ? s('ruleTrendUp') : s('ruleTrendDown'),
       sub: `${s('ruleTrendSub')} ${fmtPct(move, lang, 1)}`,
     },
-    { title: s('ruleCalm'), sub: `${s('ruleCalmSub')} ${fmtNum(volatility * 100, lang, 2)}%` },
+    { title: s('ruleCalm'), sub: `${s('ruleCalmSub')} ${fmtNum(volatility * 100, lang, 2, '%')}` },
     { title: s('ruleHeavy'), sub: s('ruleHeavySub') },
     {
       title: s('ruleDividend'),
-      sub: `${s('ruleDividendSub')} ${fmtNum(divYield * 100, lang, 1)}%`,
+      sub: `${s('ruleDividendSub')} ${fmtNum(divYield * 100, lang, 1, '%')}`,
     },
   ]
   const related = news.filter((n) => n.symbols.includes(quote.symbol)).slice(0, 2)

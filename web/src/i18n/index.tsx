@@ -69,9 +69,18 @@ const I18nContext = createContext<Ctx | null>(null)
 const STORAGE_KEY = 'app.lang'
 
 function detectLang(): Lang {
-  const saved = localStorage.getItem(STORAGE_KEY)
+  // index.html already resolved this before paint; trust it first.
+  const applied = document.documentElement.lang
+  if (applied === 'zh' || applied === 'en' || applied === 'ar') return applied
+  const saved = (() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY)
+    } catch {
+      return null
+    }
+  })()
   if (saved === 'zh' || saved === 'en' || saved === 'ar') return saved
-  const nav = navigator.language.toLowerCase()
+  const nav = (navigator.language || 'en').toLowerCase()
   if (nav.startsWith('ar')) return 'ar'
   if (nav.startsWith('zh')) return 'zh'
   return 'en'
@@ -87,7 +96,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     el.dir = dir
     // Market colour convention: red-up is a China-only habit.
     el.dataset.updown = lang === 'zh' ? 'cn' : 'intl'
-    localStorage.setItem(STORAGE_KEY, lang)
+    try {
+      localStorage.setItem(STORAGE_KEY, lang)
+    } catch {
+      // Private browsing: keep the in-memory choice, skip persistence.
+    }
   }, [lang, dir])
 
   const setLang = useCallback((l: Lang) => setLangState(l), [])
@@ -125,9 +138,9 @@ function formatter(lang: Lang, digits: number): Intl.NumberFormat {
 }
 
 /** Western digits in Arabic too — financial readers expect 45, not ٤٥. */
-export function fmtNum(n: number, lang: Lang, digits = 2): string {
-  // LRI…PDI keeps the figure reading left-to-right inside Arabic text.
-  return `\u2066${formatter(lang, digits).format(n)}\u2069`
+export function fmtNum(n: number, lang: Lang, digits = 2, suffix = ''): string {
+  // LRI…PDI keeps the figure and its unit reading left-to-right inside Arabic.
+  return `\u2066${formatter(lang, digits).format(n)}${suffix}\u2069`
 }
 
 /** The contract stores fractions: 0.12 means 12%. */

@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
-import { EmptyState, Skeleton } from '../../components/states'
-import { delay, news } from '../../data/mock'
+import { EmptyState } from '../../components/states'
+import { news } from '../../data/mock'
 import type { NewsItem } from '../../data/mock'
 import { useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
@@ -44,18 +44,6 @@ function NewsRow({ item, lang }: { item: NewsItem; lang: Lang }) {
 export default function NewsPage() {
   const { lang } = useI18n()
   const s = useStrings(strings)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    let alive = true
-    delay(400).then(() => {
-      if (alive) setLoading(false)
-    })
-    return () => {
-      alive = false
-    }
-  }, [])
-
   const [now] = useState(() => Date.now())
 
   const { groups, todayStamp, yesterdayStamp } = useMemo(() => {
@@ -77,11 +65,7 @@ export default function NewsPage() {
 
   return (
     <Screen title={s('title')} subtitle={s('lead')}>
-      {loading ? (
-        <div className="mt-1">
-          <Skeleton rows={4} />
-        </div>
-      ) : groups.length === 0 ? (
+      {groups.length === 0 ? (
         <EmptyState text={s('empty')} />
       ) : (
         <div className="mt-1 space-y-6">

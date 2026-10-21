@@ -9,7 +9,7 @@
 - One file per run. The model may overwrite it.
 - `run_id` changes on every run. The web must not reuse a cached file across `run_id` values.
 - The file is generated. It is not committed. `model/signals.example.json` is the tracked example.
-- Schema: `signals.schema.json`. Validation: `make doctor`.
+- Schema: `signals.schema.json`. Validation: `make check`.
 - A breaking change bumps `schema_version` and updates the schema, the example, the producer, the consumer, and this document in one commit.
 - An additive field is allowed when the consumer ignores it and the schema stays backward compatible.
 

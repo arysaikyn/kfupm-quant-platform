@@ -1,7 +1,4 @@
-.PHONY: doctor verify
+.PHONY: check
 
-doctor:
-	@bash scripts/doctor.sh
-
-verify: doctor
-	@echo "verify: no test suite yet; doctor is the gate."
+check:
+	@python3 scripts/check.py

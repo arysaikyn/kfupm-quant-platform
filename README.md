@@ -1,41 +1,35 @@
 # KFUPM Quant Platform
 
-A retail quant research platform. Ask in plain language; the system turns the question into rules, tests the rules on history, and explains the result.
+Retail quant research in plain language. Ask a question; the system turns it into rules, tests the rules on history, and explains the result.
 
-**Status and next step:** see [`AGENTS.md`](AGENTS.md).
+Status: pre-code. The contract and product notes are in place; the pipeline and UI are next.
 
-## The loop
+## Loop
 
-1. Ask a question in plain language.
-2. The agent turns it into an explicit strategy spec.
-3. The engine runs it on point-in-time history.
-4. The user sees the picks, the rule, the backtest, and the failure modes.
+1. Ask.
+2. Translate to a strategy spec.
+3. Test on point-in-time history.
+4. Explain the picks, the result, and the limits.
 
-## The three parts
+## Repo
 
-- **Factor library** — documented, reproducible signals.
-- **Research environment** — a natural-language workspace, not a notebook.
-- **Backtest** — costs, rebalancing, drawdown, and a plain-language verdict.
-
-## Repo map
-
-| Path | Contents |
+| Path | What |
 |---|---|
-| `agent/` | Natural-language layer: question -> strategy spec -> engine call -> explanation |
-| `data/` | Ingestion and normalized point-in-time data |
-| `model/` | Factors, screens, backtest engine; writes `model/signals.json` |
-| `web/` | User interface; reads only `model/signals.json` |
-| `docs/` | Product, architecture, decisions, plans, solutions |
+| `agent/` | Natural-language layer |
+| `data/` | Ingestion and point-in-time data |
+| `model/` | Factors, screens, backtest |
+| `web/` | UI |
+| `docs/product.md` | Product and scope |
 
 ## Start
 
 ```bash
-make doctor
+python3 -m pip install -r scripts/requirements.txt
+make check
 ```
 
-## Read next
+## Read
 
-- `AGENTS.md` — working contract
-- `docs/product/thesis.md` — what we are building and why
-- `model/CONTRACT.md` — the one data contract
-- `docs/ops/workflow.md` — task protocol
+- `AGENTS.md`
+- `docs/product.md`
+- `model/CONTRACT.md`

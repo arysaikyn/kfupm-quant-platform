@@ -1,27 +1,17 @@
-# Local task scope. Copy .scope.example, do not commit this file.
-.scope
-
-# Secrets
 .env
 .env.*
 !.env.example
 !.env.template
 
-# Python
 .venv/
 __pycache__/
 *.py[cod]
-.pytest_cache/
-.ruff_cache/
 
-# Node
 node_modules/
 dist/
 build/
 
-# Generated output
 model/signals.json
 data/raw/
 
-# OS
 .DS_Store

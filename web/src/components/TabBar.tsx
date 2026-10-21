@@ -83,10 +83,10 @@ export function TabBar() {
     <nav aria-label="Primary" className="fixed z-50 glass" style={barStyle}>
       <div
         aria-hidden
-        className="absolute top-2 bottom-2 rounded-full transition-[inset-inline-start] duration-300"
+        className="absolute top-2.5 bottom-2.5 rounded-full transition-[inset-inline-start] duration-300"
         style={{
-          width: '20%',
-          insetInlineStart: 'calc(var(--i) * 20%)',
+          width: 'calc(20% - 20px)',
+          insetInlineStart: 'calc(var(--i) * 20% + 10px)',
           background: 'rgba(62,91,255,.12)',
           boxShadow: 'inset 0 0 0 1px rgba(62,91,255,.12)',
           opacity: index === 2 ? 0 : 1,

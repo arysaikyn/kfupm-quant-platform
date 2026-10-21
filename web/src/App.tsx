@@ -23,6 +23,11 @@ export default function App() {
         <Route path="/me" element={<MePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-40 h-28"
+        style={{ background: 'linear-gradient(to top, var(--color-bg) 22%, transparent)' }}
+      />
       <TabBar />
     </>
   )

@@ -40,6 +40,29 @@ function sameChip(a: CtxRef, b: CtxRef): boolean {
   return false
 }
 
+const CAPS = [
+  { t: 'cap1t', h: 'cap1h' },
+  { t: 'cap2t', h: 'cap2h' },
+  { t: 'cap3t', h: 'cap3h' },
+  { t: 'cap4t', h: 'cap4h' },
+  { t: 'cap5t', h: 'cap5h' },
+  { t: 'cap6t', h: 'cap6h' },
+] as const
+
+const ICON_PATHS = [
+  'M4 17l4-6 4 4 4-7 4 5',
+  'M12 5v14M5 12h14',
+  'M7 8h7a4 4 0 010 8H7zM4 5l3 3M4 19l3-3',
+  'M5 6h14M5 12h9M5 18h12',
+  'M4 18V9m5 9V5m5 13v-6m5 6V8',
+  'M12 4l7 3.5v5c0 4-3 6.6-7 7.5-4-.9-7-3.5-7-7.5v-5z',
+]
+const CAP_ICONS = ICON_PATHS.map((d) => (
+  <svg key={d} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d={d} />
+  </svg>
+))
+
 export default function AiPage() {
   const { t, lang } = useI18n()
   const s = useStrings(strings)
@@ -216,17 +239,28 @@ export default function AiPage() {
         <div className="mt-5 space-y-5">
           {msgs.length === 0 && (
             <div className="pt-1">
-              <p className="text-[12px] text-muted">{s('suggestTitle')}</p>
-              <div className="mt-2 flex flex-col gap-2">
-                {[s('suggest1'), s('suggest2'), s('suggest3'), s('suggest4')].map((text) => (
+              <p className="text-[12px] text-muted">{s('capTitle')}</p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {CAPS.map((c, i) => (
                   <button
-                    key={text}
+                    key={c.t}
                     type="button"
                     disabled={busy}
-                    onClick={() => send(text)}
-                    className="rounded-2xl border border-line bg-surface px-4 py-3 text-start text-[14px] disabled:opacity-60"
+                    onClick={() => send(s(c.t))}
+                    className="flex min-h-[74px] items-start gap-2 rounded-2xl border border-line bg-surface p-3 text-start disabled:opacity-60"
                   >
-                    {text}
+                    <span
+                      className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
+                      style={{ background: 'rgba(62,91,255,.10)', color: 'var(--color-accent)' }}
+                    >
+                      {CAP_ICONS[i]}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[13px] font-medium leading-tight">{s(c.t)}</span>
+                      <span className="mt-1 block text-[11px] leading-snug text-muted">
+                        {s(c.h)}
+                      </span>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -238,7 +272,7 @@ export default function AiPage() {
             m.role === 'user' ? (
               <UserBubble key={m.id} text={m.text} />
             ) : (
-              <AssistantMessage key={m.id} m={m} />
+              <AssistantMessage key={m.id} m={m} sourcesLabel={s('sources')} />
             ),
           )}
 

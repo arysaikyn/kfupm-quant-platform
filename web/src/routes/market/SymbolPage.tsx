@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
@@ -8,10 +9,10 @@ import { strings } from './strings'
 
 const RANGES = ['1D', '1M', '6M', '1Y']
 
-/** 320×90 area chart; scales with the card so it never clips on a phone. */
+/** 320×150 area chart; scales with the card so it never clips on a phone. */
 function PriceChart({ data, up }: { data: number[]; up: boolean }) {
   const w = 320
-  const h = 90
+  const h = 150
   const pad = 6
   const min = Math.min(...data)
   const span = Math.max(...data) - min || 1
@@ -38,7 +39,7 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
         d={line}
         fill="none"
         stroke={stroke}
-        strokeWidth="1.6"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -51,6 +52,7 @@ export default function SymbolPage() {
   const navigate = useNavigate()
   const { t, lang, dir } = useI18n()
   const s = useStrings(strings)
+  const [range, setRange] = useState<string>('1Y')
 
   const quote = quotes.find((q) => q.symbol === symbol)
 
@@ -104,6 +106,9 @@ export default function SymbolPage() {
 
   const up = quote.change >= 0
   const token = up ? 'var(--color-up)' : 'var(--color-down)'
+  // The range buttons are real: each one shows a shorter slice of the series.
+  const SPANS: Record<string, number> = { '1D': 10, '1M': 20, '6M': 30, '1Y': quote.spark.length }
+  const series = quote.spark.slice(-(SPANS[range] ?? quote.spark.length))
   // 40-day momentum: the last spark point against the first one.
   const move = quote.spark[quote.spark.length - 1] / quote.spark[0] - 1
   const moves = quote.spark.slice(1).map((v, i) => Math.abs(v / quote.spark[i] - 1))
@@ -127,14 +132,14 @@ export default function SymbolPage() {
   const related = news.filter((n) => n.symbols.includes(quote.symbol)).slice(0, 2)
 
   return (
-    <Screen title={quote.name[lang]} subtitle={`${quote.symbol} · ${quote.currency}`} leading={back}>
+    <Screen title={quote.name[lang]} leading={back}>
       {/* Price header */}
       <div className="mt-1">
-        <p className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
-          {s('priceLabel')}
+        <p className="num text-[11px] tracking-[0.12em]" style={{ color: 'var(--color-muted)' }}>
+          {quote.symbol} · {quote.currency}
         </p>
-        <div className="mt-1 flex flex-wrap items-end gap-x-2 gap-y-1">
-          <span className="num text-[34px] leading-none font-semibold">
+        <div className="mt-1.5 flex flex-wrap items-end gap-x-2 gap-y-1">
+          <span className="num text-[46px] leading-none font-semibold">
             {fmtNum(quote.price, lang, 2)}
           </span>
           <span className="pb-0.5 text-[13px]" style={{ color: 'var(--color-muted)' }}>
@@ -163,25 +168,31 @@ export default function SymbolPage() {
         className="mt-4 rounded-2xl p-3"
         style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
       >
-        <PriceChart data={quote.spark} up={up} />
+        <PriceChart data={series} up={up} />
         <div
           role="group"
           aria-label={s('rangeGroup')}
-          className="mt-2 flex items-center gap-1.5"
+          className="mt-3 flex items-center gap-1.5"
         >
-          {RANGES.map((r, i) => (
-            <span
-              key={r}
-              className="rounded-full px-3 py-1 text-[11px] font-medium"
-              style={
-                i === 0
-                  ? { background: 'rgba(255,255,255,.09)', color: 'var(--color-fg)' }
-                  : { color: 'var(--color-muted)' }
-              }
-            >
-              {r}
-            </span>
-          ))}
+          {RANGES.map((r) => {
+            const on = r === range
+            return (
+              <button
+                key={r}
+                type="button"
+                aria-pressed={on}
+                onClick={() => setRange(r)}
+                className="rounded-lg px-3 py-1.5 text-[11px] font-medium transition-colors"
+                style={
+                  on
+                    ? { background: 'var(--color-accent)', color: '#fff' }
+                    : { color: 'var(--color-muted)' }
+                }
+              >
+                {r}
+              </button>
+            )
+          })}
         </div>
       </div>
 

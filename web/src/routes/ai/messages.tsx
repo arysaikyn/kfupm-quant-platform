@@ -32,7 +32,7 @@ export function UserBubble({ text }: { text: string }) {
   )
 }
 
-export function AssistantMessage({ m }: { m: AssistantMsg }) {
+export function AssistantMessage({ m, sourcesLabel }: { m: AssistantMsg; sourcesLabel: string }) {
   const text = visibleParas(m.paras, m.shown)
   const complete = m.shown >= m.total
   const lastFilled = text.reduce((acc, p, i) => (p.length > 0 ? i : acc), -1)
@@ -56,7 +56,10 @@ export function AssistantMessage({ m }: { m: AssistantMsg }) {
       </div>
 
       {complete && m.sources.length > 0 && (
-        <div className="mt-2.5 flex flex-wrap gap-1.5">
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <span className="text-[10px] tracking-wide text-muted uppercase">
+            {sourcesLabel} · {m.sources.length}
+          </span>
           {m.sources.map((src) => (
             <span
               key={src}

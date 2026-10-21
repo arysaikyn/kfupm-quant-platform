@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { AnimatedNumber } from '../../components/AnimatedNumber'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
@@ -29,7 +30,7 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`}
-      className="h-auto w-full"
+      className="chart-draw h-auto w-full"
       style={{ filter: `drop-shadow(0 0 14px color-mix(in srgb, ${stroke} 45%, transparent))` }}
       aria-hidden="true"
     >
@@ -145,7 +146,7 @@ export default function SymbolPage() {
         </p>
         <div className="mt-1.5 flex flex-wrap items-end gap-x-2 gap-y-1">
           <span className="num text-[46px] leading-none font-bold italic tracking-tight">
-            {fmtNum(quote.price, lang, 2)}
+            <AnimatedNumber value={quote.price} format={(n) => fmtNum(n, lang, 2)} />
           </span>
           <span className="pb-0.5 text-[13px]" style={{ color: 'var(--color-muted)' }}>
             {quote.currency}

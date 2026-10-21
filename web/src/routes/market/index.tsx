@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { AnimatedNumber } from '../../components/AnimatedNumber'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { Sparkline } from '../../components/Sparkline'
@@ -84,7 +85,7 @@ export default function MarketPage() {
                 {ix.name[lang]}
               </p>
               <p className="num mt-1.5 text-[19px] leading-none font-semibold">
-                {fmtNum(ix.value, lang, 2)}
+                <AnimatedNumber value={ix.value} format={(n) => fmtNum(n, lang, 2)} />
               </p>
               <p className={`num mt-1.5 text-[12px] ${up ? 'text-up' : 'text-down'}`}>
                 {fmtPct(ix.change, lang)}
@@ -198,7 +199,7 @@ export default function MarketPage() {
                   </span>
                   <div className="shrink-0 text-end">
                     <p className="num text-[15px] leading-none font-semibold">
-                      {fmtNum(q.price, lang, 2)}
+                      <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
                     </p>
                     <p className={`num mt-1 text-[12px] leading-none ${up ? 'text-up' : 'text-down'}`}>
                       {fmtPct(q.change, lang)}

@@ -74,6 +74,17 @@ body,
   height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Kill the tap flash and the double-tap zoom delay; both read as "cheap". */
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
 body {
   margin: 0;
   background: var(--color-bg);
@@ -107,22 +118,6 @@ html[dir="rtl"] body {
   letter-spacing: -0.02em;
 }
 
-.card,
-.surface {
-  background: linear-gradient(180deg, var(--card-top), var(--card-bottom));
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-card);
-  backdrop-filter: blur(14px) saturate(140%);
-  box-shadow: var(--shadow-card);
-}
-
-.press {
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
-}
-.press:active {
-  transform: scale(0.985);
-}
-
 .shimmer {
   position: relative;
   overflow: hidden;
@@ -140,6 +135,103 @@ html[dir="rtl"] body {
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
+  }
+}
+
+/* One shared easing so every motion in the app reads as the same hand. */
+:root {
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: linear(
+    0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%,
+    1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%,
+    0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1 100%
+  );
+}
+
+/* Screen changes run through the View Transitions API (React 19 <ViewTransition>).
+   The old frame leaves fast, the new one settles in. */
+::view-transition-old(root) {
+  animation: 150ms ease-in both vt-out;
+}
+
+::view-transition-new(root) {
+  animation: 240ms cubic-bezier(0.23, 1, 0.32, 1) both vt-in;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.sheet-enter {
+  animation: sheet-in 320ms var(--ease-spring) both;
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.scrim-enter {
+  animation: scrim-in 200ms var(--ease-soft) both;
+}
+
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Draw the price line on instead of slapping it down. */
+.chart-draw path:last-of-type {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+  animation: chart-draw 900ms var(--ease-soft) 60ms both;
+}
+.chart-draw path:first-of-type {
+  animation: chart-fade 700ms var(--ease-soft) 260ms both;
+}
+
+@keyframes chart-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes chart-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-enter,
+  .scrim-enter,
+  .chart-draw path {
+    animation: none !important;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
 }
 

@@ -324,11 +324,11 @@ export default function AiPage() {
       {/* context sheet */}
       {sheet && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setSheet(false)} aria-hidden />
+          <div className="scrim-enter fixed inset-0 z-40" onClick={() => setSheet(false)} aria-hidden />
           <div
             role="dialog"
             aria-label={s('sheetTitle')}
-            className="fixed z-40 rounded-2xl border border-line bg-surface"
+            className="sheet-enter fixed z-40 rounded-2xl border border-line bg-surface"
             style={{
               insetInline: 12,
               bottom: SHEET_OFFSET,

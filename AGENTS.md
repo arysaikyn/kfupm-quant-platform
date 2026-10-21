@@ -26,11 +26,11 @@ Pre-code. Process, contracts, and product notes are in place. The data pipeline,
 |---|---|---|
 | `agent/` | Question -> strategy spec -> engine call -> explanation | agent |
 | `data/` | Ingestion and normalized point-in-time data | data |
-| `model/` | Factors, screens, backtest engine; writes `model/signals.json` | model |
+| `model/` | Factors, screens, backtest engine; owns `model/signals.json` and its contract | model |
 | `web/` | User interface; reads only `model/signals.json` | web |
-| `docs/` | Product, architecture, decisions, plans, solutions | shared |
+| `docs/` | Product, decisions, plans, solutions | shared |
 
-Three writers share this repository. One top-level product directory has one owner. `docs/` is shared. Do not edit another owner's directory without agreement. `docs/architecture/signals.schema.json` is a shared contract: a change needs both the model side and the web side in the same commit.
+Three writers share this repository. One top-level product directory has one owner. `docs/` is shared. Do not edit another owner's directory without agreement. `model/signals.schema.json` is a shared contract: a change needs both the model side and the web side in the same commit.
 
 ## Commands
 
@@ -79,8 +79,7 @@ A compile, a stub, or a plan is not done.
 | `docs/product/thesis.md` | You need the product argument |
 | `docs/product/scope.md` | You are deciding whether work is in scope |
 | `docs/product/glossary.md` | A domain term is unclear |
-| `docs/architecture/overview.md` | You change a boundary or add a component |
-| `docs/architecture/signals-contract.md` | You touch `model/signals.json` or the web |
+| `model/CONTRACT.md` | You touch `model/signals.json` or the web |
 | `docs/ops/workflow.md` | You need the full task protocol |
 | `docs/ops/verification.md` | You need the proof standard |
 | `docs/ops/secrets.md` | You handle a key, token, or vendor account |

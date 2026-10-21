@@ -21,6 +21,6 @@ A strategy spec for one question, printed to stdout, with the reason for each fi
 
 ## Read first
 
-- `../docs/architecture/overview.md`
+- `../AGENTS.md`
 - `../docs/decisions/0003-agent-does-not-compute.md`
-- `../docs/architecture/signals-contract.md`
+- `../model/CONTRACT.md`

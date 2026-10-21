@@ -10,9 +10,8 @@ One map for the document set. Read `../AGENTS.md` first; it is the only always-l
 | [`product/scope.md`](product/scope.md) | In scope, out of scope, open questions | You decide whether work belongs |
 | [`product/competition.md`](product/competition.md) | Track, deadline, deliverables, rubric | You prioritize work |
 | [`product/glossary.md`](product/glossary.md) | Domain terms | A term is unclear |
-| [`architecture/overview.md`](architecture/overview.md) | Components, data flow, invariants | You change a boundary |
-| [`architecture/signals-contract.md`](architecture/signals-contract.md) | `model/signals.json` fields and units | You touch the contract or the web |
-| [`architecture/signals.schema.json`](architecture/signals.schema.json) | Machine-readable contract | You validate output |
+| [`../model/CONTRACT.md`](../model/CONTRACT.md) | `model/signals.json` fields, units, and rules | You touch the contract or the web |
+| [`../model/signals.schema.json`](../model/signals.schema.json) | Machine-readable contract | You validate output |
 | [`decisions/`](decisions/README.md) | Why a rule exists | You want to change a rule |
 | [`ops/workflow.md`](ops/workflow.md) | Full task protocol, receipts, review | You start a task |
 | [`ops/verification.md`](ops/verification.md) | What counts as proof | You claim done |

@@ -21,5 +21,5 @@ A page that renders `model/signals.example.json` and shows an explicit empty sta
 
 ## Read first
 
-- `../docs/architecture/signals-contract.md`
+- `../model/CONTRACT.md`
 - `../docs/decisions/0002-one-frontend-contract.md`

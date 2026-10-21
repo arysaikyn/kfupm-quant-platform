@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/arysaikyn/kfupm-quant-platform/docs/architecture/signals.schema.json",
+  "$id": "https://github.com/arysaikyn/kfupm-quant-platform/model/signals.schema.json",
   "title": "Signals file",
   "description": "The single data contract between model/ and web/.",
   "type": "object",

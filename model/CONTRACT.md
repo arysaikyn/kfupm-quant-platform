@@ -1,6 +1,6 @@
 # Signals contract
 
-`model/signals.json` is the only data contract between the model and the web app. The web app reads no other file for numbers.
+`model/signals.json` is the only data contract between the model and the web app. The web app reads no other file for numbers. The schema and the example live in this directory.
 
 ## Rules
 

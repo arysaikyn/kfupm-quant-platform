@@ -28,9 +28,6 @@ REQUIRED = [
     "docs/product/scope.md",
     "docs/product/competition.md",
     "docs/product/glossary.md",
-    "docs/architecture/overview.md",
-    "docs/architecture/signals-contract.md",
-    "docs/architecture/signals.schema.json",
     "docs/decisions/README.md",
     "docs/decisions/0001-decision-support.md",
     "docs/decisions/0002-one-frontend-contract.md",
@@ -46,6 +43,8 @@ REQUIRED = [
     "agent/README.md",
     "data/README.md",
     "model/README.md",
+    "model/CONTRACT.md",
+    "model/signals.schema.json",
     "model/signals.example.json",
     "web/README.md",
     "scripts/doctor.py",
@@ -129,7 +128,7 @@ def check_json() -> None:
 
 def check_contract() -> None:
     print("doctor: signals contract")
-    schema_path = ROOT / "docs/architecture/signals.schema.json"
+    schema_path = ROOT / "model/signals.schema.json"
     example_path = ROOT / "model/signals.example.json"
     try:
         from jsonschema import Draft202012Validator, FormatChecker

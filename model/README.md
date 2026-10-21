@@ -21,7 +21,7 @@ One factor and one backtest that write a schema-valid `model/signals.json` for a
 
 ## Read first
 
-- `../docs/architecture/signals-contract.md`
-- `../docs/architecture/signals.schema.json`
+- `CONTRACT.md`
+- `signals.schema.json`
 - `../docs/decisions/0004-sharia-screen-is-a-filter.md`
 - `../docs/decisions/0005-one-engine-per-market-config.md`

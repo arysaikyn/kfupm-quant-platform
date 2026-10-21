@@ -18,6 +18,6 @@ Use these terms with these meanings in code, docs, and the UI.
 | **Annual return** | The compounded yearly return of the strategy over the test window, as a decimal. |
 | **Max drawdown** | The largest peak-to-trough loss over the test window, as a negative decimal. |
 | **Sharpe ratio** | Mean excess return divided by return volatility. State the risk-free rate used. |
-| **Signals file** | `model/signals.json`, the single data contract between the model and the web app. See `../architecture/signals-contract.md`. |
+| **Signals file** | `model/signals.json`, the single data contract between the model and the web app. See `../../model/CONTRACT.md`. |
 | **Agent layer** | The language-model component. It translates a question into a strategy spec and explains results. It does not compute numbers. |
 | **Decision support** | A tool that shows evidence and limits. It is not advice, and it does not execute trades. |

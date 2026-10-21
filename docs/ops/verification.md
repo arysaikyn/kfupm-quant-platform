@@ -9,7 +9,7 @@
 - Required files exist.
 - `CLAUDE.md` imports `AGENTS.md`.
 - Every JSON file parses.
-- `model/signals.example.json` validates against `docs/architecture/signals.schema.json`.
+- `model/signals.example.json` validates against `model/signals.schema.json`.
 - Relative Markdown links resolve.
 - No secret-like file is tracked.
 

@@ -37,5 +37,5 @@ make doctor
 
 - `AGENTS.md` — working contract
 - `docs/product/thesis.md` — what we are building and why
-- `docs/architecture/overview.md` — system shape
+- `model/CONTRACT.md` — the one data contract
 - `docs/ops/workflow.md` — task protocol

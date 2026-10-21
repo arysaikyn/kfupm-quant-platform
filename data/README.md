@@ -21,6 +21,5 @@ One normalized daily snapshot for one market, with a documented schema and a row
 
 ## Read first
 
-- `../docs/architecture/overview.md`
 - `../docs/decisions/0005-one-engine-per-market-config.md`
 - `../docs/ops/secrets.md`

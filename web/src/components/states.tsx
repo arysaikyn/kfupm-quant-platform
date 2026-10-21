@@ -6,7 +6,7 @@ export function Skeleton({ rows = 3 }: { rows?: number }) {
       {Array.from({ length: rows }, (_, i) => (
         <div
           key={i}
-          className="animate-pulse rounded-2xl"
+          className="shimmer rounded-2xl"
           style={{ height: 64, background: 'var(--color-surface)' }}
         />
       ))}

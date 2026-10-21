@@ -67,13 +67,15 @@ export function TabBar() {
 
   const barStyle = {
     insetInline: 12,
+    maxWidth: 496,
+    marginInline: 'auto',
     bottom: 'calc(12px + env(safe-area-inset-bottom))',
     height: 'var(--tabbar-h)',
     borderRadius: 'var(--radius-bar)',
-    background: 'rgba(20,22,26,.78)',
+    background: 'rgba(255,255,255,.82)',
     backdropFilter: 'blur(20px) saturate(180%)',
     border: '1px solid var(--color-line)',
-    boxShadow: '0 12px 32px rgba(0,0,0,.45)',
+    boxShadow: 'var(--shadow-float)',
     '--i': index,
   } as CSSProperties
 
@@ -85,7 +87,8 @@ export function TabBar() {
         style={{
           width: '20%',
           insetInlineStart: 'calc(var(--i) * 20%)',
-          background: 'rgba(255,255,255,.07)',
+          background: 'rgba(62,91,255,.12)',
+          boxShadow: 'inset 0 0 0 1px rgba(62,91,255,.12)',
           opacity: index === 2 ? 0 : 1,
           transitionTimingFunction: 'cubic-bezier(.34,1.56,.64,1)',
         }}

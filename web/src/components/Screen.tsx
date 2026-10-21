@@ -13,7 +13,7 @@ type Props = {
 
 export function Screen({ title, subtitle, leading, action, children, padded = true }: Props) {
   return (
-    <main className="screen-pad min-h-full">
+    <main className="screen-pad mx-auto min-h-full w-full max-w-[520px]">
       {(title || action || leading) && (
         <header
           className="sticky top-0 z-30 flex items-end justify-between gap-3 px-4 pt-5 pb-3"

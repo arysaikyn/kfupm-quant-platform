@@ -1,29 +1,30 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0b0c0e;
-  --color-surface: #14161a;
-  --color-line: rgba(255, 255, 255, 0.08);
-  --color-fg: #f2f3f5;
-  --color-muted: #8b909a;
-  --color-accent: #4f8cff;
-  --color-up: #ff4d4f;
-  --color-down: #22c55e;
+  --color-bg: #f5f3ee;
+  --color-surface: #ffffff;
+  --color-line: rgba(18, 20, 26, 0.09);
+  --color-fg: #0f1218;
+  --color-muted: #6d7480;
+  --color-accent: #3e5bff;
+  --color-up: #e5484d;
+  --color-down: #12915b;
 
-  --radius-card: 16px;
-  --radius-bar: 28px;
+  --radius-card: 18px;
+  --radius-bar: 30px;
 }
 
 /* Market colour semantics follow the locale: CN red-up, everyone else green-up. */
 html[data-updown="intl"] {
-  --color-up: #22c55e;
-  --color-down: #ff4d4f;
+  --color-up: #12915b;
+  --color-down: #e5484d;
 }
 
 :root {
-  color-scheme: dark;
   --tabbar-h: 60px;
   --tabbar-gap: 12px;
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 10px 28px rgba(16, 24, 40, 0.07);
+  --shadow-float: 0 8px 30px rgba(16, 24, 40, 0.14);
 }
 
 html,
@@ -41,6 +42,24 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Warm paper + two soft blooms: the page never reads as a flat sheet. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(90% 55% at 8% -8%, rgba(62, 91, 255, 0.13), transparent 62%),
+    radial-gradient(70% 45% at 100% -4%, rgba(255, 176, 32, 0.12), transparent 58%),
+    radial-gradient(60% 40% at 50% 108%, rgba(18, 145, 91, 0.07), transparent 60%);
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
 /* Arabic needs its own face and looser leading or the marks clip. */
 html[dir="rtl"] body {
   font-family: "SF Arabic", "Noto Kufi Arabic", "Geeza Pro", system-ui, sans-serif;
@@ -49,6 +68,41 @@ html[dir="rtl"] body {
 
 .num {
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.press {
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.press:active {
+  transform: scale(0.985);
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(62, 91, 255, 0.09), transparent);
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* Space reserved under every screen for the floating bar. */
@@ -58,6 +112,6 @@ html[dir="rtl"] body {
 
 @supports not (backdrop-filter: blur(1px)) {
   .glass {
-    background: rgba(20, 22, 26, 0.96);
+    background: rgba(255, 255, 255, 0.96);
   }
 }

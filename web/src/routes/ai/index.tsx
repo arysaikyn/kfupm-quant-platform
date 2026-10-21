@@ -253,12 +253,14 @@ export default function AiPage() {
         className="fixed z-40 glass"
         style={{
           insetInline: 12,
+          maxWidth: 496,
+          marginInline: 'auto',
           bottom: BAR_OFFSET,
           height: COMPOSER_H,
           borderRadius: 20,
-          background: 'rgba(20,22,26,.94)',
+          background: 'rgba(255,255,255,.9)',
           border: '1px solid var(--color-line)',
-          boxShadow: '0 12px 32px rgba(0,0,0,.45)',
+          boxShadow: 'var(--shadow-float)',
         }}
       >
         <form onSubmit={submit} className="flex h-full items-center gap-2 ps-4 pe-1.5">
@@ -298,7 +300,7 @@ export default function AiPage() {
               bottom: SHEET_OFFSET,
               maxHeight: '58vh',
               overflowY: 'auto',
-              boxShadow: '0 18px 40px rgba(0,0,0,.5)',
+              boxShadow: 'var(--shadow-float)',
             }}
           >
             <div className="flex items-center justify-between gap-2 ps-4 pe-1 pt-2 pb-1">

@@ -251,7 +251,7 @@ export default function AiPage() {
                   >
                     <span
                       className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
-                      style={{ background: 'rgba(62,91,255,.10)', color: 'var(--color-accent)' }}
+                      style={{ background: 'rgba(168,85,247,.16)', color: 'var(--color-accent)' }}
                     >
                       {CAP_ICONS[i]}
                     </span>
@@ -292,7 +292,7 @@ export default function AiPage() {
           bottom: BAR_OFFSET,
           height: COMPOSER_H,
           borderRadius: 20,
-          background: 'rgba(255,255,255,.9)',
+          background: 'var(--bar-bg)',
           border: '1px solid var(--color-line)',
           boxShadow: 'var(--shadow-float)',
         }}

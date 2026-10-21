@@ -27,7 +27,12 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
   const stroke = up ? 'var(--color-up)' : 'var(--color-down)'
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full" aria-hidden="true">
+    <svg
+      viewBox={`0 0 ${w} ${h}`}
+      className="h-auto w-full"
+      style={{ filter: `drop-shadow(0 0 14px color-mix(in srgb, ${stroke} 45%, transparent))` }}
+      aria-hidden="true"
+    >
       <defs>
         <linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" style={{ stopColor: stroke, stopOpacity: 0.28 }} />
@@ -139,7 +144,7 @@ export default function SymbolPage() {
           {quote.symbol} · {quote.currency}
         </p>
         <div className="mt-1.5 flex flex-wrap items-end gap-x-2 gap-y-1">
-          <span className="num text-[46px] leading-none font-semibold">
+          <span className="num text-[46px] leading-none font-bold italic tracking-tight">
             {fmtNum(quote.price, lang, 2)}
           </span>
           <span className="pb-0.5 text-[13px]" style={{ color: 'var(--color-muted)' }}>

@@ -5,6 +5,9 @@ type Strings = {
   name: string
   email: string
   signIn: string
+  appearance: string
+  light: string
+  dark: string
   language: string
   /** Native names — identical in every dictionary on purpose. */
   langZh: string
@@ -22,7 +25,10 @@ export const strings = {
     name: 'Arys',
     email: 'arys@example.com',
     signIn: '登录',
-    language: '语言与显示',
+    appearance: '外观',
+    light: '浅色',
+    dark: '深色',
+    language: '语言',
     langZh: '中文',
     langZhEnglish: 'Chinese',
     langEn: 'English',
@@ -36,7 +42,10 @@ export const strings = {
     name: 'Arys',
     email: 'arys@example.com',
     signIn: 'Sign in',
-    language: 'Language & display',
+    appearance: 'Appearance',
+    light: 'Light',
+    dark: 'Dark',
+    language: 'Language',
     langZh: '中文',
     langZhEnglish: 'Chinese',
     langEn: 'English',
@@ -50,7 +59,10 @@ export const strings = {
     name: 'Arys',
     email: 'arys@example.com',
     signIn: 'تسجيل الدخول',
-    language: 'اللغة والعرض',
+    appearance: 'المظهر',
+    light: 'فاتح',
+    dark: 'داكن',
+    language: 'اللغة',
     langZh: '中文',
     langZhEnglish: 'Chinese',
     langEn: 'English',

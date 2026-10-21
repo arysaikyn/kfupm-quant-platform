@@ -109,7 +109,7 @@ export default function MarketPage() {
                 const up = sec.change >= 0
                 const selected = sector === sec.id
                 const token = up ? 'var(--color-up)' : 'var(--color-down)'
-                const alpha = 34 + Math.min(Math.abs(sec.change) / 0.02, 1) * 46
+                const alpha = 22 + Math.min(Math.abs(sec.change) / 0.02, 1) * 26
                 return (
                   <button
                     key={sec.id}
@@ -120,15 +120,16 @@ export default function MarketPage() {
                     style={{
                       flexGrow: sec.weight,
                       flexBasis: 0,
-                      background: `color-mix(in srgb, ${token} ${alpha}%, var(--color-surface))`,
-                      border: '1px solid rgba(18,20,26,.06)',
+                      background: `linear-gradient(160deg, color-mix(in srgb, ${token} ${alpha + 12}%, transparent), color-mix(in srgb, ${token} ${Math.round(alpha / 3)}%, transparent))`,
+                      border: `1px solid color-mix(in srgb, ${token} 34%, transparent)`,
+                      backdropFilter: 'blur(10px)',
                       boxShadow: selected ? 'inset 0 0 0 2px var(--color-accent)' : undefined,
                     }}
                   >
                     <span className="block min-w-0 truncate text-[12px] font-medium">
                       {sec.name[lang]}
                     </span>
-                    <span className="num text-[12px] opacity-70">
+                    <span className="num text-[12px]" style={{ color: token }}>
                       {fmtPct(sec.change, lang)}
                     </span>
                   </button>

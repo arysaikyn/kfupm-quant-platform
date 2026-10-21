@@ -17,8 +17,8 @@ export function UserBubble({ text }: { text: string }) {
       <div
         className="max-w-[85%] rounded-2xl border px-4 py-2.5"
         style={{
-          background: 'rgba(79,140,255,.16)',
-          borderColor: 'rgba(79,140,255,.28)',
+          background: 'rgba(168,85,247,.18)',
+          borderColor: 'rgba(168,85,247,.32)',
         }}
       >
         <p

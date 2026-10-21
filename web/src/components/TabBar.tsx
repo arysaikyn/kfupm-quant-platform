@@ -72,7 +72,7 @@ export function TabBar() {
     bottom: 'calc(12px + env(safe-area-inset-bottom))',
     height: 'var(--tabbar-h)',
     borderRadius: 'var(--radius-bar)',
-    background: 'rgba(255,255,255,.82)',
+    background: 'var(--bar-bg)',
     backdropFilter: 'blur(20px) saturate(180%)',
     border: '1px solid var(--color-line)',
     boxShadow: 'var(--shadow-float)',
@@ -87,8 +87,8 @@ export function TabBar() {
         style={{
           width: 'calc(20% - 20px)',
           insetInlineStart: 'calc(var(--i) * 20% + 10px)',
-          background: 'rgba(62,91,255,.12)',
-          boxShadow: 'inset 0 0 0 1px rgba(62,91,255,.12)',
+          background: 'rgba(168,85,247,.18)',
+          boxShadow: 'inset 0 0 0 1px rgba(168,85,247,.26)',
           opacity: index === 2 ? 0 : 1,
           transitionTimingFunction: 'cubic-bezier(.34,1.56,.64,1)',
         }}
@@ -117,7 +117,7 @@ export function TabBar() {
                         top: -22,
                         background: 'var(--color-accent)',
                         color: '#fff',
-                        boxShadow: '0 8px 24px rgba(79,140,255,.45)',
+                        boxShadow: '0 0 26px rgba(168,85,247,.55)',
                         border: '2px solid var(--color-bg)',
                       }}
                     >

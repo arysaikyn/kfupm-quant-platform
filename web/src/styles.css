@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0b0c0e;
+  --color-surface: #14161a;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-fg: #f2f3f5;
+  --color-muted: #8b909a;
+  --color-accent: #4f8cff;
+  --color-up: #ff4d4f;
+  --color-down: #22c55e;
+
+  --radius-card: 16px;
+  --radius-bar: 28px;
+}
+
+/* Market colour semantics follow the locale: CN red-up, everyone else green-up. */
+html[data-updown="intl"] {
+  --color-up: #22c55e;
+  --color-down: #ff4d4f;
+}
+
+:root {
+  color-scheme: dark;
+  --tabbar-h: 60px;
+  --tabbar-gap: 12px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: -apple-system, "SF Pro Text", "PingFang SC", "Noto Sans SC",
+    system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Arabic needs its own face and looser leading or the marks clip. */
+html[dir="rtl"] body {
+  font-family: "SF Arabic", "Noto Kufi Arabic", "Geeza Pro", system-ui, sans-serif;
+  line-height: 1.7;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Space reserved under every screen for the floating bar. */
+.screen-pad {
+  padding-bottom: calc(var(--tabbar-h) + var(--tabbar-gap) + env(safe-area-inset-bottom) + 16px);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .glass {
+    background: rgba(20, 22, 26, 0.96);
+  }
+}

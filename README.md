@@ -2,7 +2,15 @@
 
 Retail quant research in plain language. Ask a question; the system turns it into rules, tests them on history, and explains the result.
 
-Status: pre-code.
+Status: web shell runs on mock data; the engine is not built.
+
+## Run
+
+```
+cd web && npm install && npm run dev
+```
+
+Five tabs: markets, news, AI, strategies, profile. Chinese, English and Arabic, with right-to-left layout. All data is mock (`web/src/data/mock.ts`).
 
 ## Loop
 

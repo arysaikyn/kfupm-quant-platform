@@ -93,7 +93,6 @@ export function TabBar() {
           style={{
             transform: `translate3d(calc(var(--i) * 100% * var(--dir)), 0, 0)`,
             transitionTimingFunction: 'cubic-bezier(.32,1.12,.55,1)',
-            opacity: index === 2 ? 0 : 1,
           }}
         >
           <div
@@ -124,13 +123,17 @@ export function TabBar() {
                     <span
                       className="absolute flex items-center justify-center rounded-full"
                       style={{
-                        width: 40,
-                        height: 40,
-                        top: -22,
+                        width: active ? 44 : 40,
+                        height: active ? 44 : 40,
+                        top: active ? -25 : -22,
                         background: 'var(--color-accent)',
                         color: '#fff',
-                        boxShadow: '0 0 26px rgba(168,85,247,.55)',
+                        boxShadow: active
+                          ? '0 0 0 3px rgba(168,85,247,.22), 0 0 34px rgba(168,85,247,.75)'
+                          : '0 0 26px rgba(168,85,247,.45)',
                         border: '2px solid var(--color-bg)',
+                        transition:
+                          'width 260ms cubic-bezier(.32,1.12,.55,1), height 260ms cubic-bezier(.32,1.12,.55,1), top 260ms cubic-bezier(.32,1.12,.55,1), box-shadow 260ms ease',
                       }}
                     >
                       {it.icon}

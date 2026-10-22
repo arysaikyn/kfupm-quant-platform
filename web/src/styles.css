@@ -58,7 +58,7 @@
   --color-down: #35e08a;
 
   --radius-card: 22px;
-  --radius-bar: 30px;
+  --radius-bar: 24px;
 }
 
 /* Market colour semantics follow the locale: CN red-up, everyone else green-up.

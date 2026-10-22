@@ -89,15 +89,15 @@ export function TabBar() {
         style={{ borderRadius: 'inherit' }}
       >
         <div
-          className="absolute inset-y-1.5 start-0 w-1/5 transition-transform duration-[420ms]"
+          className="absolute inset-y-[7px] start-0 w-1/5 transition-transform duration-[420ms]"
           style={{
             transform: `translate3d(calc(var(--i) * 100% * var(--dir)), 0, 0)`,
-            transitionTimingFunction: 'cubic-bezier(.34,1.32,.64,1)',
+            transitionTimingFunction: 'cubic-bezier(.32,1.12,.55,1)',
             opacity: index === 2 ? 0 : 1,
           }}
         >
           <div
-            className="h-full rounded-[16px]"
+            className="mx-[7px] h-full rounded-[14px]"
             style={{
               background: 'rgba(168,85,247,.18)',
               boxShadow: 'inset 0 0 0 1px rgba(168,85,247,.26)',

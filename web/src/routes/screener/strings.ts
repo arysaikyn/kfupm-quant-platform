@@ -8,6 +8,7 @@ export type ScreenerStrings = {
   presetMomentum: string
   presetCalm: string
   rulesTitle: string
+  rulesHelper: string
   addRule: string
   removeRule: string
   fieldLabel: string
@@ -24,7 +25,8 @@ export type ScreenerStrings = {
   removeFilterAria: string
   turnoverHint: string
   resultsTitle: string
-  resultsMatch: string
+  /** Placeholders: n, total. */
+  resultsCount: string
   liveHint: string
   resultsEmpty: string
   relax: string
@@ -45,12 +47,13 @@ export type ScreenerStrings = {
 export const screenerStrings = {
   zh: {
     title: '筛选器',
-    subtitle: '用价格、涨跌与换手筛出标的',
+    subtitle: '用价格、涨跌和换手筛出股票',
     presetsLabel: '预设',
     presetValue: '低估值',
-    presetMomentum: '强动量',
+    presetMomentum: '强势股',
     presetCalm: '低波动',
     rulesTitle: '条件',
+    rulesHelper: '挑几条条件，列表会随输入实时更新。',
     addRule: '添加条件',
     removeRule: '删除条件',
     fieldLabel: '字段',
@@ -67,9 +70,9 @@ export const screenerStrings = {
     removeFilterAria: '移除 {name}',
     turnoverHint: '换手由走势长度估算',
     resultsTitle: '筛选结果',
-    resultsMatch: '命中',
+    resultsCount: '{total} 只中 {n} 只符合',
     liveHint: '即时更新',
-    resultsEmpty: '没有符合条件的标的',
+    resultsEmpty: '没有符合条件的股票',
     relax: '放宽条件',
     nameHeader: '名称',
     priceHeader: '价格',
@@ -86,12 +89,13 @@ export const screenerStrings = {
   },
   en: {
     title: 'Screener',
-    subtitle: 'Filter the tape by price, change and turnover',
+    subtitle: 'Filter stocks by price, change and turnover',
     presetsLabel: 'Presets',
-    presetValue: 'Low value',
-    presetMomentum: 'Momentum',
-    presetCalm: 'Low volatility',
+    presetValue: 'Cheap',
+    presetMomentum: 'Uptrend',
+    presetCalm: 'Steady',
     rulesTitle: 'Conditions',
+    rulesHelper: 'Pick a few conditions. The list updates as you type.',
     addRule: 'Add condition',
     removeRule: 'Remove condition',
     fieldLabel: 'Field',
@@ -106,9 +110,9 @@ export const screenerStrings = {
     noRules: 'No conditions yet — showing every name',
     filterChipsLabel: 'Active filters',
     removeFilterAria: 'Remove {name}',
-    turnoverHint: 'Turnover is estimated from the sparkline',
+    turnoverHint: 'Turnover is estimated from the price line',
     resultsTitle: 'Results',
-    resultsMatch: 'matched',
+    resultsCount: '{n} of {total} stocks match',
     liveHint: 'Live',
     resultsEmpty: 'No stocks match these conditions',
     relax: 'Clear conditions',
@@ -133,6 +137,7 @@ export const screenerStrings = {
     presetMomentum: 'زخم قوي',
     presetCalm: 'تقلب منخفض',
     rulesTitle: 'الشروط',
+    rulesHelper: 'اختر بضعة شروط، وستتحدّث القائمة أثناء الكتابة.',
     addRule: 'إضافة شرط',
     removeRule: 'حذف الشرط',
     fieldLabel: 'الحقل',
@@ -149,7 +154,7 @@ export const screenerStrings = {
     removeFilterAria: 'إزالة {name}',
     turnoverHint: 'الدوران مقدَّر من طول خط الحركة',
     resultsTitle: 'النتائج',
-    resultsMatch: 'مطابق',
+    resultsCount: '{n} من {total} سهماً مطابقة',
     liveHint: 'يتحدث فورًا',
     resultsEmpty: 'لا أسهم تطابق هذه الشروط',
     relax: 'مسح الشروط',

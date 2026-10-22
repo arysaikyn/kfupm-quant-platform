@@ -312,14 +312,18 @@ export default function SymbolPage() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => setRange(r)}
-                className="rounded-lg px-3 py-1.5 text-[11px] font-medium transition-colors"
-                style={
-                  on
-                    ? { background: 'var(--color-accent)', color: '#fff' }
-                    : { color: 'var(--color-muted)' }
-                }
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
               >
-                {r}
+                <span
+                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
+                  style={
+                    on
+                      ? { background: 'var(--color-accent)', color: '#fff' }
+                      : { color: 'var(--color-muted)' }
+                  }
+                >
+                  {r}
+                </span>
               </button>
             )
           })}
@@ -347,7 +351,7 @@ export default function SymbolPage() {
         <ul className="panel mt-2 overflow-hidden">
           {related.map((n) => (
             <li key={n.id} className="row">
-              <Link to={`/news/${n.id}`} className="block w-full py-3 active:opacity-75">
+              <Link to={`/news/${n.id}`} className="block w-full py-3 transition-colors active:bg-fg/10">
                 <p className="line-clamp-2 text-[14px] leading-snug">{n.title[lang]}</p>
                 <p className="num mt-1.5 text-[11px] text-muted">
                   {n.source} · {s('timePrefix')} {fmtNum(n.minutesAgo, lang, 0)} {s('timeSuffix')}
@@ -431,7 +435,7 @@ export default function SymbolPage() {
               <li key={p.symbol}>
                 <Link
                   to={`/m/${p.symbol}`}
-                  className={`${PEER_GRID} min-h-14 px-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5`}
+                  className={`${PEER_GRID} min-h-14 px-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10`}
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-[13px] leading-tight font-medium">

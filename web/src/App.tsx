@@ -2,8 +2,10 @@ import { Suspense, lazy, useEffect, useRef } from 'react'
 import { Navigate, Outlet, Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
 import { TabBar } from './components/TabBar'
 import { RouteFallback } from './components/RouteFallback'
+import { usePrefs } from './store/prefs'
 
 // Every screen is its own chunk; the shell and the tab bar stay in the entry.
+const WelcomePage = lazy(() => import('./routes/onboarding'))
 const MarketPage = lazy(() => import('./routes/market'))
 const SymbolPage = lazy(() => import('./routes/market/SymbolPage'))
 const NewsPage = lazy(() => import('./routes/news'))
@@ -85,10 +87,29 @@ function Shell() {
   )
 }
 
+/** First run: no shell, no tabs — onboarding owns the whole screen. */
+function WelcomeGate() {
+  const { onboarded } = usePrefs()
+  if (onboarded) return <Navigate to="/" replace />
+  return (
+    <Suspense fallback={<RouteFallback />}>
+      <WelcomePage />
+    </Suspense>
+  )
+}
+
+/** Tabbed screens sit behind onboarding, so a typed URL cannot skip it. */
+function AppShell() {
+  const { onboarded } = usePrefs()
+  if (!onboarded) return <Navigate to="/welcome" replace />
+  return <Shell />
+}
+
 export default function App() {
   return (
     <Routes>
-      <Route element={<Shell />}>
+      <Route path="/welcome" element={<WelcomeGate />} />
+      <Route element={<AppShell />}>
         <Route path="/" element={<MarketPage />} />
         <Route path="/m/:symbol" element={<SymbolPage />} />
         <Route path="/news" element={<NewsPage />} />

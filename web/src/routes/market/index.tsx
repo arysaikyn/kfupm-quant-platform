@@ -15,6 +15,7 @@ import type { Quote } from '../../data/mock'
 import { frameChange, membersChange, membersOf } from '../../data/membership'
 import type { HeatFrame } from '../../data/membership'
 import { useAlerts, triggeredCount } from '../../store/alerts'
+import { setMarket, usePrefs } from '../../store/prefs'
 import { toggleWatch, useUser } from '../../store/user'
 import { SectionHead } from './SectionHead'
 import { strings } from './strings'
@@ -132,6 +133,12 @@ function WatchStar({
   )
 }
 
+const MARKETS = [
+  { id: 'sa', key: 'mSaudi', index: 'TASI' },
+  { id: 'cn', key: 'mCn', index: '000001' },
+  { id: 'hk', key: 'mHk', index: 'HSI' },
+] as const
+
 export default function MarketPage() {
   const { t, lang } = useI18n()
   const s = useStrings(strings)
@@ -143,6 +150,9 @@ export default function MarketPage() {
   const [params, setParams] = useSearchParams()
   const { view, sort, frame, sector } = boardFrom(params)
   const [picked, setPicked] = useState<string | null>(null)
+  const { market: prefMarket } = usePrefs()
+  const heroIndex = indices.find((ix) => ix.symbol === MARKETS.find((m) => m.id === prefMarket)?.index) ?? indices[0]
+  const restIndices = indices.filter((ix) => ix.symbol !== heroIndex.symbol)
 
   /** Patch the board in place. replace keeps history as destination → destination,
       so tapping through tabs never stacks entries the back button has to replay. */
@@ -239,7 +249,7 @@ export default function MarketPage() {
           <Link
             to="/search"
             aria-label={s('goSearch')}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-muted"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-surface text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
               <circle cx="11" cy="11" r="6.5" />
@@ -249,7 +259,7 @@ export default function MarketPage() {
           <Link
             to="/alerts"
             aria-label={s('goAlerts')}
-            className="relative flex h-10 w-10 items-center justify-center rounded-full bg-surface text-muted"
+            className="relative flex h-11 w-11 items-center justify-center rounded-full bg-surface text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M18 8a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" />
@@ -268,21 +278,28 @@ export default function MarketPage() {
         </div>
       }
     >
-      {/* Market switch — visual only for now. */}
+      {/* Market switch: the choice made in onboarding, and changeable here. */}
       <div role="group" aria-label={s('markets')} className="mt-1 flex gap-1.5">
-        {[s('mSaudi'), s('mCn'), s('mHk')].map((label, i) => (
-          <span
-            key={label}
-            className="rounded-full px-2.5 py-1 text-[11px] font-medium leading-none"
-            style={
-              i === 0
-                ? { background: 'var(--color-fg)', color: 'var(--color-bg)' }
-                : { background: 'var(--color-surface)', color: 'var(--color-muted)' }
-            }
-          >
-            {label}
-          </span>
-        ))}
+        {MARKETS.map((id) => {
+          const active = prefMarket === id.id
+          return (
+            <button
+              key={id.id}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setMarket(id.id)}
+              className="tap rounded-full px-2.5 text-[11px] font-medium"
+              style={
+                active
+                  ? { background: 'var(--color-fg)', color: 'var(--color-bg)' }
+                  : { background: 'var(--color-surface)', color: 'var(--color-muted)' }
+              }
+            >
+              {/* The hit box is 44; the pill stays compact inside it. */}
+              <span className="rounded-full px-2 py-1 leading-none">{s(id.key)}</span>
+            </button>
+          )
+        })}
       </div>
 
       {/* Live tape: the screen's signature, 0 KB */}
@@ -304,26 +321,26 @@ export default function MarketPage() {
 
       {/* Index masthead: one hero figure, the rest as a single inline row */}
       <div className="mt-3">
-        {indices[0] && (
+        {heroIndex && (
           <div className="panel px-4 py-3">
             <div className="flex items-baseline justify-between gap-3">
               <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
-                {indices[0].name[lang]}
+                {heroIndex.name[lang]}
               </p>
               <p
                 className="num text-[12px]"
-                style={{ color: indices[0].change >= 0 ? 'var(--color-up)' : 'var(--color-down)' }}
+                style={{ color: heroIndex.change >= 0 ? 'var(--color-up)' : 'var(--color-down)' }}
               >
-                {fmtPct(indices[0].change, lang)}
+                {fmtPct(heroIndex.change, lang)}
               </p>
             </div>
             <p className="t-display num mt-1 text-[38px] leading-none">
-              <AnimatedNumber value={indices[0].value} format={(n) => fmtNum(n, lang, 2)} />
+              <AnimatedNumber value={heroIndex.value} format={(n) => fmtNum(n, lang, 2)} />
             </p>
           </div>
         )}
         <div className="mt-2 flex gap-5 px-1">
-          {indices.slice(1).map((ix) => {
+          {restIndices.map((ix) => {
             const up = ix.change >= 0
             return (
               <div key={ix.symbol} className="flex min-w-0 flex-1 items-baseline gap-1.5">
@@ -363,7 +380,7 @@ export default function MarketPage() {
               role="tab"
               aria-selected={active}
               onClick={() => setView(key)}
-              className={`min-h-10 flex-1 rounded-full text-[12px] transition-colors ${
+              className={`min-h-11 flex-1 rounded-full text-[12px] transition-colors ${
                 active ? 'font-medium' : 'text-muted'
               }`}
               style={active ? { background: 'var(--color-bg)' } : undefined}
@@ -392,14 +409,18 @@ export default function MarketPage() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => setFrame(key)}
-                className="rounded-lg px-3 py-1.5 text-[11px] font-medium transition-colors"
-                style={
-                  on
-                    ? { background: 'var(--color-accent)', color: '#fff' }
-                    : { color: 'var(--color-muted)' }
-                }
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
               >
-                {s(label)}
+                <span
+                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
+                  style={
+                    on
+                      ? { background: 'var(--color-accent)', color: '#fff' }
+                      : { color: 'var(--color-muted)' }
+                  }
+                >
+                  {s(label)}
+                </span>
               </button>
             )
           })}
@@ -469,7 +490,7 @@ export default function MarketPage() {
         {/* Drill into whichever sector is in focus */}
         <Link
           to={`/sector/${sector ?? sectors[0]?.id ?? 'energy'}`}
-          className="panel mt-2 flex min-h-[44px] items-center justify-between gap-3 px-3 text-[12px]"
+          className="panel mt-2 flex min-h-[44px] items-center justify-between gap-3 px-3 text-[12px] transition-colors active:bg-fg/10"
         >
           <span>{s('sectorDetail')}</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
@@ -511,7 +532,7 @@ export default function MarketPage() {
                 <Link
                   to="/screener"
                   aria-label={s('goScreener')}
-                  className="flex min-h-11 min-w-9 items-center justify-center"
+                  className="flex min-h-11 min-w-11 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   style={{ color: 'var(--color-muted)' }}
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -522,7 +543,7 @@ export default function MarketPage() {
                   <button
                     type="button"
                     onClick={() => setSector(null)}
-                    className="min-h-11 text-[12px]"
+                    className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-[12px] transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     style={{ color: 'var(--color-accent)' }}
                   >
                     {s('heatClear')}
@@ -533,7 +554,7 @@ export default function MarketPage() {
                   onClick={() =>
                     setSort(sort === 'chg' ? 'fall' : sort === 'fall' ? 'name' : 'chg')
                   }
-                  className="flex min-h-11 items-center gap-1.5 text-[12px]"
+                  className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   style={{ color: 'var(--color-muted)' }}
                 >
                   {s(SORT_KEY[sort])}
@@ -593,7 +614,7 @@ export default function MarketPage() {
                       <LongPressLink
                         to={`/m/${q.symbol}`}
                         prompt={`${s('askAbout')} ${q.name[lang]}`}
-                        className={`${ROW_GRID} min-h-[56px] ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent`}
+                        className={`${ROW_GRID} min-h-[56px] ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent`}
                       >
                         {/* Rank is positional, so it is not read out as part of the name. */}
                         <span
@@ -671,7 +692,10 @@ export default function MarketPage() {
               </span>
             </div>
             {/* Groups live next to the list they group, not inside Profile. */}
-            <Link to="/watchlists" className="shrink-0 text-[12px] text-accent">
+            <Link
+              to="/watchlists"
+              className="-me-2 flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full px-2 text-[12px] text-accent transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
               {s('watchGroups')}
             </Link>
           </div>
@@ -698,7 +722,7 @@ export default function MarketPage() {
                     <LongPressLink
                       to={`/m/${q.symbol}`}
                       prompt={`${s('askAbout')} ${q.name[lang]}`}
-                      className="grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                      className="grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                     >
                       <span className="min-w-0">
                         <span className="block truncate text-[14px] leading-tight font-medium">

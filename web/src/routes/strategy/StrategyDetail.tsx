@@ -47,16 +47,16 @@ type LabCopy = {
 const LAB: Record<Lang, LabCopy> = {
   zh: {
     simulated: '模拟',
-    sigTitle: '显著性',
+    sigTitle: '是不是运气',
     deflated: '紧缩夏普',
     pValue: 'p 值',
     tries: '尝试次数',
     robust: '稳健',
     borderline: '边缘',
     unclear: '存疑',
-    sigNote: '它按试过的参数个数给最好结果打折；不到 95%，就不能排除运气。',
-    attrTitle: '收益归因',
-    attrHint: '按规则权重与基准拆分，四项合计等于总回报。',
+    sigNote: '这是一个会为过拟合打折的调整分数：试过的版本越多，最好的结果扣得越多；不到 95%，就不能排除运气。',
+    attrTitle: '回报从哪来',
+    attrHint: '拆成选股、行业、择时和成本四项；四项相加等于总回报。',
     pick: '选股',
     sector: '行业',
     timing: '择时',
@@ -64,16 +64,16 @@ const LAB: Record<Lang, LabCopy> = {
   },
   en: {
     simulated: 'Simulated',
-    sigTitle: 'Significance',
+    sigTitle: 'Is it luck?',
     deflated: 'Deflated Sharpe',
     pValue: 'p-value',
-    tries: 'Tries',
+    tries: 'Times tried',
     robust: 'Robust',
     borderline: 'Borderline',
     unclear: 'Unclear',
-    sigNote: 'It discounts the best result for how many variants were tried; below 95%, luck cannot be ruled out.',
-    attrTitle: 'Return attribution',
-    attrHint: 'Split by rule weight and benchmark; the four parts add up to total return.',
+    sigNote: 'An adjusted score that penalises overfitting: the more versions were tried, the more the best result is marked down. Below 95%, luck cannot be ruled out.',
+    attrTitle: 'Where the return came from',
+    attrHint: 'Split into stock picking, sector, timing and costs; the four add up to the total return.',
     pick: 'Stock picking',
     sector: 'Sector',
     timing: 'Timing',
@@ -81,16 +81,16 @@ const LAB: Record<Lang, LabCopy> = {
   },
   ar: {
     simulated: 'محاكاة',
-    sigTitle: 'الدلالة',
+    sigTitle: 'هل هو حظ؟',
     deflated: 'شارب المخفّض',
     pValue: 'القيمة الاحتمالية',
-    tries: 'المحاولات',
+    tries: 'مرات التجربة',
     robust: 'متين',
     borderline: 'على الحد',
     unclear: 'غير واضح',
-    sigNote: 'يخصم النتيجة الأفضل بحسب عدد المحاولات؛ وأقل من 95% يعني أن الحظ لا يمكن استبعاده.',
-    attrTitle: 'مصادر العائد',
-    attrHint: 'توزيع حسب وزن القواعد ومعيار السوق؛ المجموع يساوي العائد الكلي.',
+    sigNote: 'درجة معدّلة تعاقب الإفراط في التوفيق: كلما جرّبنا نسخًا أكثر خُصمت النتيجة الأفضل أكثر. وأقل من 95% يعني أن الحظ لا يمكن استبعاده.',
+    attrTitle: 'من أين جاء العائد',
+    attrHint: 'مقسّم إلى الاختيار والقطاع والتوقيت والتكلفة؛ والمجموع يساوي العائد الكلي.',
     pick: 'الاختيار',
     sector: 'القطاع',
     timing: 'التوقيت',
@@ -183,7 +183,7 @@ function Metric({
         {value}
       </div>
       <div className="mt-1 text-[12px] leading-tight">{name}</div>
-      <div className="mt-0.5 text-[10px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+      <div className="mt-0.5 text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
         {hint}
       </div>
     </div>
@@ -351,7 +351,7 @@ export default function StrategyDetail() {
               </div>
             </div>
           </div>
-          <p className="mt-2 text-[10px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-2 text-[11px]" style={{ color: 'var(--color-muted)' }}>
             {oosText}
           </p>
           <p className="mt-3 text-[13px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
@@ -394,7 +394,7 @@ export default function StrategyDetail() {
                 {fmtNum(feesCost, lang, 2)}
               </div>
               <div className="mt-1 text-[12px] leading-tight">{s('costFees')}</div>
-              <div className="mt-0.5 text-[10px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+              <div className="mt-0.5 text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
                 {s('costFeesHint')}
               </div>
             </div>
@@ -404,22 +404,22 @@ export default function StrategyDetail() {
                 {fmtNum(slippageCost, lang, 2)}
               </div>
               <div className="mt-1 text-[12px] leading-tight">{s('costSlippage')}</div>
-              <div className="mt-0.5 text-[10px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+              <div className="mt-0.5 text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
                 {s('costSlippageHint')}
               </div>
             </div>
           </div>
-          <p className="mt-2 text-[10px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {s('costNote')}
           </p>
         </section>
 
         <Link
           to={`/report/${st.id}`}
-          className="panel flex min-h-14 items-center justify-between gap-3 p-4 text-[13px]"
+          className="panel flex min-h-14 items-center justify-between gap-3 p-4 text-[13px] transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <span>{s('fullReport')}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }} aria-hidden="true">
             <path d="M9 6l6 6-6 6" />
           </svg>
         </Link>
@@ -440,7 +440,7 @@ export default function StrategyDetail() {
             {st.rules.map((rule, index) => (
               <li key={rule.id} className="flex items-baseline gap-3 py-3">
                 <span
-                  className="num shrink-0 text-[10px]"
+                  className="num shrink-0 text-[11px]"
                   style={{ color: 'var(--color-muted)' }}
                   aria-hidden="true"
                 >
@@ -499,20 +499,20 @@ export default function StrategyDetail() {
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>
+            <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
               {lab.tries}{' '}
               <span dir="ltr" className="num">
                 {st.rules.length * VARIANTS_PER_RULE}
               </span>
             </span>
             <span
-              className="shrink-0 rounded-lg px-2.5 py-1 text-[10px] leading-none"
+              className="shrink-0 rounded-lg px-2.5 py-1 text-[11px] leading-none"
               style={verdictChip}
             >
               {verdict}
             </span>
           </div>
-          <p className="mt-2 text-[10px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {lab.sigNote}
           </p>
         </section>
@@ -520,7 +520,7 @@ export default function StrategyDetail() {
         <section className="panel p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-[13px] font-medium">{lab.attrTitle}</h2>
-            <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>
+            <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
               {lab.simulated}
             </span>
           </div>
@@ -573,7 +573,7 @@ export default function StrategyDetail() {
             onClick={rerun}
             disabled={run.running}
             aria-busy={run.running}
-            className="text-bg min-h-12 w-full rounded-xl px-4 text-[15px] font-medium disabled:opacity-60"
+            className="text-bg min-h-12 w-full rounded-xl px-4 text-[15px] font-medium transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
             style={{ background: 'var(--color-accent)' }}
           >
             {run.running ? s('runningNote') : s('rerun')}

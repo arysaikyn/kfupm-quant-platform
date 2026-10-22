@@ -106,7 +106,7 @@ export default function StrategyPage() {
                 type="button"
                 onClick={() => setTag(t)}
                 aria-pressed={active}
-                className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors ${
+                className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
                   active ? 'font-medium' : 'text-muted'
                 }`}
                 style={
@@ -130,7 +130,7 @@ export default function StrategyPage() {
           type="button"
           onClick={() => setSort(sort === 'recent' ? 'return' : 'recent')}
           aria-label={s('sortLabel')}
-          className="flex min-h-11 items-center gap-1.5 text-[12px]"
+          className="flex min-h-11 items-center gap-1.5 rounded-lg px-1 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           style={{ color: 'var(--color-muted)' }}
         >
           {s(sort === 'recent' ? 'sortRecent' : 'sortReturn')}
@@ -174,7 +174,7 @@ export default function StrategyPage() {
                   <LongPressLink
                     to={`/strategy/${st.id}`}
                     prompt={`${st.name[lang]} — ${st.description[lang]}`}
-                    className="panel block p-4 active:opacity-80"
+                    className="panel block p-4 transition-colors active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">

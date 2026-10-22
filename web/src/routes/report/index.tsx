@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
@@ -110,6 +110,18 @@ export default function ReportPage() {
   // The receipt time is fixed at mount; it never chases the clock.
   const [generatedAt] = useState(() => new Date())
   const [active, setActive] = useState<SectionId>('conclusion')
+  const chipRefs = useRef<Partial<Record<SectionId, HTMLAnchorElement | null>>>({})
+  const mounted = useRef(false)
+
+  // Keep the highlighted chip inside the strip as the reader scrolls; skip the
+  // first run so entering the page never scrolls it by itself.
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true
+      return
+    }
+    chipRefs.current[active]?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [active])
 
   useEffect(() => {
     if (!window.location.hash) window.scrollTo({ top: 0, behavior: 'instant' })
@@ -256,7 +268,34 @@ export default function ReportPage() {
         </div>
       </header>
 
-      <div className="mt-9 sm:grid sm:grid-cols-[168px_minmax(0,1fr)] sm:gap-8 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-12">
+      {/* Mobile: the report is long enough that the contents list cannot be a
+          sidebar; the same five anchors ride along at the top instead. */}
+      <nav
+        aria-label={s('navLabel')}
+        className="sticky top-0 z-10 -mx-4 mt-7 flex gap-1.5 overflow-x-auto border-b border-line bg-bg px-4 py-2 [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden"
+      >
+        {SECTION_IDS.map((sectionId) => {
+          const on = active === sectionId
+          return (
+            <a
+              key={sectionId}
+              ref={(node) => {
+                chipRefs.current[sectionId] = node
+              }}
+              href={`#${sectionId}`}
+              onClick={() => setActive(sectionId)}
+              aria-current={on ? 'location' : undefined}
+              className={`flex h-11 min-h-11 shrink-0 items-center rounded-full border px-3 text-[12px] leading-none whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
+                on ? 'border-accent font-medium text-fg' : 'border-line text-muted'
+              }`}
+            >
+              {s(NAV_KEYS[sectionId])}
+            </a>
+          )
+        })}
+      </nav>
+
+      <div className="mt-4 sm:mt-9 sm:grid sm:grid-cols-[168px_minmax(0,1fr)] sm:gap-8 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-12">
         <aside className="hidden sm:block">
           <nav aria-label={s('navLabel')} className="sticky top-6">
             <p className="t-kicker ps-3 text-muted">{s('navLabel')}</p>
@@ -289,7 +328,7 @@ export default function ReportPage() {
 
         <article className="min-w-0 max-w-[640px]">
           <div className="panel overflow-hidden">
-            <section id="conclusion" className="scroll-mt-6 p-4">
+            <section id="conclusion" className="scroll-mt-20 sm:scroll-mt-6 p-4">
               <h2 className="t-kicker text-muted">{s('conclusionLabel')}</h2>
               <p className="mt-4 text-[20px] leading-[1.5] font-semibold tracking-[-0.01em] sm:text-[22px]">
                 {conclusion}
@@ -298,7 +337,7 @@ export default function ReportPage() {
 
             <section
               id="basis"
-              className="scroll-mt-6 border-t border-line p-4"
+              className="scroll-mt-20 sm:scroll-mt-6 border-t border-line p-4"
             >
               <h2 className="t-kicker text-muted">{s('basisLabel')}</h2>
               <p className="mt-2 text-[12px] leading-relaxed text-muted">{s('basisIntro')}</p>
@@ -328,7 +367,7 @@ export default function ReportPage() {
               </ol>
             </section>
 
-            <section id="risk" className="scroll-mt-6 border-t border-line p-4">
+            <section id="risk" className="scroll-mt-20 sm:scroll-mt-6 border-t border-line p-4">
               <h2 className="t-kicker text-muted">{s('riskLabel')}</h2>
               <ul className="mt-4 divide-y divide-line">
                 {risks.map((row) => (
@@ -345,14 +384,14 @@ export default function ReportPage() {
               </ul>
             </section>
 
-            <section id="wrong" className="scroll-mt-6 border-t border-line p-4">
+            <section id="wrong" className="scroll-mt-20 sm:scroll-mt-6 border-t border-line p-4">
               <h2 className="t-kicker text-muted">{s('wrongLabel')}</h2>
               <p className="mt-4 border-s border-line ps-4 text-[14px] leading-[1.75]">
                 {s('wrongWithEquity')}
               </p>
             </section>
 
-            <section id="next" className="scroll-mt-6 border-t border-line p-4">
+            <section id="next" className="scroll-mt-20 sm:scroll-mt-6 border-t border-line p-4">
               <h2 className="t-kicker text-muted">{s('nextLabel')}</h2>
               <div className="mt-4 divide-y divide-line">
                 <Link

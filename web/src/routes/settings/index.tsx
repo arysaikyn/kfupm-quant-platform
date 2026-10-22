@@ -347,11 +347,14 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section className="mt-6" aria-labelledby="settings-reset">
+      <section className="mt-6 pb-10" aria-labelledby="settings-reset">
         <h2 id="settings-reset" className="t-kicker px-1 pb-2 text-muted">
           {s('resetTitle')}
         </h2>
-        <div className="panel px-4 py-4">
+        <div
+          className="panel px-4 py-4 transition-colors"
+          style={armed ? { borderColor: danger } : undefined}
+        >
           <p id="settings-reset-copy" className="text-[12px] leading-relaxed text-muted">
             {s('resetHint')}
           </p>

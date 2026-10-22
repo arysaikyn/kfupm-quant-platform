@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { useI18n, useStrings } from '../../i18n'
 import { useTheme } from '../../theme'
 import type { Theme } from '../../theme'
 import type { Lang } from '../../i18n'
+import { resetOnboarding } from '../../store/prefs'
 import { strings } from './strings'
 
 type StringKey = keyof (typeof strings)['en']
@@ -27,11 +28,19 @@ function initialsOf(name: string) {
 export default function MePage() {
   const { lang, setLang } = useI18n()
   const { theme, setTheme } = useTheme()
+  const navigate = useNavigate()
   const s = useStrings(strings)
   // Demo account state only — no real auth in this build.
   const [signedIn, setSignedIn] = useState(true)
 
   const name = s('name')
+
+  // Clearing the flag unmounts the tab shell on the next render; the explicit
+  // navigate keeps the URL honest even if the guard lands a beat later.
+  const replayOnboarding = () => {
+    resetOnboarding()
+    navigate('/welcome')
+  }
 
   return (
     <Screen
@@ -98,7 +107,7 @@ export default function MePage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setTheme(mode)}
-                className="row w-full text-start transition-opacity active:opacity-70"
+                className="row w-full text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
               >
                 <span className="text-muted">
                   {mode === 'light' ? (
@@ -147,7 +156,7 @@ export default function MePage() {
             <Link
               key={row.to}
               to={row.to}
-              className="row transition-opacity active:opacity-70"
+              className="row transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
             >
               <span className="flex-1 text-[14px]">{row.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)] shrink-0 text-muted">
@@ -155,6 +164,28 @@ export default function MePage() {
               </svg>
             </Link>
           ))}
+          <button
+            type="button"
+            onClick={replayOnboarding}
+            className="row w-full text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
+          >
+            <span className="flex-1 text-[14px]">{s('replayOnboarding')}</span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0 text-muted"
+              aria-hidden="true"
+            >
+              <path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1" />
+              <path d="M3.5 4.5V10h5.5" />
+            </svg>
+          </button>
         </div>
       </section>
 

@@ -20,6 +20,7 @@ type Strings = {
   moreTitle: string
   moreWatchlists: string
   moreSettings: string
+  replayOnboarding: string
   version: string
 }
 
@@ -43,6 +44,7 @@ export const strings = {
     moreTitle: '更多',
     moreWatchlists: '自选分组',
     moreSettings: '设置',
+    replayOnboarding: '重看新手引导',
     version: '版本',
   },
   en: {
@@ -64,6 +66,7 @@ export const strings = {
     moreTitle: 'More',
     moreWatchlists: 'Watchlist groups',
     moreSettings: 'Settings',
+    replayOnboarding: 'Replay onboarding',
     version: 'Version',
   },
   ar: {
@@ -85,6 +88,7 @@ export const strings = {
     moreTitle: 'المزيد',
     moreWatchlists: 'مجموعات المتابعة',
     moreSettings: 'الإعدادات',
+    replayOnboarding: 'إعادة الجولة التعريفية',
     version: 'الإصدار',
   },
 } satisfies Dict<Strings>

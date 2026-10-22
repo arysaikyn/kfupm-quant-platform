@@ -66,6 +66,10 @@ const SORT_COLUMNS: readonly {
 
 const fillName = (template: string, name: string) => template.replace('{name}', name)
 
+/** Count sentence: `{n}` and `{total}` are already locale-formatted. */
+const fillCount = (template: string, n: string, total: string) =>
+  template.replace('{n}', n).replace('{total}', total)
+
 /**
  * One rule written out. Without `current` it reads as the chip ("涨跌 > 0%");
  * with it, as the reason a row cleared ("涨跌 0.60% > 0%").
@@ -269,19 +273,17 @@ export default function ScreenerPage() {
     <Screen
       title={s('title')}
       action={
-        <div className="text-end">
-          <p className="t-kicker" style={kicker}>
-            {s('resultsMatch')}
-          </p>
+        <div className="max-w-[180px] text-end">
           <p
             aria-live="polite"
             aria-atomic="true"
-            className="num mt-0.5 text-[18px] leading-none font-semibold"
+            className="text-[12px] leading-snug font-medium"
           >
-            {results.length}
-            <span className="text-[11px] font-normal" style={{ color: 'var(--color-muted)' }}>
-              /{quotes.length}
-            </span>
+            {fillCount(
+              s('resultsCount'),
+              fmtNum(results.length, lang, 0),
+              fmtNum(quotes.length, lang, 0),
+            )}
           </p>
         </div>
       }
@@ -317,6 +319,10 @@ export default function ScreenerPage() {
             {rules.length}/{MAX_RULES}
           </span>
         </div>
+
+        <p className="mt-1 text-[12px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+          {s('rulesHelper')}
+        </p>
 
         {activeRules.length > 0 && (
           <ul
@@ -378,8 +384,7 @@ export default function ScreenerPage() {
                           onChange={(event) =>
                             updateRule(rule.id, { field: event.target.value as Field })
                           }
-                          className="h-11 w-full appearance-none rounded-lg border border-line bg-fg/5 ps-3 pe-9 text-[14px] text-fg transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
-
+                          className="h-11 min-h-11 w-full appearance-none rounded-lg border border-line bg-fg/5 ps-3 pe-9 text-[14px] text-fg transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
                         >
                           {FIELD_ORDER.map((field) => (
                             <option key={field} value={field}>
@@ -422,13 +427,7 @@ export default function ScreenerPage() {
                           })}
                         </div>
 
-                        <div
-                          className="flex h-11 min-w-0 flex-1 items-center rounded-lg transition-colors focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-accent sm:w-[104px] sm:flex-none"
-                          style={{
-                            border: '1px solid var(--color-line)',
-                            background: 'var(--color-bg)',
-                          }}
-                        >
+                        <div className="relative min-w-0 flex-1 sm:w-[104px] sm:flex-none">
                           <input
                             type="number"
                             inputMode="decimal"
@@ -439,13 +438,17 @@ export default function ScreenerPage() {
                             }
                             step={FIELD_STEP[rule.field]}
                             min={rule.field === 'change' ? undefined : 0}
-                            className="num h-full min-w-0 flex-1 bg-transparent ps-3 text-[15px] focus-visible:outline-none"
-                            style={{ color: 'var(--color-fg)' }}
+                            className="num h-11 min-h-11 w-full min-w-0 rounded-lg bg-bg ps-3 text-[15px] transition-colors [appearance:textfield] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            style={{
+                              border: '1px solid var(--color-line)',
+                              color: 'var(--color-fg)',
+                              paddingInlineEnd: unit ? 24 : 10,
+                            }}
                           />
                           {unit && (
                             <span
                               aria-hidden="true"
-                              className="shrink-0 pe-2.5 text-[11px]"
+                              className="pointer-events-none absolute end-2.5 top-1/2 -translate-y-1/2 text-[11px]"
                               style={{ color: 'var(--color-muted)' }}
                             >
                               {unit}
@@ -574,7 +577,7 @@ export default function ScreenerPage() {
                         <span className="min-w-0">
                           <span className="block truncate text-[14px]">{quote.name[lang]}</span>
                           <span
-                            className="num mt-0.5 block text-[10px] leading-[1.4]"
+                            className="num mt-0.5 block text-[11px] leading-[1.4]"
                             style={{ color: 'var(--color-muted)' }}
                           >
                             {quote.symbol}
@@ -593,7 +596,7 @@ export default function ScreenerPage() {
                       </span>
                       {reason !== '' && (
                         <span
-                          className="num mt-1 block truncate text-[10px] leading-[1.4]"
+                          className="num mt-1 block truncate text-[11px] leading-[1.4]"
                           style={{ color: 'var(--color-muted)' }}
                         >
                           {reason}
@@ -678,7 +681,7 @@ export default function ScreenerPage() {
                   >
                     <span className="max-w-[180px] truncate">{screen.name}</span>
                     <span
-                      className="num shrink-0 text-[10px]"
+                      className="num shrink-0 text-[11px]"
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {screen.rules.length}

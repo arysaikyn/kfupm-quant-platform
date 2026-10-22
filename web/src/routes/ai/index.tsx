@@ -24,9 +24,11 @@ const INITIAL_CHIPS: CtxRef[] = [
 const MAX_CHIPS = 6
 const COMPOSER_H = 56
 
-/* Composer sits above the tab bar, clearing the raised centre icon. */
+/* Composer sits above the tab bar and above the lifted centre tab.
+   Bar top is 72px up; its raised AI icon reaches another 17px. 40px of air
+   leaves the composer 23px clear of that icon at 390x844. */
 const BAR_OFFSET =
-  'calc(env(safe-area-inset-bottom) + var(--tabbar-h) + var(--tabbar-gap) + 16px)'
+  'calc(env(safe-area-inset-bottom) + var(--tabbar-h) + var(--tabbar-gap) + 40px)'
 /* Space under the last message so it clears the composer, not just the tab bar. */
 const TAIL_SPACE =
   'calc(env(safe-area-inset-bottom) + var(--tabbar-h) + var(--tabbar-gap) + 96px)'
@@ -223,7 +225,10 @@ export default function AiPage() {
       <Screen
       title={t('tab.ai')}
       action={
-        <Link to="/runs" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px] text-accent">
+        <Link
+          to="/runs"
+          className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px] text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
           {s('runs')}
         </Link>
       }
@@ -258,7 +263,7 @@ export default function AiPage() {
                   type="button"
                   onClick={() => setChips((prev) => prev.filter((x) => !sameChip(x, c)))}
                   aria-label={`${s('remove')} ${label}`}
-                  className="ms-1 flex h-11 w-10 items-center justify-center rounded-full text-muted"
+                  className="ms-0.5 flex h-11 w-11 items-center justify-center rounded-full text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <path d="M6 6l12 12M18 6L6 18" />
@@ -273,7 +278,7 @@ export default function AiPage() {
               type="button"
               onClick={() => setSheet((v) => !v)}
               aria-expanded={sheet}
-              className="inline-flex h-11 items-center gap-1 rounded-full px-3 text-[12px] text-muted"
+              className="inline-flex h-11 items-center gap-1 rounded-full px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M12 5v14M5 12h14" />
@@ -294,7 +299,7 @@ export default function AiPage() {
                     type="button"
                     disabled={busy}
                     onClick={() => send(s(preset.prompt))}
-                    className="inline-flex h-11 items-center rounded-full bg-surface px-3 text-[12px] disabled:opacity-60"
+                    className="inline-flex h-11 items-center rounded-full bg-surface px-3 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
                   >
                     {s(preset.label)}
                   </button>
@@ -308,7 +313,7 @@ export default function AiPage() {
                     type="button"
                     disabled={busy}
                     onClick={() => send(s(c.t))}
-                    className="panel flex min-h-[74px] items-start gap-2 p-4 text-start disabled:opacity-60"
+                    className="panel flex min-h-[74px] items-start gap-2 p-4 text-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
                   >
                     <span
                       className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-accent"
@@ -349,7 +354,7 @@ export default function AiPage() {
 
       {/* composer */}
       <div
-        className="fixed z-40 glass"
+        className="fixed z-40 glass has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-accent"
         style={{
           insetInline: 12,
           maxWidth: 496,
@@ -370,13 +375,13 @@ export default function AiPage() {
             aria-label={s('placeholder')}
             enterKeyHint="send"
             autoComplete="off"
-            className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted"
+            className="h-11 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted"
           />
           <button
             type="submit"
             disabled={input.trim().length === 0 || busy}
             aria-label={s('send')}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full disabled:opacity-40"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-40"
             style={{ background: 'var(--color-accent)', color: '#fff' }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -416,7 +421,7 @@ export default function AiPage() {
                 type="button"
                 onClick={() => setSheet(false)}
                 aria-label={s('close')}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M6 6l12 12M18 6L6 18" />
@@ -432,7 +437,7 @@ export default function AiPage() {
                   <button
                     type="button"
                     onClick={() => addChip(o.ref)}
-                    className="flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-start"
+                    className="flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-start focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                   >
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[13px]">{o.label}</span>

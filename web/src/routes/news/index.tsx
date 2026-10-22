@@ -87,7 +87,7 @@ function NewsRow({
     <LongPressLink
       to={source === null ? `/news/${item.id}` : `/news/${item.id}?source=${encodeURIComponent(source)}`}
       prompt={`${s('askAi')} — ${item.title[lang]}`}
-      className="min-w-0 flex-1 py-3.5 transition-colors active:opacity-80"
+      className="w-full min-w-0 flex-1 px-4 py-3.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
     >
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
@@ -174,14 +174,14 @@ export default function NewsPage() {
     <Screen
       title={s('title')}
       action={
-        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px] text-accent">
+        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px] text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
           {s('calendar')}
         </Link>
       }
     >
       <Link
         to="/review"
-        className="panel row mt-1"
+        className="panel row mt-1 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:bg-fg/5"
       >
         <span className="text-muted">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -215,7 +215,7 @@ export default function NewsPage() {
                 type="button"
                 onClick={() => selectSource(name)}
                 aria-pressed={active}
-                className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors ${
+                className={`min-h-11 min-w-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
                   active ? 'bg-surface font-medium text-fg' : 'text-muted'
                 }`}
               >
@@ -244,7 +244,7 @@ export default function NewsPage() {
               </header>
               <ul className="panel overflow-hidden">
                 {group.items.map((item) => (
-                  <li key={item.id} className="row">
+                  <li key={item.id} className="row p-0">
                     <NewsRow item={item} lang={lang} s={s} watchlist={watchlist} source={source} />
                   </li>
                 ))}

@@ -76,7 +76,6 @@ export function TabBar() {
     '/report': '/strategy',
     '/learn': '/me',
     '/watchlists': '/me',
-    '/risk': '/me',
     '/settings': '/me',
   }
   const owner =

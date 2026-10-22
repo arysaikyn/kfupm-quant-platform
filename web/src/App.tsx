@@ -23,7 +23,6 @@ const SearchPage = lazy(() => import('./routes/search'))
 const SectorPage = lazy(() => import('./routes/sector'))
 const ReportPage = lazy(() => import('./routes/report'))
 const WatchlistsPage = lazy(() => import('./routes/watchlists'))
-const RiskPage = lazy(() => import('./routes/risk'))
 const SettingsPage = lazy(() => import('./routes/settings'))
 
 /**
@@ -107,7 +106,6 @@ export default function App() {
         <Route path="/sector/:id" element={<SectorPage />} />
         <Route path="/report/:id" element={<ReportPage />} />
         <Route path="/watchlists" element={<WatchlistsPage />} />
-        <Route path="/risk" element={<RiskPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

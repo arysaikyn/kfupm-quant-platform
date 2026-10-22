@@ -19,16 +19,8 @@ type Strings = {
   glossary: string
   moreTitle: string
   moreWatchlists: string
-  moreRisk: string
   moreSettings: string
   version: string
-  journalTitle: string
-  journalTotal: string
-  journalNotional: string
-  journalEmpty: string
-  sideBuy: string
-  sideSell: string
-  journalDelete: string
 }
 
 export const strings = {
@@ -50,16 +42,8 @@ export const strings = {
     glossary: '术语',
     moreTitle: '更多',
     moreWatchlists: '自选分组',
-    moreRisk: '组合风险',
     moreSettings: '设置',
     version: '版本',
-    journalTitle: '交易记录',
-    journalTotal: '总笔数',
-    journalNotional: '名义金额',
-    journalEmpty: '在「策略」中记录一笔交易，这里会显示明细。',
-    sideBuy: '买入',
-    sideSell: '卖出',
-    journalDelete: '删除',
   },
   en: {
     title: 'Profile',
@@ -79,16 +63,8 @@ export const strings = {
     glossary: 'Glossary',
     moreTitle: 'More',
     moreWatchlists: 'Watchlist groups',
-    moreRisk: 'Portfolio risk',
     moreSettings: 'Settings',
     version: 'Version',
-    journalTitle: 'Trade log',
-    journalTotal: 'Entries',
-    journalNotional: 'Notional',
-    journalEmpty: 'Log a trade from Strategies and it shows up here.',
-    sideBuy: 'Buy',
-    sideSell: 'Sell',
-    journalDelete: 'Delete',
   },
   ar: {
     title: 'حسابي',
@@ -108,15 +84,7 @@ export const strings = {
     glossary: 'المصطلحات',
     moreTitle: 'المزيد',
     moreWatchlists: 'مجموعات المتابعة',
-    moreRisk: 'مخاطر المحفظة',
     moreSettings: 'الإعدادات',
     version: 'الإصدار',
-    journalTitle: 'سجل التداول',
-    journalTotal: 'عدد الصفقات',
-    journalNotional: 'القيمة الاسمية',
-    journalEmpty: 'سجّل صفقة من «خططي» وستظهر هنا.',
-    sideBuy: 'شراء',
-    sideSell: 'بيع',
-    journalDelete: 'حذف',
   },
 } satisfies Dict<Strings>

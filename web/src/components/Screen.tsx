@@ -15,14 +15,7 @@ export function Screen({ title, subtitle, leading, action, children, padded = tr
   return (
     <main className="screen-pad mx-auto min-h-full w-full max-w-[520px]">
       {(title || action || leading) && (
-        <header
-          className="sticky top-0 z-30 flex items-end justify-between gap-3 px-4 pt-5 pb-3"
-          style={{
-            background: 'color-mix(in srgb, var(--color-bg) 96%, transparent)',
-            backdropFilter: 'blur(12px)',
-            borderBottom: '1px solid var(--color-line)',
-          }}
-        >
+        <header className="flex items-end justify-between gap-3 px-4 pt-5 pb-3">
           <div className="flex min-w-0 items-end gap-2">
             {leading}
             <div className="min-w-0">

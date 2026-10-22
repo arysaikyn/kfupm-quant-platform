@@ -35,15 +35,25 @@ function Shell() {
   const { pathname } = useLocation()
   const screenRef = useRef<HTMLDivElement>(null)
 
-  // A view transition snapshots the whole viewport, which made the fixed tab
-  // bar flicker. A plain opacity ramp on the routed block has no snapshot.
+  // Warm the five tab chunks once the first screen is idle, so a tab tap
+  // resolves from memory instead of waiting on a network round trip.
   useEffect(() => {
-    const el = screenRef.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    el.animate([{ opacity: 0 }, { opacity: 1 }], {
-      duration: 180,
-      easing: 'cubic-bezier(0.241, 0.969, 0.635, 0.997)',
-    })
+    const warm = () => {
+      void import('./routes/news')
+      void import('./routes/ai')
+      void import('./routes/strategy')
+      void import('./routes/me')
+      void import('./routes/search')
+    }
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number }
+    if (typeof w.requestIdleCallback === 'function') w.requestIdleCallback(warm)
+    else setTimeout(warm, 1200)
+  }, [])
+
+  // Reset the scroll position on navigation; a fresh screen should start at
+  // the top, and a preserved offset reads as a jump.
+  useEffect(() => {
+    window.scrollTo(0, 0)
   }, [pathname])
 
   return (

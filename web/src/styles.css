@@ -129,7 +129,8 @@ body,
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Not smooth: the route reset and the tab-tap scroll-to-top must be
+     instant, or every tab switch reads as a slide. */
   /* Reserve the scrollbar gutter always: the fixed bar is centred on the
      viewport, so a page that fits would otherwise shift it sideways. */
   scrollbar-gutter: stable;
@@ -163,7 +164,8 @@ body {
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Not smooth: the route reset and the tab-tap scroll-to-top must be
+     instant, or every tab switch reads as a slide. */
   /* Reserve the scrollbar gutter always: the fixed bar is centred on the
      viewport, so a page that fits would otherwise shift it sideways. */
   scrollbar-gutter: stable;

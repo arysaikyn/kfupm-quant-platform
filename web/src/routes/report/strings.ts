@@ -12,8 +12,6 @@ export type ReportStrings = {
   conclusionLabel: string
   /** Placeholders: name, span, pct. */
   conclusionWithEquity: string
-  /** Placeholders: name, rules, pct. */
-  conclusionNoEquity: string
   basisLabel: string
   basisIntro: string
   basisRulesLabel: string
@@ -23,9 +21,6 @@ export type ReportStrings = {
   /** Placeholder: span. */
   basisExcessLabel: string
   basisExcessNote: string
-  basisMissingLabel: string
-  basisMissingNote: string
-  basisMissingValue: string
   rulesUnit: string
   ppUnit: string
   metaUpdated: string
@@ -40,12 +35,8 @@ export type ReportStrings = {
   riskSingleTitle: string
   /** Placeholder: pct. */
   riskSingleBody: string
-  riskNoCurveTitle: string
-  riskNoCurveBody: string
-  riskNoCurveValue: string
   wrongLabel: string
   wrongWithEquity: string
-  wrongNoEquity: string
   nextLabel: string
   nextStrategyTitle: string
   nextStrategyBody: string
@@ -72,19 +63,14 @@ export const strings = {
     conclusionLabel: '结论',
     conclusionWithEquity:
       '{name}的净值曲线覆盖 {span}，最近一期收益为 {pct}，但有回测记录不等于未来收益。',
-    conclusionNoEquity:
-      '{name}目前只有 {rules}和最近一期 {pct} 的收益，没有净值曲线，因此在补齐回测之前只是一个候选。',
     basisLabel: '依据',
     basisIntro: '每一项都来自策略快照或净值数据；没有的数据，直接写明。',
     basisRulesLabel: '规则条数',
     basisRulesNote: '这些条件必须同时成立；少一条，名单就会换一批。',
-    basisReturnLabel: '最近一期收益',
-    basisReturnNote: '来自策略快照，不是年化，也不是回测全期。',
+    basisReturnLabel: '区间累计收益',
+    basisReturnNote: '成本后净值末值减 1，覆盖 {span} 整段；不年化，也不是其中某一年。',
     basisExcessLabel: '相对基准（末值差）',
     basisExcessNote: '成本后末值减基准末值，覆盖区间为 {span}；只描述这段曲线。',
-    basisMissingLabel: '相对基准',
-    basisMissingNote: '该策略没有回测净值，无法计算相对基准。',
-    basisMissingValue: '未提供',
     rulesUnit: '条规则',
     ppUnit: '个百分点',
     metaUpdated: '更新于',
@@ -97,15 +83,10 @@ export const strings = {
     riskCostBody:
       '成本后与不含成本的末值相差 {pp} 个百分点；换手上升时，这个差会先扩大。',
     riskSingleTitle: '单一区间',
-    riskSingleBody: '最近一期收益 {pct} 只覆盖一个区间，不能当作下一期的预期。',
-    riskNoCurveTitle: '没有净值曲线',
-    riskNoCurveBody: '没有回测净值，回撤、成本与容量都无法核对；本报告不提供这三项数字。',
-    riskNoCurveValue: '无数据',
+    riskSingleBody: '区间累计收益 {pct} 只覆盖一个区间，不能当作下一期的预期。',
     wrongLabel: '如果错了会怎样',
     wrongWithEquity:
       '如果结论错了，最可能错在把这段回测当成未来。成本会先吃掉一部分收益，风格切换会让相对基准的优势收窄；规则仍会按同样的条件选出名单，所以错误不会在筛选层报警，只会出现在收益和回撤上。',
-    wrongNoEquity:
-      '如果结论错了，最可能错在把规则的存在当成规则有效。没有净值曲线，回撤会有多深、成本会有多高都无法估计；下一次风格切换时，最近一期收益可能整体回吐，而规则不会报警，因为它只检查条件，不检查结果。',
     nextLabel: '下一步',
     nextStrategyTitle: '回到策略页',
     nextStrategyBody: '看完整规则、阈值与运行记录。',
@@ -129,22 +110,17 @@ export const strings = {
     conclusionLabel: 'Conclusion',
     conclusionWithEquity:
       '{name} has an equity curve covering {span} and a latest-period return of {pct}, but a backtest record is not a promise about the future.',
-    conclusionNoEquity:
-      '{name} currently has {rules} and a latest-period return of {pct} but no equity curve, so until a backtest exists it is only a candidate.',
     basisLabel: 'Evidence',
     basisIntro:
       'Every row comes from the strategy snapshot or the equity data; where none exists, the report says so.',
     basisRulesLabel: 'Rule count',
     basisRulesNote: 'All conditions must hold at once; drop one and the list changes.',
-    basisReturnLabel: 'Latest-period return',
-    basisReturnNote: 'From the strategy snapshot: not annualised, not the full backtest.',
+    basisReturnLabel: 'Cumulative return',
+    basisReturnNote:
+      'The cost-inclusive curve end minus 1, covering the whole of {span}; not annualised and not one year inside it.',
     basisExcessLabel: 'Excess vs benchmark',
     basisExcessNote:
       'Cost-inclusive end value minus the benchmark end value over {span}; it describes this curve only.',
-    basisMissingLabel: 'Excess vs benchmark',
-    basisMissingNote:
-      'This strategy has no equity curve, so the excess cannot be computed.',
-    basisMissingValue: 'Not available',
     rulesUnit: 'rules',
     ppUnit: 'pp',
     metaUpdated: 'Updated',
@@ -158,16 +134,10 @@ export const strings = {
       'The cost-inclusive and pre-cost end values differ by {pp} pp; as turnover rises, this gap widens first.',
     riskSingleTitle: 'One window',
     riskSingleBody:
-      'A latest-period return of {pct} covers one window only; it is not a forecast for the next.',
-    riskNoCurveTitle: 'No equity curve',
-    riskNoCurveBody:
-      'Without a backtest equity curve, drawdown, cost and capacity cannot be checked; this report gives no figures for them.',
-    riskNoCurveValue: 'No data',
+      'A cumulative return of {pct} covers one window only; it is not a forecast for the next.',
     wrongLabel: 'If this is wrong',
     wrongWithEquity:
       'If the conclusion is wrong, the likely error is treating this backtest as the future. Cost takes a slice of the return first, then a style shift narrows the lead over the benchmark; the rules still pick the same list, so the mistake raises no alarm at the screening step — it only shows up in returns and drawdown.',
-    wrongNoEquity:
-      'If the conclusion is wrong, the likely error is treating the existence of rules as proof that they work. Without an equity curve, neither the depth of a drawdown nor the size of costs can be estimated; at the next style shift the latest-period return could give back entirely, and the rules will not warn us, because they check conditions, not outcomes.',
     nextLabel: 'Next',
     nextStrategyTitle: 'Back to the strategy',
     nextStrategyBody: 'See the full rules, thresholds and run history.',
@@ -192,24 +162,18 @@ export const strings = {
     conclusionLabel: 'الخلاصة',
     conclusionWithEquity:
       'يغطي منحنى أداء الاستراتيجية {name} الفترة {span}، ويبلغ عائد أحدث فترة {pct}، لكن سجل الاختبار الخلفي لا يضمن عائدًا مستقبلًا.',
-    conclusionNoEquity:
-      'لا تملك الاستراتيجية {name} حاليًا سوى {rules} وعائد أحدث فترة قدره {pct}، دون منحنى أداء، وإلى أن يتوفر اختبار خلفي فهي مرشحة فقط.',
     basisLabel: 'الأساس',
     basisIntro:
       'كل بند مستخرج من لقطة الاستراتيجية أو بيانات الأداء؛ وما لا يوجد يُذكر صراحةً.',
     basisRulesLabel: 'عدد القواعد',
     basisRulesNote:
       'يجب أن تتحقق هذه الشروط معًا؛ وإذا غاب شرط واحد تغيّرت القائمة بأكملها.',
-    basisReturnLabel: 'عائد أحدث فترة',
+    basisReturnLabel: 'العائد التراكمي',
     basisReturnNote:
-      'مأخوذ من لقطة الاستراتيجية، وليس عائدًا سنويًا ولا عائد الاختبار كاملًا.',
+      'قيمة نهاية المنحنى بعد التكلفة ناقص 1، وتغطي كامل الفترة {span}؛ وليست سنوية ولا سنة واحدة منها.',
     basisExcessLabel: 'الفارق عن المرجع',
     basisExcessNote:
       'قيمة النهاية بعد التكلفة ناقص قيمة نهاية المرجع خلال {span}؛ يصف هذه السلسلة فقط.',
-    basisMissingLabel: 'الفارق عن المرجع',
-    basisMissingNote:
-      'لا يوجد منحنى أداء لهذه الاستراتيجية، لذلك لا يمكن حساب الفارق عن المرجع.',
-    basisMissingValue: 'غير متاح',
     rulesUnit: 'قواعد',
     ppUnit: 'نقطة مئوية',
     metaUpdated: 'آخر تحديث',
@@ -223,16 +187,10 @@ export const strings = {
       'تختلف قيمة النهاية بعد التكلفة عن قيمتها قبل التكلفة بمقدار {pp} نقطة مئوية؛ وكلما ارتفع معدل الدوران اتسع هذا الفارق أولًا.',
     riskSingleTitle: 'فترة واحدة',
     riskSingleBody:
-      'عائد أحدث فترة {pct} يغطي فترة واحدة فقط، ولا يصلح توقعًا للفترة القادمة.',
-    riskNoCurveTitle: 'لا يوجد منحنى أداء',
-    riskNoCurveBody:
-      'لا يوجد منحنى أداء خلفي، لذا لا يمكن التحقق من التراجع والتكلفة والطاقة الاستيعابية؛ وهذا التقرير لا يقدّم أرقامًا لها.',
-    riskNoCurveValue: 'غير متاح',
+      'العائد التراكمي {pct} يغطي فترة واحدة فقط، ولا يصلح توقعًا للفترة القادمة.',
     wrongLabel: 'إذا أخطأنا',
     wrongWithEquity:
       'إذا كانت الخلاصة خاطئة، فالخطأ الأرجح أن نأخذ هذا الاختبار الخلفي على أنه المستقبل. ستأكل التكلفة جزءًا من العائد أولًا، ثم يضيق تفوقنا على المرجع مع تبدّل الأسلوب؛ وستظل القواعد تختار القائمة نفسها، لذلك لن ينبّهنا الخطأ في مرحلة الفرز، بل سيظهر في العائد والتراجع فقط.',
-    wrongNoEquity:
-      'إذا كانت الخلاصة خاطئة، فالخطأ الأرجح أن نأخذ وجود القواعد على أنه دليل على فعاليتها. ومن دون منحنى أداء لا يمكن تقدير عمق التراجع ولا حجم التكلفة؛ وعند تبدّل الأسلوب قد يتبخر عائد أحدث فترة بالكامل، ولن تنبّهنا القواعد لأنها تتحقق من الشروط لا من النتائج.',
     nextLabel: 'الخطوة التالية',
     nextStrategyTitle: 'العودة إلى الاستراتيجية',
     nextStrategyBody: 'راجع القواعد والعتبات وسجل التشغيل كاملًا.',

@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useRef } from 'react'
-import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
 import { TabBar } from './components/TabBar'
 import { RouteFallback } from './components/RouteFallback'
 
@@ -31,6 +31,7 @@ const SettingsPage = lazy(() => import('./routes/settings'))
  */
 function Shell() {
   const { pathname } = useLocation()
+  const navigationType = useNavigationType()
   const screenRef = useRef<HTMLDivElement>(null)
 
   // Warm the five tab chunks once the first screen is idle, so a tab tap
@@ -48,11 +49,12 @@ function Shell() {
     else setTimeout(warm, 1200)
   }, [])
 
-  // Reset the scroll position on navigation; a fresh screen should start at
-  // the top, and a preserved offset reads as a jump.
+  // Reset the scroll position only when a navigation PUSHes a fresh screen.
+  // A POP is the browser taking you back to a screen you already visited, so
+  // resetting there throws away the offset the user left and reads as a jump.
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
+    if (navigationType === 'PUSH') window.scrollTo(0, 0)
+  }, [pathname, navigationType])
 
   // A short opacity ramp so tabs read as one surface changing, not two pages.
   // Opacity only: no transform, no snapshot, nothing that relayouts the bar.

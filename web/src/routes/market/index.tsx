@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { AnimatedNumber } from '../../components/AnimatedNumber'
 import { BarStrip } from '../../components/BarStrip'
 import { LongPressLink } from '../../components/LongPressLink'
@@ -9,84 +9,22 @@ import type { TreemapGroup } from '../../components/Treemap'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import { fundamentalsFor } from '../../data/fundamentals'
 import { indices, quotes, sectors } from '../../data/mock'
 import type { Quote } from '../../data/mock'
+import { frameChange, membersChange, membersOf } from '../../data/membership'
+import type { HeatFrame } from '../../data/membership'
 import { useAlerts, triggeredCount } from '../../store/alerts'
 import { toggleWatch, useUser } from '../../store/user'
 import { SectionHead } from './SectionHead'
 import { strings } from './strings'
 
-/** Which stocks sit in which sector. The mock quotes carry no sector field, so
-    the named membership is written out; Moutai is the consumer name -> retail. */
-const SECTOR_MEMBERS: Record<string, string[]> = {
-  energy: ['2222'],
-  banks: ['1120'],
-  materials: ['2010'],
-  tech: ['0700'],
-  retail: ['600519'],
-}
-
-/** Every quote lands in exactly one sector, so the map accounts for the whole
-    universe instead of losing anything a later quote adds: the named rows go
-    first, then the rest by a stable hash into the band with the fewest tiles,
-    so no band starves while another crowds. */
-const SECTOR_OF: Record<string, Quote[]> = (() => {
-  const out: Record<string, Quote[]> = {}
-  for (const sec of sectors) out[sec.id] = []
-  const placed = new Set<string>()
-  for (const sec of sectors) {
-    for (const symbol of SECTOR_MEMBERS[sec.id] ?? []) {
-      const q = quotes.find((x) => x.symbol === symbol)
-      if (!q || placed.has(q.symbol)) continue
-      out[sec.id].push(q)
-      placed.add(q.symbol)
-    }
-  }
-  for (const q of quotes) {
-    if (placed.has(q.symbol)) continue
-    const ids = sectors.map((sec) => sec.id)
-    const least = Math.min(...ids.map((id) => out[id].length))
-    const tied = ids.filter((id) => out[id].length === least)
-    // 33 / 100003 spread the ticker characters; the score only picks a band, so
-    // the same symbol lands in the same place on every load and in every locale.
-    const score = [...q.symbol].reduce(
-      (acc, ch) => (acc * 33 + ch.charCodeAt(0)) % 100003,
-      7,
-    )
-    out[tied[score % tied.length]].push(q)
-    placed.add(q.symbol)
-  }
-  return out
-})()
-
-type HeatFrame = '1d' | '1w' | '1m'
-
+/** The map's frames, in the order the switcher lists them. */
 const FRAMES: [HeatFrame, 'frameDay' | 'frameWeek' | 'frameMonth'][] = [
   ['1d', 'frameDay'],
   ['1w', 'frameWeek'],
   ['1m', 'frameMonth'],
 ]
-
-/** The spark has no timestamps, so a week or a month is a fixed number of points
-    back from the last one. 40 points ≈ a month of sessions, which makes 1W five
-    points and 1M twenty-one; both are clamped, so a short series still works. */
-const SERIES_BACK: Record<Exclude<HeatFrame, '1d'>, number> = { '1w': 5, '1m': 21 }
-
-function frameChange(q: Quote, frame: HeatFrame): number {
-  if (frame === '1d') return q.change
-  const last = q.spark.length - 1
-  if (last < 1) return 0
-  const then = q.spark[Math.max(0, last - SERIES_BACK[frame])]
-  return then > 0 ? q.spark[last] / then - 1 : 0
-}
-
-/** A sector has no series of its own, so a derived frame averages its members,
-    weighted by the same price that sizes their tiles. */
-function membersChange(members: Quote[], frame: HeatFrame): number {
-  const total = members.reduce((sum, q) => sum + q.price, 0)
-  if (total <= 0) return 0
-  return members.reduce((sum, q) => sum + frameChange(q, frame) * q.price, 0) / total
-}
 
 /** One grid for the header rail and every row, so the columns stack in a line.
     The last 44px of the row are padding, not a column: the star floats there on
@@ -100,11 +38,36 @@ const ROW_GRID =
 /** Cells that carry the sparkline; the rail header hides with it. */
 const SPARK_CELL = 'max-[480px]:hidden'
 
-/** A move this large is worth surfacing on the strip. */
+const VIEWS = ['rank', 'sectors', 'watch'] as const
+type View = (typeof VIEWS)[number]
 
-type Sort = 'chg' | 'fall' | 'name'
+const SORTS = ['chg', 'fall', 'name'] as const
+type Sort = (typeof SORTS)[number]
 
 const SORT_KEY = { chg: 'sortGain', fall: 'sortLoss', name: 'sortName' } as const
+
+/** The map's frame keys, in the same order as the switcher's buttons. */
+const FRAME_KEYS: HeatFrame[] = FRAMES.map(([key]) => key)
+
+/** Read the board out of the URL. Every field is checked against its known
+    values, so a hand-edited or stale link falls back to the default board
+    instead of an empty screen; a sector the universe does not know is ignored
+    for the same reason. */
+function boardFrom(params: URLSearchParams) {
+  const rawView = params.get('view')
+  const rawSort = params.get('sort')
+  const rawFrame = params.get('frame')
+  const rawSector = params.get('sector')
+  return {
+    view: VIEWS.includes(rawView as View) ? (rawView as View) : 'rank',
+    sort: SORTS.includes(rawSort as Sort) ? (rawSort as Sort) : 'chg',
+    frame: FRAME_KEYS.includes(rawFrame as HeatFrame) ? (rawFrame as HeatFrame) : '1d',
+    sector:
+      rawSector !== null && sectors.some((sec) => sec.id === rawSector)
+        ? rawSector
+        : null,
+  }
+}
 
 /** A drawn triangle, not ▲: at 8px the text glyph sits on a different baseline
     in every locale font, which is what made the old rows look unaligned. */
@@ -174,14 +137,31 @@ export default function MarketPage() {
   const s = useStrings(strings)
   const navigate = useNavigate()
   const { watchlist } = useUser()
-  const [sector, setSector] = useState<string | null>(null)
-  const [sort, setSort] = useState<Sort>('chg')
-  const [view, setView] = useState<'rank' | 'sectors' | 'watch'>('rank')
-  const [frame, setFrame] = useState<HeatFrame>('1d')
+  // The board lives in the URL, not in component state: the quote page's back
+  // button, the browser's back button and a shared link all land on the same
+  // board instead of resetting to rank.
+  const [params, setParams] = useSearchParams()
+  const { view, sort, frame, sector } = boardFrom(params)
   const [picked, setPicked] = useState<string | null>(null)
 
+  /** Patch the board in place. replace keeps history as destination → destination,
+      so tapping through tabs never stacks entries the back button has to replay. */
+  const writeBoard = (patch: Record<string, string | null>) => {
+    const next = new URLSearchParams(params)
+    for (const [key, value] of Object.entries(patch)) {
+      if (value === null) next.delete(key)
+      else next.set(key, value)
+    }
+    setParams(next, { replace: true })
+  }
+
+  const setView = (next: View) => writeBoard({ view: next })
+  const setSector = (next: string | null) => writeBoard({ sector: next })
+  const setSort = (next: Sort) => writeBoard({ sort: next })
+  const setFrame = (next: HeatFrame) => writeBoard({ frame: next })
+
   const ranked = useMemo(() => {
-    const list = sector ? (SECTOR_OF[sector] ?? []) : quotes
+    const list = sector ? membersOf(sector) : quotes
     return [...list].sort((a, b) =>
       sort === 'chg'
         ? b.change - a.change
@@ -197,21 +177,23 @@ export default function MarketPage() {
   const heatGroups = useMemo<TreemapGroup[]>(() => {
     const groups: TreemapGroup[] = []
     for (const sec of sectors) {
-      const members = SECTOR_OF[sec.id] ?? []
+      const members = membersOf(sec.id)
       if (members.length === 0) continue
       groups.push({
         id: sec.id,
         label: sec.name[lang],
-        // Always the mean of the band's own tiles. Reading the sector's stored
-        // move made a one-stock band print +1.30% above a tile showing +0.72%.
-        change: membersChange(members, frame),
+        // Always the mean of the band's own tiles, from the shared membership
+        // table: the sector page and the AI chips print this same figure.
+        change: membersChange(sec.id, frame),
         weight: sec.weight,
         tiles: members.map((q) => ({
           key: q.symbol,
           label: q.name[lang],
           sub: q.symbol,
           change: frameChange(q, frame),
-          weight: q.price,
+          // Market cap, not the raw price: price mixes SAR, CNY and HKD, so a
+          // yuan stock would look fifty times bigger without its cap.
+          weight: fundamentalsFor(q.symbol, q.price).marketCap,
         })),
       })
     }
@@ -680,12 +662,18 @@ export default function MarketPage() {
       {view === 'watch' && (
         <>
       {/* Watchlist — read from the shared store, so a tap anywhere lands here */}
-        <div className="mt-7">
-          <div className="flex items-center justify-between">
-            <h2 className="text-[15px] font-semibold">{s('watchTitle')}</h2>
-            <span className="num rounded-full bg-surface px-2 py-0.5 text-[11px] text-muted">
-              {watched.length}
-            </span>
+        <div className="mt-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-baseline gap-2">
+              <h2 className="truncate text-[15px] font-semibold">{s('watchTitle')}</h2>
+              <span className="num rounded-full bg-surface px-2 py-0.5 text-[11px] text-muted">
+                {watched.length}
+              </span>
+            </div>
+            {/* Groups live next to the list they group, not inside Profile. */}
+            <Link to="/watchlists" className="shrink-0 text-[12px] text-accent">
+              {s('watchGroups')}
+            </Link>
           </div>
           {watched.length === 0 ? (
             <EmptyState

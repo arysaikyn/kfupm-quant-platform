@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
+import { fundamentalsFor } from '../../data/fundamentals'
 import { quotes } from '../../data/mock'
 import type { Quote } from '../../data/mock'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
@@ -33,6 +35,8 @@ type Stats = {
   vol: number
   /** 0–100 blend of range position, today's move and calm. */
   score: number
+  /** Fair value ÷ price − 1. Unit-free, so it ranks across currencies. */
+  discount: number
 }
 
 function statsFor(q: Quote): Stats {
@@ -53,8 +57,11 @@ function statsFor(q: Quote): Stats {
   const momentum = Math.min(1, Math.max(0, 0.5 + q.change * 20))
   const calm = Math.min(1, Math.max(0, 1 - vol / VOL_CEILING))
   const score = 100 * (0.45 * pos + 0.3 * momentum + 0.25 * calm)
+  // Same fair value the stock page prints, read as a fraction of price so the
+  // number means the same thing whether the quote is in SAR, CNY or HKD.
+  const discount = fundamentalsFor(q.symbol, q.price).fairValue / q.price - 1
 
-  return { q, pos, vol, score: Math.round(score * 10) / 10 }
+  return { q, pos, vol, score: Math.round(score * 10) / 10, discount }
 }
 
 function bestFlags(values: number[], dir: 'min' | 'max'): boolean[] {
@@ -189,6 +196,11 @@ export default function ComparePage() {
     return [wanted, ...[0, 1, 2].filter((i) => i !== wanted)].slice(0, 3)
   })
 
+  // Opened from a stock page (?a=SYMBOL) a deep link has no history to pop, so
+  // back lands on that stock rather than the tab root.
+  const focus = params.get('a')
+  const backTo = quotes.some((q) => q.symbol === focus) ? `/m/${focus}` : '/'
+
   const stats = useMemo(() => picks.map((i) => statsFor(quotes[i])), [picks])
 
   const series = useMemo(
@@ -215,7 +227,7 @@ export default function ComparePage() {
     (_m, key) => verdictVars[key] ?? '',
   )
 
-  const prices = stats.map((st) => st.q.price)
+  const discounts = stats.map((st) => st.discount)
   const changes = stats.map((st) => st.q.change)
   const positions = stats.map((st) => st.pos)
   const vols = stats.map((st) => st.vol)
@@ -223,11 +235,19 @@ export default function ComparePage() {
 
   const rows: Row[] = [
     {
-      key: 'price',
-      label: s('rowPrice'),
-      hint: s('rowPriceHint'),
-      best: bestFlags(prices, 'min'),
-      cells: stats.map((st) => ({ text: fmtNum(st.q.price, lang, 2) })),
+      key: 'discount',
+      label: s('rowDiscount'),
+      hint: s('rowDiscountHint'),
+      best: bestFlags(discounts, 'max'),
+      cells: stats.map((st) => ({
+        text: fmtNum(st.discount * 100, lang, 1, '%'),
+        tone:
+          st.discount > 0
+            ? 'var(--color-up)'
+            : st.discount < 0
+              ? 'var(--color-down)'
+              : 'var(--color-muted)',
+      })),
     },
     {
       key: 'change',
@@ -274,7 +294,7 @@ export default function ComparePage() {
     setPicks((prev) => prev.map((p, i) => (i === slot ? value : p)))
 
   return (
-    <Screen title={s('title')}>
+    <Screen title={s('title')} leading={<BackButton fallback={backTo} />}>
       <section className="panel mt-4 overflow-hidden">
         <div className="p-4">
           <h2 className="t-kicker text-muted">{s('slotsTitle')}</h2>

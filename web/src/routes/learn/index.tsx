@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
@@ -127,7 +128,7 @@ export default function LearnPage() {
   )
 
   return (
-    <Screen title={s('title')}>
+    <Screen title={s('title')} leading={<BackButton fallback="/me" />}>
       <div className="pt-4">
         <p className="text-[13px] leading-[1.5] text-muted">{s('intro')}</p>
 

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { quotes } from '../../data/mock'
 import type { L10n } from '../../data/mock'
@@ -140,7 +141,7 @@ export default function Calendar() {
     .replace('{end}', fmt.date.format(days[6]))
 
   return (
-    <Screen title={s('title')}>
+    <Screen title={s('title')} leading={<BackButton fallback="/news" />}>
       <section aria-labelledby="week-summary" className="panel mt-4 px-4 py-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">

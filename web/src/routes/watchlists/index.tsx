@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
@@ -389,6 +390,7 @@ export default function WatchlistsPage() {
   return (
     <Screen
       title={s('title')}
+      leading={<BackButton fallback="/" />}
       action={
         <div
           role="group"

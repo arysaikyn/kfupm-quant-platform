@@ -22,7 +22,10 @@ export function useLongPress(onLongPress: () => void, { ms = 480, slop = 10 }: O
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
-      if (e.pointerType === 'mouse') return
+      // A mouse may hold too: the desktop build had no way to reach the
+      // "hold a row to ask the AI" action, and the slop check already stops a
+      // drag or a text selection from firing it.
+      if (e.pointerType === 'mouse' && e.button !== 0) return
       origin.current = { x: e.clientX, y: e.clientY }
       timer.current = window.setTimeout(() => {
         if (!origin.current) return

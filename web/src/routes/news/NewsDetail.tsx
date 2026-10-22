@@ -1,4 +1,5 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { news } from '../../data/mock'
@@ -13,29 +14,15 @@ export default function NewsDetail() {
   const s = useStrings(strings)
   const { watchlist } = useUser()
   const navigate = useNavigate()
+  const [params] = useSearchParams()
   const item = news.find((n) => n.id === id)
 
+  // The feed's source filter travels with the story's URL. A history pop
+  // already restores it; this fallback covers a deep link or a reload, where
+  // there is no entry to pop and back must still land on the filtered list.
+  const source = params.get('source')
   const back = (
-    <Link
-      to="/news"
-      className="flex min-h-11 shrink-0 items-center gap-1 rounded-full border border-line px-3 text-[13px] text-muted"
-    >
-      <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        className="rtl:[transform:scaleX(-1)]"
-      >
-        <path d="M15 5l-7 7 7 7" />
-      </svg>
-      {s('back')}
-    </Link>
+    <BackButton fallback={source === null ? '/news' : `/news?source=${encodeURIComponent(source)}`} />
   )
 
   if (!item) {

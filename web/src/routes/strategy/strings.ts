@@ -95,14 +95,9 @@ export type DetailStrings = {
   rulesTitle: string
   rulesHint: string
   fullReport: string
-  rule1: string
-  rule2: string
-  rule3: string
-  rule4: string
   chartTitle: string
   chartAria: string
   legendWithCost: string
-  legendWithoutCost: string
   legendBench: string
   axisNote: string
   axisFrom: string
@@ -139,20 +134,15 @@ export const detailStrings = {
     rulesTitle: '选股规则',
     rulesHint: '只读，重跑时按顺序执行',
     fullReport: '查看完整研究报告',
-    rule1: '市盈率低于 15',
-    rule2: '负债低于资产的三成',
-    rule3: '排除银行和保险',
-    rule4: '通过教法筛选',
     chartTitle: '净值走势',
     chartAria: '净值走势图',
     legendWithCost: '含成本',
-    legendWithoutCost: '不含成本',
     legendBench: '基准',
     axisNote: '时间从左到右',
     axisFrom: '2019',
     axisTo: '2026',
     mTotal: '总回报',
-    mTotalHint: '五年累计',
+    mTotalHint: '区间累计',
     mDrawdown: '最大回撤',
     mDrawdownHint: '最深一次下跌',
     mTurnover: '换手',
@@ -172,7 +162,7 @@ export const detailStrings = {
     costFeesHint: '期末的 0.15%',
     costSlippage: '滑点',
     costSlippageHint: '期末的 0.5%',
-    costNote: '模拟：初始资金按近一年收益增长，再按期末价值扣费用与滑点。',
+    costNote: '模拟：初始资金按净值曲线的区间累计收益增长到期末，再按期末价值扣费用与滑点。',
   },
   en: {
     back: 'Back',
@@ -181,20 +171,15 @@ export const detailStrings = {
     rulesTitle: 'Stock rules',
     rulesHint: 'Read only. Applied in order on each run.',
     fullReport: 'Open the full report',
-    rule1: 'Price under 15 times earnings',
-    rule2: 'Debt under a third of assets',
-    rule3: 'Banks and insurers left out',
-    rule4: 'Passes the Sharia screen',
     chartTitle: 'How it grew',
     chartAria: 'Equity curve',
     legendWithCost: 'After costs',
-    legendWithoutCost: 'Before costs',
     legendBench: 'Benchmark',
     axisNote: 'Time runs left to right',
     axisFrom: '2019',
     axisTo: '2026',
     mTotal: 'Total return',
-    mTotalHint: 'over five years',
+    mTotalHint: 'over the whole span',
     mDrawdown: 'Worst drop',
     mDrawdownHint: 'deepest fall',
     mTurnover: 'Turnover',
@@ -214,7 +199,7 @@ export const detailStrings = {
     costFeesHint: '0.15% of final',
     costSlippage: 'Slippage',
     costSlippageHint: '0.5% of final',
-    costNote: 'Simulated: starting capital grown by the last-year return, then fees and slippage taken from the final value.',
+    costNote: 'Simulated: the starting capital compounds at the curve’s cumulative return to its end value, then fees and slippage come off that final value.',
   },
   ar: {
     back: 'رجوع',
@@ -223,20 +208,15 @@ export const detailStrings = {
     rulesTitle: 'قواعد الاختيار',
     rulesHint: 'للقراءة فقط، وتُطبَّق بالترتيب عند كل تشغيل.',
     fullReport: 'افتح التقرير الكامل',
-    rule1: 'السعر أقل من 15 ضعف الأرباح',
-    rule2: 'الدين أقل من ثلث الأصول',
-    rule3: 'استبعاد البنوك وشركات التأمين',
-    rule4: 'يجتاز الفحص الشرعي',
     chartTitle: 'مسار النمو',
     chartAria: 'مخطط مسار النمو',
     legendWithCost: 'بعد التكاليف',
-    legendWithoutCost: 'قبل التكاليف',
     legendBench: 'المؤشر المرجعي',
     axisNote: 'الزمن من اليسار إلى اليمين',
     axisFrom: '2019',
     axisTo: '2026',
     mTotal: 'العائد الكلي',
-    mTotalHint: 'خلال خمس سنوات',
+    mTotalHint: 'خلال الفترة كاملة',
     mDrawdown: 'أقصى تراجع',
     mDrawdownHint: 'أعمق هبوط',
     mTurnover: 'معدل الدوران',
@@ -256,6 +236,6 @@ export const detailStrings = {
     costFeesHint: '0.15% من القيمة النهائية',
     costSlippage: 'الانزلاق السعري',
     costSlippageHint: '0.5% من القيمة النهائية',
-    costNote: 'محاكاة: ينمو رأس المال الابتدائي بعائد آخر سنة، ثم تُخصم الرسوم والانزلاق من القيمة النهائية.',
+    costNote: 'محاكاة: يتراكم رأس المال الابتدائي بعائد المنحنى التراكمي حتى قيمته النهائية، ثم تُخصم الرسوم والانزلاق من تلك القيمة.',
   },
 } satisfies Dict<DetailStrings>

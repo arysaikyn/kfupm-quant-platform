@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
@@ -139,6 +140,7 @@ export default function AlertsPage() {
   return (
     <Screen
       title={s('title')}
+      leading={<BackButton fallback="/" />}
       action={
         <div
           role="group"

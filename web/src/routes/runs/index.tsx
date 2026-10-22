@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
@@ -357,6 +358,7 @@ export default function RunsPage() {
   return (
     <Screen
       title={s('title')}
+      leading={<BackButton fallback="/ai" />}
       action={
         <Link
           to="/ai"

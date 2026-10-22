@@ -49,26 +49,32 @@ type Rule = {
 
 const RULES: Rule[] = [
   // ── value ──────────────────────────────────────────────────
+  // Fair value is price × (1 + gap), gap in [-0.35, 0.35). Measured from fair
+  // value the deepest discount any name can show is 1 − 1/1.35 ≈ 25.9%, so the
+  // old "40% below fair value" rule could never fire. Both thresholds below sit
+  // inside that band: 10% needs gap ≥ 1/9, and 25% needs gap ≥ 1/3 — the top
+  // 2.4% of the band, so roughly one symbol in forty passes it. At least one
+  // symbol can therefore clear the stricter rule; it is a cut, not dead code.
   {
-    id: 'value-price-20',
+    id: 'value-price-10',
     axis: 'value',
     label: {
-      zh: '现价低于合理价的 80%',
-      en: 'Price at least 20% below fair value',
-      ar: 'السعر أقل من القيمة العادلة بـ20% على الأقل',
+      zh: '现价低于合理价的 90%',
+      en: 'Price at least 10% below fair value',
+      ar: 'السعر أقل من القيمة العادلة بـ10% على الأقل',
     },
-    test: (x) => x.price <= x.f.fairValue * 0.8,
+    test: (x) => x.price <= x.f.fairValue * 0.9,
     value: (x) => `${n(x.price)} vs FV ${n(x.f.fairValue)}`,
   },
   {
-    id: 'value-price-40',
+    id: 'value-price-25',
     axis: 'value',
     label: {
-      zh: '现价低于合理价的 60%',
-      en: 'Price at least 40% below fair value',
-      ar: 'السعر أقل من القيمة العادلة بـ40% على الأقل',
+      zh: '现价低于合理价的 75%',
+      en: 'Price at least 25% below fair value',
+      ar: 'السعر أقل من القيمة العادلة بـ25% على الأقل',
     },
-    test: (x) => x.price <= x.f.fairValue * 0.6,
+    test: (x) => x.price <= x.f.fairValue * 0.75,
     value: (x) => `${n(x.price)} vs FV ${n(x.f.fairValue)}`,
   },
   {

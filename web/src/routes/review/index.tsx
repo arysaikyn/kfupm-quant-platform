@@ -5,6 +5,7 @@ import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { quotes, sectors } from '../../data/mock'
 import type { Quote, Sector } from '../../data/mock'
+import { membersChange, membersOf } from '../../data/membership'
 import { useUser } from '../../store/user'
 import { strings } from './strings'
 
@@ -16,7 +17,17 @@ const PLOT_W_FALLBACK = 264
 
 type Anchor = 'start' | 'end' | 'above' | 'below'
 
-type Point = { sector: Sector; x: number; y: number }
+type Point = { sector: Sector; change: number; x: number; y: number }
+
+/**
+ * The sectors that have a member base, each with the move its members average.
+ * A sector the quote table does not reach has no move at all, so it is left off
+ * the plot instead of sitting on the zero line as if it were flat — the markets
+ * map does not draw a band for it either.
+ */
+const MEASURED: { sector: Sector; change: number }[] = sectors
+  .filter((item) => membersOf(item.id).length > 0)
+  .map((item) => ({ sector: item, change: membersChange(item.id, '1d') }))
 
 type Box = { x1: number; y1: number; x2: number; y2: number }
 
@@ -107,7 +118,7 @@ function placeLabels(points: Point[], width: number, height: number, lang: Lang)
   const order = [...points].sort(
     (a, b) =>
       b.sector.weight - a.sector.weight ||
-      Math.abs(b.sector.change) - Math.abs(a.sector.change),
+      Math.abs(b.change) - Math.abs(a.change),
   )
 
   for (const p of order) {
@@ -180,21 +191,22 @@ function RotationChart({
   }, [])
 
   // Symmetric x domain with a little breathing room, snapped to 0.5pp.
-  const maxAbs = sectors.reduce((max, sec) => Math.max(max, Math.abs(sec.change)), 0)
+  const maxAbs = MEASURED.reduce((max, row) => Math.max(max, Math.abs(row.change)), 0)
   const span = Math.max(0.02, Math.ceil((maxAbs + 0.003) / 0.005) * 0.005)
   // Weight domain starts at zero and lands on a multiple of 8 so ticks stay whole.
   const top = Math.max(
     8,
     Math.ceil(sectors.reduce((max, sec) => Math.max(max, sec.weight), 0) / 8) * 8,
   )
-  const meanWeight = sectors.length
-    ? sectors.reduce((sum, sec) => sum + sec.weight, 0) / sectors.length
+  const meanWeight = MEASURED.length
+    ? MEASURED.reduce((sum, row) => sum + row.sector.weight, 0) / MEASURED.length
     : top / 2
 
-  const points: Point[] = sectors.map((sec) => ({
-    sector: sec,
-    x: ((sec.change + span) / (2 * span)) * 100,
-    y: (1 - sec.weight / top) * 100,
+  const points: Point[] = MEASURED.map((row) => ({
+    sector: row.sector,
+    change: row.change,
+    x: ((row.change + span) / (2 * span)) * 100,
+    y: (1 - row.sector.weight / top) * 100,
   }))
   const labels = placeLabels(points, width, PLOT_H, lang)
 
@@ -255,13 +267,13 @@ function RotationChart({
 
             {points.map((p) => {
               const isSelected = selected === p.sector.id
-              const tone = toneOf(p.sector.change)
+              const tone = toneOf(p.change)
               return (
                 <button
                   key={p.sector.id}
                   type="button"
                   aria-pressed={isSelected}
-                  aria-label={`${p.sector.name[lang]} · ${fmtPct(p.sector.change, lang)} · ${s(
+                  aria-label={`${p.sector.name[lang]} · ${fmtPct(p.change, lang)} · ${s(
                     'weightLabel',
                   )} ${fmtNum(p.sector.weight, lang, 0, '%')}`}
                   onClick={() => onSelect(isSelected ? null : p.sector.id)}
@@ -327,7 +339,7 @@ function RotationChart({
             <span className="flex min-w-0 items-center gap-2">
               <span
                 className="h-2 w-2 shrink-0 rounded-full"
-                style={{ background: toneOf(picked.sector.change) }}
+                style={{ background: toneOf(picked.change) }}
               />
               <span className="truncate text-[13px] font-medium">
                 {picked.sector.name[lang]}
@@ -336,9 +348,9 @@ function RotationChart({
             <span className="flex shrink-0 items-baseline gap-2">
               <span
                 className="num text-[13px] font-semibold"
-                style={{ color: toneOf(picked.sector.change) }}
+                style={{ color: toneOf(picked.change) }}
               >
-                {fmtPct(picked.sector.change, lang)}
+                {fmtPct(picked.change, lang)}
               </span>
               <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
                 {s('weightLabel')} {fmtNum(picked.sector.weight, lang, 0, '%')}
@@ -370,14 +382,17 @@ export default function ReviewPage() {
   const best = ranked[0]
   const worst = ranked[ranked.length - 1]
 
-  // Weighted tape: sector move × index weight, normalised by total weight.
-  const totalWeight = sectors.reduce((sum, sec) => sum + sec.weight, 0)
+  // Weighted tape: sector move × index weight, normalised by the weight that
+  // actually has a move behind it. The stored Sector.change is never read here:
+  // this page used to print +1.30% for energy while the map printed +0.72%.
+  const totalWeight = MEASURED.reduce((sum, row) => sum + row.sector.weight, 0)
   const weighted =
     totalWeight > 0
-      ? sectors.reduce((sum, sec) => sum + sec.weight * sec.change, 0) / totalWeight
+      ? MEASURED.reduce((sum, row) => sum + row.sector.weight * row.change, 0) /
+        totalWeight
       : 0
 
-  const byChange = [...sectors].sort((a, b) => b.change - a.change)
+  const byChange = [...MEASURED].sort((a, b) => b.change - a.change)
   const [leader, runner] = byChange
 
   const score =
@@ -403,8 +418,8 @@ export default function ReviewPage() {
       id: 'lead',
       tone: toneOf(leader.change),
       text: fill(s('takeLead'), {
-        leader: leader.name[lang],
-        follower: runner.name[lang],
+        leader: leader.sector.name[lang],
+        follower: runner.sector.name[lang],
         gap: fmtNum((leader.change - runner.change) * 100, lang, 1),
       }),
     })
@@ -425,7 +440,7 @@ export default function ReviewPage() {
       text,
     })
   }
-  if (sectors.length > 0) {
+  if (MEASURED.length > 0) {
     takeaways.push({
       id: 'weighted',
       tone: toneOf(weighted),

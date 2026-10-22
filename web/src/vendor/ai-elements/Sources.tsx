@@ -63,7 +63,25 @@ export const SourcesContent = ({
 
 export type SourceProps = ComponentProps<"a">;
 
-export const Source = ({ href, title, children, ...props }: SourceProps) => (
+export const Source = ({ href, title, children, ...props }: SourceProps) => {
+  // A placeholder href ('#' or empty) must not become a link: target="_blank"
+  // resolved it against the current page and opened a second copy of the app.
+  const inert = !href || href === '#' || href.startsWith('#')
+
+  if (inert) {
+    return (
+      <span className="flex items-center gap-2">
+        {children ?? (
+          <>
+            <BookIcon className="h-4 w-4" />
+            <span className="block font-medium">{title}</span>
+          </>
+        )}
+      </span>
+    )
+  }
+
+  return (
   <a
     className="flex items-center gap-2"
     href={href}
@@ -78,4 +96,5 @@ export const Source = ({ href, title, children, ...props }: SourceProps) => (
       </>
     )}
   </a>
-);
+  )
+}

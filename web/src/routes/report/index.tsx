@@ -2,14 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
-import { equity, strategies } from '../../data/mock'
+import { bench, equityYears, strategies } from '../../data/mock'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { strings } from './strings'
 import type { ReportStrings } from './strings'
-
-/** The mock ships one equity curve, and its label names this strategy. */
-const EQUITY_STRATEGY = 'low-debt-value'
 
 const SECTION_IDS = ['conclusion', 'basis', 'risk', 'wrong', 'next'] as const
 type SectionId = (typeof SECTION_IDS)[number]
@@ -31,11 +28,6 @@ const TAG_KEYS: Partial<Record<string, keyof ReportStrings>> = {
 
 function fill(template: string, values: Record<string, string>): string {
   return template.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match)
-}
-
-function lastValue(series: number[]): number | null {
-  const value = series.at(-1)
-  return value !== undefined && Number.isFinite(value) ? value : null
 }
 
 /** Same display convention as the strategy screen; Arabic keeps Latin digits. */
@@ -168,88 +160,55 @@ export default function ReportPage() {
     )
   }
 
-  // Only one strategy in the mock has a curve; the rest must say so in words.
-  const curve = st.id === EQUITY_STRATEGY ? equity : null
-  const withEnd = curve ? lastValue(curve.withCost) : null
-  const withoutEnd = curve ? lastValue(curve.withoutCost) : null
-  const benchEnd = curve ? lastValue(curve.bench) : null
-  const ends =
-    withEnd !== null && withoutEnd !== null && benchEnd !== null
-      ? { with: withEnd, without: withoutEnd, bench: benchEnd }
-      : null
+  // Every strategy ships its own curve, so the prose and the table share one end value.
+  const withEnd = st.curve[st.curve.length - 1]
+  const grossEnd = st.gross[st.gross.length - 1]
+  const benchEnd = bench[bench.length - 1]
+  const total = withEnd - 1
+  const excess = withEnd - benchEnd
+  const costDrag = (grossEnd - withEnd) * 100
+  const span = `${equityYears.first}–${equityYears.last}`
 
-  const excess = ends ? ends.with - ends.bench : null
-  const costDrag = ends ? Math.abs(ends.without - ends.with) * 100 : null
-  // The equity label names the strategy and its years; only the years read well in a sentence.
-  const span = equity.label[lang].match(/\d{4}\s*[-–]\s*\d{4}/)?.[0] ?? equity.label[lang]
-
-  const conclusion = ends
-    ? fill(s('conclusionWithEquity'), {
-        name: st.name[lang],
-        span,
-        pct: fmtPct(st.lastReturn, lang),
-      })
-    : fill(s('conclusionNoEquity'), {
-        name: st.name[lang],
-        rules: `${fmtNum(st.rules, lang, 0)} ${s('rulesUnit')}`,
-        pct: fmtPct(st.lastReturn, lang),
-      })
+  const conclusion = fill(s('conclusionWithEquity'), {
+    name: st.name[lang],
+    span,
+    pct: fmtPct(total, lang),
+  })
 
   const evidence: { label: string; value: string; note: string; tone?: string }[] = [
     {
       label: s('basisRulesLabel'),
-      value: `${fmtNum(st.rules, lang, 0)} ${s('rulesUnit')}`,
+      value: `${fmtNum(st.rules.length, lang, 0)} ${s('rulesUnit')}`,
       note: s('basisRulesNote'),
     },
     {
       label: s('basisReturnLabel'),
-      value: fmtPct(st.lastReturn, lang),
-      note: s('basisReturnNote'),
-      tone:
-        st.lastReturn > 0 ? 'text-up' : st.lastReturn < 0 ? 'text-down' : 'text-muted',
+      value: fmtPct(total, lang),
+      note: fill(s('basisReturnNote'), { span }),
+      tone: total > 0 ? 'text-up' : total < 0 ? 'text-down' : 'text-muted',
     },
-    ends && excess !== null
-      ? {
-          label: s('basisExcessLabel'),
-          value: fmtPct(excess, lang),
-          note: fill(s('basisExcessNote'), { span }),
-          tone: excess > 0 ? 'text-up' : excess < 0 ? 'text-down' : 'text-muted',
-        }
-      : {
-          label: s('basisMissingLabel'),
-          value: s('basisMissingValue'),
-          note: s('basisMissingNote'),
-        },
+    {
+      label: s('basisExcessLabel'),
+      value: fmtPct(excess, lang),
+      note: fill(s('basisExcessNote'), { span }),
+      tone: excess > 0 ? 'text-up' : excess < 0 ? 'text-down' : 'text-muted',
+    },
   ]
 
-  const risks =
-    ends && costDrag !== null
-      ? [
-          {
-            title: s('riskCostTitle'),
-            value: `${fmtNum(costDrag, lang, 2)} ${s('ppUnit')}`,
-            body: fill(s('riskCostBody'), {
-              pp: fmtNum(costDrag, lang, 2),
-            }),
-          },
-          {
-            title: s('riskSingleTitle'),
-            value: fmtPct(st.lastReturn, lang),
-            body: fill(s('riskSingleBody'), { pct: fmtPct(st.lastReturn, lang) }),
-          },
-        ]
-      : [
-          {
-            title: s('riskNoCurveTitle'),
-            value: s('riskNoCurveValue'),
-            body: s('riskNoCurveBody'),
-          },
-          {
-            title: s('riskSingleTitle'),
-            value: fmtPct(st.lastReturn, lang),
-            body: fill(s('riskSingleBody'), { pct: fmtPct(st.lastReturn, lang) }),
-          },
-        ]
+  const risks = [
+    {
+      title: s('riskCostTitle'),
+      value: `${fmtNum(costDrag, lang, 2)} ${s('ppUnit')}`,
+      body: fill(s('riskCostBody'), {
+        pp: fmtNum(costDrag, lang, 2),
+      }),
+    },
+    {
+      title: s('riskSingleTitle'),
+      value: fmtPct(total, lang),
+      body: fill(s('riskSingleBody'), { pct: fmtPct(total, lang) }),
+    },
+  ]
 
   return (
     <main className="screen-pad mx-auto min-h-full w-full max-w-[920px] px-4">
@@ -275,7 +234,7 @@ export default function ReportPage() {
             </span>
             <span aria-hidden="true">·</span>
             <span>
-              {fmtNum(st.rules, lang, 0)} {s('rulesUnit')}
+              {fmtNum(st.rules.length, lang, 0)} {s('rulesUnit')}
             </span>
           </div>
           {st.tags.length > 0 && (
@@ -389,7 +348,7 @@ export default function ReportPage() {
             <section id="wrong" className="scroll-mt-6 border-t border-line p-4">
               <h2 className="t-kicker text-muted">{s('wrongLabel')}</h2>
               <p className="mt-4 border-s border-line ps-4 text-[14px] leading-[1.75]">
-                {ends ? s('wrongWithEquity') : s('wrongNoEquity')}
+                {s('wrongWithEquity')}
               </p>
             </section>
 

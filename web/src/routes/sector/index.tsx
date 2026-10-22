@@ -1,28 +1,13 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
-import { ErrorState } from '../../components/states'
+import { EmptyState, ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
-import { quotes, sectors } from '../../data/mock'
-import type { Quote, Sector } from '../../data/mock'
+import { sectors } from '../../data/mock'
+import type { Sector } from '../../data/mock'
+import { membersChange, membersOf } from '../../data/membership'
 import { toggleWatch, useUser } from '../../store/user'
 import { strings } from './strings'
-
-/** Stable score for a string; used only for ordering, never for a figure. */
-const hashSymbol = (value: string) =>
-  [...value].reduce((acc, ch) => (acc * 33 + ch.charCodeAt(0)) % 100003, 7)
-
-/** The mock universe has five quotes and no sector field. A sector-salted hash
-    gives each sector its own stable 4–6 name sample from that same universe
-    (capped at five today); no hand-written membership map is added to mock.ts. */
-function constituentsFor(sectorId: string): Quote[] {
-  const count = 4 + (hashSymbol(sectorId) % 3)
-  return [...quotes]
-    .map((quote) => ({ quote, score: hashSymbol(`${sectorId}:${quote.symbol}`) }))
-    .sort((a, b) => a.score - b.score || a.quote.symbol.localeCompare(b.quote.symbol))
-    .slice(0, Math.min(count, quotes.length))
-    .map((entry) => entry.quote)
-}
 
 type VerdictKey =
   | 'verdictStrong'
@@ -157,16 +142,38 @@ export default function SectorPage() {
     )
   }
 
-  const ranked: Sector[] = [...sectors].sort(
-    (a, b) => b.change - a.change || b.weight - a.weight,
+  // Every move on this page is the market-cap-weighted mean of the sector's own
+  // members, read from the shared membership table, so the headline, the rank
+  // list and the markets map can never print two figures for one sector. A
+  // sector the mock universe does not reach has no move at all and prints a
+  // dash instead of a fabricated 0.00%.
+  const members = membersOf(sector.id)
+  const change = members.length > 0 ? membersChange(sector.id, '1d') : null
+
+  const rows = sectors
+    .map((item) => ({
+      sector: item,
+      change: membersOf(item.id).length > 0 ? membersChange(item.id, '1d') : null,
+    }))
+    .sort((a, b) => {
+      if (a.change === null || b.change === null) {
+        if (a.change === b.change) return b.sector.weight - a.sector.weight
+        return a.change === null ? 1 : -1
+      }
+      return b.change - a.change || b.sector.weight - a.sector.weight
+    })
+  const measured = rows.filter(
+    (row): row is { sector: Sector; change: number } => row.change !== null,
   )
-  const rank = ranked.findIndex((item) => item.id === sector.id) + 1
-  const maxAbs = Math.max(...sectors.map((item) => Math.abs(item.change)), 0.0001)
-  const members = constituentsFor(sector.id)
-  const tone = toneOf(sector.change)
-  const rankText = s('rankValue')
-    .replaceAll('{n}', String(rank))
-    .replaceAll('{total}', String(sectors.length))
+  const rank = rows.findIndex((row) => row.sector.id === sector.id) + 1
+  const maxAbs = Math.max(...measured.map((row) => Math.abs(row.change)), 0.0001)
+  const tone = change === null ? 'var(--color-muted)' : toneOf(change)
+  const rankText =
+    change === null
+      ? '—'
+      : s('rankValue')
+          .replaceAll('{n}', String(rank))
+          .replaceAll('{total}', String(measured.length))
 
   // Arabic joins tear under tracking, so they opt out of the kicker spacing.
   const kicker = { letterSpacing: lang === 'ar' ? 0 : undefined }
@@ -199,56 +206,62 @@ export default function SectorPage() {
             className="num t-display mt-1 text-[36px] leading-none"
             style={{ color: tone }}
           >
-            {fmtPct(sector.change, lang)}
+            {change === null ? '—' : fmtPct(change, lang)}
           </p>
-          <p className="mt-3 text-[13px] leading-snug">{s(verdictKey(sector.change))}</p>
+          <p className="mt-3 text-[13px] leading-snug">
+            {change === null ? s('constituentsEmpty') : s(verdictKey(change))}
+          </p>
         </div>
       </section>
 
       <SectionTitle title={s('constituentsTitle')} />
-      <div className="panel mt-2 overflow-hidden">
-        {members.map((quote) => {
-          const watched = watchlist.includes(quote.symbol)
-          return (
-            <div key={quote.symbol} className="row relative">
-              <Link
-                to={`/m/${quote.symbol}`}
-                className="flex min-h-14 w-full items-center gap-1.5 py-2 pe-12 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px] font-medium">
-                    {quote.name[lang]}
-                  </span>
-                  <span className="num mt-0.5 block truncate text-[10.5px] text-muted">
-                    {quote.symbol} · {quote.currency}
-                  </span>
-                </span>
-                <Bars data={quote.spark} up={quote.change >= 0} />
-                <span className="num w-[58px] shrink-0 text-end text-[12px]">
-                  {fmtNum(quote.price, lang, 2)}
-                </span>
-                <span
-                  className="num w-[52px] shrink-0 text-end text-[11.5px] font-medium"
-                  style={{ color: toneOf(quote.change) }}
+      {members.length === 0 ? (
+        <EmptyState text={s('constituentsEmpty')} />
+      ) : (
+        <div className="panel mt-2 overflow-hidden">
+          {members.map((quote) => {
+            const watched = watchlist.includes(quote.symbol)
+            return (
+              <div key={quote.symbol} className="row relative">
+                <Link
+                  to={`/m/${quote.symbol}`}
+                  className="flex min-h-14 w-full items-center gap-1.5 py-2 pe-12 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                 >
-                  {fmtPct(quote.change, lang)}
-                </span>
-              </Link>
-              <button
-                type="button"
-                aria-pressed={watched}
-                aria-label={`${s(watched ? 'watchRemove' : 'watchAdd')} ${quote.name[lang]}`}
-                onClick={() => toggleWatch(quote.symbol)}
-                className={`absolute top-1/2 end-1 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
-                  watched ? 'text-accent' : 'text-muted'
-                }`}
-              >
-                <StarIcon filled={watched} />
-              </button>
-            </div>
-          )
-        })}
-      </div>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[13px] font-medium">
+                      {quote.name[lang]}
+                    </span>
+                    <span className="num mt-0.5 block truncate text-[10.5px] text-muted">
+                      {quote.symbol} · {quote.currency}
+                    </span>
+                  </span>
+                  <Bars data={quote.spark} up={quote.change >= 0} />
+                  <span className="num w-[58px] shrink-0 text-end text-[12px]">
+                    {fmtNum(quote.price, lang, 2)}
+                  </span>
+                  <span
+                    className="num w-[52px] shrink-0 text-end text-[11.5px] font-medium"
+                    style={{ color: toneOf(quote.change) }}
+                  >
+                    {fmtPct(quote.change, lang)}
+                  </span>
+                </Link>
+                <button
+                  type="button"
+                  aria-pressed={watched}
+                  aria-label={`${s(watched ? 'watchRemove' : 'watchAdd')} ${quote.name[lang]}`}
+                  onClick={() => toggleWatch(quote.symbol)}
+                  className={`absolute top-1/2 end-1 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                    watched ? 'text-accent' : 'text-muted'
+                  }`}
+                >
+                  <StarIcon filled={watched} />
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       <SectionTitle
         title={s('comparisonTitle')}
@@ -260,25 +273,29 @@ export default function SectorPage() {
       />
       <div className="panel mt-2 p-4">
         <div role="list" aria-label={s('chartLabel')} className="space-y-0.5">
-          {ranked.map((item) => {
+          {rows.map((row) => {
+            const item = row.sector
+            const move = row.change
             const current = item.id === sector.id
-            const width = Math.max((Math.abs(item.change) / maxAbs) * 50, 1)
+            const width = move === null ? 0 : Math.max((Math.abs(move) / maxAbs) * 50, 1)
             const barStyle: CSSProperties =
-              item.change >= 0
-                ? {
-                    insetBlockStart: 0,
-                    insetBlockEnd: 0,
-                    insetInlineStart: '50%',
-                    width: `${width}%`,
-                    background: toneOf(item.change),
-                  }
-                : {
-                    insetBlockStart: 0,
-                    insetBlockEnd: 0,
-                    insetInlineEnd: '50%',
-                    width: `${width}%`,
-                    background: toneOf(item.change),
-                  }
+              move === null
+                ? {}
+                : move >= 0
+                  ? {
+                      insetBlockStart: 0,
+                      insetBlockEnd: 0,
+                      insetInlineStart: '50%',
+                      width: `${width}%`,
+                      background: toneOf(move),
+                    }
+                  : {
+                      insetBlockStart: 0,
+                      insetBlockEnd: 0,
+                      insetInlineEnd: '50%',
+                      width: `${width}%`,
+                      background: toneOf(move),
+                    }
 
             return (
               <div
@@ -305,7 +322,9 @@ export default function SectorPage() {
                   className="relative h-2 rounded-full"
                   style={{ background: 'var(--color-line)', direction: 'ltr' }}
                 >
-                  <span className="absolute rounded-full" style={barStyle} />
+                  {move !== null && (
+                    <span className="absolute rounded-full" style={barStyle} />
+                  )}
                   <span
                     className="absolute"
                     style={{
@@ -321,11 +340,11 @@ export default function SectorPage() {
                 <span
                   className="num text-end text-[11px]"
                   style={{
-                    color: toneOf(item.change),
+                    color: move === null ? 'var(--color-muted)' : toneOf(move),
                     opacity: current ? 1 : 0.72,
                   }}
                 >
-                  {fmtPct(item.change, lang)}
+                  {move === null ? '—' : fmtPct(move, lang)}
                 </span>
               </div>
             )

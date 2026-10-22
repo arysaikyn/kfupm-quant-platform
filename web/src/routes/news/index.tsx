@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { news } from '../../data/mock'
@@ -70,11 +70,14 @@ function NewsRow({
   lang,
   s,
   watchlist,
+  source,
 }: {
   item: NewsItem
   lang: Lang
   s: S
   watchlist: string[]
+  /** Carried into the story's URL so the detail screen can rebuild this list. */
+  source: string | null
 }) {
   const deck = item.body[0]?.[lang]
   const watched = item.symbols.some((sym) => watchlist.includes(sym))
@@ -82,7 +85,7 @@ function NewsRow({
 
   return (
     <LongPressLink
-      to={`/news/${item.id}`}
+      to={source === null ? `/news/${item.id}` : `/news/${item.id}?source=${encodeURIComponent(source)}`}
       prompt={`${s('askAi')} — ${item.title[lang]}`}
       className="min-w-0 flex-1 py-3.5 transition-colors active:opacity-80"
     >
@@ -132,7 +135,19 @@ export default function NewsPage() {
   const s = useStrings(strings)
   const { watchlist } = useUser()
   const [now] = useState(() => Date.now())
-  const [source, setSource] = useState<string | null>(null)
+  // The filter lives in the URL, not in component state: leaving for a story and
+  // coming back (a history pop) must restore the same list, not reset to All.
+  const [params, setParams] = useSearchParams()
+  const source = params.get('source')
+
+  const selectSource = (name: string | null) => {
+    const next = new URLSearchParams(params)
+    if (name === null) next.delete('source')
+    else next.set('source', name)
+    // replace: a chip is view state, not a destination — it must not stack
+    // history entries between the list and the story the user opens next.
+    setParams(next, { replace: true })
+  }
 
   const sources = useMemo(() => Array.from(new Set(news.map((item) => item.source))), [])
 
@@ -198,7 +213,7 @@ export default function NewsPage() {
               <button
                 key={name ?? 'all'}
                 type="button"
-                onClick={() => setSource(name)}
+                onClick={() => selectSource(name)}
                 aria-pressed={active}
                 className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors ${
                   active ? 'bg-surface font-medium text-fg' : 'text-muted'
@@ -230,7 +245,7 @@ export default function NewsPage() {
               <ul className="panel overflow-hidden">
                 {group.items.map((item) => (
                   <li key={item.id} className="row">
-                    <NewsRow item={item} lang={lang} s={s} watchlist={watchlist} />
+                    <NewsRow item={item} lang={lang} s={s} watchlist={watchlist} source={source} />
                   </li>
                 ))}
               </ul>

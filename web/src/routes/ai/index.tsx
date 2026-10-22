@@ -5,6 +5,7 @@ import { Screen } from '../../components/Screen'
 import { fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { quotes, sectors } from '../../data/mock'
+import { membersChange, membersOf } from '../../data/membership'
 import { strings } from './strings'
 import { canned, followUps } from './replies'
 import type { Reply } from './replies'
@@ -205,7 +206,9 @@ export default function AiPage() {
         key: `s:${x.id}`,
         label: x.name[lang],
         sub: s('sectorLabel'),
-        change: x.change,
+        // Same membership mean the markets map draws, so a chip and the band it
+        // came from can never disagree.
+        change: membersOf(x.id).length > 0 ? membersChange(x.id, '1d') : null,
         ref: { kind: 'sector', id: x.id } satisfies CtxRef,
       })),
   ].slice(0, 5)
@@ -231,7 +234,11 @@ export default function AiPage() {
             const quote = c.kind === 'quote' ? quotes.find((q) => q.symbol === c.symbol) : undefined
             const sector = c.kind === 'sector' ? sectors.find((x) => x.id === c.id) : undefined
             const label = quote ? quote.name[lang] : sector ? sector.name[lang] : ''
-            const change = quote ? quote.change : sector ? sector.change : 0
+            const change = quote
+              ? quote.change
+              : sector && membersOf(sector.id).length > 0
+                ? membersChange(sector.id, '1d')
+                : null
             const key = quote ? `q:${quote.symbol}` : sector ? `s:${sector.id}` : 'unknown'
 
             return (
@@ -240,8 +247,12 @@ export default function AiPage() {
                 className="inline-flex h-11 items-center rounded-full bg-surface ps-3 pe-0.5"
               >
                 <span className="text-[12px]">{label}</span>
-                <span className={`num ms-2 text-[11px] ${toneOf(change)}`}>
-                  {fmtPct(change, lang)}
+                <span
+                  className={`num ms-2 text-[11px] ${
+                    change === null ? 'text-muted' : toneOf(change)
+                  }`}
+                >
+                  {change === null ? '—' : fmtPct(change, lang)}
                 </span>
                 <button
                   type="button"
@@ -427,8 +438,12 @@ export default function AiPage() {
                       <span className="block truncate text-[13px]">{o.label}</span>
                       <span className="block truncate text-[11px] text-muted">{o.sub}</span>
                     </span>
-                    <span className={`num shrink-0 text-[12px] ${toneOf(o.change)}`}>
-                      {fmtPct(o.change, lang)}
+                    <span
+                      className={`num shrink-0 text-[12px] ${
+                        o.change === null ? 'text-muted' : toneOf(o.change)
+                      }`}
+                    >
+                      {o.change === null ? '—' : fmtPct(o.change, lang)}
                     </span>
                   </button>
                 </li>

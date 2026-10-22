@@ -5,7 +5,7 @@ import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
-import { equity, strategies } from '../../data/mock'
+import { strategies } from '../../data/mock'
 import { fmtDate } from './format'
 import { listStrings, TAG_KEY } from './strings'
 
@@ -25,18 +25,6 @@ const FILTER_LABEL: Record<Lang, string> = {
 const SW = 120
 const SH = 56
 const SP = 4
-
-/**
- * One window of the shared curve per strategy, keyed by id so that sorting and
- * filtering never change a card's shape. Each window is rescaled so its last
- * point is exactly the strategy's last return — the number printed above it.
- */
-const SPARKS: Record<string, number[]> = {}
-strategies.forEach((st, i) => {
-  const slice = equity.withCost.slice((i * 17) % 31)
-  const scale = (1 + st.lastReturn) / slice[slice.length - 1]
-  SPARKS[st.id] = slice.map((v) => v * scale)
-})
 
 function Sparkline({ series, up }: { series: number[]; up: boolean }) {
   const lo = Math.min(...series)
@@ -76,7 +64,6 @@ function Sparkline({ series, up }: { series: number[]; up: boolean }) {
 export default function StrategyPage() {
   const { lang } = useI18n()
   const s = useStrings(listStrings)
-  /** Rules live in the detail dictionary; the card summarises their first two headings. */
   const [sort, setSort] = useState<Sort>('recent')
   /** null is the "All" chip. */
   const [tag, setTag] = useState<string | null>(null)
@@ -233,7 +220,7 @@ export default function StrategyPage() {
                     </div>
 
                     <div className="mt-3">
-                      <Sparkline series={SPARKS[st.id]} up={up} />
+                      <Sparkline series={st.curve} up={up} />
                     </div>
 
                     <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -255,7 +242,7 @@ export default function StrategyPage() {
                       style={{ color: 'var(--color-muted)' }}
                     >
                       <span>
-                        <span className="num">{fmtNum(st.rules, lang, 0)}</span> {s('rulesUnit')}
+                        <span className="num">{fmtNum(st.rules.length, lang, 0)}</span> {s('rulesUnit')}
                       </span>
                       <span className="truncate">
                         {s('updated')} {fmtDate(st.updated, lang)}

@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactElement } from 'react'
+import type { CSSProperties, ReactElement, ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useI18n } from '../i18n'
 import type { GlobalKey } from '../i18n'
@@ -56,6 +56,43 @@ const items: Item[] = [
   { to: '/me', key: 'tab.me', icon: meIcon },
 ]
 
+/**
+ * A tab you are already on does not need a link: it only scrolls its screen to
+ * the top. Pushing the same path would grow history and make the user's first
+ * back press appear to do nothing.
+ */
+function ItemSurface({
+  to,
+  active,
+  children,
+}: {
+  to: string
+  active: boolean
+  children: ReactNode
+}) {
+  const className = 'flex h-full w-full flex-col items-center justify-center gap-1'
+
+  if (active) {
+    return (
+      <button
+        type="button"
+        aria-current="page"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+        className={className}
+        style={{ color: 'var(--color-fg)' }}
+      >
+        {children}
+      </button>
+    )
+  }
+
+  return (
+    <Link to={to} className={className} style={{ color: 'var(--color-muted)' }}>
+      {children}
+    </Link>
+  )
+}
+
 export function TabBar() {
   const { t, dir } = useI18n()
   const { pathname } = useLocation()
@@ -75,13 +112,23 @@ export function TabBar() {
     '/runs': '/ai',
     '/report': '/strategy',
     '/learn': '/me',
-    '/watchlists': '/me',
+    '/watchlists': '/',
     '/settings': '/me',
   }
+  // Explicit entries first, then the tab whose own path prefixes this one.
+  // Without the second step /strategy/:id had no entry and the bar fell back to
+  // Markets, so opening a saved strategy moved the highlight to the wrong tab.
   const owner =
     Object.entries(TAB_OWNER).find(
       ([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-    )?.[1] ?? pathname
+    )?.[1] ??
+    items
+      .filter(
+        (it) =>
+          it.to !== '/' && (pathname === it.to || pathname.startsWith(`${it.to}/`)),
+      )
+      .sort((a, b) => b.to.length - a.to.length)[0]?.to ??
+    pathname
   const activeIndex = items.findIndex((it) =>
     it.to === '/' ? owner === '/' : owner === it.to,
   )
@@ -132,12 +179,7 @@ export function TabBar() {
 
           return (
             <li key={it.to} className="relative">
-              <Link
-                to={it.to}
-                aria-current={active ? 'page' : undefined}
-                className="flex h-full flex-col items-center justify-center gap-1"
-                style={{ color: active ? 'var(--color-fg)' : 'var(--color-muted)' }}
-              >
+              <ItemSurface to={it.to} active={active}>
                 {it.key === 'tab.ai' ? (
                   <span className="relative flex h-[22px] w-full items-center justify-center">
                     <span
@@ -164,7 +206,7 @@ export function TabBar() {
                 <span className="max-w-full truncate px-1 pb-[1px] text-[10px] leading-[1.6]">
                   {t(it.key)}
                 </span>
-              </Link>
+              </ItemSurface>
             </li>
           )
         })}

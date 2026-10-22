@@ -142,7 +142,6 @@ export default function MePage() {
         <div className="panel overflow-hidden">
           {[
             { to: '/learn', label: s('glossary') },
-            { to: '/watchlists', label: s('moreWatchlists') },
             { to: '/settings', label: s('moreSettings') },
           ].map((row) => (
             <Link

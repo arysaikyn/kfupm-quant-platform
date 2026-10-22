@@ -137,12 +137,12 @@ export default function SymbolPage() {
   const move = quote.spark[quote.spark.length - 1] / quote.spark[0] - 1
   const moves = quote.spark.slice(1).map((v, i) => Math.abs(v / quote.spark[i] - 1))
   const volatility = moves.reduce((a, m) => a + m, 0) / moves.length
-  // Stable per-symbol mock yield in the 2.4%–4.9% band.
-  const divYield =
-    0.024 + ([...quote.symbol].reduce((a, c) => a + c.charCodeAt(0), 0) % 26) * 0.001
+  // Read the same fundamentals block the Sharia screen scores, so the yield in
+  // the dividend rule and the "yield below 5%" check can never disagree.
+  const fundamentals = fundamentalsFor(quote.symbol, quote.price)
+  const divYield = fundamentals.dividendYield
 
-  // Peer set: neither quotes nor sectors carry a membership map in the mock,
-  // so compare the first three other names in the board.
+  // Peer set: the first three other names on the board.
   const peers = quotes.filter((q) => q.symbol !== quote.symbol).slice(0, 3)
 
   // Five axes, six named checks each. The score is a count of passes, never a
@@ -150,7 +150,7 @@ export default function SymbolPage() {
   const checks = checkList(quote.symbol, quote.price)
   const axes = axisScores(checks)
   const { rewards, risks } = strengthsAndRisks(checks, 3)
-  const fairValue = fundamentalsFor(quote.symbol, quote.price).fairValue
+  const fairValue = fundamentals.fairValue
   const axisLabel: Record<string, string> = {
     value: c('factorValue'),
     growth: c('factorQuality'),

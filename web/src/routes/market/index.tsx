@@ -1,40 +1,92 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AnimatedNumber } from '../../components/AnimatedNumber'
 import { BarStrip } from '../../components/BarStrip'
 import { LongPressLink } from '../../components/LongPressLink'
 import { TickerTape } from '../../components/TickerTape'
+import { Treemap } from '../../components/Treemap'
+import type { TreemapGroup } from '../../components/Treemap'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import { indices, quotes, sectors } from '../../data/mock'
-import type { Quote, Sector } from '../../data/mock'
+import type { Quote } from '../../data/mock'
 import { useAlerts, triggeredCount } from '../../store/alerts'
 import { toggleWatch, useUser } from '../../store/user'
 import { SectionHead } from './SectionHead'
 import { strings } from './strings'
 
-/** Which stocks sit in which sector. The mock quotes carry no sector field. */
+/** Which stocks sit in which sector. The mock quotes carry no sector field, so
+    the named membership is written out; Moutai is the consumer name -> retail. */
 const SECTOR_MEMBERS: Record<string, string[]> = {
   energy: ['2222'],
   banks: ['1120'],
   materials: ['2010'],
   tech: ['0700'],
-  retail: [],
-  utilities: [],
-  health: [],
-  telecom: [],
+  retail: ['600519'],
 }
 
-/** Treemap rows: area ∝ weight, split so every tile stays tappable on a phone. */
-const HEAT_ROWS: Sector[][] = (() => {
-  const sorted = [...sectors].sort((a, b) => b.weight - a.weight)
-  const rows: Sector[][] = []
-  for (let i = 0; i < sorted.length; i += 3) rows.push(sorted.slice(i, i + 3))
-  return rows
+/** Every quote lands in exactly one sector, so the map accounts for the whole
+    universe instead of losing anything a later quote adds: the named rows go
+    first, then the rest by a stable hash into the band with the fewest tiles,
+    so no band starves while another crowds. */
+const SECTOR_OF: Record<string, Quote[]> = (() => {
+  const out: Record<string, Quote[]> = {}
+  for (const sec of sectors) out[sec.id] = []
+  const placed = new Set<string>()
+  for (const sec of sectors) {
+    for (const symbol of SECTOR_MEMBERS[sec.id] ?? []) {
+      const q = quotes.find((x) => x.symbol === symbol)
+      if (!q || placed.has(q.symbol)) continue
+      out[sec.id].push(q)
+      placed.add(q.symbol)
+    }
+  }
+  for (const q of quotes) {
+    if (placed.has(q.symbol)) continue
+    const ids = sectors.map((sec) => sec.id)
+    const least = Math.min(...ids.map((id) => out[id].length))
+    const tied = ids.filter((id) => out[id].length === least)
+    // 33 / 100003 spread the ticker characters; the score only picks a band, so
+    // the same symbol lands in the same place on every load and in every locale.
+    const score = [...q.symbol].reduce(
+      (acc, ch) => (acc * 33 + ch.charCodeAt(0)) % 100003,
+      7,
+    )
+    out[tied[score % tied.length]].push(q)
+    placed.add(q.symbol)
+  }
+  return out
 })()
 
-const TILE_UNIT = 2.8
+type HeatFrame = '1d' | '1w' | '1m'
+
+const FRAMES: [HeatFrame, 'frameDay' | 'frameWeek' | 'frameMonth'][] = [
+  ['1d', 'frameDay'],
+  ['1w', 'frameWeek'],
+  ['1m', 'frameMonth'],
+]
+
+/** The spark has no timestamps, so a week or a month is a fixed number of points
+    back from the last one. 40 points ≈ a month of sessions, which makes 1W five
+    points and 1M twenty-one; both are clamped, so a short series still works. */
+const SERIES_BACK: Record<Exclude<HeatFrame, '1d'>, number> = { '1w': 5, '1m': 21 }
+
+function frameChange(q: Quote, frame: HeatFrame): number {
+  if (frame === '1d') return q.change
+  const last = q.spark.length - 1
+  if (last < 1) return 0
+  const then = q.spark[Math.max(0, last - SERIES_BACK[frame])]
+  return then > 0 ? q.spark[last] / then - 1 : 0
+}
+
+/** A sector has no series of its own, so a derived frame averages its members,
+    weighted by the same price that sizes their tiles. */
+function membersChange(members: Quote[], frame: HeatFrame): number {
+  const total = members.reduce((sum, q) => sum + q.price, 0)
+  if (total <= 0) return 0
+  return members.reduce((sum, q) => sum + frameChange(q, frame) * q.price, 0) / total
+}
 
 /** One grid for the header rail and every row, so the columns stack in a line.
     The last 44px of the row are padding, not a column: the star floats there on
@@ -120,14 +172,16 @@ function WatchStar({
 export default function MarketPage() {
   const { t, lang } = useI18n()
   const s = useStrings(strings)
+  const navigate = useNavigate()
   const { watchlist } = useUser()
   const [sector, setSector] = useState<string | null>(null)
   const [sort, setSort] = useState<Sort>('chg')
   const [view, setView] = useState<'rank' | 'sectors' | 'watch'>('rank')
+  const [frame, setFrame] = useState<HeatFrame>('1d')
+  const [picked, setPicked] = useState<string | null>(null)
 
   const ranked = useMemo(() => {
-    const members = sector ? (SECTOR_MEMBERS[sector] ?? []) : null
-    const list = members ? quotes.filter((q) => members.includes(q.symbol)) : quotes
+    const list = sector ? (SECTOR_OF[sector] ?? []) : quotes
     return [...list].sort((a, b) =>
       sort === 'chg'
         ? b.change - a.change
@@ -136,6 +190,35 @@ export default function MarketPage() {
           : a.name[lang].localeCompare(b.name[lang], lang),
     )
   }, [sector, sort, lang])
+
+  // The map's bands are the sectors that own a quote: the mock only carries five
+  // names, so a sector with no constituent is left out rather than drawn as an
+  // empty column. With a real universe every sector fills in on its own.
+  const heatGroups = useMemo<TreemapGroup[]>(() => {
+    const groups: TreemapGroup[] = []
+    for (const sec of sectors) {
+      const members = SECTOR_OF[sec.id] ?? []
+      if (members.length === 0) continue
+      groups.push({
+        id: sec.id,
+        label: sec.name[lang],
+        // Always the mean of the band's own tiles. Reading the sector's stored
+        // move made a one-stock band print +1.30% above a tile showing +0.72%.
+        change: membersChange(members, frame),
+        weight: sec.weight,
+        tiles: members.map((q) => ({
+          key: q.symbol,
+          label: q.name[lang],
+          sub: q.symbol,
+          change: frameChange(q, frame),
+          weight: q.price,
+        })),
+      })
+    }
+    return groups
+  }, [frame, lang])
+
+  const pickedQuote = picked ? (quotes.find((q) => q.symbol === picked) ?? null) : null
 
   // Symbols arrive newest first from the store; the mock quote is the row.
   // Alerts belong to the bell, not to the feed. The count is what fired; the
@@ -322,53 +405,97 @@ export default function MarketPage() {
 
       {view === 'sectors' && (
         <>
-      {/* Sector heatmap */}
+      {/* Sector map */}
         <SectionHead title={s('heatTitle')} />
-        <div className="mt-2 flex flex-col gap-1.5">
-          {HEAT_ROWS.map((row) => {
-            const sum = row.reduce((a, r) => a + r.weight, 0)
+
+        <div
+          role="group"
+          aria-label={s('heatFrame')}
+          className="mt-2 flex items-center gap-1.5"
+        >
+          {FRAMES.map(([key, label]) => {
+            const on = key === frame
             return (
-              <div
-                key={row.map((r) => r.id).join('-')}
-                className="flex gap-1.5"
-                style={{ height: Math.max(64, Math.round(sum * TILE_UNIT)) }}
+              <button
+                key={key}
+                type="button"
+                aria-pressed={on}
+                onClick={() => setFrame(key)}
+                className="rounded-lg px-3 py-1.5 text-[11px] font-medium transition-colors"
+                style={
+                  on
+                    ? { background: 'var(--color-accent)', color: '#fff' }
+                    : { color: 'var(--color-muted)' }
+                }
               >
-                {row.map((sec) => {
-                  const up = sec.change >= 0
-                  const selected = sector === sec.id
-                  const token = up ? 'var(--color-up)' : 'var(--color-down)'
-                  const alpha = 22 + Math.min(Math.abs(sec.change) / 0.02, 1) * 26
-                  return (
-                    <button
-                      key={sec.id}
-                      type="button"
-                      aria-pressed={selected}
-                      onClick={() => setSector(selected ? null : sec.id)}
-                      className="flex min-w-0 flex-col justify-between rounded-[14px] p-2.5 text-start"
-                      style={{
-                        flexGrow: sec.weight,
-                        flexBasis: 0,
-                        background: `linear-gradient(165deg, color-mix(in srgb, ${token} ${Math.round(alpha * 0.9)}%, transparent), color-mix(in srgb, ${token} ${Math.round(alpha * 0.2)}%, transparent))`,
-                        border: `1px solid color-mix(in srgb, ${token} 26%, transparent)`,
-                        boxShadow: selected
-                          ? 'inset 0 0 0 2px var(--color-accent)'
-                          : 'var(--card-inset)',
-                      }}
-                    >
-                      <span className="block min-w-0 truncate text-[12px] font-medium">
-                        {sec.name[lang]}
-                      </span>
-                      <span className="num text-[12px]" style={{ color: token }}>
-                        {fmtPct(sec.change, lang)}
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
+                {s(label)}
+              </button>
             )
           })}
         </div>
-  
+
+        <div className="mt-2">
+          <Treemap
+            groups={heatGroups}
+            up="var(--color-up)"
+            down="var(--color-down)"
+            selected={picked}
+            selectedGroup={sector}
+            formatChange={(v) => fmtPct(v, lang)}
+            onGroup={(id) => navigate(`/sector/${id}`)}
+            onPick={(key) => {
+              const again = picked === key
+              setPicked(again ? null : key)
+              setSector(
+                again
+                  ? null
+                  : (heatGroups.find((g) => g.tiles.some((t) => t.key === key))?.id ?? null),
+              )
+            }}
+          />
+        </div>
+
+        {frame !== '1d' && (
+          <p
+            className="mt-1.5 text-[10px] leading-snug"
+            style={{ color: 'var(--color-muted)' }}
+          >
+            {s('heatDerived')}
+          </p>
+        )}
+
+        {/* What the picked tile is, in full: the map itself only has room for
+            the name and the move. */}
+        {pickedQuote && (
+          <div className="panel mt-2 flex min-h-[56px] items-center justify-between gap-3 px-3 py-2">
+            <div className="min-w-0">
+              <p className="truncate text-[13px] font-medium">{pickedQuote.name[lang]}</p>
+              <p
+                className="num mt-0.5 truncate text-[11px]"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                {pickedQuote.symbol} · {fmtNum(pickedQuote.price, lang, 2)}
+              </p>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <span
+                className={`num text-[13px] font-semibold ${
+                  frameChange(pickedQuote, frame) >= 0 ? 'text-up' : 'text-down'
+                }`}
+              >
+                {fmtPct(frameChange(pickedQuote, frame), lang)}
+              </span>
+              <Link
+                to={`/m/${pickedQuote.symbol}`}
+                className="flex min-h-11 items-center rounded-full px-3 text-[12px]"
+                style={{ border: '1px solid var(--color-line)' }}
+              >
+                {s('openQuote')}
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Drill into whichever sector is in focus */}
         <Link
           to={`/sector/${sector ?? sectors[0]?.id ?? 'energy'}`}

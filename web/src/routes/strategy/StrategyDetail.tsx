@@ -5,7 +5,7 @@ import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { equity, strategies } from '../../data/mock'
-import { fmtClock } from './format'
+import { fmtClock, fmtDate } from './format'
 import { EquityChart } from './EquityChart'
 import { detailStrings, listStrings, TAG_KEY } from './strings'
 import type { DetailStrings } from './strings'
@@ -43,6 +43,11 @@ const STEPS = ['stepFetch', 'stepFilter', 'stepCompute', 'stepDone'] as const
 
 /** No turnover field in the mock contract; a fixed figure keeps the row honest. */
 const TURNOVER = 0.78
+
+/** Cost row: one unit of starting capital, plus the two charges a rerun would pay. */
+const INITIAL_CAPITAL = 10000
+const FEE_RATE = 0.0015
+const SLIP_RATE = 0.005
 
 /** Same year as the chart's first axis label; kept whole because word order differs. */
 const SINCE: Record<Lang, string> = { zh: '2019 年以来', en: 'Since 2019', ar: 'منذ 2019' }
@@ -543,6 +548,12 @@ export default function StrategyDetail() {
   const tone = total > 0 ? 'text-up' : total < 0 ? 'text-down' : 'text-muted'
   const lab = LAB[lang]
 
+  // The cost row re-prices the card's own last-year return, so it invents no figure.
+  const finalValue = Math.round(INITIAL_CAPITAL * (1 + st.lastReturn) * 100) / 100
+  const feesCost = Math.round(finalValue * FEE_RATE * 100) / 100
+  const slippageCost = Math.round(finalValue * SLIP_RATE * 100) / 100
+  const oosText = s('oosFrom').replace('{date}', fmtDate(st.updated, lang))
+
   // Attribution walks from benchmark -> gross -> net, so the four parts close on total.
   const benchTotal = equity.bench[equity.bench.length - 1] - 1
   const withoutTotal = equity.withoutCost[equity.withoutCost.length - 1] - 1
@@ -632,6 +643,9 @@ export default function StrategyDetail() {
               </div>
             </div>
           </div>
+          <p className="mt-2 text-[10px]" style={{ color: 'var(--color-muted)' }}>
+            {oosText}
+          </p>
           <p className="mt-3 text-[13px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {st.description[lang]}
           </p>
@@ -652,6 +666,51 @@ export default function StrategyDetail() {
         </section>
 
         
+        {/* The return above in money: what a rerun pays in fees and slippage. */}
+        <section className="panel p-4">
+          <h2 className="text-[13px] font-medium">{s('costTitle')}</h2>
+          <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-3">
+            <div className="min-w-0">
+              <div dir="ltr" className="num text-[17px] leading-tight font-semibold">
+                {fmtNum(INITIAL_CAPITAL, lang, 0)}
+              </div>
+              <div className="mt-1 text-[12px] leading-tight">{s('costStart')}</div>
+            </div>
+            <div className="min-w-0">
+              <div dir="ltr" className="num text-[17px] leading-tight font-semibold">
+                {fmtNum(finalValue, lang, 2)}
+              </div>
+              <div className="mt-1 text-[12px] leading-tight">{s('costFinal')}</div>
+              <div className="num mt-0.5 text-[10px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+                {fmtPct(st.lastReturn, lang, 1)}
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div dir="ltr" className="num text-[17px] leading-tight font-semibold text-down">
+                {'−'}
+                {fmtNum(feesCost, lang, 2)}
+              </div>
+              <div className="mt-1 text-[12px] leading-tight">{s('costFees')}</div>
+              <div className="mt-0.5 text-[10px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+                {s('costFeesHint')}
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div dir="ltr" className="num text-[17px] leading-tight font-semibold text-down">
+                {'−'}
+                {fmtNum(slippageCost, lang, 2)}
+              </div>
+              <div className="mt-1 text-[12px] leading-tight">{s('costSlippage')}</div>
+              <div className="mt-0.5 text-[10px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+                {s('costSlippageHint')}
+              </div>
+            </div>
+          </div>
+          <p className="mt-2 text-[10px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+            {s('costNote')}
+          </p>
+        </section>
+
         <Link
           to={`/report/${st.id}`}
           className="panel flex min-h-[52px] items-center justify-between gap-3 px-4 text-[13px]"

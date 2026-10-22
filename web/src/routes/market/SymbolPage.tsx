@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AnimatedNumber } from '../../components/AnimatedNumber'
+import { FairValueRail } from '../../components/FairValueRail'
+import { Snowflake } from '../../components/Snowflake'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import { fundamentalsFor } from '../../data/fundamentals'
 import { news, quotes } from '../../data/mock'
+import { axisScores, checkList, strengthsAndRisks } from './checks'
 import { toggleWatch, useUser } from '../../store/user'
 import { SectionHead } from './SectionHead'
 import { strings } from './strings'
@@ -21,12 +25,6 @@ const fill = (tpl: string, vars: Record<string, string | number>) =>
     (out, [key, value]) => out.replaceAll(`{${key}}`, String(value)),
     tpl,
   )
-
-/** Deterministic 1–99 score; the hash keeps each symbol stable across visits. */
-const hashSymbol = (symbol: string) =>
-  [...symbol].reduce((a, c) => (a * 33 + c.charCodeAt(0)) % 100003, 7)
-
-const clampScore = (n: number) => Math.max(1, Math.min(99, Math.round(n)))
 
 // Draw the line once per session. Replaying it on every open made navigation
 // look like the page was re-rendering out of order.
@@ -152,35 +150,19 @@ export default function SymbolPage() {
   // so compare the first three other names in the board.
   const peers = quotes.filter((q) => q.symbol !== quote.symbol).slice(0, 3)
 
-  // Factor scores: the symbol hash gives every name a stable base, then the
-  // quote's own change, momentum and volatility tilt each factor.
-  const seed = hashSymbol(quote.symbol)
-  const factors = [
-    {
-      key: 'value',
-      label: c('factorValue'),
-      score: clampScore(44 + (seed % 31) + quote.change * 380),
-    },
-    {
-      key: 'quality',
-      label: c('factorQuality'),
-      score: clampScore(
-        48 + ((seed >> 3) % 29) + quote.change * 220 - volatility * 180,
-      ),
-    },
-    {
-      key: 'momentum',
-      label: c('factorMomentum'),
-      score: clampScore(34 + ((seed >> 6) % 29) + move * 300),
-    },
-    {
-      key: 'volatility',
-      label: c('factorVolatility'),
-      score: clampScore(
-        34 + ((seed >> 9) % 29) + volatility * 900 + Math.abs(quote.change) * 200,
-      ),
-    },
-  ]
+  // Five axes, six named checks each. The score is a count of passes, never a
+  // grade: 4/6 says "four of these six rules hold", which a reader can audit.
+  const checks = checkList(quote.symbol, quote.price)
+  const axes = axisScores(checks)
+  const { rewards, risks } = strengthsAndRisks(checks, 3)
+  const fairValue = fundamentalsFor(quote.symbol, quote.price).fairValue
+  const axisLabel: Record<string, string> = {
+    value: c('factorValue'),
+    growth: c('factorQuality'),
+    past: c('factorMomentum'),
+    health: c('factorVolatility'),
+    sharia: c('axisSharia'),
+  }
 
   // Why it moved: each bullet counts something in this quote's own series.
   const closes = quote.spark.slice(-6)
@@ -304,6 +286,23 @@ export default function SymbolPage() {
         </button>
       </div>
 
+      {/* Fair value rail: price against the model's fair value, before anything else */}
+      <div className="mt-3">
+        <FairValueRail
+          price={quote.price}
+          fairValue={fairValue}
+          format={(n) => fmtNum(n, lang, 2)}
+          labels={{
+            title: c('fairTitle'),
+            price: c('fairPrice'),
+            fair: c('fairValueLabel'),
+            undervalued: c('undervalued'),
+            overvalued: c('overvalued'),
+            aboutRight: c('aboutRight'),
+          }}
+        />
+      </div>
+
       {/* Chart */}
       <div
         className="mt-4 rounded-2xl p-3"
@@ -379,30 +378,62 @@ export default function SymbolPage() {
         </ul>
       )}
 
-      {/* Factor scores */}
+      {/* Five-axis score: the polygon is the summary, the rows are the audit */}
       <SectionHead title={c('factorsTitle')} />
       <div className="panel mt-3 p-4">
-        <ul className="space-y-3">
-          {factors.map((f) => (
-            <li
-              key={f.key}
-              className="grid grid-cols-[68px_minmax(0,1fr)_24px] items-center gap-x-2.5"
-            >
-              <span className="truncate text-[12px] font-medium">{f.label}</span>
-              <div
-                aria-hidden="true"
-                className="h-1.5 w-full overflow-hidden rounded-full"
-                style={{ background: 'var(--color-line)' }}
-              >
-                <div
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{ width: `${f.score}%`, background: 'var(--color-accent)' }}
-                />
-              </div>
-              <span className="num text-end text-[13px] font-semibold">{f.score}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="flex items-center gap-4">
+          <Snowflake
+            scores={axes.map((a) => a.score)}
+            labels={axes.map((a) => axisLabel[a.axis])}
+            max={6}
+            size={132}
+            aria={axes.map((a) => `${axisLabel[a.axis]} ${a.score}/${a.total}`).join(', ')}
+          />
+          <ul className="min-w-0 flex-1 space-y-1.5">
+            {axes.map((a) => {
+              const tone =
+                a.score >= 4
+                  ? 'var(--color-up)'
+                  : a.score <= 1
+                    ? 'var(--color-down)'
+                    : 'var(--color-muted)'
+              return (
+                <li key={a.axis} className="flex items-baseline justify-between gap-2">
+                  <span className="truncate text-[12px]">{axisLabel[a.axis]}</span>
+                  <span className="num shrink-0 text-[12px] font-semibold" style={{ color: tone }}>
+                    {a.score}/{a.total}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+        <p className="mt-3 text-[11px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+          {c('factorsHint')}
+        </p>
+      </div>
+
+      {/* Strengths / risks: the same checks, read out in words */}
+      <SectionHead title={c('rewardsTitle')} />
+      <div className="panel mt-3 divide-y divide-line overflow-hidden">
+        {rewards.map((k) => (
+          <div key={k.id} className="flex items-start gap-2.5 px-4 py-2.5">
+            <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-up)' }}>✓</span>
+            <span className="min-w-0 flex-1 text-[12.5px] leading-snug">{k.label[lang]}</span>
+            <span className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
+          </div>
+        ))}
+      </div>
+
+      <SectionHead title={c('risksTitle')} />
+      <div className="panel mt-3 divide-y divide-line overflow-hidden">
+        {risks.map((k) => (
+          <div key={k.id} className="flex items-start gap-2.5 px-4 py-2.5">
+            <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-down)' }}>⚠</span>
+            <span className="min-w-0 flex-1 text-[12.5px] leading-snug">{k.label[lang]}</span>
+            <span className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
+          </div>
+        ))}
       </div>
 
       {/* Peer comparison */}

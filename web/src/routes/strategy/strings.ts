@@ -10,6 +10,8 @@ export type ListStrings = {
   rulesUnit: string
   updated: string
   lastReturn: string
+  oos: string
+  oosHint: string
   empty: string
   emptyCta: string
   'tag.value': string
@@ -29,6 +31,8 @@ export const listStrings = {
     rulesUnit: '条规则',
     updated: '更新于',
     lastReturn: '近一年',
+    oos: 'OOS',
+    oosHint: '样本外：结果取自策略没有参与构建的时段',
     empty: '还没有策略',
     emptyCta: '用一句话建一个',
     'tag.value': '价值',
@@ -46,6 +50,8 @@ export const listStrings = {
     rulesUnit: 'rules',
     updated: 'Updated',
     lastReturn: 'Last year',
+    oos: 'OOS',
+    oosHint: 'Out-of-sample: measured on a period the strategy was not built on',
     empty: 'No strategies yet',
     emptyCta: 'Build one from a sentence',
     'tag.value': 'Value',
@@ -63,6 +69,8 @@ export const listStrings = {
     rulesUnit: 'قواعد',
     updated: 'حُدِّثت',
     lastReturn: 'آخر سنة',
+    oos: 'OOS',
+    oosHint: 'خارج العينة: قياس على فترة لم تُبنَ عليها الخطة',
     empty: 'لا توجد خطط بعد',
     emptyCta: 'ابنِ خطة من جملة',
     'tag.value': 'قيمة',
@@ -112,6 +120,15 @@ export type DetailStrings = {
   stepDone: string
   runningNote: string
   updatedNote: string
+  oosFrom: string
+  costTitle: string
+  costStart: string
+  costFinal: string
+  costFees: string
+  costFeesHint: string
+  costSlippage: string
+  costSlippageHint: string
+  costNote: string
 }
 
 export const detailStrings = {
@@ -147,6 +164,15 @@ export const detailStrings = {
     stepDone: '完成',
     runningNote: '正在重跑',
     updatedNote: '结果已更新',
+    oosFrom: '样本外自 {date}',
+    costTitle: '成本模拟',
+    costStart: '初始资金',
+    costFinal: '期末价值',
+    costFees: '费用',
+    costFeesHint: '期末的 0.15%',
+    costSlippage: '滑点',
+    costSlippageHint: '期末的 0.5%',
+    costNote: '模拟：初始资金按近一年收益增长，再按期末价值扣费用与滑点。',
   },
   en: {
     back: 'Back',
@@ -180,6 +206,15 @@ export const detailStrings = {
     stepDone: 'Done',
     runningNote: 'Running',
     updatedNote: 'Results updated',
+    oosFrom: 'Out-of-sample from {date}',
+    costTitle: 'Simulated costs',
+    costStart: 'Starting capital',
+    costFinal: 'Final value',
+    costFees: 'Fees',
+    costFeesHint: '0.15% of final',
+    costSlippage: 'Slippage',
+    costSlippageHint: '0.5% of final',
+    costNote: 'Simulated: starting capital grown by the last-year return, then fees and slippage taken from the final value.',
   },
   ar: {
     back: 'رجوع',
@@ -213,5 +248,14 @@ export const detailStrings = {
     stepDone: 'تم',
     runningNote: 'جارٍ التشغيل',
     updatedNote: 'تم تحديث النتائج',
+    oosFrom: 'خارج العينة من {date}',
+    costTitle: 'تكاليف محاكاة',
+    costStart: 'رأس المال الابتدائي',
+    costFinal: 'القيمة النهائية',
+    costFees: 'الرسوم',
+    costFeesHint: '0.15% من القيمة النهائية',
+    costSlippage: 'الانزلاق السعري',
+    costSlippageHint: '0.5% من القيمة النهائية',
+    costNote: 'محاكاة: ينمو رأس المال الابتدائي بعائد آخر سنة، ثم تُخصم الرسوم والانزلاق من القيمة النهائية.',
   },
 } satisfies Dict<DetailStrings>

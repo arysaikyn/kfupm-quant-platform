@@ -82,6 +82,7 @@ function Sparkline({ id, series, up }: { id: string; series: number[]; up: boole
 export default function StrategyPage() {
   const { lang } = useI18n()
   const s = useStrings(listStrings)
+  /** Rules live in the detail dictionary; the card summarises their first two headings. */
   const [sort, setSort] = useState<Sort>('recent')
   /** null is the "All" chip. */
   const [tag, setTag] = useState<string | null>(null)
@@ -102,6 +103,8 @@ export default function StrategyPage() {
         ),
     [sort, tag],
   )
+
+  /** One sentence, read straight off the rule list the detail screen runs. */
 
   return (
     <Screen
@@ -194,19 +197,34 @@ export default function StrategyPage() {
                         <h2 className="truncate text-[16px] leading-snug font-semibold">
                           {st.name[lang]}
                         </h2>
+                        {/* Composer's card reads intent → rule → metrics. The
+                            description already is the rule in one sentence, so
+                            it carries the accent and is not repeated below. */}
                         <p
-                          className="mt-1 line-clamp-2 text-[13px] leading-snug"
-                          style={{ color: 'var(--color-muted)' }}
+                          className="mt-1 line-clamp-2 text-[12.5px] leading-snug"
+                          style={{ color: 'var(--color-accent)' }}
                         >
                           {st.description[lang]}
                         </p>
                       </div>
                       <div className="shrink-0 text-end">
-                        <div
-                          dir="ltr"
-                          className={`num text-[22px] leading-none font-semibold ${tone}`}
-                        >
-                          {fmtPct(ret, lang, 1)}
+                        <div className="flex items-center justify-end gap-1.5">
+                          <span
+                            dir="ltr"
+                            className={`num text-[22px] leading-none font-semibold ${tone}`}
+                          >
+                            {fmtPct(ret, lang, 1)}
+                          </span>
+                          <abbr
+                            title={s('oosHint')}
+                            className="num no-underline rounded-full px-1.5 py-[3px] text-[9px] leading-none font-medium"
+                            style={{
+                              color: 'var(--color-accent)',
+                              background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)',
+                            }}
+                          >
+                            {s('oos')}
+                          </abbr>
                         </div>
                         <div
                           className="mt-1.5 text-[11px] leading-none"

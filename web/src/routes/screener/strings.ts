@@ -20,6 +20,8 @@ export type ScreenerStrings = {
   opGt: string
   ruleLimit: string
   noRules: string
+  filterChipsLabel: string
+  removeFilterAria: string
   turnoverHint: string
   resultsTitle: string
   resultsMatch: string
@@ -61,6 +63,8 @@ export const screenerStrings = {
     opGt: '大于',
     ruleLimit: '最多 5 条',
     noRules: '还没有条件，先看全部标的',
+    filterChipsLabel: '生效条件',
+    removeFilterAria: '移除 {name}',
     turnoverHint: '换手由走势长度估算',
     resultsTitle: '筛选结果',
     resultsMatch: '命中',
@@ -100,6 +104,8 @@ export const screenerStrings = {
     opGt: 'Greater than',
     ruleLimit: '5 max',
     noRules: 'No conditions yet — showing every name',
+    filterChipsLabel: 'Active filters',
+    removeFilterAria: 'Remove {name}',
     turnoverHint: 'Turnover is estimated from the sparkline',
     resultsTitle: 'Results',
     resultsMatch: 'matched',
@@ -139,6 +145,8 @@ export const screenerStrings = {
     opGt: 'أكبر من',
     ruleLimit: '5 كحد أقصى',
     noRules: 'لا شروط بعد — تُعرض كل الأسماء',
+    filterChipsLabel: 'عوامل التصفية النشطة',
+    removeFilterAria: 'إزالة {name}',
     turnoverHint: 'الدوران مقدَّر من طول خط الحركة',
     resultsTitle: 'النتائج',
     resultsMatch: 'مطابق',

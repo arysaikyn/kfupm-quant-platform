@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import type { Lang } from '../../i18n'
 import { quotes } from '../../data/mock'
 import {
   MAX_RULES,
@@ -13,6 +14,7 @@ import {
   createId,
   defaultRules,
   loadScreens,
+  metric,
   newRule,
   presetRules,
   ruleValue,
@@ -28,22 +30,59 @@ const PRESET_KEY: Record<PresetId, keyof ScreenerStrings> = {
   calm: 'presetCalm',
 }
 
-const FIELD_OPTIONS: readonly { value: Field; key: keyof ScreenerStrings }[] = [
-  { value: 'change', key: 'fieldChange' },
-  { value: 'price', key: 'fieldPrice' },
-  { value: 'turnover', key: 'fieldTurnover' },
-]
+const FIELD_ORDER: readonly Field[] = ['change', 'price', 'turnover']
+
+const FIELD_KEY: Record<Field, keyof ScreenerStrings> = {
+  change: 'fieldChange',
+  price: 'fieldPrice',
+  turnover: 'fieldTurnover',
+}
 
 const OP_OPTIONS: readonly { value: Op; key: 'opLt' | 'opGt' }[] = [
   { value: 'lt', key: 'opLt' },
   { value: 'gt', key: 'opGt' },
 ]
 
+const OP_SYMBOL: Record<Op, string> = { lt: '<', gt: '>' }
+
 const FIELD_STEP: Record<Field, number> = { change: 0.1, price: 0.01, turnover: 0.5 }
 
 const FIELD_UNIT: Record<Field, string | null> = { change: '%', price: null, turnover: '%' }
 
+/** Input precision per field; chips and row reasons print the same digits. */
+const FIELD_DIGITS: Record<Field, number> = { change: 2, price: 2, turnover: 1 }
+
+type SortKey = 'change' | 'price' | 'name'
+type SortDir = 'desc' | 'asc'
+
+const SORT_COLUMNS: readonly {
+  key: SortKey
+  label: 'nameHeader' | 'priceHeader' | 'changeHeader'
+}[] = [
+  { key: 'name', label: 'nameHeader' },
+  { key: 'price', label: 'priceHeader' },
+  { key: 'change', label: 'changeHeader' },
+]
+
 const fillName = (template: string, name: string) => template.replace('{name}', name)
+
+/**
+ * One rule written out. Without `current` it reads as the chip ("涨跌 > 0%");
+ * with it, as the reason a row cleared ("涨跌 0.60% > 0%").
+ */
+function ruleText(
+  rule: Rule,
+  threshold: number,
+  label: string,
+  lang: Lang,
+  current?: number,
+) {
+  const unit = FIELD_UNIT[rule.field] ?? ''
+  const digits = FIELD_DIGITS[rule.field]
+  const limit = fmtNum(threshold, lang, digits, unit)
+  if (current === undefined) return `${label} ${OP_SYMBOL[rule.op]} ${limit}`
+  return `${label} ${fmtNum(current, lang, digits, unit)} ${OP_SYMBOL[rule.op]} ${limit}`
+}
 
 function IconChevron() {
   return (
@@ -107,6 +146,8 @@ export default function ScreenerPage() {
   const [screens, setScreens] = useState<SavedScreen[]>(loadScreens)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [status, setStatus] = useState('')
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'change', dir: 'desc' })
+  const rowRefs = useRef<Record<string, HTMLLIElement | null>>({})
 
   useEffect(() => {
     if (status === '') return
@@ -114,7 +155,25 @@ export default function ScreenerPage() {
     return () => window.clearTimeout(timer)
   }, [status])
 
-  const results = useMemo(() => applyRules(quotes, rules), [rules])
+  /** Rules that actually filter — a blank value is not part of the screen yet. */
+  const activeRules = useMemo(
+    () =>
+      rules.flatMap((rule) => {
+        const value = ruleValue(rule)
+        return value === null ? [] : [{ rule, value }]
+      }),
+    [rules],
+  )
+
+  const results = useMemo(() => {
+    const filtered = applyRules(quotes, rules)
+    const dir = sort.dir === 'asc' ? 1 : -1
+    return [...filtered].sort((a, b) => {
+      if (sort.key === 'name') return a.name[lang].localeCompare(b.name[lang]) * dir
+      const delta = sort.key === 'price' ? a.price - b.price : a.change - b.change
+      return delta === 0 ? a.symbol.localeCompare(b.symbol) : delta * dir
+    })
+  }, [rules, sort, lang])
 
   const kicker = {
     color: 'var(--color-muted)',
@@ -134,6 +193,22 @@ export default function ScreenerPage() {
   function removeRule(id: string) {
     setActiveId(null)
     setRules((prev) => prev.filter((rule) => rule.id !== id))
+  }
+
+  function toggleSort(key: SortKey) {
+    setSort((prev) =>
+      prev.key === key
+        ? { key, dir: prev.dir === 'desc' ? 'asc' : 'desc' }
+        : { key, dir: 'desc' },
+    )
+  }
+
+  /** Chip body: bring the rule row into view and put the caret on its field. */
+  function focusRule(id: string) {
+    const row = rowRefs.current[id]
+    if (!row) return
+    row.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    row.querySelector('select')?.focus()
   }
 
   function applyPreset(id: PresetId) {
@@ -248,6 +323,45 @@ export default function ScreenerPage() {
           </span>
         </div>
 
+        {activeRules.length > 0 && (
+          <ul
+            aria-label={s('filterChipsLabel')}
+            className="mt-1.5 flex gap-1.5 overflow-x-auto pb-0.5"
+          >
+            {activeRules.map(({ rule, value }) => {
+              const text = ruleText(rule, value, s(FIELD_KEY[rule.field]), lang)
+              return (
+                <li
+                  key={rule.id}
+                  className="flex shrink-0 items-center rounded-full"
+                  style={{
+                    border: '1px solid var(--color-line)',
+                    background: 'var(--color-surface)',
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => focusRule(rule.id)}
+                    className="flex h-11 items-center whitespace-nowrap rounded-s-full ps-3.5 pe-2 text-[11px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    style={{ color: 'var(--color-fg)' }}
+                  >
+                    {text}
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={fillName(s('removeFilterAria'), text)}
+                    onClick={() => removeRule(rule.id)}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-e-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    style={{ color: 'var(--color-muted)' }}
+                  >
+                    <IconX size={12} />
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+
         <div className="panel mt-2 p-3">
           {rules.length === 0 ? (
             <p className="px-1 py-3 text-center text-[12px]" style={{ color: 'var(--color-muted)' }}>
@@ -260,6 +374,9 @@ export default function ScreenerPage() {
                 return (
                   <li
                     key={rule.id}
+                    ref={(node) => {
+                      rowRefs.current[rule.id] = node
+                    }}
                     className="rounded-xl p-2"
                     style={{
                       border: '1px solid var(--color-line)',
@@ -281,9 +398,9 @@ export default function ScreenerPage() {
                             color: 'var(--color-fg)',
                           }}
                         >
-                          {FIELD_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {s(option.key)}
+                          {FIELD_ORDER.map((field) => (
+                            <option key={field} value={field}>
+                              {s(FIELD_KEY[field])}
                             </option>
                           ))}
                         </select>
@@ -318,9 +435,7 @@ export default function ScreenerPage() {
                                       }
                                 }
                               >
-                                <span aria-hidden="true">
-                                  {option.value === 'lt' ? '<' : '>'}
-                                </span>
+                                <span aria-hidden="true">{OP_SYMBOL[option.value]}</span>
                               </button>
                             )
                           })}
@@ -425,22 +540,46 @@ export default function ScreenerPage() {
         ) : (
           <div className="panel mt-2 overflow-hidden">
             <div
-              className="grid grid-cols-[minmax(0,1fr)_78px_66px] gap-x-2 border-b px-3.5 py-2"
+              className="grid grid-cols-[minmax(0,1fr)_78px_66px] gap-x-2 border-b px-3.5 py-1"
               style={{ borderColor: 'var(--color-line)' }}
             >
-              <span className="t-kicker" style={kicker}>
-                {s('nameHeader')}
-              </span>
-              <span className="t-kicker text-end" style={kicker}>
-                {s('priceHeader')}
-              </span>
-              <span className="t-kicker text-end" style={kicker}>
-                {s('changeHeader')}
-              </span>
+              {SORT_COLUMNS.map((column) => {
+                const active = sort.key === column.key
+                return (
+                  <button
+                    key={column.key}
+                    type="button"
+                    onClick={() => toggleSort(column.key)}
+                    aria-pressed={active}
+                    className={`t-kicker flex min-h-9 items-center gap-1 transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
+                      column.key === 'name' ? 'justify-start text-start' : 'justify-end text-end'
+                    }`}
+                    style={kicker}
+                  >
+                    {s(column.label)}
+                    <span
+                      aria-hidden="true"
+                      className="text-[8px] leading-none"
+                      style={{ opacity: active ? 1 : 0 }}
+                    >
+                      {sort.dir === 'desc' ? '▼' : '▲'}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
             <ul>
               {results.map((quote, index) => {
                 const up = quote.change >= 0
+                // Every row cleared every active rule, so the reasons are just
+                // those rules rewritten with the quote's own value.
+                const reasons = activeRules.map(({ rule, value }) =>
+                  ruleText(rule, value, s(FIELD_KEY[rule.field]), lang, metric(quote, rule.field)),
+                )
+                const kept = reasons.slice(0, 2)
+                const extra = reasons.length - kept.length
+                const reason =
+                  extra > 0 ? `${kept.join(' · ')} +${fmtNum(extra, lang, 0)}` : kept.join(' · ')
                 return (
                   <li
                     key={quote.symbol}
@@ -455,27 +594,37 @@ export default function ScreenerPage() {
                         lang,
                         2,
                       )} · ${fmtPct(quote.change, lang)}`}
-                      className="grid min-h-11 grid-cols-[minmax(0,1fr)_78px_66px] items-center gap-x-2 px-3.5 py-2.5 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                      className="block min-h-11 px-3.5 py-2.5 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                     >
-                      <span className="min-w-0">
-                        <span className="block truncate text-[14px]">{quote.name[lang]}</span>
+                      <span className="grid grid-cols-[minmax(0,1fr)_78px_66px] items-center gap-x-2">
+                        <span className="min-w-0">
+                          <span className="block truncate text-[14px]">{quote.name[lang]}</span>
+                          <span
+                            className="num mt-0.5 block text-[10px] leading-[1.4]"
+                            style={{ color: 'var(--color-muted)' }}
+                          >
+                            {quote.symbol}
+                          </span>
+                        </span>
+                        <span className="num text-end text-[13px] whitespace-nowrap">
+                          {fmtNum(quote.price, lang, 2)}
+                        </span>
                         <span
-                          className="num mt-0.5 block text-[10px] leading-[1.4]"
-                          style={{ color: 'var(--color-muted)' }}
+                          className={`num text-end text-[13px] font-medium whitespace-nowrap ${
+                            up ? 'text-up' : 'text-down'
+                          }`}
                         >
-                          {quote.symbol}
+                          {fmtPct(quote.change, lang)}
                         </span>
                       </span>
-                      <span className="num text-end text-[13px] whitespace-nowrap">
-                        {fmtNum(quote.price, lang, 2)}
-                      </span>
-                      <span
-                        className={`num text-end text-[13px] font-medium whitespace-nowrap ${
-                          up ? 'text-up' : 'text-down'
-                        }`}
-                      >
-                        {fmtPct(quote.change, lang)}
-                      </span>
+                      {reason !== '' && (
+                        <span
+                          className="num mt-1 block truncate text-[10px] leading-[1.4]"
+                          style={{ color: 'var(--color-muted)' }}
+                        >
+                          {reason}
+                        </span>
+                      )}
                     </Link>
                   </li>
                 )

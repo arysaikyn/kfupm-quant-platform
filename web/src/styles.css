@@ -138,6 +138,9 @@ body,
 
 html {
   scroll-behavior: smooth;
+  /* Reserve the scrollbar gutter always: the fixed bar is centred on the
+     viewport, so a page that fits would otherwise shift it sideways. */
+  scrollbar-gutter: stable;
 }
 
 /* Kill the tap flash and the double-tap zoom delay; both read as "cheap". */

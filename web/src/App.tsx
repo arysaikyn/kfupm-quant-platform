@@ -56,6 +56,18 @@ function Shell() {
     window.scrollTo(0, 0)
   }, [pathname])
 
+  // A short opacity ramp so tabs read as one surface changing, not two pages.
+  // Opacity only: no transform, no snapshot, nothing that relayouts the bar.
+  useEffect(() => {
+    const el = screenRef.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const anim = el.animate([{ opacity: 0.35 }, { opacity: 1 }], {
+      duration: 140,
+      easing: 'cubic-bezier(0.241, 0.969, 0.635, 0.997)',
+    })
+    return () => anim.cancel()
+  }, [pathname])
+
   return (
     <>
       <div ref={screenRef}>

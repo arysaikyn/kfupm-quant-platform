@@ -16,6 +16,7 @@ type Strings = {
   langEnEnglish: string
   langAr: string
   langArEnglish: string
+  glossary: string
   version: string
   journalTitle: string
   journalTotal: string
@@ -42,6 +43,7 @@ export const strings = {
     langEnEnglish: 'English',
     langAr: 'العربية',
     langArEnglish: 'Arabic',
+    glossary: '术语',
     version: '版本',
     journalTitle: '交易记录',
     journalTotal: '总笔数',
@@ -66,6 +68,7 @@ export const strings = {
     langEnEnglish: 'English',
     langAr: 'العربية',
     langArEnglish: 'Arabic',
+    glossary: 'Glossary',
     version: 'Version',
     journalTitle: 'Trade log',
     journalTotal: 'Entries',
@@ -90,6 +93,7 @@ export const strings = {
     langEnEnglish: 'English',
     langAr: 'العربية',
     langArEnglish: 'Arabic',
+    glossary: 'المصطلحات',
     version: 'الإصدار',
     journalTitle: 'سجل التداول',
     journalTotal: 'عدد الصفقات',

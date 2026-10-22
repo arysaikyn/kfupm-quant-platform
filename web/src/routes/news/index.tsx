@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { news } from '../../data/mock'
@@ -155,7 +156,15 @@ export default function NewsPage() {
   }, [now, source])
 
   return (
-    <Screen title={s('title')} subtitle={s('lead')}>
+    <Screen
+      title={s('title')}
+      subtitle={s('lead')}
+      action={
+        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
+          {s('calendar')}
+        </Link>
+      }
+    >
       {sources.length > 1 && (
         <div
           role="group"

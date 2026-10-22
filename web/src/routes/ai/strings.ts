@@ -30,6 +30,7 @@ export type AiStrings = {
   saveStrategy: string
   savedStrategy: string
   sources: string
+  runs: string
   disclaimer: string
   close: string
   presetValue: string
@@ -74,6 +75,7 @@ export const strings = {
     saveStrategy: '保存为策略',
     savedStrategy: '已保存',
     sources: '来源',
+    runs: '历史',
     disclaimer: '演示数据，不构成投资建议。',
     close: '关闭',
     presetValue: '低估值',
@@ -116,6 +118,7 @@ export const strings = {
     saveStrategy: 'Save as strategy',
     savedStrategy: 'Saved',
     sources: 'Sources',
+    runs: 'History',
     disclaimer: 'Demo data. Not investment advice.',
     close: 'Close',
     presetValue: 'Value',
@@ -158,6 +161,7 @@ export const strings = {
     saveStrategy: 'حفظ كخطة',
     savedStrategy: 'تم الحفظ',
     sources: 'المصادر',
+    runs: 'السجل',
     disclaimer: 'بيانات عرض، وليست نصيحة استثمارية.',
     close: 'إغلاق',
     presetValue: 'قيمة منخفضة',

@@ -278,6 +278,24 @@ export default function MarketPage() {
         </div>
       )}
 
+      {/* Ways into the deeper screens, kept to one thumb-height row */}
+      <nav className="mt-3 grid grid-cols-4 gap-2" aria-label={s('moreScreens')}>
+        {[
+          { to: '/screener', label: s('goScreener') },
+          { to: '/review', label: s('goReview') },
+          { to: '/alerts', label: s('goAlerts') },
+          { to: '/compare', label: s('goCompare') },
+        ].map((item) => (
+          <Link
+            key={item.to}
+            to={item.to}
+            className="panel flex min-h-[44px] items-center justify-center px-1 text-center text-[11px] leading-tight"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+
       {/* Index masthead: one hero figure, then the rest as a compact row */}
       <div className="mt-5">
         {indices[0] && (

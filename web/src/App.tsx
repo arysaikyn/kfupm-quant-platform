@@ -9,6 +9,13 @@ import AiPage from './routes/ai'
 import StrategyPage from './routes/strategy'
 import StrategyDetail from './routes/strategy/StrategyDetail'
 import MePage from './routes/me'
+import ScreenerPage from './routes/screener'
+import AlertsPage from './routes/alerts'
+import ReviewPage from './routes/review'
+import CalendarPage from './routes/calendar'
+import ComparePage from './routes/compare'
+import RunsPage from './routes/runs'
+import LearnPage from './routes/learn'
 
 /**
  * One persistent boundary: the shell never remounts, only its children swap.
@@ -44,6 +51,13 @@ export default function App() {
         <Route path="/strategy" element={<StrategyPage />} />
         <Route path="/strategy/:id" element={<StrategyDetail />} />
         <Route path="/me" element={<MePage />} />
+        <Route path="/screener" element={<ScreenerPage />} />
+        <Route path="/alerts" element={<AlertsPage />} />
+        <Route path="/review" element={<ReviewPage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/compare" element={<ComparePage />} />
+        <Route path="/runs" element={<RunsPage />} />
+        <Route path="/learn" element={<LearnPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

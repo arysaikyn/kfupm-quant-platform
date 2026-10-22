@@ -15,6 +15,7 @@ export const strings = {
     allSources: '全部',
     filterLabel: '按来源筛选',
     watchMark: '自选',
+    calendar: '日历',
     watchAdd: '加入自选',
     watchRemove: '移出自选',
     whyWatched: '其中自选 {count}，今天{dir}。',
@@ -44,6 +45,7 @@ export const strings = {
     allSources: 'All',
     filterLabel: 'Filter by source',
     watchMark: 'Watchlist',
+    calendar: 'Calendar',
     watchAdd: 'Add to watchlist',
     watchRemove: 'Remove from watchlist',
     whyWatched: '{count} on your watchlist —{dir} today.',
@@ -73,6 +75,7 @@ export const strings = {
     allSources: 'الكل',
     filterLabel: 'تصفية حسب المصدر',
     watchMark: 'قائمتي',
+    calendar: 'التقويم',
     watchAdd: 'أضف إلى قائمتي',
     watchRemove: 'أزل من قائمتي',
     whyWatched: 'في قائمتك {count} —{dir} اليوم.',
@@ -95,6 +98,7 @@ export const strings = {
   yesterday: string
   related: string
   askAi: string
+  calendar: string
   notFound: string
   empty: string
   emptySource: string

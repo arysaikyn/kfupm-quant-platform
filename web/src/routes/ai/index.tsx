@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
@@ -216,7 +217,15 @@ export default function AiPage() {
 
   return (
     <>
-      <Screen title={t('tab.ai')} subtitle={s('promise')}>
+      <Screen
+      title={t('tab.ai')}
+      subtitle={s('promise')}
+      action={
+        <Link to="/runs" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
+          {s('runs')}
+        </Link>
+      }
+    >
         {/* context tray */}
         <div className="flex flex-wrap items-center gap-2 pt-1">
           {chips.map((c) => {

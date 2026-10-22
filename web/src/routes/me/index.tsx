@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
 import { useTheme } from '../../theme'
@@ -58,7 +59,14 @@ export default function MePage() {
   const notional = journal.reduce((sum, e) => sum + e.qty * e.price, 0)
 
   return (
-    <Screen title={s('title')}>
+    <Screen
+      title={s('title')}
+      action={
+        <Link to="/learn" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
+          {s('glossary')}
+        </Link>
+      }
+    >
       <section className="pt-2">
         {signedIn ? (
           <div className="flex items-center gap-4">

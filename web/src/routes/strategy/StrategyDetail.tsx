@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
@@ -52,6 +52,7 @@ const FAIL: Record<Lang, string> = { zh: '未过', en: 'Fail', ar: 'غير مط�
 type LabCopy = {
   rulesHint: string
   dirty: string
+  fullReport: string
   save: string
   saveHint: string
   decrease: string
@@ -87,6 +88,7 @@ const LAB: Record<Lang, LabCopy> = {
   zh: {
     rulesHint: '规则固定，按顺序执行；阈值可微调并保存。',
     dirty: '未保存的修改',
+    fullReport: '查看完整研究报告',
     save: '保存阈值',
     saveHint: '只存在这台设备，刷新后沿用。',
     decrease: '降低阈值',
@@ -119,6 +121,7 @@ const LAB: Record<Lang, LabCopy> = {
   en: {
     rulesHint: 'Rules are fixed and applied in order; thresholds can be tuned and saved.',
     dirty: 'Unsaved changes',
+    fullReport: 'Open the full report',
     save: 'Save thresholds',
     saveHint: 'Stored on this device only; restored after a reload.',
     decrease: 'Decrease threshold',
@@ -151,6 +154,7 @@ const LAB: Record<Lang, LabCopy> = {
   ar: {
     rulesHint: 'القواعد ثابتة وتُطبَّق بالترتيب؛ ويمكن ضبط الحدود وحفظها.',
     dirty: 'تعديلات غير محفوظة',
+    fullReport: 'افتح التقرير الكامل',
     save: 'حفظ الحدود',
     saveHint: 'تُحفظ على هذا الجهاز فقط وتعود بعد إعادة التحميل.',
     decrease: 'خفض الحد',
@@ -647,7 +651,17 @@ export default function StrategyDetail() {
           </div>
         </section>
 
-        <section className="panel p-4">
+        
+        <Link
+          to={`/report/${st.id}`}
+          className="panel flex min-h-[52px] items-center justify-between gap-3 px-4 text-[13px]"
+        >
+          <span>{s('fullReport')}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </Link>
+<section className="panel p-4">
           <h2 className="text-[13px] font-medium">{s('chartTitle')}</h2>
           <div className="mt-2" dir="ltr">
             <EquityChart lang={lang} />

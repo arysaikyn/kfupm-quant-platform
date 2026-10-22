@@ -17,6 +17,10 @@ type Strings = {
   langAr: string
   langArEnglish: string
   glossary: string
+  moreTitle: string
+  moreWatchlists: string
+  moreRisk: string
+  moreSettings: string
   version: string
   journalTitle: string
   journalTotal: string
@@ -44,6 +48,10 @@ export const strings = {
     langAr: 'العربية',
     langArEnglish: 'Arabic',
     glossary: '术语',
+    moreTitle: '更多',
+    moreWatchlists: '自选分组',
+    moreRisk: '组合风险',
+    moreSettings: '设置',
     version: '版本',
     journalTitle: '交易记录',
     journalTotal: '总笔数',
@@ -69,6 +77,10 @@ export const strings = {
     langAr: 'العربية',
     langArEnglish: 'Arabic',
     glossary: 'Glossary',
+    moreTitle: 'More',
+    moreWatchlists: 'Watchlist groups',
+    moreRisk: 'Portfolio risk',
+    moreSettings: 'Settings',
     version: 'Version',
     journalTitle: 'Trade log',
     journalTotal: 'Entries',
@@ -94,6 +106,10 @@ export const strings = {
     langAr: 'العربية',
     langArEnglish: 'Arabic',
     glossary: 'المصطلحات',
+    moreTitle: 'المزيد',
+    moreWatchlists: 'مجموعات المتابعة',
+    moreRisk: 'مخاطر المحفظة',
+    moreSettings: 'الإعدادات',
     version: 'الإصدار',
     journalTitle: 'سجل التداول',
     journalTotal: 'عدد الصفقات',

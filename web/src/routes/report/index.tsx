@@ -1,0 +1,438 @@
+import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { Screen } from '../../components/Screen'
+import { ErrorState } from '../../components/states'
+import { equity, strategies } from '../../data/mock'
+import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import type { Lang } from '../../i18n'
+import { strings } from './strings'
+import type { ReportStrings } from './strings'
+
+/** The mock ships one equity curve, and its label names this strategy. */
+const EQUITY_STRATEGY = 'low-debt-value'
+
+const SECTION_IDS = ['conclusion', 'basis', 'risk', 'wrong', 'next'] as const
+type SectionId = (typeof SECTION_IDS)[number]
+
+const NAV_KEYS: Record<SectionId, keyof ReportStrings> = {
+  conclusion: 'navConclusion',
+  basis: 'navBasis',
+  risk: 'navRisk',
+  wrong: 'navWrong',
+  next: 'navNext',
+}
+
+const TAG_KEYS: Partial<Record<string, keyof ReportStrings>> = {
+  value: 'tagValue',
+  sharia: 'tagSharia',
+  income: 'tagIncome',
+  momentum: 'tagMomentum',
+}
+
+function fill(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match)
+}
+
+function lastValue(series: number[]): number | null {
+  const value = series.at(-1)
+  return value !== undefined && Number.isFinite(value) ? value : null
+}
+
+/** Same display convention as the strategy screen; Arabic keeps Latin digits. */
+function fmtDate(iso: string, lang: Lang): string {
+  const d = new Date(`${iso}T00:00:00`)
+  if (Number.isNaN(d.getTime())) return iso
+  return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-u-nu-latn-ca-gregory' : lang, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(d)
+}
+
+function fmtMoment(date: Date, lang: Lang): string {
+  return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-u-nu-latn-ca-gregory' : lang, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
+
+function BackIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="rtl:rotate-180"
+      aria-hidden="true"
+    >
+      <path d="M15 5l-7 7 7 7" />
+    </svg>
+  )
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="shrink-0 text-muted rtl:rotate-180"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14" />
+      <path d="M13 6l6 6-6 6" />
+    </svg>
+  )
+}
+
+function BackLink({ label }: { label: string }) {
+  return (
+    <Link
+      to="/strategy"
+      aria-label={label}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/5 active:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      style={{ border: '1px solid var(--color-line)' }}
+    >
+      <BackIcon />
+    </Link>
+  )
+}
+
+export default function ReportPage() {
+  const { id } = useParams()
+  const { lang } = useI18n()
+  const s = useStrings(strings)
+
+  // The receipt time is fixed at mount; it never chases the clock.
+  const [generatedAt] = useState(() => new Date())
+  const [active, setActive] = useState<SectionId>('conclusion')
+
+  useEffect(() => {
+    if (!window.location.hash) window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [id])
+
+  useEffect(() => {
+    const sync = () => {
+      const doc = document.documentElement
+      if (
+        doc.scrollHeight > window.innerHeight + 8 &&
+        window.innerHeight + window.scrollY >= doc.scrollHeight - 8
+      ) {
+        setActive('next')
+        return
+      }
+      let current: SectionId = 'conclusion'
+      for (const sectionId of SECTION_IDS) {
+        const node = document.getElementById(sectionId)
+        if (node && node.getBoundingClientRect().top <= 140) current = sectionId
+      }
+      setActive(current)
+    }
+
+    sync()
+    window.addEventListener('scroll', sync, { passive: true })
+    window.addEventListener('resize', sync)
+    return () => {
+      window.removeEventListener('scroll', sync)
+      window.removeEventListener('resize', sync)
+    }
+  }, [id])
+
+  const st = strategies.find((x) => x.id === id)
+
+  if (!st) {
+    return (
+      <Screen title={s('notFound')} leading={<BackLink label={s('back')} />}>
+        <ErrorState message={s('notFoundHint')} />
+        <div className="flex justify-center pb-8">
+          <Link
+            to="/strategy"
+            className="flex min-h-11 items-center justify-center rounded-full px-5 text-[13px] font-medium transition-colors hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            style={{ border: '1px solid var(--color-line)' }}
+          >
+            {s('notFoundAction')}
+          </Link>
+        </div>
+      </Screen>
+    )
+  }
+
+  // Only one strategy in the mock has a curve; the rest must say so in words.
+  const curve = st.id === EQUITY_STRATEGY ? equity : null
+  const withEnd = curve ? lastValue(curve.withCost) : null
+  const withoutEnd = curve ? lastValue(curve.withoutCost) : null
+  const benchEnd = curve ? lastValue(curve.bench) : null
+  const ends =
+    withEnd !== null && withoutEnd !== null && benchEnd !== null
+      ? { with: withEnd, without: withoutEnd, bench: benchEnd }
+      : null
+
+  const excess = ends ? ends.with - ends.bench : null
+  const costDrag = ends ? Math.abs(ends.without - ends.with) * 100 : null
+  // The equity label names the strategy and its years; only the years read well in a sentence.
+  const span = equity.label[lang].match(/\d{4}\s*[-–]\s*\d{4}/)?.[0] ?? equity.label[lang]
+
+  const conclusion = ends
+    ? fill(s('conclusionWithEquity'), {
+        name: st.name[lang],
+        span,
+        pct: fmtPct(st.lastReturn, lang),
+      })
+    : fill(s('conclusionNoEquity'), {
+        name: st.name[lang],
+        rules: `${fmtNum(st.rules, lang, 0)} ${s('rulesUnit')}`,
+        pct: fmtPct(st.lastReturn, lang),
+      })
+
+  const evidence: { label: string; value: string; note: string; tone?: string }[] = [
+    {
+      label: s('basisRulesLabel'),
+      value: `${fmtNum(st.rules, lang, 0)} ${s('rulesUnit')}`,
+      note: s('basisRulesNote'),
+    },
+    {
+      label: s('basisReturnLabel'),
+      value: fmtPct(st.lastReturn, lang),
+      note: s('basisReturnNote'),
+      tone:
+        st.lastReturn > 0 ? 'text-up' : st.lastReturn < 0 ? 'text-down' : 'text-muted',
+    },
+    ends && excess !== null
+      ? {
+          label: s('basisExcessLabel'),
+          value: fmtPct(excess, lang),
+          note: fill(s('basisExcessNote'), { span }),
+          tone: excess > 0 ? 'text-up' : excess < 0 ? 'text-down' : 'text-muted',
+        }
+      : {
+          label: s('basisMissingLabel'),
+          value: s('basisMissingValue'),
+          note: s('basisMissingNote'),
+        },
+  ]
+
+  const risks =
+    ends && costDrag !== null
+      ? [
+          {
+            title: s('riskCostTitle'),
+            value: `${fmtNum(costDrag, lang, 2)} ${s('ppUnit')}`,
+            body: fill(s('riskCostBody'), {
+              pp: fmtNum(costDrag, lang, 2),
+            }),
+          },
+          {
+            title: s('riskSingleTitle'),
+            value: fmtPct(st.lastReturn, lang),
+            body: fill(s('riskSingleBody'), { pct: fmtPct(st.lastReturn, lang) }),
+          },
+        ]
+      : [
+          {
+            title: s('riskNoCurveTitle'),
+            value: s('riskNoCurveValue'),
+            body: s('riskNoCurveBody'),
+          },
+          {
+            title: s('riskSingleTitle'),
+            value: fmtPct(st.lastReturn, lang),
+            body: fill(s('riskSingleBody'), { pct: fmtPct(st.lastReturn, lang) }),
+          },
+        ]
+
+  return (
+    <main className="screen-pad mx-auto min-h-full w-full max-w-[920px] px-4">
+      <header className="pt-5">
+        <div className="flex items-center justify-between gap-3">
+          <BackLink label={s('back')} />
+          <span className="t-kicker text-muted">{s('kicker')}</span>
+        </div>
+
+        <div className="mt-8">
+          <p className="t-kicker text-accent">
+            <span dir="ltr">{st.id}</span>
+          </p>
+          <h1 className="t-display mt-2.5 text-[32px] leading-[1.1] font-semibold sm:text-[38px]">
+            {st.name[lang]}
+          </h1>
+          <p className="mt-3 max-w-[560px] text-[14px] leading-relaxed text-muted">
+            {st.description[lang]}
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-muted">
+            <span>
+              {s('metaUpdated')} {fmtDate(st.updated, lang)}
+            </span>
+            <span aria-hidden="true">·</span>
+            <span>
+              {fmtNum(st.rules, lang, 0)} {s('rulesUnit')}
+            </span>
+          </div>
+          {st.tags.length > 0 && (
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              {st.tags.map((tag) => {
+                const key = TAG_KEYS[tag]
+                if (!key) return null
+                return (
+                  <li
+                    key={tag}
+                    className="rounded-full border border-line px-2.5 py-1 text-[10px] leading-none text-muted"
+                  >
+                    {s(key)}
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+      </header>
+
+      <div className="mt-9 sm:grid sm:grid-cols-[168px_minmax(0,1fr)] sm:gap-8 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-12">
+        <aside className="hidden sm:block">
+          <nav aria-label={s('navLabel')} className="sticky top-6">
+            <p className="t-kicker ps-3 text-muted">{s('navLabel')}</p>
+            <ul className="mt-2">
+              {SECTION_IDS.map((sectionId, index) => {
+                const on = active === sectionId
+                return (
+                  <li key={sectionId}>
+                    <a
+                      href={`#${sectionId}`}
+                      onClick={() => setActive(sectionId)}
+                      aria-current={on ? 'location' : undefined}
+                      className={`flex min-h-11 items-center gap-2.5 border-s-2 ps-3 text-[12px] leading-snug transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                        on
+                          ? 'border-accent font-medium text-fg'
+                          : 'border-transparent text-muted hover:text-fg'
+                      }`}
+                    >
+                      <span className={`num text-[10px] ${on ? 'text-accent' : 'text-muted'}`}>
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span>{s(NAV_KEYS[sectionId])}</span>
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
+          </nav>
+        </aside>
+
+        <article className="min-w-0 max-w-[640px]">
+          <section id="conclusion" className="scroll-mt-6 border-t border-line pt-7">
+            <h2 className="t-kicker text-muted">{s('conclusionLabel')}</h2>
+            <p className="mt-4 text-[20px] leading-[1.5] font-semibold tracking-[-0.01em] sm:text-[22px]">
+              {conclusion}
+            </p>
+          </section>
+
+          <section id="basis" className="mt-10 scroll-mt-6 border-t border-line pt-7">
+            <h2 className="t-kicker text-muted">{s('basisLabel')}</h2>
+            <p className="mt-2 text-[12px] leading-relaxed text-muted">{s('basisIntro')}</p>
+            <ol className="mt-5">
+              {evidence.map((row, index) => (
+                <li
+                  key={row.label}
+                  className="border-t border-line py-4 first:border-t-0 first:pt-0"
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <div className="flex min-w-0 items-baseline gap-2.5">
+                      <span className="num shrink-0 text-[10px] text-muted">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <p className="min-w-0 text-[13px] leading-snug font-medium">{row.label}</p>
+                    </div>
+                    <span
+                      className={`num shrink-0 text-[14px] leading-snug font-semibold ${
+                        row.tone ?? 'text-fg'
+                      }`}
+                    >
+                      {row.value}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 ps-6 text-[12px] leading-relaxed text-muted">
+                    {row.note}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section id="risk" className="mt-10 scroll-mt-6 border-t border-line pt-7">
+            <h2 className="t-kicker text-muted">{s('riskLabel')}</h2>
+            <ul className="panel mt-4 divide-y divide-line overflow-hidden">
+              {risks.map((row) => (
+                <li key={row.title} className="p-4">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="min-w-0 text-[13px] font-medium">{row.title}</p>
+                    <span className="num shrink-0 text-[13px] font-semibold text-fg">
+                      {row.value}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-[12px] leading-relaxed text-muted">{row.body}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section id="wrong" className="mt-10 scroll-mt-6 border-t border-line pt-7">
+            <h2 className="t-kicker text-muted">{s('wrongLabel')}</h2>
+            <p className="mt-4 border-s-2 border-accent ps-4 text-[14px] leading-[1.75]">
+              {ends ? s('wrongWithEquity') : s('wrongNoEquity')}
+            </p>
+          </section>
+
+          <section id="next" className="mt-10 scroll-mt-6 border-t border-line pt-7">
+            <h2 className="t-kicker text-muted">{s('nextLabel')}</h2>
+            <div className="mt-4 grid gap-3">
+              <Link
+                to={`/strategy/${st.id}`}
+                className="panel flex min-h-[72px] items-center gap-3 p-4 transition-colors hover:border-accent active:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] font-medium">{s('nextStrategyTitle')}</p>
+                  <p className="mt-1 text-[12px] leading-relaxed text-muted">
+                    {s('nextStrategyBody')}
+                  </p>
+                </div>
+                <ArrowIcon />
+              </Link>
+
+              <Link
+                to="/ai"
+                className="panel flex min-h-[72px] items-center gap-3 p-4 transition-colors hover:border-accent active:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] font-medium">{s('nextAiTitle')}</p>
+                  <p className="mt-1 text-[12px] leading-relaxed text-muted">
+                    {s('nextAiBody')}
+                  </p>
+                </div>
+                <ArrowIcon />
+              </Link>
+            </div>
+          </section>
+
+          <footer className="mt-12 border-t border-line pt-5">
+            <p className="t-kicker text-muted">
+              {fill(s('footerGenerated'), { time: fmtMoment(generatedAt, lang) })}
+            </p>
+            <p className="mt-2 text-[11px] leading-relaxed text-muted">{s('disclaimer')}</p>
+          </footer>
+        </article>
+      </div>
+    </main>
+  )
+}

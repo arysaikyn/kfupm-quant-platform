@@ -1,21 +1,31 @@
-import { ViewTransition } from 'react'
+import { Suspense, lazy, ViewTransition } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { TabBar } from './components/TabBar'
-import MarketPage from './routes/market'
-import SymbolPage from './routes/market/SymbolPage'
-import NewsPage from './routes/news'
-import NewsDetail from './routes/news/NewsDetail'
-import AiPage from './routes/ai'
-import StrategyPage from './routes/strategy'
-import StrategyDetail from './routes/strategy/StrategyDetail'
-import MePage from './routes/me'
-import ScreenerPage from './routes/screener'
-import AlertsPage from './routes/alerts'
-import ReviewPage from './routes/review'
-import CalendarPage from './routes/calendar'
-import ComparePage from './routes/compare'
-import RunsPage from './routes/runs'
-import LearnPage from './routes/learn'
+import { RouteFallback } from './components/RouteFallback'
+
+// Every screen is its own chunk; the shell and the tab bar stay in the entry.
+const MarketPage = lazy(() => import('./routes/market'))
+const SymbolPage = lazy(() => import('./routes/market/SymbolPage'))
+const NewsPage = lazy(() => import('./routes/news'))
+const NewsDetail = lazy(() => import('./routes/news/NewsDetail'))
+const AiPage = lazy(() => import('./routes/ai'))
+const StrategyPage = lazy(() => import('./routes/strategy'))
+const StrategyDetail = lazy(() => import('./routes/strategy/StrategyDetail'))
+const MePage = lazy(() => import('./routes/me'))
+const ScreenerPage = lazy(() => import('./routes/screener'))
+const AlertsPage = lazy(() => import('./routes/alerts'))
+const ReviewPage = lazy(() => import('./routes/review'))
+const CalendarPage = lazy(() => import('./routes/calendar'))
+const ComparePage = lazy(() => import('./routes/compare'))
+const RunsPage = lazy(() => import('./routes/runs'))
+const LearnPage = lazy(() => import('./routes/learn'))
+const SearchPage = lazy(() => import('./routes/search'))
+const SectorPage = lazy(() => import('./routes/sector'))
+const ReportPage = lazy(() => import('./routes/report'))
+const WatchlistsPage = lazy(() => import('./routes/watchlists'))
+const LeaderboardPage = lazy(() => import('./routes/leaderboard'))
+const RiskPage = lazy(() => import('./routes/risk'))
+const SettingsPage = lazy(() => import('./routes/settings'))
 
 /**
  * One persistent boundary: the shell never remounts, only its children swap.
@@ -26,7 +36,9 @@ function Shell() {
     <>
       <ViewTransition>
         <div style={{ viewTransitionName: 'screen' }}>
-          <Outlet />
+          <Suspense fallback={<RouteFallback />}>
+            <Outlet />
+          </Suspense>
         </div>
       </ViewTransition>
       <div
@@ -58,6 +70,13 @@ export default function App() {
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/runs" element={<RunsPage />} />
         <Route path="/learn" element={<LearnPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/sector/:id" element={<SectorPage />} />
+        <Route path="/report/:id" element={<ReportPage />} />
+        <Route path="/watchlists" element={<WatchlistsPage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/risk" element={<RiskPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

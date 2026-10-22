@@ -3,6 +3,7 @@ import type { Dict } from '../../i18n'
 export type ListStrings = {
   title: string
   subtitle: string
+  leaderboard: string
   sortLabel: string
   sortRecent: string
   sortReturn: string
@@ -21,6 +22,7 @@ export const listStrings = {
   zh: {
     title: '策略库',
     subtitle: '一句话形成的规则，都收在这里',
+  leaderboard: '排行榜',
     sortLabel: '排序方式',
     sortRecent: '最近更新',
     sortReturn: '收益最高',
@@ -37,6 +39,7 @@ export const listStrings = {
   en: {
     title: 'Strategies',
     subtitle: 'Rules you built from one sentence',
+  leaderboard: 'Leaderboard',
     sortLabel: 'Sort by',
     sortRecent: 'Recently updated',
     sortReturn: 'Best return',
@@ -53,6 +56,7 @@ export const listStrings = {
   ar: {
     title: 'خططي',
     subtitle: 'قواعد بنيتها من جملة واحدة',
+    leaderboard: 'المتصدرون',
     sortLabel: 'الترتيب حسب',
     sortRecent: 'الأحدث تحديثًا',
     sortReturn: 'الأعلى عائدًا',
@@ -82,6 +86,7 @@ export type DetailStrings = {
   notFoundHint: string
   rulesTitle: string
   rulesHint: string
+  fullReport: string
   rule1: string
   rule2: string
   rule3: string
@@ -116,6 +121,7 @@ export const detailStrings = {
     notFoundHint: '这个链接可能已经过期',
     rulesTitle: '选股规则',
     rulesHint: '只读，重跑时按顺序执行',
+    fullReport: '查看完整研究报告',
     rule1: '市盈率低于 15',
     rule2: '负债低于资产的三成',
     rule3: '排除银行和保险',
@@ -148,6 +154,7 @@ export const detailStrings = {
     notFoundHint: 'This link may be out of date',
     rulesTitle: 'Stock rules',
     rulesHint: 'Read only. Applied in order on each run.',
+    fullReport: 'Open the full report',
     rule1: 'Price under 15 times earnings',
     rule2: 'Debt under a third of assets',
     rule3: 'Banks and insurers left out',
@@ -180,6 +187,7 @@ export const detailStrings = {
     notFoundHint: 'قد يكون هذا الرابط قديمًا',
     rulesTitle: 'قواعد الاختيار',
     rulesHint: 'للقراءة فقط، وتُطبَّق بالترتيب عند كل تشغيل.',
+    fullReport: 'افتح التقرير الكامل',
     rule1: 'السعر أقل من 15 ضعف الأرباح',
     rule2: 'الدين أقل من ثلث الأصول',
     rule3: 'استبعاد البنوك وشركات التأمين',

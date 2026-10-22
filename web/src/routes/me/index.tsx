@@ -152,6 +152,30 @@ export default function MePage() {
         </div>
       </section>
 
+      <section className="mt-8" aria-labelledby="me-more">
+        <h2 id="me-more" className="px-1 pb-2 text-[12px] font-medium text-muted">
+          {s('moreTitle')}
+        </h2>
+        <div className="panel divide-y divide-line overflow-hidden">
+          {[
+            { to: '/watchlists', label: s('moreWatchlists') },
+            { to: '/risk', label: s('moreRisk') },
+            { to: '/settings', label: s('moreSettings') },
+          ].map((row) => (
+            <Link
+              key={row.to}
+              to={row.to}
+              className="flex min-h-[52px] items-center justify-between gap-3 px-4"
+            >
+              <span className="text-[14px]">{row.label}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <section className="mt-8" aria-labelledby="me-language">
         <h2 id="me-language" className="px-1 pb-2 text-[12px] font-medium text-muted">
           {s('language')}

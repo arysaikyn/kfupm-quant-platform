@@ -231,7 +231,15 @@ export default function StrategyPage() {
   )
 
   return (
-    <Screen title={s('title')} subtitle={s('subtitle')}>
+    <Screen
+      title={s('title')}
+      subtitle={s('subtitle')}
+      action={
+        <Link to="/leaderboard" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
+          {s('leaderboard')}
+        </Link>
+      }
+    >
       <section aria-labelledby="paper-book-title" className="panel mt-2 mb-3 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">

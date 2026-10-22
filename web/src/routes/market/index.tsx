@@ -213,7 +213,15 @@ export default function MarketPage() {
     document.getElementById('ranking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
   return (
-    <Screen title={t('tab.market')} subtitle={s('subtitle')}>
+    <Screen
+      title={t('tab.market')}
+      subtitle={s('subtitle')}
+      action={
+        <Link to="/search" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }} aria-label={s('goSearch')}>
+          {s('goSearch')}
+        </Link>
+      }
+    >
       {/* Market switch — visual only for now. */}
       <div role="group" aria-label={s('markets')} className="mt-1 flex flex-wrap gap-2">
         {[s('mSaudi'), s('mCn'), s('mHk')].map((label, i) => (
@@ -385,6 +393,17 @@ export default function MarketPage() {
           )
         })}
       </div>
+
+      {/* Drill into whichever sector is in focus */}
+      <Link
+        to={`/sector/${sector ?? sectors[0]?.id ?? 'energy'}`}
+        className="panel mt-2 flex min-h-[44px] items-center justify-between gap-3 px-3 text-[12px]"
+      >
+        <span>{s('sectorDetail')}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
+          <path d="M9 6l6 6-6 6" />
+        </svg>
+      </Link>
 
       {/* Ranking */}
       <div className="mt-6 flex items-center justify-between gap-3" id="ranking">

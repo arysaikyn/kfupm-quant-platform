@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Screen } from '../../components/Screen'
-import { useI18n, useStrings } from '../../i18n'
+import { fmtNum, useI18n, useStrings } from '../../i18n'
 import { useTheme } from '../../theme'
 import type { Theme } from '../../theme'
 import type { Lang } from '../../i18n'
+import { removeJournal, useUser } from '../../store/user'
 import { strings } from './strings'
 
 const APP_VERSION = '0.1.0'
@@ -25,14 +26,36 @@ function initialsOf(name: string) {
     .join('')
 }
 
+/** Arabic keeps Western digits, matching fmtNum in src/i18n. */
+const REL_LOCALES: Record<Lang, string> = {
+  zh: 'zh',
+  en: 'en',
+  ar: 'ar-SA-u-nu-latn',
+}
+
+/** "3 minutes ago" / "قبل 3 دقائق" — Intl owns the wording, never hand-built. */
+function relTime(at: number, now: number, lang: Lang): string {
+  const rtf = new Intl.RelativeTimeFormat(REL_LOCALES[lang], { numeric: 'auto' })
+  const minutes = Math.max(0, Math.round((now - at) / 60_000))
+  if (minutes < 1) return rtf.format(0, 'minute')
+  if (minutes < 60) return rtf.format(-minutes, 'minute')
+  const hours = Math.round(minutes / 60)
+  if (hours < 24) return rtf.format(-hours, 'hour')
+  return rtf.format(-Math.round(hours / 24), 'day')
+}
+
 export default function MePage() {
   const { lang, setLang } = useI18n()
   const { theme, setTheme } = useTheme()
+  const { journal } = useUser()
   const s = useStrings(strings)
   // Demo account state only — no real auth in this build.
   const [signedIn, setSignedIn] = useState(true)
 
   const name = s('name')
+  // Store keeps entries newest first; notional is unsigned (qty × price).
+  const [now] = useState(() => Date.now())
+  const notional = journal.reduce((sum, e) => sum + e.qty * e.price, 0)
 
   return (
     <Screen title={s('title')}>
@@ -166,6 +189,87 @@ export default function MePage() {
             )
           })}
         </div>
+      </section>
+
+      <section className="mt-8" aria-labelledby="me-journal">
+        <h2 id="me-journal" className="px-1 pb-2 text-[12px] font-medium text-muted">
+          {s('journalTitle')}
+        </h2>
+
+        <div className="panel grid grid-cols-2 overflow-hidden">
+          <div className="min-w-0 px-4 py-3">
+            <p className="text-[11px] leading-tight text-muted">{s('journalTotal')}</p>
+            <p className="num mt-1 text-[16px] leading-tight font-semibold">
+              {fmtNum(journal.length, lang, 0)}
+            </p>
+          </div>
+          <div
+            className="min-w-0 px-4 py-3"
+            style={{ borderInlineStart: '1px solid var(--color-line)' }}
+          >
+            <p className="text-[11px] leading-tight text-muted">{s('journalNotional')}</p>
+            <p className="num mt-1 text-[16px] leading-tight font-semibold">
+              {fmtNum(notional, lang, 2)}
+            </p>
+          </div>
+        </div>
+
+        {journal.length === 0 ? (
+          <p className="panel mt-2 px-4 py-3.5 text-[12.5px] leading-snug text-muted">
+            {s('journalEmpty')}
+          </p>
+        ) : (
+          <ul className="panel mt-2 divide-y divide-line overflow-hidden">
+            {journal.map((e) => {
+              const isBuy = e.side === 'buy'
+              const tone = isBuy ? 'var(--color-up)' : 'var(--color-down)'
+              return (
+                <li key={e.id} className="flex items-center gap-3 px-4 py-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate text-[15px] leading-tight font-semibold">
+                        {e.symbol}
+                      </span>
+                      <span
+                        className="shrink-0 rounded-full px-2 py-0.5 text-[10.5px] leading-tight font-semibold"
+                        style={{
+                          color: tone,
+                          background: `color-mix(in srgb, ${tone} 14%, transparent)`,
+                        }}
+                      >
+                        {s(isBuy ? 'sideBuy' : 'sideSell')}
+                      </span>
+                    </div>
+                    <p className="num mt-1 text-[12px] leading-tight text-muted">
+                      {fmtNum(e.qty, lang, Number.isInteger(e.qty) ? 0 : 2)} ×{' '}
+                      {fmtNum(e.price, lang, 2)} · {relTime(e.at, now, lang)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeJournal(e.id)}
+                    aria-label={`${s('journalDelete')} ${e.symbol}`}
+                    className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-muted transition-colors hover:text-fg active:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      width="17"
+                      height="17"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M4 7h16M9.5 7V5.6A1.6 1.6 0 0111.1 4h1.8a1.6 1.6 0 011.6 1.6V7M6.6 7l.8 12.1a1.6 1.6 0 001.6 1.5h6a1.6 1.6 0 001.6-1.5L17.4 7M10 11v6M14 11v6" />
+                    </svg>
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </section>
 
       <footer className="mt-10 pb-2 text-center text-[11px] text-muted">

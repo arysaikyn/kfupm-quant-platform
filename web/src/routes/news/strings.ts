@@ -10,7 +10,25 @@ export const strings = {
     askAi: '问 AI 这件事',
     notFound: '没有找到这条新闻',
     empty: '暂时没有新闻',
+    emptySource: '这个来源暂时没有新闻',
     back: '返回',
+    allSources: '全部',
+    filterLabel: '按来源筛选',
+    watchMark: '自选',
+    watchAdd: '加入自选',
+    watchRemove: '移出自选',
+    whyWatched: '其中自选 {count}，今天{dir}。',
+    whyStory: '涉及 {count}，今天{dir}。',
+    whyStock: '只',
+    whyStockOne: '只',
+    whyStockTwo: '只',
+    whyUp: '涨',
+    whyDown: '跌',
+    whyFlat: '平',
+    whyAllUp: '全线上涨',
+    whyAllDown: '全线下挫',
+    whyFlatOnly: '走平',
+    whyComma: ' ',
   },
   en: {
     title: 'News',
@@ -21,7 +39,25 @@ export const strings = {
     askAi: 'Ask AI about this',
     notFound: 'This story is not available',
     empty: 'No stories right now',
+    emptySource: 'No stories from this source',
     back: 'Back',
+    allSources: 'All',
+    filterLabel: 'Filter by source',
+    watchMark: 'Watchlist',
+    watchAdd: 'Add to watchlist',
+    watchRemove: 'Remove from watchlist',
+    whyWatched: '{count} on your watchlist —{dir} today.',
+    whyStory: '{count} in this story —{dir} today.',
+    whyStock: 'names',
+    whyStockOne: 'name',
+    whyStockTwo: 'names',
+    whyUp: 'up',
+    whyDown: 'down',
+    whyFlat: 'flat',
+    whyAllUp: 'all up',
+    whyAllDown: 'all down',
+    whyFlatOnly: 'flat',
+    whyComma: ', ',
   },
   ar: {
     title: 'الأخبار',
@@ -32,7 +68,25 @@ export const strings = {
     askAi: 'اسأل AI عن هذا الخبر',
     notFound: 'لم نجد هذا الخبر',
     empty: 'لا توجد أخبار الآن',
+    emptySource: 'لا توجد أخبار من هذا المصدر',
     back: 'رجوع',
+    allSources: 'الكل',
+    filterLabel: 'تصفية حسب المصدر',
+    watchMark: 'قائمتي',
+    watchAdd: 'أضف إلى قائمتي',
+    watchRemove: 'أزل من قائمتي',
+    whyWatched: 'في قائمتك {count} —{dir} اليوم.',
+    whyStory: 'في هذا الخبر {count} —{dir} اليوم.',
+    whyStock: 'أسهم',
+    whyStockOne: 'سهم واحد',
+    whyStockTwo: 'سهمان',
+    whyUp: 'صاعد',
+    whyDown: 'هابط',
+    whyFlat: 'دون تغيير',
+    whyAllUp: 'كلها صاعدة',
+    whyAllDown: 'كلها هابطة',
+    whyFlatOnly: 'دون تغيير',
+    whyComma: '، ',
   },
 } satisfies Dict<{
   title: string
@@ -43,5 +97,25 @@ export const strings = {
   askAi: string
   notFound: string
   empty: string
+  emptySource: string
   back: string
+  allSources: string
+  filterLabel: string
+  watchMark: string
+  watchAdd: string
+  watchRemove: string
+  whyWatched: string
+  whyStory: string
+  whyStock: string
+  whyStockOne: string
+  whyStockTwo: string
+  whyUp: string
+  whyDown: string
+  whyFlat: string
+  whyAllUp: string
+  whyAllDown: string
+  whyFlatOnly: string
+  whyComma: string
 }>
+
+export type NewsKey = keyof typeof strings.zh

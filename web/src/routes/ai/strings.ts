@@ -32,6 +32,21 @@ export type AiStrings = {
   sources: string
   disclaimer: string
   close: string
+  presetValue: string
+  presetValuePrompt: string
+  presetDividend: string
+  presetDividendPrompt: string
+  presetSharia: string
+  presetShariaPrompt: string
+  presetMomentum: string
+  presetMomentumPrompt: string
+  stepUnderstand: string
+  stepRead: string
+  stepConclude: string
+  stepsUnit: string
+  secUnit: string
+  evVol: string
+  evAbove: string
 }
 
 export const strings = {
@@ -61,6 +76,21 @@ export const strings = {
     sources: '来源',
     disclaimer: '演示数据，不构成投资建议。',
     close: '关闭',
+    presetValue: '低估值',
+    presetValuePrompt: '按低估值帮我筛一遍：市盈率低、负债不高。',
+    presetDividend: '高股息',
+    presetDividendPrompt: '高股息的有哪些？股息率 3% 以上、还在提高派息。',
+    presetSharia: '教法筛选',
+    presetShariaPrompt: '先过教法筛选，再按基本面排名。',
+    presetMomentum: '动量',
+    presetMomentumPrompt: '最近六个月动量最强的有哪些？',
+    stepUnderstand: '理解问题',
+    stepRead: '读取行情',
+    stepConclude: '生成结论',
+    stepsUnit: '步',
+    secUnit: 's',
+    evVol: '近 20 日波动',
+    evAbove: '现价对 20 日均值',
   },
   en: {
     promise: 'Ask in plain words. See what fits and why.',
@@ -88,6 +118,21 @@ export const strings = {
     sources: 'Sources',
     disclaimer: 'Demo data. Not investment advice.',
     close: 'Close',
+    presetValue: 'Value',
+    presetValuePrompt: 'Screen for low valuation: modest P/E and low debt.',
+    presetDividend: 'Income',
+    presetDividendPrompt: 'Which names pay high dividends? Yield above 3% and still rising.',
+    presetSharia: 'Sharia',
+    presetShariaPrompt: 'Run the Sharia screen first, then rank on fundamentals.',
+    presetMomentum: 'Momentum',
+    presetMomentumPrompt: 'Which names have the strongest six-month momentum?',
+    stepUnderstand: 'Understanding the question',
+    stepRead: 'Reading the market',
+    stepConclude: 'Writing the answer',
+    stepsUnit: 'steps',
+    secUnit: 's',
+    evVol: '20-day volatility',
+    evAbove: 'Price vs 20-day mean',
   },
   ar: {
     promise: 'اسأل بكلمات بسيطة، وشاهد ما يناسبك ولماذا.',
@@ -115,5 +160,20 @@ export const strings = {
     sources: 'المصادر',
     disclaimer: 'بيانات عرض، وليست نصيحة استثمارية.',
     close: 'إغلاق',
+    presetValue: 'قيمة منخفضة',
+    presetValuePrompt: 'رشّح لي بالقيمة المنخفضة: مكرر ربحية منخفض ودين محدود.',
+    presetDividend: 'توزيعات مرتفعة',
+    presetDividendPrompt: 'ما الأسهم ذات التوزيعات المرتفعة؟ عائد فوق 3% ويرتفع باستمرار.',
+    presetSharia: 'فحص شرعي',
+    presetShariaPrompt: 'طبّق الفحص الشرعي أولًا ثم رتّب على الأساسيات.',
+    presetMomentum: 'زخم',
+    presetMomentumPrompt: 'ما أقوى الأسهم زخمًا خلال الأشهر الستة الماضية؟',
+    stepUnderstand: 'فهم السؤال',
+    stepRead: 'قراءة الأسعار',
+    stepConclude: 'صياغة الخلاصة',
+    stepsUnit: 'خطوات',
+    secUnit: 'ث',
+    evVol: 'تقلب 20 يومًا',
+    evAbove: 'السعر مقابل متوسط 20 يومًا',
   },
 } satisfies Dict<AiStrings>

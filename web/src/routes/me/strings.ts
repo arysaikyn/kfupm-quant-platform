@@ -17,6 +17,13 @@ type Strings = {
   langAr: string
   langArEnglish: string
   version: string
+  journalTitle: string
+  journalTotal: string
+  journalNotional: string
+  journalEmpty: string
+  sideBuy: string
+  sideSell: string
+  journalDelete: string
 }
 
 export const strings = {
@@ -36,6 +43,13 @@ export const strings = {
     langAr: 'العربية',
     langArEnglish: 'Arabic',
     version: '版本',
+    journalTitle: '交易记录',
+    journalTotal: '总笔数',
+    journalNotional: '名义金额',
+    journalEmpty: '在「策略」中记录一笔交易，这里会显示明细。',
+    sideBuy: '买入',
+    sideSell: '卖出',
+    journalDelete: '删除',
   },
   en: {
     title: 'Profile',
@@ -53,6 +67,13 @@ export const strings = {
     langAr: 'العربية',
     langArEnglish: 'Arabic',
     version: 'Version',
+    journalTitle: 'Trade log',
+    journalTotal: 'Entries',
+    journalNotional: 'Notional',
+    journalEmpty: 'Log a trade from Strategies and it shows up here.',
+    sideBuy: 'Buy',
+    sideSell: 'Sell',
+    journalDelete: 'Delete',
   },
   ar: {
     title: 'حسابي',
@@ -70,5 +91,12 @@ export const strings = {
     langAr: 'العربية',
     langArEnglish: 'Arabic',
     version: 'الإصدار',
+    journalTitle: 'سجل التداول',
+    journalTotal: 'عدد الصفقات',
+    journalNotional: 'القيمة الاسمية',
+    journalEmpty: 'سجّل صفقة من «خططي» وستظهر هنا.',
+    sideBuy: 'شراء',
+    sideSell: 'بيع',
+    journalDelete: 'حذف',
   },
 } satisfies Dict<Strings>

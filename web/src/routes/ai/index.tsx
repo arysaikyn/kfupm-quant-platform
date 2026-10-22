@@ -8,6 +8,7 @@ import { strings } from './strings'
 import { canned, followUps } from './replies'
 import type { Reply } from './replies'
 import { AssistantMessage, TypingRow, UserBubble } from './messages'
+import { STREAM_MS } from './timeline'
 import { loadThread, saveThread } from './thread'
 import { takeIntake } from './intake'
 import { toneOf, tokenize } from './chat'
@@ -49,6 +50,13 @@ const CAPS = [
   { t: 'cap4t', h: 'cap4h' },
   { t: 'cap5t', h: 'cap5h' },
   { t: 'cap6t', h: 'cap6h' },
+] as const
+
+const PRESETS = [
+  { label: 'presetValue', prompt: 'presetValuePrompt' },
+  { label: 'presetDividend', prompt: 'presetDividendPrompt' },
+  { label: 'presetSharia', prompt: 'presetShariaPrompt' },
+  { label: 'presetMomentum', prompt: 'presetMomentumPrompt' },
 ] as const
 
 const ICON_PATHS = [
@@ -99,15 +107,20 @@ export default function AiPage() {
     saveThread({ msgs, chips, turn: turn.current })
   }, [msgs, chips, busy])
 
-  // A long press on another screen drops its question here.
+  // A long press on another screen drops its question here. The handler is
+  // read from a ref so this effect stays mount-only.
+  const sendRef = useRef(send)
+  sendRef.current = send
   useEffect(() => {
     const asked = takeIntake()
-    if (asked) send(asked)
+    if (asked) sendRef.current(asked)
     // Running twice is harmless: takeIntake removes the value.
   }, [])
 
   const last = msgs[msgs.length - 1]
   const lastShown = last && last.role === 'assistant' ? last.shown : 0
+  const quoteChip = chips.find((c) => c.kind === 'quote')
+  const evidenceSymbol = quoteChip?.kind === 'quote' ? quoteChip.symbol : undefined
 
   useEffect(() => {
     const el = endRef.current
@@ -163,7 +176,7 @@ export default function AiPage() {
           busyRef.current = false
           setBusy(false)
         }
-      }, 18)
+      }, STREAM_MS)
     }, 700)
   }
 
@@ -255,7 +268,20 @@ export default function AiPage() {
         <div className="mt-5 space-y-5">
           {msgs.length === 0 && (
             <div className="pt-1">
-              <p className="text-[12px] text-muted">{s('capTitle')}</p>
+              <div className="flex flex-wrap gap-2">
+                {PRESETS.map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    disabled={busy}
+                    onClick={() => send(s(preset.prompt))}
+                    className="inline-flex h-11 items-center rounded-full border border-line bg-surface px-3 text-[12px] disabled:opacity-60"
+                  >
+                    {s(preset.label)}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-4 text-[12px] text-muted">{s('capTitle')}</p>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 {CAPS.map((c, i) => (
                   <button
@@ -288,7 +314,12 @@ export default function AiPage() {
             m.role === 'user' ? (
               <UserBubble key={m.id} text={m.text} />
             ) : (
-              <AssistantMessage key={m.id} m={m} sourcesLabel={s('sources')} />
+              <AssistantMessage
+                key={m.id}
+                m={m}
+                sourcesLabel={s('sources')}
+                evidenceSymbol={evidenceSymbol}
+              />
             ),
           )}
 

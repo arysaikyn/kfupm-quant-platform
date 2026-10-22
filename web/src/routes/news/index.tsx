@@ -2,21 +2,87 @@ import { useMemo, useState } from 'react'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { news } from '../../data/mock'
-import type { NewsItem } from '../../data/mock'
-import { useI18n, useStrings } from '../../i18n'
+import type { NewsItem, Quote } from '../../data/mock'
+import { fmtNum, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
+import { useUser } from '../../store/user'
 import { dayStamp, formatDay, quoteBySymbol, relTime } from './format'
 import { LongPressLink } from '../../components/LongPressLink'
 import { StoryArt } from './StoryArt'
 import { strings } from './strings'
+import type { NewsKey } from './strings'
 
-function NewsRow({ item, lang, askLabel }: { item: NewsItem; lang: Lang; askLabel: string }) {
+type S = (k: NewsKey) => string
+
+/** "1 up, 1 down" — counts only, never a canned verdict. */
+function directionPhrase(
+  up: number,
+  down: number,
+  flat: number,
+  lang: Lang,
+  s: S,
+): string {
+  const total = up + down + flat
+  const lead = lang === 'zh' ? '' : ' '
+  if (up === total) return `${lead}${total === 1 ? s('whyUp') : s('whyAllUp')}`
+  if (down === total) return `${lead}${total === 1 ? s('whyDown') : s('whyAllDown')}`
+  if (flat === total) return `${lead}${s('whyFlatOnly')}`
+
+  const parts: string[] = []
+  if (up) parts.push(`${fmtNum(up, lang, 0)} ${s('whyUp')}`)
+  if (down) parts.push(`${fmtNum(down, lang, 0)} ${s('whyDown')}`)
+  if (flat) parts.push(`${fmtNum(flat, lang, 0)} ${s('whyFlat')}`)
+  return ` ${parts.join(s('whyComma'))}`
+}
+
+/**
+ * One derived line under the deck. Scoped to the watchlist when the story
+ * touches it, otherwise to every symbol in the story.
+ */
+function whyItMatters(item: NewsItem, watchlist: string[], lang: Lang, s: S): string | null {
+  const watched = item.symbols.filter((sym) => watchlist.includes(sym))
+  const scope = watched.length > 0 ? watched : item.symbols
+  const quotes = scope
+    .map((sym) => quoteBySymbol[sym])
+    .filter((q): q is Quote => Boolean(q))
+  if (quotes.length === 0) return null
+
+  const up = quotes.filter((q) => q.change > 0).length
+  const down = quotes.filter((q) => q.change < 0).length
+  const flat = quotes.length - up - down
+  const n = quotes.length
+
+  const template = watched.length > 0 ? s('whyWatched') : s('whyStory')
+  const counted =
+    lang === 'ar' && n < 3
+      ? n === 1
+        ? s('whyStockOne')
+        : s('whyStockTwo')
+      : `${fmtNum(n, lang, 0)} ${n === 1 ? s('whyStockOne') : s('whyStock')}`
+  return template
+    .replace('{count}', counted)
+    .replace('{dir}', directionPhrase(up, down, flat, lang, s))
+}
+
+function NewsRow({
+  item,
+  lang,
+  s,
+  watchlist,
+}: {
+  item: NewsItem
+  lang: Lang
+  s: S
+  watchlist: string[]
+}) {
   const deck = item.body[0]?.[lang]
+  const watched = item.symbols.some((sym) => watchlist.includes(sym))
+  const why = whyItMatters(item, watchlist, lang, s)
 
   return (
     <LongPressLink
       to={`/news/${item.id}`}
-      prompt={`${askLabel} — ${item.title[lang]}`}
+      prompt={`${s('askAi')} — ${item.title[lang]}`}
       className="panel block px-4 py-3.5 transition-colors active:opacity-80"
     >
       <div className="flex items-start gap-4">
@@ -27,11 +93,18 @@ function NewsRow({ item, lang, askLabel }: { item: NewsItem; lang: Lang; askLabe
           {deck && (
             <p className="mt-1.5 line-clamp-2 text-[14px] leading-[1.45] text-muted">{deck}</p>
           )}
+          {why && <p className="mt-1.5 text-[12px] leading-[1.45] text-muted">{why}</p>}
         </div>
         <StoryArt item={item} />
       </div>
       <div className="t-kicker mt-3 flex items-center gap-2 text-muted">
-        <span className="truncate">{item.source}</span>
+        {watched && (
+          <span className="flex shrink-0 items-center gap-1" style={{ color: 'var(--color-accent)' }}>
+            <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full bg-current" />
+            {s('watchMark')}
+          </span>
+        )}
+        <span className="min-w-0 truncate">{item.source}</span>
         <span aria-hidden="true" className="h-[3px] w-[3px] shrink-0 rounded-full bg-current opacity-60" />
         <time className="num shrink-0">{relTime(item.minutesAgo, lang)}</time>
       </div>
@@ -56,7 +129,11 @@ function NewsRow({ item, lang, askLabel }: { item: NewsItem; lang: Lang; askLabe
 export default function NewsPage() {
   const { lang } = useI18n()
   const s = useStrings(strings)
+  const { watchlist } = useUser()
   const [now] = useState(() => Date.now())
+  const [source, setSource] = useState<string | null>(null)
+
+  const sources = useMemo(() => Array.from(new Set(news.map((item) => item.source))), [])
 
   const { groups, todayStamp, yesterdayStamp } = useMemo(() => {
     const today = dayStamp(0, now)
@@ -64,7 +141,9 @@ export default function NewsPage() {
     y.setDate(y.getDate() - 1)
     const yesterday = y.getFullYear() * 10000 + (y.getMonth() + 1) * 100 + y.getDate()
 
-    const sorted = [...news].sort((a, b) => a.minutesAgo - b.minutesAgo)
+    const sorted = [...news]
+      .filter((item) => source === null || item.source === source)
+      .sort((a, b) => a.minutesAgo - b.minutesAgo)
     const out: { stamp: number; items: NewsItem[] }[] = []
     for (const item of sorted) {
       const stamp = dayStamp(item.minutesAgo, now)
@@ -73,14 +152,44 @@ export default function NewsPage() {
       else out.push({ stamp, items: [item] })
     }
     return { groups: out, todayStamp: today, yesterdayStamp: yesterday }
-  }, [now])
+  }, [now, source])
 
   return (
     <Screen title={s('title')} subtitle={s('lead')}>
+      {sources.length > 1 && (
+        <div
+          role="group"
+          aria-label={s('filterLabel')}
+          className="-mx-4 mt-1 flex gap-2 overflow-x-auto px-4 pb-0.5 [&::-webkit-scrollbar]:hidden"
+          style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
+        >
+          {[null, ...sources].map((name) => {
+            const active = source === name
+            return (
+              <button
+                key={name ?? 'all'}
+                type="button"
+                onClick={() => setSource(name)}
+                aria-pressed={active}
+                className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors ${
+                  active ? 'font-medium text-fg' : 'text-muted'
+                }`}
+                style={{
+                  border: '1px solid var(--color-line)',
+                  background: active ? 'var(--color-surface)' : 'transparent',
+                }}
+              >
+                {name ?? s('allSources')}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
       {groups.length === 0 ? (
-        <EmptyState text={s('empty')} />
+        <EmptyState text={source === null ? s('empty') : s('emptySource')} />
       ) : (
-        <div className="mt-1 space-y-6">
+        <div className="mt-4 space-y-6">
           {groups.map((group) => (
             <section key={group.stamp}>
               <header className="mb-2.5 flex items-center gap-3 px-1">
@@ -102,7 +211,7 @@ export default function NewsPage() {
               <ul className="space-y-2.5">
                 {group.items.map((item) => (
                   <li key={item.id}>
-                    <NewsRow item={item} lang={lang} askLabel={s('askAi')} />
+                    <NewsRow item={item} lang={lang} s={s} watchlist={watchlist} />
                   </li>
                 ))}
               </ul>

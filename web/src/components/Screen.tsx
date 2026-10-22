@@ -20,6 +20,7 @@ export function Screen({ title, subtitle, leading, action, children, padded = tr
           style={{
             background: 'color-mix(in srgb, var(--color-bg) 96%, transparent)',
             backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid var(--color-line)',
           }}
         >
           <div className="flex min-w-0 items-end gap-2">

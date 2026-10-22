@@ -72,14 +72,7 @@ export default function StrategyPage() {
               const tone = ret > 0 ? 'text-up' : ret < 0 ? 'text-down' : 'text-muted'
               return (
                 <li key={st.id}>
-                  <Link
-                    to={`/strategy/${st.id}`}
-                    className="block rounded-2xl p-4 active:opacity-80"
-                    style={{
-                      background: 'var(--color-surface)',
-                      border: '1px solid var(--color-line)',
-                    }}
-                  >
+                  <Link to={`/strategy/${st.id}`} className="panel block p-4 active:opacity-80">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <h2 className="truncate text-[16px] leading-snug font-semibold">

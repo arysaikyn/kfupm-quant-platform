@@ -18,8 +18,8 @@ export function Screen({ title, subtitle, leading, action, children, padded = tr
         <header
           className="sticky top-0 z-30 flex items-end justify-between gap-3 px-4 pt-5 pb-3"
           style={{
-            background: 'linear-gradient(var(--color-bg) 70%, transparent)',
-            backdropFilter: 'blur(8px)',
+            background: 'color-mix(in srgb, var(--color-bg) 96%, transparent)',
+            backdropFilter: 'blur(12px)',
           }}
         >
           <div className="flex min-w-0 items-end gap-2">

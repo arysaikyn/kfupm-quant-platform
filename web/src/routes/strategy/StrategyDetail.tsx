@@ -152,10 +152,7 @@ export default function StrategyDetail() {
           </div>
         </div>
 
-        <section
-          className="rounded-2xl p-4"
-          style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
-        >
+        <section className="panel p-4">
           <h2 className="text-[13px] font-medium">{s('rulesTitle')}</h2>
           <p className="mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
             {s('rulesHint')}
@@ -191,10 +188,7 @@ export default function StrategyDetail() {
           </ul>
         </section>
 
-        <section
-          className="rounded-2xl p-4"
-          style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
-        >
+        <section className="panel p-4">
           <h2 className="text-[13px] font-medium">{s('chartTitle')}</h2>
           <div className="mt-2" dir="ltr">
             <EquityChart lang={lang} />
@@ -230,10 +224,7 @@ export default function StrategyDetail() {
           </p>
         </section>
 
-        <section
-          className="rounded-2xl p-4"
-          style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
-        >
+        <section className="panel p-4">
           <div className="grid grid-cols-3 gap-3">
             <Metric
               value={fmtPct(total, lang, 1)}
@@ -255,10 +246,7 @@ export default function StrategyDetail() {
           </div>
         </section>
 
-        <section
-          className="rounded-2xl p-4"
-          style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
-        >
+        <section className="panel p-4">
           <button
             type="button"
             onClick={rerun}

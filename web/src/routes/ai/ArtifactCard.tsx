@@ -12,7 +12,7 @@ export function ArtifactCard({ title }: { title: string }) {
   const rows = quotes.slice(0, 5)
 
   return (
-    <div className="mt-3 rounded-2xl border border-line bg-surface p-3">
+    <div className="panel mt-3 p-3">
       <div className="flex items-baseline justify-between gap-2">
         <p className="min-w-0 truncate text-[13px] font-medium">{title}</p>
         <span className="shrink-0 text-[11px] text-muted">{s('artifactCount')}</span>

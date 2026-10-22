@@ -13,7 +13,7 @@ function NewsRow({ item, lang }: { item: NewsItem; lang: Lang }) {
   return (
     <Link
       to={`/news/${item.id}`}
-      className="block rounded-2xl border border-line bg-surface p-4 transition-colors active:bg-[#1a1d23]"
+      className="panel block p-4 transition-colors active:opacity-80"
     >
       <div className="flex items-center gap-1.5 text-[11px] text-muted">
         <span className="truncate">{item.source}</span>

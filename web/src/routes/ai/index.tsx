@@ -255,7 +255,7 @@ export default function AiPage() {
                     type="button"
                     disabled={busy}
                     onClick={() => send(s(c.t))}
-                    className="flex min-h-[74px] items-start gap-2 rounded-2xl border border-line bg-surface p-3 text-start disabled:opacity-60"
+                    className="panel flex min-h-[74px] items-start gap-2 p-3 text-start disabled:opacity-60"
                   >
                     <span
                       className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"

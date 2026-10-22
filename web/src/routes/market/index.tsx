@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatedNumber } from '../../components/AnimatedNumber'
+import { BarStrip } from '../../components/BarStrip'
+import { TickerTape } from '../../components/TickerTape'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
-import { Sparkline } from '../../components/Sparkline'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import { indices, quotes, sectors } from '../../data/mock'
 import type { Sector } from '../../data/mock'
@@ -65,34 +66,64 @@ export default function MarketPage() {
         ))}
       </div>
 
-      {/* Index strip */}
-      <p className="mt-5 text-[11px] font-medium" style={{ color: 'var(--color-muted)' }}>
-        {s('indices')}
-      </p>
-      <div
-        className="-mx-4 mt-2 flex snap-x gap-2.5 overflow-x-auto px-4 pb-1"
-        style={{ scrollbarWidth: 'none' }}
-      >
-        {indices.map((ix) => {
-          const up = ix.change >= 0
-          return (
-            <div
-              key={ix.symbol}
-              className="w-[158px] shrink-0 snap-start rounded-2xl p-3"
-              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
-            >
-              <p className="truncate text-[12px]" style={{ color: 'var(--color-muted)' }}>
-                {ix.name[lang]}
+      {/* Live tape: the screen's signature, 0 KB */}
+      <div className="mt-3 border-y" style={{ borderColor: 'var(--color-line)' }}>
+        <TickerTape
+          quotes={quotes.slice(0, 5).concat(indices.map((ix) => ({
+            symbol: ix.symbol,
+            name: ix.name,
+            price: ix.value,
+            change: ix.change,
+            currency: '',
+            spark: [ix.value],
+          }))).slice(0, 8)}
+          name={(q) => q.name[lang]}
+          price={(q) => fmtNum(q.price, lang, 2)}
+          change={(q) => fmtPct(q.change, lang)}
+        />
+      </div>
+
+      {/* Index masthead: one hero figure, then the rest as a compact row */}
+      <div className="mt-5">
+        {indices[0] && (
+          <div className="panel px-4 py-3.5">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
+                {indices[0].name[lang]}
               </p>
-              <p className="num mt-1.5 text-[19px] leading-none font-semibold">
-                <AnimatedNumber value={ix.value} format={(n) => fmtNum(n, lang, 2)} />
-              </p>
-              <p className={`num mt-1.5 text-[12px] ${up ? 'text-up' : 'text-down'}`}>
-                {fmtPct(ix.change, lang)}
+              <p
+                className="num text-[12px]"
+                style={{ color: indices[0].change >= 0 ? 'var(--color-up)' : 'var(--color-down)' }}
+              >
+                {fmtPct(indices[0].change, lang)}
               </p>
             </div>
-          )
-        })}
+            <p className="t-display num mt-1 text-[40px] leading-none font-bold italic">
+              <AnimatedNumber value={indices[0].value} format={(n) => fmtNum(n, lang, 2)} />
+            </p>
+          </div>
+        )}
+        <div
+          className="mt-2 flex snap-x gap-2.5 overflow-x-auto pb-1"
+          style={{ scrollbarWidth: 'none' }}
+        >
+          {indices.slice(1).map((ix) => {
+            const up = ix.change >= 0
+            return (
+              <div key={ix.symbol} className="panel w-[152px] shrink-0 snap-start p-3">
+                <p className="truncate text-[12px]" style={{ color: 'var(--color-muted)' }}>
+                  {ix.name[lang]}
+                </p>
+                <p className="num mt-1.5 text-[19px] leading-none font-semibold">
+                  <AnimatedNumber value={ix.value} format={(n) => fmtNum(n, lang, 2)} />
+                </p>
+                <p className={`num mt-1.5 text-[12px] ${up ? 'text-up' : 'text-down'}`}>
+                  {fmtPct(ix.change, lang)}
+                </p>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       {/* Sector heatmap */}
@@ -117,14 +148,15 @@ export default function MarketPage() {
                     type="button"
                     aria-pressed={selected}
                     onClick={() => setSector(selected ? null : sec.id)}
-                    className="flex min-w-0 flex-col justify-between rounded-xl p-2.5 text-start"
+                    className="flex min-w-0 flex-col justify-between rounded-[14px] p-2.5 text-start"
                     style={{
                       flexGrow: sec.weight,
                       flexBasis: 0,
-                      background: `linear-gradient(160deg, color-mix(in srgb, ${token} ${alpha + 12}%, transparent), color-mix(in srgb, ${token} ${Math.round(alpha / 3)}%, transparent))`,
-                      border: `1px solid color-mix(in srgb, ${token} 34%, transparent)`,
-                      backdropFilter: 'blur(10px)',
-                      boxShadow: selected ? 'inset 0 0 0 2px var(--color-accent)' : undefined,
+                      background: `linear-gradient(165deg, color-mix(in srgb, ${token} ${Math.round(alpha * 0.55)}%, transparent), color-mix(in srgb, ${token} ${Math.round(alpha * 0.12)}%, transparent))`,
+                      border: `1px solid color-mix(in srgb, ${token} 26%, transparent)`,
+                      boxShadow: selected
+                        ? 'inset 0 0 0 2px var(--color-accent)'
+                        : 'var(--card-inset)',
                     }}
                   >
                     <span className="block min-w-0 truncate text-[12px] font-medium">
@@ -182,8 +214,7 @@ export default function MarketPage() {
               <li key={q.symbol}>
                 <Link
                   to={`/m/${q.symbol}`}
-                  className="flex min-h-[64px] items-center gap-3 rounded-2xl px-3.5 py-2.5 active:opacity-75"
-                  style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
+                  className="panel flex min-h-[64px] items-center gap-3 px-3.5 py-2.5 active:opacity-75"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[14px] font-medium">{q.name[lang]}</p>
@@ -195,7 +226,7 @@ export default function MarketPage() {
                     aria-hidden="true"
                     className={`shrink-0 ${up ? 'text-up' : 'text-down'}`}
                   >
-                    <Sparkline data={q.spark} w={48} h={20} />
+                    <BarStrip data={q.spark} up={up} />
                   </span>
                   <div className="shrink-0 text-end">
                     <p className="num text-[15px] leading-none font-semibold">

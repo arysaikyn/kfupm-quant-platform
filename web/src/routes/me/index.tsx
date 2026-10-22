@@ -128,7 +128,7 @@ export default function MePage() {
         <div
           role="group"
           aria-labelledby="me-language"
-          className="divide-y divide-line overflow-hidden rounded-[16px] border border-line bg-surface"
+          className="panel divide-y divide-line overflow-hidden"
         >
           {LANGUAGES.map((row) => {
             const active = lang === row.id

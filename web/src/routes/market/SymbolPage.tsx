@@ -145,7 +145,7 @@ export default function SymbolPage() {
           {quote.symbol} · {quote.currency}
         </p>
         <div className="mt-1.5 flex flex-wrap items-end gap-x-2 gap-y-1">
-          <span className="num text-[46px] leading-none font-bold italic tracking-tight">
+          <span className="t-display num text-[46px] leading-none font-bold italic">
             <AnimatedNumber value={quote.price} format={(n) => fmtNum(n, lang, 2)} />
           </span>
           <span className="pb-0.5 text-[13px]" style={{ color: 'var(--color-muted)' }}>

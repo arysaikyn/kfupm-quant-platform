@@ -1,7 +1,52 @@
 @import "tailwindcss";
 
+/* Two files, both variable. Only the subsets we can actually render are
+   shipped: Latin for Inter (72 KB) and Arabic for Rubik (32 KB). CJK comes
+   from the system. Each face carries a unicode-range so the browser fetches
+   it only when those glyphs appear. */
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./fonts/inter-latin.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Rubik Arabic";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 900;
+  src: url("./fonts/rubik-arabic.woff2") format("woff2-variations");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1,
+    U+08E3-08FF, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+
+
+
 /* Dark is the default: near-black canvas, colour comes from ambient light. */
 @theme {
+  /* Type scale. One ramp, no 4xl and up: display sizes are set by hand. */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1.35;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.45;
+  --text-base: 0.875rem;
+  --text-base--line-height: 1.5;
+  --text-md: 0.9375rem;
+  --text-md--line-height: 1.45;
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: 1.35;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.25;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 1.2;
+
   --color-bg: #050309;
   --color-surface: rgba(255, 255, 255, 0.045);
   --color-line: rgba(255, 255, 255, 0.09);
@@ -84,6 +129,13 @@ body,
   height: 100%;
 }
 
+/* Inter carries Latin and digits, Rubik picks up Arabic by fallback, and CJK
+   falls through to the system face so we ship no Han glyphs. */
+:root {
+  --font-ui: "Inter Variable", "Rubik Arabic", -apple-system, "PingFang SC",
+    "Noto Sans SC", system-ui, sans-serif;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -99,8 +151,8 @@ body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-fg);
-  font-family: -apple-system, "SF Pro Text", "PingFang SC", "Noto Sans SC",
-    system-ui, sans-serif;
+  font-family: var(--font-ui);
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -138,12 +190,15 @@ body::before {
 }
 
 html[dir="rtl"] body {
-  font-family: "SF Arabic", "Noto Kufi Arabic", "Geeza Pro", system-ui, sans-serif;
+  font-family: var(--font-ui);
   line-height: 1.7;
 }
 
+/* ss01 opens the digits and cv03 flattens the 4: the 'drawn at this size'
+   tell that a scaled-up UI face cannot fake. */
 .num {
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: "tnum" 1, "ss01" 1, "cv03" 1;
   letter-spacing: -0.02em;
 }
 
@@ -169,7 +224,9 @@ html[dir="rtl"] body {
 
 /* One shared easing so every motion in the app reads as the same hand. */
 :root {
-  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.241, 0.969, 0.635, 0.997);
+  --dur-fast: 160ms;
+  --dur-base: 320ms;
   --ease-spring: linear(
     0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%,
     1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%,
@@ -187,11 +244,11 @@ html[dir="rtl"] body {
 }
 
 ::view-transition-old(screen) {
-  animation: 120ms ease-in both vt-out;
+  animation: var(--dur-fast) ease-in both vt-out;
 }
 
 ::view-transition-new(screen) {
-  animation: 220ms cubic-bezier(0.23, 1, 0.32, 1) both vt-in;
+  animation: var(--dur-base) var(--ease-soft) both vt-in;
 }
 
 @keyframes vt-out {
@@ -207,7 +264,7 @@ html[dir="rtl"] body {
 }
 
 .sheet-enter {
-  animation: sheet-in 320ms var(--ease-spring) both;
+  animation: sheet-in var(--dur-base) var(--ease-soft) both;
 }
 
 @keyframes sheet-in {

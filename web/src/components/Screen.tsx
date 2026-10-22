@@ -26,7 +26,7 @@ export function Screen({ title, subtitle, leading, action, children, padded = tr
             {leading}
             <div className="min-w-0">
               {title && (
-                <h1 className="truncate py-[1px] text-[22px] leading-[1.35] font-semibold">{title}</h1>
+                <h1 className="t-title truncate py-[1px] text-[24px] leading-[1.3] font-semibold">{title}</h1>
               )}
               {subtitle && (
                 <p className="mt-1 truncate text-[12px]" style={{ color: 'var(--color-muted)' }}>

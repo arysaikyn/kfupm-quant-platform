@@ -158,8 +158,9 @@ export default function Calendar() {
           </div>
           <div className="shrink-0 text-end">
             <p
-              className="num text-[22px] leading-none font-semibold"
-              style={{ color: watched > 0 ? 'var(--color-accent)' : 'var(--color-muted)' }}
+              className={`num text-[22px] leading-none font-semibold ${
+                watched > 0 ? 'text-fg' : 'text-muted'
+              }`}
             >
               {fmtNum(watched, lang, 0)}
             </p>
@@ -172,7 +173,7 @@ export default function Calendar() {
       </section>
 
       {grouped.map((group, day) => (
-        <section key={day} aria-labelledby={`calendar-day-${day}`} className="mt-5">
+        <section key={day} aria-labelledby={`calendar-day-${day}`} className="mt-6">
           <div className="mb-2 flex items-center gap-2 px-1">
             <h2 id={`calendar-day-${day}`} className="t-kicker text-fg">
               {fmt.weekday.format(group.date)}
@@ -181,23 +182,14 @@ export default function Calendar() {
               {fmt.date.format(group.date)}
             </time>
             {day === 0 && (
-              <span
-                className="rounded-full px-1.5 py-0.5 text-[10px] leading-none whitespace-nowrap"
-                style={{
-                  color: 'var(--color-accent)',
-                  background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)',
-                }}
-              >
+              <span className="rounded-lg bg-fg/10 px-1.5 py-0.5 text-[10px] leading-none whitespace-nowrap text-fg">
                 {s('today')}
               </span>
             )}
           </div>
 
           {group.events.length === 0 ? (
-            <p
-              className="rounded-[18px] border border-dashed px-4 py-3 text-[12px]"
-              style={{ borderColor: 'var(--color-line)', color: 'var(--color-muted)' }}
-            >
+            <p className="panel border-dashed px-4 py-3 text-[12px] text-muted">
               {s('noEvents')}
             </p>
           ) : (
@@ -244,8 +236,7 @@ export default function Calendar() {
                           <>
                             <span
                               aria-hidden="true"
-                              className="h-[5px] w-[5px] shrink-0 rounded-full"
-                              style={{ background: 'var(--color-accent)' }}
+                              className="h-[5px] w-[5px] shrink-0 rounded-full bg-muted"
                             />
                             <span className="sr-only">{s('watchMark')}</span>
                           </>
@@ -255,11 +246,10 @@ export default function Calendar() {
                     </div>
 
                     <span
-                      className="shrink-0 rounded-full border px-2 py-0.5 text-[10px] leading-[1.6] whitespace-nowrap"
+                      className="shrink-0 rounded-lg px-2 py-0.5 text-[10px] leading-[1.6] whitespace-nowrap"
                       style={{
                         color: tone,
                         background: `color-mix(in srgb, ${tone} 12%, transparent)`,
-                        borderColor: `color-mix(in srgb, ${tone} 34%, transparent)`,
                       }}
                     >
                       {chip}

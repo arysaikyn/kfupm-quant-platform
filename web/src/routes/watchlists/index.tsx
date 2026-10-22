@@ -240,8 +240,8 @@ function HeadStat({ value, label, tracking }: { value: number; label: string; tr
     <div className="text-end">
       <p className="num text-[17px] leading-none font-semibold">{value}</p>
       <p
-        className="t-kicker mt-1.5 max-w-[86px] truncate"
-        style={{ color: 'var(--color-muted)', letterSpacing: tracking }}
+        className="mt-1.5 max-w-[86px] truncate text-[10px] leading-tight text-muted"
+        style={{ letterSpacing: tracking }}
       >
         {label}
       </p>
@@ -423,12 +423,9 @@ export default function WatchlistsPage() {
                   if (next) setPick(next.symbol)
                 }}
                 title={group.name}
-                className="flex min-h-11 max-w-[220px] shrink-0 items-center gap-1.5 overflow-hidden rounded-full px-3.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-                style={
-                  selected
-                    ? { background: 'var(--color-fg)', color: 'var(--color-bg)' }
-                    : { border: '1px solid var(--color-line)', color: 'var(--color-muted)' }
-                }
+                className={`flex min-h-11 max-w-[220px] shrink-0 items-center gap-1.5 overflow-hidden rounded-full px-3.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                  selected ? 'bg-fg text-bg' : 'border border-line text-muted'
+                }`}
               >
                 <span className="min-w-0 truncate">{group.name}</span>
                 <span aria-hidden="true" className="num text-[10px] opacity-60">
@@ -443,8 +440,7 @@ export default function WatchlistsPage() {
             aria-expanded={newOpen}
             aria-controls={newOpen ? 'wl-new-group' : undefined}
             aria-label={s('newGroup')}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-            style={{ border: '1px dashed var(--color-line)', color: 'var(--color-muted)' }}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-dashed border-line text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
           >
             <PlusIcon />
           </button>
@@ -463,7 +459,7 @@ export default function WatchlistsPage() {
             }
           }}
         >
-          <label htmlFor="wl-new-name" className="t-kicker" style={{ ...kicker, color: 'var(--color-muted)' }}>
+          <label htmlFor="wl-new-name" className="t-kicker text-muted" style={kicker}>
             {s('newGroup')}
           </label>
           <div className="mt-2 flex items-center gap-2">
@@ -475,18 +471,12 @@ export default function WatchlistsPage() {
               placeholder={s('groupNamePlaceholder')}
               aria-label={s('groupName')}
               onChange={(e) => setNewName(e.target.value)}
-              className="min-h-11 min-w-0 flex-1 rounded-lg px-3 text-[14px] focus-visible:outline-2 focus-visible:outline-accent"
-              style={{
-                border: '1px solid var(--color-line)',
-                background: 'var(--color-bg)',
-                color: 'var(--color-fg)',
-              }}
+              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-3 text-[14px] text-fg focus-visible:outline-2 focus-visible:outline-accent"
             />
             <button
               type="submit"
               disabled={!newName.trim()}
-              className="min-h-11 shrink-0 rounded-full px-4 text-[13px] font-medium disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              style={{ background: 'var(--color-accent)', color: '#fff' }}
+              className="min-h-11 shrink-0 rounded-full bg-accent px-4 text-[13px] font-medium text-white disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {s('create')}
             </button>
@@ -501,10 +491,10 @@ export default function WatchlistsPage() {
             </IconBtn>
           </div>
           <div className="mt-1.5 flex items-baseline justify-between gap-2">
-            <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+            <span className="text-[11px] text-muted">
               {s('nameLimit')}
             </span>
-            <span className="num text-[10px]" style={{ color: 'var(--color-muted)' }}>
+            <span className="num text-[10px] text-muted">
               {newName.length}/{MAX_NAME}
             </span>
           </div>
@@ -519,8 +509,7 @@ export default function WatchlistsPage() {
               <button
                 type="button"
                 onClick={() => setNewOpen(true)}
-                className="min-h-11 rounded-full px-4 text-[13px] font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                style={{ background: 'var(--color-accent)', color: '#fff' }}
+                className="min-h-11 rounded-full bg-accent px-4 text-[13px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 {s('newGroup')}
               </button>
@@ -529,10 +518,7 @@ export default function WatchlistsPage() {
         />
       ) : active ? (
         <section className="panel mt-3 overflow-hidden">
-          <div
-            className="flex items-center gap-1 border-b ps-3 pe-1 py-1.5"
-            style={{ borderColor: 'var(--color-line)' }}
-          >
+          <div className="flex items-center gap-1 border-b border-line ps-3 pe-1 py-1.5">
             {editingId === active.id ? (
               <form onSubmit={saveRename} className="flex min-w-0 flex-1 items-center gap-1">
                 <label htmlFor="wl-rename" className="sr-only">
@@ -548,12 +534,7 @@ export default function WatchlistsPage() {
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') setEditingId(null)
                   }}
-                  className="min-h-11 min-w-0 flex-1 rounded-lg px-2.5 text-[14px] focus-visible:outline-2 focus-visible:outline-accent"
-                  style={{
-                    border: '1px solid var(--color-line)',
-                    background: 'var(--color-bg)',
-                    color: 'var(--color-fg)',
-                  }}
+                  className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[14px] text-fg focus-visible:outline-2 focus-visible:outline-accent"
                 />
                 <IconBtn label={s('save')} type="submit" disabled={!editName.trim()}>
                   <CheckIcon />
@@ -565,7 +546,7 @@ export default function WatchlistsPage() {
             ) : (
               <>
                 <h2 className="min-w-0 flex-1 truncate text-[15px] font-semibold">{active.name}</h2>
-                <span className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+                <span className="num shrink-0 text-[11px] text-muted">
                   {rows.length}
                 </span>
                 <IconBtn label={`${s('rename')} ${active.name}`} onClick={() => startRename(active)}>
@@ -576,12 +557,7 @@ export default function WatchlistsPage() {
                     type="button"
                     onClick={() => tapDelete(active)}
                     aria-label={`${s('confirmDelete')} ${active.name}`}
-                    className="flex min-h-11 shrink-0 items-center rounded-full px-3 text-[11px] font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-                    style={{
-                      border: '1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)',
-                      background: 'color-mix(in srgb, var(--color-accent) 16%, transparent)',
-                      color: 'var(--color-accent)',
-                    }}
+                    className="flex min-h-11 shrink-0 items-center rounded-full bg-accent/20 px-3 text-[11px] font-medium whitespace-nowrap text-accent focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                   >
                     {s('confirmDelete')}
                   </button>
@@ -596,8 +572,7 @@ export default function WatchlistsPage() {
 
           <form
             onSubmit={addSymbol}
-            className="flex items-center gap-2 border-b px-3 py-2"
-            style={{ borderColor: 'var(--color-line)' }}
+            className="flex items-center gap-2 border-b border-line px-4 py-2"
           >
             <label htmlFor="wl-add-symbol" className="sr-only">
               {s('addSymbol')}
@@ -606,12 +581,7 @@ export default function WatchlistsPage() {
               id="wl-add-symbol"
               value={pick}
               onChange={(e) => setPick(e.target.value)}
-              className="min-h-11 min-w-0 flex-1 rounded-lg px-2 text-[13px] focus-visible:outline-2 focus-visible:outline-accent"
-              style={{
-                border: '1px solid var(--color-line)',
-                background: 'var(--color-bg)',
-                color: 'var(--color-fg)',
-              }}
+              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-accent"
             >
               {quotes.map((q) => (
                 <option key={q.symbol} value={q.symbol}>
@@ -622,34 +592,28 @@ export default function WatchlistsPage() {
             <button
               type="submit"
               disabled={!canAdd}
-              className="min-h-11 shrink-0 rounded-full px-4 text-[13px] font-medium disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              style={{ background: 'var(--color-accent)', color: '#fff' }}
+              className="min-h-11 shrink-0 rounded-full bg-accent px-4 text-[13px] font-medium text-white disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {s('add')}
             </button>
           </form>
 
           {rows.length === 0 ? (
-            <p className="px-4 py-8 text-center text-[13px]" style={{ color: 'var(--color-muted)' }}>
-              {s('emptyGroup')}
-            </p>
+            <p className="px-4 py-8 text-center text-[13px] text-muted">{s('emptyGroup')}</p>
           ) : (
-            <ul className="divide-y divide-line">
+            <ul>
               {rows.map((q) => {
                 const watched = watchlist.includes(q.symbol)
                 const tone = q.change >= 0 ? 'var(--color-up)' : 'var(--color-down)'
                 return (
-                  <li key={q.symbol} className="flex items-center">
+                  <li key={q.symbol} className="row pe-1">
                     <Link
                       to={`/m/${q.symbol}`}
-                      className="flex min-h-[64px] min-w-0 flex-1 items-center gap-3 ps-3 pe-2 py-2.5"
+                      className="flex min-h-11 min-w-0 flex-1 items-center gap-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                     >
                       <span className="min-w-0 flex-1">
                         <span className="num block text-[14px] leading-tight font-semibold">{q.symbol}</span>
-                        <span
-                          className="mt-1 block truncate text-[11.5px] leading-tight"
-                          style={{ color: 'var(--color-muted)' }}
-                        >
+                        <span className="mt-1 block truncate text-[11.5px] leading-tight text-muted">
                           {q.name[lang]}
                         </span>
                       </span>
@@ -676,8 +640,7 @@ export default function WatchlistsPage() {
                       type="button"
                       aria-label={`${s('removeFromGroup')}: ${q.symbol}`}
                       onClick={() => removeSymbol(active, q.symbol)}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-                      style={{ color: 'var(--color-muted)' }}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                     >
                       <MinusIcon />
                     </button>

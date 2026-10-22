@@ -122,8 +122,7 @@ export default function SectorPage() {
     <Link
       to="/"
       aria-label={t('common.back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-      style={{ border: '1px solid var(--color-line)', color: 'var(--color-fg)' }}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-fg"
     >
       <svg
         width="20"
@@ -149,8 +148,7 @@ export default function SectorPage() {
         <div className="flex justify-center">
           <Link
             to="/"
-            className="flex min-h-11 items-center rounded-full px-4 text-[13px]"
-            style={{ border: '1px solid var(--color-line)' }}
+            className="flex min-h-11 items-center rounded-full border border-line px-4 text-[13px]"
           >
             {s('marketsLink')}
           </Link>
@@ -170,47 +168,41 @@ export default function SectorPage() {
     .replaceAll('{n}', String(rank))
     .replaceAll('{total}', String(sectors.length))
 
-  // .t-kicker sets 10px unlayered, so the size is inline; Arabic joins tear
-  // under tracking and have to opt out.
-  const kicker = {
-    color: 'var(--color-muted)',
-    fontSize: 11,
-    letterSpacing: lang === 'ar' ? 0 : undefined,
-  }
+  // Arabic joins tear under tracking, so they opt out of the kicker spacing.
+  const kicker = { letterSpacing: lang === 'ar' ? 0 : undefined }
 
   return (
     <Screen title={s('title')} leading={back}>
       <section className="panel mt-1 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="t-kicker" style={kicker}>
+            <p className="t-kicker text-muted" style={kicker}>
               {s('sectorLabel')}
             </p>
             <h2 className="t-title mt-1 truncate text-[26px] leading-tight font-semibold">
               {sector.name[lang]}
             </h2>
           </div>
-          <span
-            className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1.5 text-[11px]"
-            style={{ border: '1px solid var(--color-line)' }}
-          >
+          <span className="flex shrink-0 items-center gap-1 rounded-full border border-line px-2.5 py-1.5 text-[11px]">
             <span className="num font-semibold">
               {fmtNum(sector.weight, lang, 0, '%')}
             </span>
-            <span style={{ color: 'var(--color-muted)' }}>{s('weight')}</span>
+            <span className="text-muted">{s('weight')}</span>
           </span>
         </div>
 
-        <p className="t-kicker mt-4" style={kicker}>
-          {s('today')}
-        </p>
-        <p
-          className="num t-display mt-0.5 text-[36px] leading-none font-bold"
-          style={{ color: tone }}
-        >
-          {fmtPct(sector.change, lang)}
-        </p>
-        <p className="mt-3 text-[13px] leading-snug">{s(verdictKey(sector.change))}</p>
+        <div className="mt-4 border-t border-line pt-4">
+          <p className="text-[11px] leading-none text-muted" style={kicker}>
+            {s('today')}
+          </p>
+          <p
+            className="num t-display mt-1 text-[36px] leading-none"
+            style={{ color: tone }}
+          >
+            {fmtPct(sector.change, lang)}
+          </p>
+          <p className="mt-3 text-[13px] leading-snug">{s(verdictKey(sector.change))}</p>
+        </div>
       </section>
 
       <SectionTitle title={s('constituentsTitle')} />
@@ -218,22 +210,16 @@ export default function SectorPage() {
         {members.map((quote) => {
           const watched = watchlist.includes(quote.symbol)
           return (
-            <div
-              key={quote.symbol}
-              className="relative border-b border-line last:border-b-0"
-            >
+            <div key={quote.symbol} className="row relative">
               <Link
                 to={`/m/${quote.symbol}`}
-                className="flex min-h-[58px] items-center gap-1.5 py-2 ps-3 pe-12 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                className="flex min-h-14 w-full items-center gap-1.5 py-2 pe-12 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
               >
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-medium">
                     {quote.name[lang]}
                   </span>
-                  <span
-                    className="num mt-0.5 block truncate text-[10.5px]"
-                    style={{ color: 'var(--color-muted)' }}
-                  >
+                  <span className="num mt-0.5 block truncate text-[10.5px] text-muted">
                     {quote.symbol} · {quote.currency}
                   </span>
                 </span>
@@ -253,8 +239,9 @@ export default function SectorPage() {
                 aria-pressed={watched}
                 aria-label={`${s(watched ? 'watchRemove' : 'watchAdd')} ${quote.name[lang]}`}
                 onClick={() => toggleWatch(quote.symbol)}
-                className="absolute top-1/2 end-1 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-                style={{ color: watched ? 'var(--color-accent)' : 'var(--color-muted)' }}
+                className={`absolute top-1/2 end-1 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                  watched ? 'text-accent' : 'text-muted'
+                }`}
               >
                 <StarIcon filled={watched} />
               </button>
@@ -271,7 +258,7 @@ export default function SectorPage() {
           </span>
         }
       />
-      <div className="panel mt-2 p-3">
+      <div className="panel mt-2 p-4">
         <div role="list" aria-label={s('chartLabel')} className="space-y-0.5">
           {ranked.map((item) => {
             const current = item.id === sector.id
@@ -349,17 +336,13 @@ export default function SectorPage() {
       <nav className="mt-6 grid grid-cols-2 gap-2" aria-label={s('linksLabel')}>
         <Link
           to="/"
-          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12.5px] font-medium"
+          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12.5px] font-medium transition-colors hover:bg-fg/5"
         >
           {s('marketsLink')}
         </Link>
         <Link
           to="/screener"
-          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12.5px] font-medium"
-          style={{
-            color: 'var(--color-accent)',
-            borderColor: 'color-mix(in srgb, var(--color-accent) 35%, transparent)',
-          }}
+          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12.5px] font-medium text-accent transition-colors hover:bg-fg/5"
         >
           {s('screenerLink')}
         </Link>

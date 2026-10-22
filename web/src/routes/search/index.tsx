@@ -103,20 +103,17 @@ function QuoteRow({
 }) {
   const up = quote.change >= 0
   return (
-    <li className="relative">
+    <li className="row pe-1">
       <Link
         to={`/m/${quote.symbol}`}
         onClick={onOpen}
-        className="flex min-h-[64px] items-center gap-3 ps-3.5 pe-12 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+        className="flex min-h-11 min-w-0 flex-1 items-center gap-3 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
       >
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[14px] leading-tight font-medium">
             {quote.name[lang]}
           </span>
-          <span
-            className="num mt-1 flex items-center gap-1.5 text-[11px] leading-tight"
-            style={{ color: 'var(--color-muted)' }}
-          >
+          <span className="num mt-1 flex items-center gap-1.5 text-[11px] leading-tight text-muted">
             <span>{quote.symbol}</span>
             <span aria-hidden="true">·</span>
             <span>{quote.currency}</span>
@@ -145,7 +142,7 @@ function QuoteRow({
           event.preventDefault()
           onToggle()
         }}
-        className="absolute top-1/2 end-0 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
         style={{ color: watched ? 'var(--color-accent)' : 'var(--color-muted)' }}
       >
         <StarIcon filled={watched} />
@@ -235,8 +232,7 @@ export default function SearchPage() {
       type="button"
       onClick={goBack}
       aria-label={s('back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-      style={{ border: '1px solid var(--color-line)', color: 'var(--color-fg)' }}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-fg"
     >
       <svg
         width="20"
@@ -261,7 +257,7 @@ export default function SearchPage() {
         <form
           role="search"
           onSubmit={submit}
-          className="panel flex h-12 items-center gap-1 ps-3 pe-1 transition-colors focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent"
+          className="panel flex h-14 items-center gap-1 ps-4 pe-1 transition-colors focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent"
         >
           <svg
             aria-hidden="true"
@@ -272,8 +268,7 @@ export default function SearchPage() {
             stroke="currentColor"
             strokeWidth="1.7"
             strokeLinecap="round"
-            className="shrink-0"
-            style={{ color: 'var(--color-muted)' }}
+            className="shrink-0 text-muted"
           >
             <circle cx="11" cy="11" r="6.5" />
             <path d="M16 16l4.2 4.2" />
@@ -293,16 +288,14 @@ export default function SearchPage() {
             onKeyDown={onKeyDown}
             placeholder={s('placeholder')}
             aria-label={s('placeholder')}
-            className="h-11 min-w-0 flex-1 appearance-none bg-transparent text-[15px] placeholder:text-muted focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:appearance-none"
-            style={{ color: 'var(--color-fg)' }}
+            className="h-11 min-w-0 flex-1 appearance-none bg-transparent text-[15px] text-fg placeholder:text-muted focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:appearance-none"
           />
           {query !== '' && (
             <button
               type="button"
               onClick={clearQuery}
               aria-label={s('clearQuery')}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-              style={{ color: 'var(--color-muted)' }}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
             >
               <svg
                 aria-hidden="true"
@@ -321,22 +314,19 @@ export default function SearchPage() {
         </form>
       </div>
 
-      <Link
-        to="/screener"
-        className="panel mt-3 flex min-h-[56px] items-center gap-3 px-3.5"
-      >
-        <span style={{ color: 'var(--color-muted)' }}>
+      <Link to="/screener" className="panel row mt-3 gap-3">
+        <span className="shrink-0 text-muted">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M3 5h18l-7 8v6l-4 2v-8z" />
           </svg>
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[14px] leading-tight">{s('screenerEntry')}</span>
-          <span className="mt-0.5 block truncate text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+          <span className="mt-0.5 block truncate text-[11px] leading-tight text-muted">
             {s('screenerHint')}
           </span>
         </span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }} aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="shrink-0 text-muted rtl:[transform:scaleX(-1)]" aria-hidden="true">
           <path d="M9 6l6 6-6 6" />
         </svg>
       </Link>
@@ -345,39 +335,47 @@ export default function SearchPage() {
         <>
           <section className="mt-6" aria-labelledby="search-recent">
             <div className="flex items-center justify-between gap-3">
-              <h2
-                id="search-recent"
-                className="t-kicker"
-                style={{ color: 'var(--color-muted)' }}
-              >
+              <h2 id="search-recent" className="t-kicker text-muted">
                 {s('recent')}
               </h2>
               {recent.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setRecent([])}
-                  className="min-h-11 shrink-0 rounded-full px-2 text-[12px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  style={{ color: 'var(--color-accent)' }}
+                  className="min-h-11 shrink-0 rounded-full px-2 text-[12px] text-accent transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   {s('clearAll')}
                 </button>
               )}
             </div>
             {recent.length === 0 ? (
-              <p className="mt-1 text-[12px]" style={{ color: 'var(--color-muted)' }}>
-                {s('noRecent')}
-              </p>
+              <p className="mt-2 text-[12px] text-muted">{s('noRecent')}</p>
             ) : (
-              <div className="mt-1 flex flex-wrap gap-2">
+              <div className="panel mt-2 overflow-hidden">
                 {recent.map((term) => (
                   <button
                     key={term}
                     type="button"
                     onClick={() => chooseRecent(term)}
-                    className="min-h-11 max-w-full truncate rounded-full px-3.5 text-[13px] transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                    style={{ border: '1px solid var(--color-line)', color: 'var(--color-fg)' }}
+                    className="row w-full text-start transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                   >
-                    {term}
+                    <svg
+                      aria-hidden="true"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="shrink-0 text-muted"
+                    >
+                      <path d="M4 5.5v4h4" />
+                      <path d="M4.6 9.5A8 8 0 1 1 4 12" />
+                      <path d="M12 8v4.5l3 1.8" />
+                    </svg>
+                    <span className="min-w-0 flex-1 truncate text-[14px]">{term}</span>
                   </button>
                 ))}
               </div>
@@ -387,18 +385,12 @@ export default function SearchPage() {
           {watchedQuotes.length > 0 && (
             <section className="mt-6" aria-labelledby="search-watchlist">
               <div className="flex items-baseline justify-between gap-3">
-                <h2
-                  id="search-watchlist"
-                  className="t-kicker"
-                  style={{ color: 'var(--color-muted)' }}
-                >
+                <h2 id="search-watchlist" className="t-kicker text-muted">
                   {s('watchlist')}
                 </h2>
-                <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
-                  {watchedQuotes.length}
-                </span>
+                <span className="num text-[11px] text-muted">{watchedQuotes.length}</span>
               </div>
-              <ul className="panel mt-2 divide-y divide-line overflow-hidden">
+              <ul className="panel mt-2 overflow-hidden">
                 {watchedQuotes.map((quote) => (
                   <QuoteRow
                     key={quote.symbol}
@@ -420,31 +412,21 @@ export default function SearchPage() {
             <button
               type="button"
               onClick={clearQuery}
-              className="min-h-11 rounded-full px-4 text-[13px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              style={{ border: '1px solid var(--color-line)' }}
+              className="min-h-11 rounded-full border border-line px-4 text-[13px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {s('clearQuery')}
             </button>
           }
         />
       ) : (
-        <section className="mt-5" aria-labelledby="search-results-heading">
+        <section className="mt-6" aria-labelledby="search-results-heading">
           <div className="flex items-baseline justify-between gap-3">
-            <h2
-              id="search-results-heading"
-              className="t-kicker"
-              style={{ color: 'var(--color-muted)' }}
-            >
+            <h2 id="search-results-heading" className="t-kicker text-muted">
               {s('results')}
             </h2>
-            <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
-              {results.length}
-            </span>
+            <span className="num text-[11px] text-muted">{results.length}</span>
           </div>
-          <ul
-            id="search-results"
-            className="panel mt-2 divide-y divide-line overflow-hidden"
-          >
+          <ul id="search-results" className="panel mt-2 overflow-hidden">
             {results.map((quote) => {
               const watched = watchlist.includes(quote.symbol)
               return (

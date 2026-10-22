@@ -84,11 +84,11 @@ function NewsRow({
     <LongPressLink
       to={`/news/${item.id}`}
       prompt={`${s('askAi')} — ${item.title[lang]}`}
-      className="panel block px-4 py-3.5 transition-colors active:opacity-80"
+      className="min-w-0 flex-1 py-3.5 transition-colors active:opacity-80"
     >
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
-          <h3 className="t-title line-clamp-2 text-[17px] leading-[1.3] font-semibold text-fg">
+          <h3 className="line-clamp-2 text-[17px] leading-[1.3] font-semibold tracking-[-0.011em] text-fg">
             {item.title[lang]}
           </h3>
           {deck && (
@@ -98,9 +98,9 @@ function NewsRow({
         </div>
         <StoryArt item={item} />
       </div>
-      <div className="t-kicker mt-3 flex items-center gap-2 text-muted">
+      <div className="mt-3 flex items-center gap-2 text-[11px] leading-[1.4] text-muted">
         {watched && (
-          <span className="flex shrink-0 items-center gap-1" style={{ color: 'var(--color-accent)' }}>
+          <span className="flex shrink-0 items-center gap-1 text-accent">
             <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full bg-current" />
             {s('watchMark')}
           </span>
@@ -115,7 +115,7 @@ function NewsRow({
           return (
             <span
               key={sym}
-              className="flex items-center gap-1 rounded-full border border-line px-2 py-0.5 text-[11px]"
+              className="flex items-center gap-1 rounded-full bg-bg px-2 py-0.5 text-[11px]"
             >
               <span className="num text-fg">{sym}</span>
               {quote && <span className="text-muted">{quote.name[lang]}</span>}
@@ -159,16 +159,16 @@ export default function NewsPage() {
     <Screen
       title={s('title')}
       action={
-        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
+        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px] text-accent">
           {s('calendar')}
         </Link>
       }
     >
       <Link
         to="/review"
-        className="panel flex min-h-[56px] items-center gap-3 px-3.5"
+        className="panel row mt-1"
       >
-        <span style={{ color: 'var(--color-muted)' }}>
+        <span className="text-muted">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M4 5h11l5 5v9H4z" />
             <path d="M8 12h8M8 16h5" />
@@ -176,11 +176,11 @@ export default function NewsPage() {
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[14px] leading-tight">{s('reviewEntry')}</span>
-          <span className="mt-0.5 block truncate text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+          <span className="mt-0.5 block truncate text-[11px] leading-tight text-muted">
             {s('reviewHint')}
           </span>
         </span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }} aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)] text-muted" aria-hidden="true">
           <path d="M9 6l6 6-6 6" />
         </svg>
       </Link>
@@ -189,7 +189,7 @@ export default function NewsPage() {
         <div
           role="group"
           aria-label={s('filterLabel')}
-          className="-mx-4 mt-1 flex gap-2 overflow-x-auto px-4 pb-0.5 [&::-webkit-scrollbar]:hidden"
+          className="mt-3 flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden"
           style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
         >
           {[null, ...sources].map((name) => {
@@ -201,12 +201,8 @@ export default function NewsPage() {
                 onClick={() => setSource(name)}
                 aria-pressed={active}
                 className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors ${
-                  active ? 'font-medium text-fg' : 'text-muted'
+                  active ? 'bg-surface font-medium text-fg' : 'text-muted'
                 }`}
-                style={{
-                  border: '1px solid var(--color-line)',
-                  background: active ? 'var(--color-surface)' : 'transparent',
-                }}
               >
                 {name ?? s('allSources')}
               </button>
@@ -218,10 +214,10 @@ export default function NewsPage() {
       {groups.length === 0 ? (
         <EmptyState text={source === null ? s('empty') : s('emptySource')} />
       ) : (
-        <div className="mt-4 space-y-6">
+        <div className="mt-6 space-y-6">
           {groups.map((group) => (
             <section key={group.stamp}>
-              <header className="mb-2.5 flex items-center gap-3 px-1">
+              <header className="mb-2 flex items-center gap-3">
                 <h2 className="t-kicker shrink-0 text-muted">
                   {group.stamp === todayStamp
                     ? s('today')
@@ -229,17 +225,11 @@ export default function NewsPage() {
                       ? s('yesterday')
                       : formatDay(group.stamp, lang)}
                 </h2>
-                <span
-                  aria-hidden="true"
-                  className="h-px flex-1 rtl:[transform:scaleX(-1)]"
-                  style={{
-                    background: 'linear-gradient(to right, var(--color-line), transparent)',
-                  }}
-                />
+                <span aria-hidden="true" className="h-px flex-1 bg-line" />
               </header>
-              <ul className="space-y-2.5">
+              <ul className="panel overflow-hidden">
                 {group.items.map((item) => (
-                  <li key={item.id}>
+                  <li key={item.id} className="row">
                     <NewsRow item={item} lang={lang} s={s} watchlist={watchlist} />
                   </li>
                 ))}

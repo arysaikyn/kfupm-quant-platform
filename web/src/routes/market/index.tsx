@@ -249,14 +249,6 @@ export default function MarketPage() {
         ? 'var(--color-down)'
         : 'var(--color-muted)'
 
-  // .t-kicker sets 10px unlayered, so the rail's 11px has to come inline.
-  const kicker = {
-    color: 'var(--color-muted)',
-    fontSize: 11,
-    // Letter-spacing tears the joins in Arabic script.
-    letterSpacing: lang === 'ar' ? 0 : undefined,
-  }
-
   return (
     <Screen
       title={t('tab.market')}
@@ -265,8 +257,7 @@ export default function MarketPage() {
           <Link
             to="/search"
             aria-label={s('goSearch')}
-            className="flex h-10 w-10 items-center justify-center rounded-full"
-            style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-muted"
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
               <circle cx="11" cy="11" r="6.5" />
@@ -276,8 +267,7 @@ export default function MarketPage() {
           <Link
             to="/alerts"
             aria-label={s('goAlerts')}
-            className="relative flex h-10 w-10 items-center justify-center rounded-full"
-            style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
+            className="relative flex h-10 w-10 items-center justify-center rounded-full bg-surface text-muted"
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M18 8a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" />
@@ -305,7 +295,7 @@ export default function MarketPage() {
             style={
               i === 0
                 ? { background: 'var(--color-fg)', color: 'var(--color-bg)' }
-                : { color: 'var(--color-muted)' }
+                : { background: 'var(--color-surface)', color: 'var(--color-muted)' }
             }
           >
             {label}
@@ -314,7 +304,7 @@ export default function MarketPage() {
       </div>
 
       {/* Live tape: the screen's signature, 0 KB */}
-      <div className="mt-3 border-y" style={{ borderColor: 'var(--color-line)' }}>
+      <div className="mt-3">
         <TickerTape
           quotes={quotes.slice(0, 5).concat(indices.map((ix) => ({
             symbol: ix.symbol,
@@ -345,7 +335,7 @@ export default function MarketPage() {
                 {fmtPct(indices[0].change, lang)}
               </p>
             </div>
-            <p className="t-display num mt-1 text-[38px] leading-none font-bold italic">
+            <p className="t-display num mt-1 text-[38px] leading-none">
               <AnimatedNumber value={indices[0].value} format={(n) => fmtNum(n, lang, 2)} />
             </p>
           </div>
@@ -376,8 +366,7 @@ export default function MarketPage() {
       <div
         role="tablist"
         aria-label={s('moreScreens')}
-        className="mt-4 flex rounded-full p-1"
-        style={{ border: '1px solid var(--color-line)' }}
+        className="mt-4 flex rounded-full bg-surface p-1"
       >
         {([
           ['rank', s('viewRank')],
@@ -395,7 +384,7 @@ export default function MarketPage() {
               className={`min-h-10 flex-1 rounded-full text-[12px] transition-colors ${
                 active ? 'font-medium' : 'text-muted'
               }`}
-              style={active ? { background: 'var(--color-surface)' } : undefined}
+              style={active ? { background: 'var(--color-bg)' } : undefined}
             >
               {label}
             </button>
@@ -487,8 +476,7 @@ export default function MarketPage() {
               </span>
               <Link
                 to={`/m/${pickedQuote.symbol}`}
-                className="flex min-h-11 items-center rounded-full px-3 text-[12px]"
-                style={{ border: '1px solid var(--color-line)' }}
+                className="flex min-h-11 items-center rounded-full px-3 text-[12px] text-accent"
               >
                 {s('openQuote')}
               </Link>
@@ -519,8 +507,8 @@ export default function MarketPage() {
               <button
                 type="button"
                 onClick={() => setSector(null)}
-                className="min-h-[44px] rounded-full px-4 text-[13px]"
-                style={{ border: '1px solid var(--color-line)' }}
+                className="min-h-11 rounded-full px-4 text-[13px] font-medium"
+                style={{ background: 'var(--color-accent)', color: '#fff' }}
               >
                 {s('rankPick')}
               </button>
@@ -573,44 +561,45 @@ export default function MarketPage() {
                 </button>
               </div>
             </div>
-            <div>
-              <div
-                aria-hidden="true"
-                className="mt-2 flex h-[3px] gap-px overflow-hidden rounded-full"
-                style={{ background: 'var(--color-line)' }}
-              >
-                {breadth.up > 0 && (
-                  <span style={{ flexGrow: breadth.up, background: 'var(--color-up)' }} />
-                )}
-                {breadth.down > 0 && (
-                  <span style={{ flexGrow: breadth.down, background: 'var(--color-down)' }} />
-                )}
-              </div>
+            {/* A 96px strip, not a page-wide bar: full width made a two-rule
+                summary look like a progress meter. */}
+            <div
+              aria-hidden="true"
+              className="mt-1 flex h-0.5 w-24 gap-0.5 overflow-hidden rounded-full"
+              style={{ background: 'var(--color-line)' }}
+            >
+              {breadth.up > 0 && (
+                <span
+                  className="rounded-full"
+                  style={{
+                    flexGrow: breadth.up,
+                    background: 'color-mix(in srgb, var(--color-up) 70%, transparent)',
+                  }}
+                />
+              )}
+              {breadth.down > 0 && (
+                <span
+                  className="rounded-full"
+                  style={{
+                    flexGrow: breadth.down,
+                    background: 'color-mix(in srgb, var(--color-down) 70%, transparent)',
+                  }}
+                />
+              )}
             </div>
   
-            <div className="panel mt-3 overflow-hidden">
+            <div className="panel mt-3 divide-y divide-line overflow-hidden">
               {/* Column rail: one grid shared with every row, so the figures sit
-                  in a line instead of drifting with each name length. */}
-              <div
-                aria-hidden="true"
-                className={`${ROW_GRID} ps-3 pe-11 py-2`}
-                style={{ borderBottom: '1px solid var(--color-line)' }}
-              >
-                <span className="t-kicker text-center" style={kicker}>
-                  #
-                </span>
-                <span className="t-kicker" style={kicker}>
-                  {s('colName')}
-                </span>
-                <span className={`t-kicker text-center ${SPARK_CELL}`} style={kicker}>
+                  in a line instead of drifting with each name length. The panel's
+                  divider draws the line under it; the rail draws nothing. */}
+              <div aria-hidden="true" className={`${ROW_GRID} ps-3 pe-11 py-2`}>
+                <span className="text-center text-[11px] text-muted">#</span>
+                <span className="text-[11px] text-muted">{s('colName')}</span>
+                <span className={`text-center text-[11px] text-muted ${SPARK_CELL}`}>
                   {s('col1m')}
                 </span>
-                <span className="t-kicker text-end" style={kicker}>
-                  {s('colLast')}
-                </span>
-                <span className="t-kicker text-end" style={kicker}>
-                  {s('colChg')}
-                </span>
+                <span className="text-end text-[11px] text-muted">{s('colLast')}</span>
+                <span className="text-end text-[11px] text-muted">{s('colChg')}</span>
               </div>
   
               <ul className="divide-y divide-line">
@@ -694,10 +683,7 @@ export default function MarketPage() {
         <div className="mt-7">
           <div className="flex items-center justify-between">
             <h2 className="text-[15px] font-semibold">{s('watchTitle')}</h2>
-            <span
-              className="num rounded-full px-2 py-0.5 text-[11px]"
-              style={{ background: 'var(--color-surface)', color: 'var(--color-muted)' }}
-            >
+            <span className="num rounded-full bg-surface px-2 py-0.5 text-[11px] text-muted">
               {watched.length}
             </span>
           </div>
@@ -708,8 +694,8 @@ export default function MarketPage() {
                 <button
                   type="button"
                   onClick={() => setView('rank')}
-                  className="min-h-[44px] rounded-full px-4 text-[13px]"
-                  style={{ border: '1px solid var(--color-line)', color: 'var(--color-fg)' }}
+                  className="min-h-11 rounded-full px-4 text-[13px] font-medium"
+                  style={{ background: 'var(--color-accent)', color: '#fff' }}
                 >
                   {s('watchCta')}
                 </button>

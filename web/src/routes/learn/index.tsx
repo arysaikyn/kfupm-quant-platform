@@ -132,7 +132,7 @@ export default function LearnPage() {
         <p className="text-[13px] leading-[1.5] text-muted">{s('intro')}</p>
 
         {/* The border lives on the wrapper so focus lights the whole field. */}
-        <div className="panel mt-3.5 flex items-center gap-1 ps-3.5 pe-1.5 focus-within:border-accent">
+        <div className="panel mt-3 flex h-14 items-center gap-1 ps-4 pe-1.5 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent">
           <span className="flex shrink-0 items-center text-muted">
             <SearchIcon />
           </span>
@@ -149,7 +149,7 @@ export default function LearnPage() {
             autoCorrect="off"
             spellCheck={false}
             enterKeyHint="search"
-            className="h-12 min-w-0 flex-1 appearance-none bg-transparent px-2 text-[16px] text-fg outline-none [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none placeholder:text-muted"
+            className="h-full min-w-0 flex-1 appearance-none bg-transparent px-2 text-[16px] text-fg outline-none [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none placeholder:text-muted"
           />
           <button
             type="button"
@@ -169,36 +169,22 @@ export default function LearnPage() {
       </div>
 
       {groups.map((group) => (
-        <section key={group.key} className="mt-1.5">
+        <section key={group.key} className="mt-6">
           {/* Sticks just under the Screen header (65px tall) while the group
               scrolls past, so the reader always knows the current bucket. */}
-          <h2
-            className="sticky top-[64px] z-20 -mx-4 flex items-center gap-2 px-4 pt-2.5 pb-2 text-[14px] font-semibold"
-            style={{
-              background: 'color-mix(in srgb, var(--color-bg) 96%, transparent)',
-              backdropFilter: 'blur(10px)',
-            }}
-          >
-            <span style={{ color: 'var(--color-accent)' }}>{group.key}</span>
-            <span
-              aria-hidden="true"
-              className="h-px flex-1"
-              style={{ background: 'var(--color-line)' }}
-            />
+          <h2 className="sticky top-[64px] z-20 -mx-4 flex items-center gap-2 bg-bg px-4 pt-2.5 pb-2 text-[14px] font-semibold">
+            <span className="text-fg">{group.key}</span>
           </h2>
 
           <ul className="panel divide-y divide-line overflow-hidden">
             {group.items.map((item) => (
-              <li key={item.term} className="px-4 py-3.5">
+              <li key={item.term} className="px-4 py-4">
                 <h3 className="t-title text-[17px] leading-[1.3] font-semibold text-fg">
                   {item.term}
                 </h3>
                 <p className="mt-1.5 text-[14px] leading-[1.55] text-fg/85">{item.plain}</p>
-                <div className="mt-2.5 border-s-2 border-accent ps-2.5">
-                  <p
-                    className="text-[11px] leading-[1.4] font-semibold"
-                    style={{ color: 'var(--color-accent)' }}
-                  >
+                <div className="mt-3 border-s-2 border-line ps-3">
+                  <p className="text-[11px] leading-[1.4] font-semibold text-muted">
                     {s('why')}
                   </p>
                   <p className="mt-1 text-[12.5px] leading-[1.5] text-muted">{item.why}</p>
@@ -216,8 +202,7 @@ export default function LearnPage() {
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="min-h-11 rounded-full px-4 text-[13px]"
-              style={{ border: '1px solid var(--color-line)' }}
+              className="min-h-11 rounded-full border border-line px-4 text-[13px]"
             >
               {s('emptyAction')}
             </button>

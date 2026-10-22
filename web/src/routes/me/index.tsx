@@ -39,10 +39,10 @@ export default function MePage() {
     >
       <section className="pt-2">
         {signedIn ? (
-          <div className="flex items-center gap-4">
+          <div className="panel row min-h-[88px] gap-4">
             <div
               aria-hidden="true"
-              className="num grid h-16 w-16 shrink-0 place-items-center rounded-full border border-line bg-surface text-[20px] font-semibold"
+              className="num grid h-16 w-16 shrink-0 place-items-center rounded-full bg-bg text-[20px] font-semibold"
             >
               {initialsOf(name)}
             </div>
@@ -52,10 +52,10 @@ export default function MePage() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-5 py-3">
+          <div className="panel flex flex-col items-center gap-5 px-4 py-6">
             <div
               aria-hidden="true"
-              className="grid h-20 w-20 place-items-center rounded-full border border-line bg-surface text-muted"
+              className="grid h-20 w-20 place-items-center rounded-full bg-bg text-muted"
             >
               <svg
                 width="30"
@@ -73,7 +73,7 @@ export default function MePage() {
             <button
               type="button"
               onClick={() => setSignedIn(true)}
-              className="min-h-[48px] w-full rounded-[14px] bg-accent text-[15px] font-semibold text-[#0b0c0e] active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+              className="h-12 w-full rounded-full bg-accent text-[15px] font-semibold text-white active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
             >
               {s('signIn')}
             </button>
@@ -81,14 +81,14 @@ export default function MePage() {
         )}
       </section>
 
-      <section className="mt-8" aria-labelledby="me-appearance">
-        <h2 id="me-appearance" className="px-1 pb-2 text-[12px] font-medium text-muted">
+      <section className="mt-6" aria-labelledby="me-appearance">
+        <h2 id="me-appearance" className="t-kicker mb-2 text-muted">
           {s('appearance')}
         </h2>
         <div
           role="group"
           aria-labelledby="me-appearance"
-          className="flex gap-1 rounded-full border border-line bg-surface p-1"
+          className="panel"
         >
           {(['light', 'dark'] as Theme[]).map((mode) => {
             const active = theme === mode
@@ -98,35 +98,48 @@ export default function MePage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setTheme(mode)}
-                className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-full text-[14px] font-medium transition-colors"
-                style={
-                  active
-                    ? { background: 'var(--color-accent)', color: '#fff' }
-                    : { color: 'var(--color-muted)' }
-                }
+                className="row w-full text-start transition-opacity active:opacity-70"
               >
-                {mode === 'light' ? (
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                    <circle cx="12" cy="12" r="4" />
-                    <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" />
-                  </svg>
-                ) : (
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z" />
+                <span className="text-muted">
+                  {mode === 'light' ? (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                      <circle cx="12" cy="12" r="4" />
+                      <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" />
+                    </svg>
+                  ) : (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z" />
+                    </svg>
+                  )}
+                </span>
+                <span className="flex-1 text-[15px]">{s(mode === 'light' ? 'light' : 'dark')}</span>
+                {active && (
+                  <svg
+                    aria-hidden="true"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="shrink-0 text-accent"
+                  >
+                    <path d="M5 12.5l4.6 4.6L19 7.6" />
                   </svg>
                 )}
-                {s(mode === 'light' ? 'light' : 'dark')}
               </button>
             )
           })}
         </div>
       </section>
 
-      <section className="mt-8" aria-labelledby="me-more">
-        <h2 id="me-more" className="px-1 pb-2 text-[12px] font-medium text-muted">
+      <section className="mt-6" aria-labelledby="me-more">
+        <h2 id="me-more" className="t-kicker mb-2 text-muted">
           {s('moreTitle')}
         </h2>
-        <div className="panel divide-y divide-line overflow-hidden">
+        <div className="panel overflow-hidden">
           {[
             { to: '/learn', label: s('glossary') },
             { to: '/watchlists', label: s('moreWatchlists') },
@@ -135,10 +148,10 @@ export default function MePage() {
             <Link
               key={row.to}
               to={row.to}
-              className="flex min-h-[52px] items-center justify-between gap-3 px-4"
+              className="row transition-opacity active:opacity-70"
             >
-              <span className="text-[14px]">{row.label}</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
+              <span className="flex-1 text-[14px]">{row.label}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)] shrink-0 text-muted">
                 <path d="M9 6l6 6-6 6" />
               </svg>
             </Link>
@@ -146,14 +159,14 @@ export default function MePage() {
         </div>
       </section>
 
-      <section className="mt-8" aria-labelledby="me-language">
-        <h2 id="me-language" className="px-1 pb-2 text-[12px] font-medium text-muted">
+      <section className="mt-6" aria-labelledby="me-language">
+        <h2 id="me-language" className="t-kicker mb-2 text-muted">
           {s('language')}
         </h2>
         <div
           role="group"
           aria-labelledby="me-language"
-          className="panel divide-y divide-line overflow-hidden"
+          className="panel overflow-hidden"
         >
           {LANGUAGES.map((row) => {
             const active = lang === row.id
@@ -163,7 +176,7 @@ export default function MePage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setLang(row.id)}
-                className="flex min-h-[60px] w-full items-center gap-3 px-4 text-start transition-colors hover:bg-white/5 active:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                className="row w-full text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
               >
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[15px] leading-tight">{s(row.native)}</span>

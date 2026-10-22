@@ -394,10 +394,7 @@ function Metric({
   divided?: boolean
 }) {
   return (
-    <div
-      className="min-w-0"
-      style={divided ? { borderInlineStart: '1px solid var(--color-line)', paddingInlineStart: 12 } : undefined}
-    >
+    <div className={divided ? 'min-w-0 border-s border-line ps-3' : 'min-w-0'}>
       <div dir="ltr" className={`num text-[17px] leading-tight font-semibold ${tone ?? ''}`}>
         {value}
       </div>
@@ -412,7 +409,7 @@ function Metric({
 function RuleChip({ ok, label }: { ok: boolean; label: string }) {
   return (
     <span
-      className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full px-2 py-[3px] text-[10px] leading-none"
+      className="mt-0.5 flex shrink-0 items-center gap-1 rounded-lg px-2 py-[3px] text-[10px] leading-none"
       style={{
         color: ok ? 'var(--color-accent)' : 'var(--color-muted)',
         border: `1px solid ${ok ? 'transparent' : 'var(--color-line)'}`,
@@ -510,8 +507,7 @@ export default function StrategyDetail() {
       type="button"
       onClick={() => navigate('/strategy')}
       aria-label={s('back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-      style={{ border: '1px solid var(--color-line)' }}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
     >
       <svg
         width="18"
@@ -615,7 +611,7 @@ export default function StrategyDetail() {
 
   return (
     <Screen title={st.name[lang]} leading={back}>
-      <div className="space-y-4 pt-1">
+      <div className="space-y-6 pt-1">
         {/* The verdict first: one big number, the worst fall beside it, then what it is. */}
         <section>
           <div className="flex items-end justify-between gap-4">
@@ -655,8 +651,7 @@ export default function StrategyDetail() {
               return (
                 <span
                   key={tag}
-                  className="rounded-full px-2.5 py-1 text-[11px] leading-none"
-                  style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
+                  className="rounded-lg border border-line px-2.5 py-1 text-[11px] leading-none text-muted"
                 >
                   {key ? tagLabel(key) : tag}
                 </span>
@@ -665,18 +660,17 @@ export default function StrategyDetail() {
           </div>
         </section>
 
-        
         {/* The return above in money: what a rerun pays in fees and slippage. */}
         <section className="panel p-4">
           <h2 className="text-[13px] font-medium">{s('costTitle')}</h2>
-          <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-3">
-            <div className="min-w-0">
+          <div className="mt-3 grid grid-cols-2">
+            <div className="min-w-0 pe-3 pb-3">
               <div dir="ltr" className="num text-[17px] leading-tight font-semibold">
                 {fmtNum(INITIAL_CAPITAL, lang, 0)}
               </div>
               <div className="mt-1 text-[12px] leading-tight">{s('costStart')}</div>
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 border-s border-line ps-3 pb-3">
               <div dir="ltr" className="num text-[17px] leading-tight font-semibold">
                 {fmtNum(finalValue, lang, 2)}
               </div>
@@ -685,7 +679,7 @@ export default function StrategyDetail() {
                 {fmtPct(st.lastReturn, lang, 1)}
               </div>
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 border-t border-line pe-3 pt-3">
               <div dir="ltr" className="num text-[17px] leading-tight font-semibold text-down">
                 {'−'}
                 {fmtNum(feesCost, lang, 2)}
@@ -695,7 +689,7 @@ export default function StrategyDetail() {
                 {s('costFeesHint')}
               </div>
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 border-s border-t border-line ps-3 pt-3">
               <div dir="ltr" className="num text-[17px] leading-tight font-semibold text-down">
                 {'−'}
                 {fmtNum(slippageCost, lang, 2)}
@@ -713,14 +707,14 @@ export default function StrategyDetail() {
 
         <Link
           to={`/report/${st.id}`}
-          className="panel flex min-h-[52px] items-center justify-between gap-3 px-4 text-[13px]"
+          className="panel flex min-h-14 items-center justify-between gap-3 p-4 text-[13px]"
         >
           <span>{s('fullReport')}</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
             <path d="M9 6l6 6-6 6" />
           </svg>
         </Link>
-<section className="panel p-4">
+        <section className="panel p-4">
           <h2 className="text-[13px] font-medium">{s('chartTitle')}</h2>
           <div className="mt-2" dir="ltr">
             <EquityChart lang={lang} />
@@ -759,7 +753,7 @@ export default function StrategyDetail() {
             <h2 className="text-[13px] font-medium">{s('rulesTitle')}</h2>
             {rulesDirty && (
               <span
-                className="shrink-0 rounded-full px-2 py-[3px] text-[10px] leading-none"
+                className="shrink-0 rounded-lg px-2 py-[3px] text-[10px] leading-none"
                 style={{
                   color: 'var(--color-accent)',
                   background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)',
@@ -773,18 +767,14 @@ export default function StrategyDetail() {
           <p className="mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
             {lab.rulesHint}
           </p>
-          <ul className="mt-2">
-            {RULES.map((rule, i) => {
+          <ul className="mt-2 divide-y divide-line">
+            {RULES.map((rule) => {
               const param = rule.param
               const limit = param ? LIMITS[param] : null
               const current = param ? draftRules[param] : 0
               const heading = ruleHeading(rule, draftRules, lang) ?? s(rule.key)
               return (
-                <li
-                  key={rule.key}
-                  className="py-3"
-                  style={{ borderTop: i === 0 ? 'none' : '1px solid var(--color-line)' }}
-                >
+                <li key={rule.key} className="py-3">
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px] leading-snug">{heading}</p>
@@ -799,14 +789,17 @@ export default function StrategyDetail() {
                     <RuleChip ok={rule.ok} label={rule.ok ? PASS[lang] : FAIL[lang]} />
                   </div>
                   {param && limit ? (
-                    <div className="mt-1 flex items-center gap-1" role="group" aria-label={heading}>
+                    <div
+                      className="mt-1 inline-flex items-center rounded-full border border-line"
+                      role="group"
+                      aria-label={heading}
+                    >
                       <button
                         type="button"
                         onClick={() => changeRule(param, -1)}
                         disabled={current <= limit.min}
                         aria-label={`${lab.decrease} · ${heading}`}
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[17px] leading-none disabled:opacity-30"
-                        style={{ border: '1px solid var(--color-line)' }}
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[17px] leading-none transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent disabled:opacity-30"
                       >
                         −
                       </button>
@@ -822,8 +815,7 @@ export default function StrategyDetail() {
                         onClick={() => changeRule(param, 1)}
                         disabled={current >= limit.max}
                         aria-label={`${lab.increase} · ${heading}`}
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[17px] leading-none disabled:opacity-30"
-                        style={{ border: '1px solid var(--color-line)' }}
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[17px] leading-none transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent disabled:opacity-30"
                       >
                         +
                       </button>
@@ -883,8 +875,7 @@ export default function StrategyDetail() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-[13px] font-medium">{lab.sweepTitle}</h2>
             <span
-              className="shrink-0 rounded-full px-2 py-[3px] text-[10px] leading-none"
-              style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
+              className="shrink-0 rounded-lg border border-line px-2 py-[3px] text-[10px] leading-none text-muted"
             >
               {lab.simulated}
             </span>
@@ -894,12 +885,12 @@ export default function StrategyDetail() {
           </p>
           <table className="mt-2 w-full table-fixed border-collapse text-[11px]">
             <thead>
-              <tr style={{ color: 'var(--color-muted)' }}>
-                <th scope="col" className="w-[30%] pb-1 text-start font-normal">
+              <tr className="border-b border-line text-muted">
+                <th scope="col" className="w-[30%] pb-2 text-start font-normal">
                   <span className="sr-only">{lab.rowThreshold}</span>
                 </th>
                 {SWEEP.map((mult) => (
-                  <th key={mult} scope="col" className="pb-1 text-center font-normal">
+                  <th key={mult} scope="col" className="pb-2 text-center font-normal">
                     <span className="block">
                       {mult < 1 ? lab.tighter : mult > 1 ? lab.looser : lab.current}
                     </span>
@@ -912,8 +903,8 @@ export default function StrategyDetail() {
                 ))}
               </tr>
             </thead>
-            <tbody>
-              <tr style={{ borderTop: '1px solid var(--color-line)' }}>
+            <tbody className="divide-y divide-line">
+              <tr>
                 <th scope="row" className="py-2 text-start font-normal" style={{ color: 'var(--color-muted)' }}>
                   {lab.rowThreshold}
                 </th>
@@ -925,7 +916,7 @@ export default function StrategyDetail() {
                   </td>
                 ))}
               </tr>
-              <tr style={{ borderTop: '1px solid var(--color-line)' }}>
+              <tr>
                 <th scope="row" className="py-2 text-start font-normal" style={{ color: 'var(--color-muted)' }}>
                   {lab.rowReturn}
                 </th>
@@ -940,7 +931,7 @@ export default function StrategyDetail() {
                   </td>
                 ))}
               </tr>
-              <tr style={{ borderTop: '1px solid var(--color-line)' }}>
+              <tr>
                 <th scope="row" className="py-2 text-start font-normal" style={{ color: 'var(--color-muted)' }}>
                   {lab.rowDrawdown}
                 </th>
@@ -965,10 +956,7 @@ export default function StrategyDetail() {
               </div>
               <div className="mt-1 text-[11px] leading-tight">{lab.deflated}</div>
             </div>
-            <div
-              className="min-w-0"
-              style={{ borderInlineStart: '1px solid var(--color-line)', paddingInlineStart: 12 }}
-            >
+            <div className="min-w-0 border-s border-line ps-3">
               <div dir="ltr" className="num text-[19px] leading-none font-semibold">
                 {pText}
               </div>
@@ -983,7 +971,7 @@ export default function StrategyDetail() {
               </span>
             </span>
             <span
-              className="shrink-0 rounded-full px-2.5 py-1 text-[10px] leading-none"
+              className="shrink-0 rounded-lg px-2.5 py-1 text-[10px] leading-none"
               style={verdictChip}
             >
               {verdict}
@@ -1021,10 +1009,7 @@ export default function StrategyDetail() {
                       {fmtPct(part.shown / 100, lang, 1)}
                     </span>
                   </div>
-                  <div
-                    className="relative mt-1 h-1.5 overflow-hidden rounded-full"
-                    style={{ background: 'var(--color-line)' }}
-                  >
+                  <div className="relative mt-1 h-1.5 overflow-hidden rounded-full bg-line">
                     <div
                       className="absolute inset-y-0"
                       style={{
@@ -1039,10 +1024,7 @@ export default function StrategyDetail() {
               )
             })}
           </div>
-          <div
-            className="mt-3 flex items-center justify-between gap-3 border-t pt-2 text-[12px]"
-            style={{ borderColor: 'var(--color-line)' }}
-          >
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-2 text-[12px]">
             <span>{s('mTotal')}</span>
             <span dir="ltr" className={`num font-semibold ${tone}`}>
               {fmtPct(total, lang, 1)}
@@ -1074,10 +1056,7 @@ export default function StrategyDetail() {
                   {run.step + 1} / 4
                 </span>
               </div>
-              <div
-                className="mt-1.5 h-1.5 overflow-hidden rounded-full"
-                style={{ background: 'var(--color-line)' }}
-              >
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-line">
                 <div
                   className="h-full rounded-full transition-all duration-300"
                   style={{

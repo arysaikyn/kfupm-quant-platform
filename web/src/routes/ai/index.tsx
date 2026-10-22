@@ -220,7 +220,7 @@ export default function AiPage() {
       <Screen
       title={t('tab.ai')}
       action={
-        <Link to="/runs" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
+        <Link to="/runs" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px] text-accent">
           {s('runs')}
         </Link>
       }
@@ -237,7 +237,7 @@ export default function AiPage() {
             return (
               <span
                 key={key}
-                className="inline-flex h-11 items-center rounded-full border border-line bg-surface ps-3 pe-0.5"
+                className="inline-flex h-11 items-center rounded-full bg-surface ps-3 pe-0.5"
               >
                 <span className="text-[12px]">{label}</span>
                 <span className={`num ms-2 text-[11px] ${toneOf(change)}`}>
@@ -262,7 +262,7 @@ export default function AiPage() {
               type="button"
               onClick={() => setSheet((v) => !v)}
               aria-expanded={sheet}
-              className="inline-flex h-11 items-center gap-1 rounded-full border border-dashed border-line px-3 text-[12px] text-muted"
+              className="inline-flex h-11 items-center gap-1 rounded-full px-3 text-[12px] text-muted"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M12 5v14M5 12h14" />
@@ -283,13 +283,13 @@ export default function AiPage() {
                     type="button"
                     disabled={busy}
                     onClick={() => send(s(preset.prompt))}
-                    className="inline-flex h-11 items-center rounded-full border border-line bg-surface px-3 text-[12px] disabled:opacity-60"
+                    className="inline-flex h-11 items-center rounded-full bg-surface px-3 text-[12px] disabled:opacity-60"
                   >
                     {s(preset.label)}
                   </button>
                 ))}
               </div>
-              <p className="mt-4 text-[12px] text-muted">{s('capTitle')}</p>
+              <p className="t-kicker mt-6 text-muted">{s('capTitle')}</p>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 {CAPS.map((c, i) => (
                   <button
@@ -297,11 +297,10 @@ export default function AiPage() {
                     type="button"
                     disabled={busy}
                     onClick={() => send(s(c.t))}
-                    className="panel flex min-h-[74px] items-start gap-2 p-3 text-start disabled:opacity-60"
+                    className="panel flex min-h-[74px] items-start gap-2 p-4 text-start disabled:opacity-60"
                   >
                     <span
-                      className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
-                      style={{ background: 'rgba(168,85,247,.16)', color: 'var(--color-accent)' }}
+                      className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-accent"
                     >
                       {CAP_ICONS[i]}
                     </span>

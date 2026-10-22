@@ -103,8 +103,7 @@ function BackLink({ label }: { label: string }) {
     <Link
       to="/strategy"
       aria-label={label}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/5 active:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-      style={{ border: '1px solid var(--color-line)' }}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       <BackIcon />
     </Link>
@@ -160,8 +159,7 @@ export default function ReportPage() {
         <div className="flex justify-center pb-8">
           <Link
             to="/strategy"
-            className="flex min-h-11 items-center justify-center rounded-full px-5 text-[13px] font-medium transition-colors hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            style={{ border: '1px solid var(--color-line)' }}
+            className="flex min-h-11 items-center justify-center rounded-full border border-line px-5 text-[13px] font-medium transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {s('notFoundAction')}
           </Link>
@@ -262,7 +260,7 @@ export default function ReportPage() {
         </div>
 
         <div className="mt-8">
-          <p className="t-kicker text-accent">
+          <p className="inline-flex items-center rounded-full border border-line px-2.5 py-1 text-[10px] leading-none text-muted">
             <span dir="ltr">{st.id}</span>
           </p>
           <h1 className="t-display mt-2.5 text-[32px] leading-[1.1] font-semibold sm:text-[38px]">
@@ -288,7 +286,7 @@ export default function ReportPage() {
                 return (
                   <li
                     key={tag}
-                    className="rounded-full border border-line px-2.5 py-1 text-[10px] leading-none text-muted"
+                    className="rounded-lg border border-line px-2.5 py-1 text-[10px] leading-none text-muted"
                   >
                     {s(key)}
                   </li>
@@ -331,101 +329,103 @@ export default function ReportPage() {
         </aside>
 
         <article className="min-w-0 max-w-[640px]">
-          <section id="conclusion" className="scroll-mt-6 border-t border-line pt-7">
-            <h2 className="t-kicker text-muted">{s('conclusionLabel')}</h2>
-            <p className="mt-4 text-[20px] leading-[1.5] font-semibold tracking-[-0.01em] sm:text-[22px]">
-              {conclusion}
-            </p>
-          </section>
+          <div className="panel overflow-hidden">
+            <section id="conclusion" className="scroll-mt-6 p-4">
+              <h2 className="t-kicker text-muted">{s('conclusionLabel')}</h2>
+              <p className="mt-4 text-[20px] leading-[1.5] font-semibold tracking-[-0.01em] sm:text-[22px]">
+                {conclusion}
+              </p>
+            </section>
 
-          <section id="basis" className="mt-10 scroll-mt-6 border-t border-line pt-7">
-            <h2 className="t-kicker text-muted">{s('basisLabel')}</h2>
-            <p className="mt-2 text-[12px] leading-relaxed text-muted">{s('basisIntro')}</p>
-            <ol className="mt-5">
-              {evidence.map((row, index) => (
-                <li
-                  key={row.label}
-                  className="border-t border-line py-4 first:border-t-0 first:pt-0"
-                >
-                  <div className="flex items-baseline justify-between gap-3">
-                    <div className="flex min-w-0 items-baseline gap-2.5">
-                      <span className="num shrink-0 text-[10px] text-muted">
-                        {String(index + 1).padStart(2, '0')}
+            <section
+              id="basis"
+              className="scroll-mt-6 border-t border-line p-4"
+            >
+              <h2 className="t-kicker text-muted">{s('basisLabel')}</h2>
+              <p className="mt-2 text-[12px] leading-relaxed text-muted">{s('basisIntro')}</p>
+              <ol className="mt-4 divide-y divide-line">
+                {evidence.map((row, index) => (
+                  <li key={row.label} className="py-3.5">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <div className="flex min-w-0 items-baseline gap-2.5">
+                        <span className="num shrink-0 text-[10px] text-muted">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <p className="min-w-0 text-[13px] leading-snug font-medium">{row.label}</p>
+                      </div>
+                      <span
+                        className={`num shrink-0 text-[14px] leading-snug font-semibold ${
+                          row.tone ?? 'text-fg'
+                        }`}
+                      >
+                        {row.value}
                       </span>
-                      <p className="min-w-0 text-[13px] leading-snug font-medium">{row.label}</p>
                     </div>
-                    <span
-                      className={`num shrink-0 text-[14px] leading-snug font-semibold ${
-                        row.tone ?? 'text-fg'
-                      }`}
-                    >
-                      {row.value}
-                    </span>
+                    <p className="mt-1.5 ps-6 text-[12px] leading-relaxed text-muted">
+                      {row.note}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+
+            <section id="risk" className="scroll-mt-6 border-t border-line p-4">
+              <h2 className="t-kicker text-muted">{s('riskLabel')}</h2>
+              <ul className="mt-4 divide-y divide-line">
+                {risks.map((row) => (
+                  <li key={row.title} className="py-3.5">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <p className="min-w-0 text-[13px] font-medium">{row.title}</p>
+                      <span className="num shrink-0 text-[13px] font-semibold text-fg">
+                        {row.value}
+                      </span>
+                    </div>
+                    <p className="mt-1.5 text-[12px] leading-relaxed text-muted">{row.body}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section id="wrong" className="scroll-mt-6 border-t border-line p-4">
+              <h2 className="t-kicker text-muted">{s('wrongLabel')}</h2>
+              <p className="mt-4 border-s border-line ps-4 text-[14px] leading-[1.75]">
+                {ends ? s('wrongWithEquity') : s('wrongNoEquity')}
+              </p>
+            </section>
+
+            <section id="next" className="scroll-mt-6 border-t border-line p-4">
+              <h2 className="t-kicker text-muted">{s('nextLabel')}</h2>
+              <div className="mt-4 divide-y divide-line">
+                <Link
+                  to={`/strategy/${st.id}`}
+                  className="-mx-2 flex min-h-14 items-center gap-3 rounded-[10px] px-2 py-3.5 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-medium">{s('nextStrategyTitle')}</p>
+                    <p className="mt-1 text-[12px] leading-relaxed text-muted">
+                      {s('nextStrategyBody')}
+                    </p>
                   </div>
-                  <p className="mt-1.5 ps-6 text-[12px] leading-relaxed text-muted">
-                    {row.note}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </section>
+                  <ArrowIcon />
+                </Link>
 
-          <section id="risk" className="mt-10 scroll-mt-6 border-t border-line pt-7">
-            <h2 className="t-kicker text-muted">{s('riskLabel')}</h2>
-            <ul className="panel mt-4 divide-y divide-line overflow-hidden">
-              {risks.map((row) => (
-                <li key={row.title} className="p-4">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <p className="min-w-0 text-[13px] font-medium">{row.title}</p>
-                    <span className="num shrink-0 text-[13px] font-semibold text-fg">
-                      {row.value}
-                    </span>
+                <Link
+                  to="/ai"
+                  className="-mx-2 flex min-h-14 items-center gap-3 rounded-[10px] px-2 py-3.5 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-medium">{s('nextAiTitle')}</p>
+                    <p className="mt-1 text-[12px] leading-relaxed text-muted">
+                      {s('nextAiBody')}
+                    </p>
                   </div>
-                  <p className="mt-1.5 text-[12px] leading-relaxed text-muted">{row.body}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
+                  <ArrowIcon />
+                </Link>
+              </div>
+            </section>
+          </div>
 
-          <section id="wrong" className="mt-10 scroll-mt-6 border-t border-line pt-7">
-            <h2 className="t-kicker text-muted">{s('wrongLabel')}</h2>
-            <p className="mt-4 border-s-2 border-accent ps-4 text-[14px] leading-[1.75]">
-              {ends ? s('wrongWithEquity') : s('wrongNoEquity')}
-            </p>
-          </section>
-
-          <section id="next" className="mt-10 scroll-mt-6 border-t border-line pt-7">
-            <h2 className="t-kicker text-muted">{s('nextLabel')}</h2>
-            <div className="mt-4 grid gap-3">
-              <Link
-                to={`/strategy/${st.id}`}
-                className="panel flex min-h-[72px] items-center gap-3 p-4 transition-colors hover:border-accent active:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-medium">{s('nextStrategyTitle')}</p>
-                  <p className="mt-1 text-[12px] leading-relaxed text-muted">
-                    {s('nextStrategyBody')}
-                  </p>
-                </div>
-                <ArrowIcon />
-              </Link>
-
-              <Link
-                to="/ai"
-                className="panel flex min-h-[72px] items-center gap-3 p-4 transition-colors hover:border-accent active:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-medium">{s('nextAiTitle')}</p>
-                  <p className="mt-1 text-[12px] leading-relaxed text-muted">
-                    {s('nextAiBody')}
-                  </p>
-                </div>
-                <ArrowIcon />
-              </Link>
-            </div>
-          </section>
-
-          <footer className="mt-12 border-t border-line pt-5">
+          <footer className="mt-6">
             <p className="t-kicker text-muted">
               {fill(s('footerGenerated'), { time: fmtMoment(generatedAt, lang) })}
             </p>

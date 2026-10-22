@@ -38,10 +38,10 @@ function EvidenceRows({ symbol }: { symbol?: string }) {
   const rows = evidenceFor(symbol, lang)
 
   return (
-    <div className="mt-3 space-y-1">
+    <div className="panel">
       {rows.map((row) => (
-        <div key={row.key} className="flex min-h-6 items-center gap-2">
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-line bg-surface text-muted">
+        <div key={row.key} className="row min-h-11">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center text-muted">
             {row.key === 'vol' ? (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M3 12h4l3-7 4 14 3-7h4" />
@@ -72,13 +72,7 @@ function Caret() {
 export function UserBubble({ text }: { text: string }) {
   return (
     <div className="flex justify-end">
-      <div
-        className="max-w-[85%] rounded-2xl border px-4 py-2.5"
-        style={{
-          background: 'rgba(168,85,247,.18)',
-          borderColor: 'rgba(168,85,247,.32)',
-        }}
-      >
+      <div className="max-w-[85%] rounded-2xl border border-line bg-surface px-4 py-2.5">
         <p
           dir="auto"
           className="text-start text-[14px] leading-relaxed break-words whitespace-pre-wrap"
@@ -104,29 +98,31 @@ export function AssistantMessage({
   const lastFilled = text.reduce((acc, p, i) => (p.length > 0 ? i : acc), -1)
 
   return (
-    <div>
+    <div className="space-y-2">
       <StepTimeline shown={m.shown} total={m.total} />
 
-      <div className="space-y-2 text-[14px] leading-relaxed">
-        {lastFilled < 0 && !complete && (
-          <p>
-            <Caret />
-          </p>
-        )}
-        {text.map((p, i) =>
-          p.length === 0 ? null : (
-            <p key={i} dir="auto" className="break-words whitespace-pre-wrap">
-              {p}
-              {!complete && i === lastFilled && <Caret />}
+      <div className="panel p-4 text-[14px] leading-relaxed">
+        <div className="space-y-2">
+          {lastFilled < 0 && !complete && (
+            <p>
+              <Caret />
             </p>
-          ),
-        )}
+          )}
+          {text.map((p, i) =>
+            p.length === 0 ? null : (
+              <p key={i} dir="auto" className="break-words whitespace-pre-wrap">
+                {p}
+                {!complete && i === lastFilled && <Caret />}
+              </p>
+            ),
+          )}
+        </div>
       </div>
 
       {complete && <EvidenceRows symbol={evidenceSymbol} />}
 
       {complete && m.sources.length > 0 && (
-        <Sources defaultOpen className="mt-3 mb-0">
+        <Sources defaultOpen className="mb-0">
           <SourcesTrigger count={m.sources.length} className="text-[11px] text-muted">
             {`${sourcesLabel} · ${m.sources.length}`}
           </SourcesTrigger>

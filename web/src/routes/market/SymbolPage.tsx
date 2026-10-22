@@ -51,20 +51,16 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
     <svg
       viewBox={`0 0 ${w} ${h}`}
       className={`${hasDrawnOnce ? "" : "chart-draw"} h-auto w-full`}
-      style={{ filter: `drop-shadow(0 0 14px color-mix(in srgb, ${stroke} 45%, transparent))` }}
       aria-hidden="true"
     >
-      <defs>
-        <linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" style={{ stopColor: stroke, stopOpacity: 0.28 }} />
-          <stop offset="100%" style={{ stopColor: stroke, stopOpacity: 0 }} />
-        </linearGradient>
-      </defs>
-      <path d={area} fill="url(#priceFill)" />
+      {/* A flat 10% wash under the line: a hint of direction, never a glow. */}
+      <path
+        d={area}
+        style={{ fill: `color-mix(in srgb, ${stroke} 6%, transparent)` }}
+      />
       <path
         d={line}
-        fill="none"
-        stroke={stroke}
+        style={{ fill: 'none', stroke }}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -96,8 +92,7 @@ export default function SymbolPage() {
       type="button"
       onClick={goBack}
       aria-label={t('common.back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-      style={{ border: '1px solid var(--color-line)', color: 'var(--color-fg)' }}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface"
     >
       <svg
         width="20"
@@ -123,8 +118,8 @@ export default function SymbolPage() {
         <div className="flex justify-center">
           <Link
             to="/"
-            className="flex min-h-[44px] items-center rounded-full px-4 text-[13px]"
-            style={{ border: '1px solid var(--color-line)' }}
+            className="flex min-h-11 items-center rounded-full px-4 text-[13px] font-medium"
+            style={{ background: 'var(--color-accent)', color: '#fff' }}
           >
             {t('tab.market')}
           </Link>
@@ -217,8 +212,7 @@ export default function SymbolPage() {
       action={
         <Link
           to={`/compare?a=${quote.symbol}`}
-          className="flex min-h-11 shrink-0 items-center rounded-full px-3.5 text-[12px]"
-          style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
+          className="flex min-h-11 shrink-0 items-center rounded-full bg-surface px-3.5 text-[12px] text-muted"
         >
           {s('goCompare')}
         </Link>
@@ -231,7 +225,7 @@ export default function SymbolPage() {
             {quote.symbol} · {quote.currency}
           </p>
           <div className="mt-1.5 flex flex-wrap items-end gap-x-2 gap-y-1">
-            <span className="t-display num text-[46px] leading-none font-bold italic">
+            <span className="t-display num text-[46px] leading-none">
               <AnimatedNumber value={quote.price} format={(n) => fmtNum(n, lang, 2)} />
             </span>
             <span className="pb-0.5 text-[13px]" style={{ color: 'var(--color-muted)' }}>
@@ -264,10 +258,9 @@ export default function SymbolPage() {
             watched
               ? {
                   background: 'color-mix(in srgb, var(--color-accent) 16%, transparent)',
-                  border: '1px solid color-mix(in srgb, var(--color-accent) 38%, transparent)',
                   color: 'var(--color-accent)',
                 }
-              : { border: '1px solid var(--color-line)', color: 'var(--color-muted)' }
+              : { background: 'var(--color-surface)', color: 'var(--color-muted)' }
           }
         >
           <svg
@@ -304,10 +297,7 @@ export default function SymbolPage() {
       </div>
 
       {/* Chart */}
-      <div
-        className="mt-4 rounded-2xl p-3"
-        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
-      >
+      <div className="panel mt-4 p-3">
         <PriceChart data={series} up={up} />
         <div
           role="group"
@@ -338,17 +328,11 @@ export default function SymbolPage() {
 
       {/* Rules */}
       <SectionHead title={s('rulesTitle')} />
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div className="panel mt-2">
         {rules.map((r) => (
-          <div
-            key={r.title}
-            className="max-w-full rounded-2xl px-3 py-2"
-            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
-          >
-            <p className="text-[13px] font-medium">{r.title}</p>
-            <p className="num mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
-              {r.sub}
-            </p>
+          <div key={r.title} className="row justify-between gap-3">
+            <p className="min-w-0 truncate text-[13px]">{r.title}</p>
+            <p className="num shrink-0 text-end text-[11px] text-muted">{r.sub}</p>
           </div>
         ))}
       </div>
@@ -360,16 +344,12 @@ export default function SymbolPage() {
           {s('newsEmpty')}
         </p>
       ) : (
-        <ul className="mt-2 space-y-2">
+        <ul className="panel mt-2 overflow-hidden">
           {related.map((n) => (
-            <li key={n.id}>
-              <Link
-                to={`/news/${n.id}`}
-                className="block rounded-2xl px-3.5 py-3 active:opacity-75"
-                style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}
-              >
+            <li key={n.id} className="row">
+              <Link to={`/news/${n.id}`} className="block w-full py-3 active:opacity-75">
                 <p className="line-clamp-2 text-[14px] leading-snug">{n.title[lang]}</p>
-                <p className="num mt-1.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+                <p className="num mt-1.5 text-[11px] text-muted">
                   {n.source} · {s('timePrefix')} {fmtNum(n.minutesAgo, lang, 0)} {s('timeSuffix')}
                 </p>
               </Link>
@@ -438,15 +418,11 @@ export default function SymbolPage() {
 
       {/* Peer comparison */}
       <SectionHead title={c('peersTitle')} />
-      <div className="panel mt-3 overflow-hidden">
-        <div
-          aria-hidden="true"
-          className={`${PEER_GRID} px-3 py-2`}
-          style={{ borderBottom: '1px solid var(--color-line)' }}
-        >
-          <span className="t-kicker">{c('colName')}</span>
-          <span className="t-kicker text-end">{c('colPrice')}</span>
-          <span className="t-kicker text-end">{c('colChg')}</span>
+      <div className="panel mt-3 divide-y divide-line overflow-hidden">
+        <div aria-hidden="true" className={`${PEER_GRID} px-3 py-2`}>
+          <span className="text-[11px] text-muted">{c('colName')}</span>
+          <span className="text-end text-[11px] text-muted">{c('colPrice')}</span>
+          <span className="text-end text-[11px] text-muted">{c('colChg')}</span>
         </div>
         <ul className="divide-y divide-line">
           {peers.map((p) => {
@@ -455,7 +431,7 @@ export default function SymbolPage() {
               <li key={p.symbol}>
                 <Link
                   to={`/m/${p.symbol}`}
-                  className={`${PEER_GRID} min-h-[44px] px-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5`}
+                  className={`${PEER_GRID} min-h-14 px-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5`}
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-[13px] leading-tight font-medium">

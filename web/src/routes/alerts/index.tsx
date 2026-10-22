@@ -61,24 +61,15 @@ function HeadStat({
   value,
   label,
   tone,
-  tracking,
 }: {
   value: number
   label: string
   tone: string
-  tracking: number | undefined
 }) {
   return (
     <div className="text-end">
-      <p className="num text-[17px] leading-none font-semibold" style={{ color: tone }}>
-        {value}
-      </p>
-      <p
-        className="t-kicker mt-1.5 truncate"
-        style={{ color: 'var(--color-muted)', letterSpacing: tracking }}
-      >
-        {label}
-      </p>
+      <p className={`num text-[17px] leading-none font-semibold ${tone}`}>{value}</p>
+      <p className="mt-1.5 truncate text-[10px] leading-none text-muted">{label}</p>
     </div>
   )
 }
@@ -157,43 +148,28 @@ export default function AlertsPage() {
           <HeadStat
             value={triggered.length}
             label={s('triggered')}
-            tone="var(--color-accent)"
-            tracking={kicker.letterSpacing}
+            tone="text-accent"
           />
-          <span aria-hidden="true" className="h-7 w-px" style={{ background: 'var(--color-line)' }} />
-          <HeadStat
-            value={waiting.length}
-            label={s('waiting')}
-            tone="var(--color-fg)"
-            tracking={kicker.letterSpacing}
-          />
+          <span aria-hidden="true" className="h-7 w-px bg-line" />
+          <HeadStat value={waiting.length} label={s('waiting')} tone="text-fg" />
         </div>
       }
     >
-      <section className="panel mt-4 p-3.5">
-        <h2 className="t-kicker" style={{ ...kicker, color: 'var(--color-muted)' }}>
+      <section className="panel mt-4 p-4">
+        <h2 className="t-kicker text-muted" style={kicker}>
           {s('formTitle')}
         </h2>
 
         <form className="mt-3 space-y-3" onSubmit={submit} noValidate>
           <div>
-            <label
-              htmlFor="alert-symbol"
-              className="text-[11px] leading-none"
-              style={{ color: 'var(--color-muted)' }}
-            >
+            <label htmlFor="alert-symbol" className="text-[11px] leading-none text-muted">
               {s('symbol')}
             </label>
             <select
               id="alert-symbol"
               value={symbol}
               onChange={(e) => pickSymbol(e.target.value)}
-              className="mt-1.5 min-h-11 w-full rounded-lg px-2.5 text-[13px] focus-visible:outline-2 focus-visible:outline-accent"
-              style={{
-                border: '1px solid var(--color-line)',
-                background: 'var(--color-bg)',
-                color: 'var(--color-fg)',
-              }}
+              className="mt-1.5 min-h-11 w-full rounded-[10px] border border-line bg-bg px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-accent"
             >
               {quotes.map((q) => (
                 <option key={q.symbol} value={q.symbol}>
@@ -204,11 +180,7 @@ export default function AlertsPage() {
           </div>
 
           <div>
-            <span
-              id="alert-dir-label"
-              className="text-[11px] leading-none"
-              style={{ color: 'var(--color-muted)' }}
-            >
+            <span id="alert-dir-label" className="text-[11px] leading-none text-muted">
               {s('direction')}
             </span>
             <div
@@ -227,9 +199,9 @@ export default function AlertsPage() {
                       setDir(k)
                       setError(null)
                     }}
-                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-accent"
+                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[10px] border text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-accent"
                     style={{
-                      border: `1px solid ${active ? 'var(--color-fg)' : 'var(--color-line)'}`,
+                      borderColor: active ? 'var(--color-fg)' : 'var(--color-line)',
                       background: active ? 'var(--color-fg)' : 'transparent',
                       color: active ? 'var(--color-bg)' : 'var(--color-muted)',
                     }}
@@ -246,12 +218,11 @@ export default function AlertsPage() {
             <div className="flex items-baseline justify-between gap-2">
               <label
                 htmlFor="alert-threshold"
-                className="text-[11px] leading-none"
-                style={{ color: 'var(--color-muted)' }}
+                className="text-[11px] leading-none text-muted"
               >
                 {s('threshold')}
               </label>
-              <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
+              <span className="num text-[11px] text-muted">
                 {s('current')} {fmtNum(quote.price, lang, 2)} {quote.currency}
               </span>
             </div>
@@ -270,17 +241,13 @@ export default function AlertsPage() {
                   setThreshold(e.target.value)
                   if (error) setError(null)
                 }}
-                className="num min-h-11 w-full rounded-lg border ps-3 pe-14 text-[14px] [appearance:textfield] focus-visible:outline-2 focus-visible:outline-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                style={{
-                  borderColor: error ? 'var(--color-accent)' : 'var(--color-line)',
-                  background: 'var(--color-bg)',
-                  color: 'var(--color-fg)',
-                }}
+                className={`num min-h-11 w-full rounded-[10px] border bg-bg ps-3 pe-14 text-[14px] text-fg [appearance:textfield] focus-visible:outline-2 focus-visible:outline-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
+                  error ? 'border-accent' : 'border-line'
+                }`}
               />
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-[10px]"
-                style={{ color: 'var(--color-muted)' }}
+                className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-[10px] text-muted"
               >
                 {quote.currency}
               </span>
@@ -288,20 +255,14 @@ export default function AlertsPage() {
           </div>
 
           {error && (
-            <p
-              id="alert-error"
-              role="alert"
-              className="text-[12px] leading-snug"
-              style={{ color: 'var(--color-accent)' }}
-            >
+            <p id="alert-error" role="alert" className="text-[12px] leading-snug text-accent">
               {errorText}
             </p>
           )}
 
           <button
             type="submit"
-            className="min-h-11 w-full rounded-full text-[13px] font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            style={{ background: 'var(--color-accent)', color: '#fff' }}
+            className="min-h-11 w-full rounded-full bg-accent text-[13px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {s('create')}
           </button>
@@ -309,65 +270,46 @@ export default function AlertsPage() {
       </section>
 
       {rows.length === 0 ? (
-        <section className="mt-5">
+        <section className="mt-6">
           <EmptyState text={s('empty')} />
         </section>
       ) : (
         <>
           {sections.map((group) => (
-            <section key={group.key} className="mt-5">
-              <div className="flex items-baseline justify-between gap-2">
-                <h2
-                  className="t-kicker"
-                  style={{
-                    ...kicker,
-                    color:
-                      group.key === 'fired' ? 'var(--color-accent)' : 'var(--color-muted)',
-                  }}
-                >
-                  {group.key === 'fired' ? s('triggered') : s('waiting')}
-                </h2>
-                <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
-                  {group.rows.length}
-                </span>
-              </div>
-              <ul className="panel mt-2 divide-y divide-line overflow-hidden">
+            <section key={group.key} className="mt-6">
+              <div className="panel overflow-hidden">
+                <div className="flex items-baseline justify-between gap-2 border-b border-line px-4 py-3">
+                  <h2
+                    className={`t-kicker ${group.key === 'fired' ? 'text-accent' : 'text-muted'}`}
+                    style={kicker}
+                  >
+                    {group.key === 'fired' ? s('triggered') : s('waiting')}
+                  </h2>
+                  <span className="num text-[11px] text-muted">{group.rows.length}</span>
+                </div>
+                <ul>
                 {group.rows.map((r) => (
-              <li
-                key={r.id}
-                className="flex items-start gap-2 px-3 py-2.5"
-                style={{
-                  background: r.triggered
-                    ? 'color-mix(in srgb, var(--color-accent) 5%, transparent)'
-                    : undefined,
-                }}
-              >
+              <li key={r.id} className="row">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-1.5">
                     <span className="num text-[14px] font-semibold">{r.symbol}</span>
-                    <span
-                      className="truncate text-[11px]"
-                      style={{ color: 'var(--color-muted)' }}
-                    >
+                    <span className="truncate text-[11px] text-muted">
                       {r.quote.name[lang]}
                     </span>
                   </div>
                   <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
-                    <span className="inline-flex items-center gap-1" style={{ color: 'var(--color-fg)' }}>
+                    <span className="inline-flex items-center gap-1 text-fg">
                       <DirIcon dir={r.dir} />
-                      <span style={{ color: 'var(--color-muted)' }}>{s(r.dir)}</span>
+                      <span className="text-muted">{s(r.dir)}</span>
                       <span className="num font-medium">{fmtNum(r.threshold, lang, 2)}</span>
                     </span>
-                    <span aria-hidden="true" style={{ color: 'var(--color-line)' }}>
+                    <span aria-hidden="true" className="text-line">
                       ·
                     </span>
-                    <span style={{ color: 'var(--color-muted)' }}>
+                    <span className="text-muted">
                       {s('current')}{' '}
-                      <span className="num" style={{ color: 'var(--color-fg)' }}>
-                        {fmtNum(r.quote.price, lang, 2)}
-                      </span>
+                      <span className="num text-fg">{fmtNum(r.quote.price, lang, 2)}</span>
                     </span>
-
                   </div>
                 </div>
 
@@ -375,14 +317,14 @@ export default function AlertsPage() {
                   type="button"
                   onClick={() => removeAlert(r.id)}
                   aria-label={`${s('delete')} ${r.symbol}`}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-                  style={{ color: 'var(--color-muted)' }}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                 >
                   <TrashIcon />
                 </button>
               </li>
                 ))}
-              </ul>
+                </ul>
+              </div>
             </section>
           ))}
         </>

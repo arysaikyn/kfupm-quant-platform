@@ -133,15 +133,13 @@ export default function SettingsPage() {
   const danger = theme === 'light' ? '#b42318' : '#ff7a88'
   const dangerContrast = theme === 'light' ? '#ffffff' : '#1b070b'
   const dangerBg = theme === 'light' ? 'rgba(180, 35, 24, 0.06)' : 'rgba(255, 122, 136, 0.10)'
-  const dangerBorder = theme === 'light' ? 'rgba(180, 35, 24, 0.28)' : 'rgba(255, 122, 136, 0.30)'
 
   const back = (
     <button
       type="button"
       onClick={goBack}
       aria-label={s('back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-      style={{ border: '1px solid var(--color-line)', color: 'var(--color-fg)' }}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       <svg
         width="20"
@@ -164,8 +162,8 @@ export default function SettingsPage() {
 
   return (
     <Screen title={s('title')} leading={back}>
-      <section className="mt-5" aria-labelledby="settings-reading">
-        <h2 id="settings-reading" className="px-1 pb-2 text-[12px] font-medium text-muted">
+      <section className="mt-6" aria-labelledby="settings-reading">
+        <h2 id="settings-reading" className="t-kicker px-1 pb-2 text-muted">
           {s('readingTitle')}
         </h2>
 
@@ -201,7 +199,7 @@ export default function SettingsPage() {
 
         <div className="panel mt-3 overflow-hidden">
           <div className="px-4 pt-3 pb-2">
-            <h3 className="t-kicker text-muted">{s('previewTitle')}</h3>
+            <h3 className="text-[11px] font-medium text-muted">{s('previewTitle')}</h3>
             <p className="mt-1 text-[11px] leading-snug text-muted">{s('previewHint')}</p>
           </div>
           <ul className="divide-y divide-line">
@@ -233,14 +231,14 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section className="mt-7" aria-labelledby="settings-sources">
-        <h2 id="settings-sources" className="px-1 pb-2 text-[12px] font-medium text-muted">
+      <section className="mt-6" aria-labelledby="settings-sources">
+        <h2 id="settings-sources" className="t-kicker px-1 pb-2 text-muted">
           {s('sourcesTitle')}
         </h2>
         <p className="px-1 pb-2 text-[11.5px] leading-snug text-muted">{s('sourcesHint')}</p>
-        <ul className="panel divide-y divide-line overflow-hidden">
+        <ul className="panel overflow-hidden">
           {SOURCES.map((source) => (
-            <li key={source.name} className="flex min-h-[58px] items-center gap-3 px-4 py-2.5">
+            <li key={source.name} className="row py-2">
               <span
                 aria-hidden="true"
                 className="h-2 w-2 shrink-0 rounded-full"
@@ -254,14 +252,7 @@ export default function SettingsPage() {
                   {s(source.market)}
                 </p>
               </div>
-              <span
-                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] leading-tight font-semibold tracking-[0.06em]"
-                style={{
-                  color: 'var(--color-muted)',
-                  background: 'color-mix(in srgb, var(--color-fg) 7%, transparent)',
-                  border: '1px solid var(--color-line)',
-                }}
-              >
+              <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-[10px] leading-tight font-semibold tracking-[0.06em] text-muted">
                 {s('chipDemo')}
               </span>
             </li>
@@ -269,12 +260,12 @@ export default function SettingsPage() {
         </ul>
       </section>
 
-      <section className="mt-7" aria-labelledby="settings-notifications">
-        <h2 id="settings-notifications" className="px-1 pb-2 text-[12px] font-medium text-muted">
+      <section className="mt-6" aria-labelledby="settings-notifications">
+        <h2 id="settings-notifications" className="t-kicker px-1 pb-2 text-muted">
           {s('notificationsTitle')}
         </h2>
         <div className="panel overflow-hidden">
-          <div className="flex min-h-[56px] items-center gap-3 px-4 py-2">
+          <div className="row py-2">
             <span className="min-w-0 flex-1 truncate text-[14.5px] leading-tight font-medium">
               {s('alertsLabel')}
             </span>
@@ -301,7 +292,6 @@ export default function SettingsPage() {
                   style={{
                     insetInlineStart: alerts ? 'calc(100% - 27px)' : '3px',
                     transition: 'inset-inline-start 180ms var(--ease-soft)',
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.35)',
                   }}
                 />
               </span>
@@ -313,22 +303,22 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section className="mt-7" aria-labelledby="settings-about">
-        <h2 id="settings-about" className="px-1 pb-2 text-[12px] font-medium text-muted">
+      <section className="mt-6" aria-labelledby="settings-about">
+        <h2 id="settings-about" className="t-kicker px-1 pb-2 text-muted">
           {s('aboutTitle')}
         </h2>
-        <div className="panel divide-y divide-line overflow-hidden">
-          <div className="flex min-h-[52px] items-center justify-between gap-3 px-4">
+        <div className="panel overflow-hidden">
+          <div className="row justify-between">
             <span className="text-[12.5px] text-muted">{s('appLabel')}</span>
             <span className="truncate text-[14px] leading-tight font-medium">{s('appName')}</span>
           </div>
-          <div className="flex min-h-[52px] items-center justify-between gap-3 px-4">
+          <div className="row justify-between">
             <span className="text-[12.5px] text-muted">{s('versionLabel')}</span>
             <span className="num text-[13px] leading-tight">{APP_VERSION}</span>
           </div>
           <Link
             to="/learn"
-            className="flex min-h-[56px] items-center gap-3 px-4 transition-colors hover:bg-white/5 active:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+            className="row transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
           >
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[14.5px] leading-tight font-medium">
@@ -357,8 +347,8 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section className="mt-7" aria-labelledby="settings-reset">
-        <h2 id="settings-reset" className="px-1 pb-2 text-[12px] font-medium text-muted">
+      <section className="mt-6" aria-labelledby="settings-reset">
+        <h2 id="settings-reset" className="t-kicker px-1 pb-2 text-muted">
           {s('resetTitle')}
         </h2>
         <div className="panel px-4 py-4">
@@ -369,11 +359,11 @@ export default function SettingsPage() {
             type="button"
             onClick={reset}
             aria-describedby="settings-reset-copy"
-            className="mt-3 flex min-h-[48px] w-full items-center justify-center rounded-[14px] px-4 text-[14px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className={`mt-3 flex min-h-12 w-full items-center justify-center rounded-full border px-4 text-[14px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+              armed ? 'border-transparent' : 'border-line'
+            }`}
             style={
-              armed
-                ? { background: danger, color: dangerContrast }
-                : { background: dangerBg, color: danger, border: `1px solid ${dangerBorder}` }
+              armed ? { background: danger, color: dangerContrast } : { background: dangerBg, color: danger }
             }
           >
             {s(armed ? 'resetConfirm' : 'resetButton')}
@@ -382,7 +372,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => setArmed(false)}
-              className="mt-1 flex min-h-[44px] w-full items-center justify-center rounded-full text-[12.5px] text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+              className="mt-1 flex min-h-11 w-full items-center justify-center rounded-full text-[12.5px] text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
             >
               {s('resetCancel')}
             </button>

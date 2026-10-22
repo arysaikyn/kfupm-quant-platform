@@ -56,16 +56,13 @@ export function StoryArt({ item }: Props) {
   const tone = rising ? 'var(--color-up)' : 'var(--color-down)'
   const bars = seed % 2 === 1
   const { line, area } = pricePath(seed, rising)
-  const gradientId = `story-art-${item.id.replace(/[^a-zA-Z0-9_-]/g, '')}`
   const corner = item.symbols[0] ?? item.source.charAt(0)
 
+  // Flat tint plus the hairline. The gradient glow made a 96px thumbnail the
+  // loudest element in the feed, louder than the headline next to it.
   const tile: CSSProperties = {
     borderColor: 'var(--color-line)',
-    backgroundImage: [
-      `radial-gradient(130% 105% at 100% 0%, color-mix(in srgb, ${tone} 34%, transparent), transparent 68%)`,
-      `linear-gradient(158deg, color-mix(in srgb, ${tone} 15%, transparent), color-mix(in srgb, var(--color-bg) 62%, transparent))`,
-    ].join(', '),
-    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.18)',
+    background: `color-mix(in srgb, ${tone} 8%, var(--color-surface))`,
   }
 
   return (
@@ -90,13 +87,9 @@ export function StoryArt({ item }: Props) {
           ))
         ) : (
           <>
-            <defs>
-              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={tone} stopOpacity="0.34" />
-                <stop offset="100%" stopColor={tone} stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <path d={area} fill={`url(#${gradientId})`} />
+            {/* Flat fill: a gradient glow on a 96px thumbnail reads as a
+                sticker, and the card already carries the number. */}
+            <path d={area} fill={tone} fillOpacity="0.10" />
             <path
               d={line}
               stroke={tone}

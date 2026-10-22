@@ -120,8 +120,7 @@ export function TabBar() {
           <div
             className="mx-[7px] h-full rounded-[14px]"
             style={{
-              background: 'rgba(168,85,247,.18)',
-              boxShadow: 'inset 0 0 0 1px rgba(168,85,247,.26)',
+              background: 'color-mix(in srgb, var(--color-accent) 15%, transparent)',
             }}
           />
         </div>
@@ -149,10 +148,8 @@ export function TabBar() {
                         top: active ? -25 : -22,
                         background: 'var(--color-accent)',
                         color: '#fff',
-                        // One soft halo, barely different when active: the size
-                        // change is the signal. Stacked rings over a blurred
-                        // backdrop read as a flash.
-                        boxShadow: '0 0 18px rgba(168,85,247,.32)',
+                        // No halo: the size change is the signal, and a glow
+                        // fights the flat surface language everywhere else.
                         border: '2px solid var(--color-bg)',
                         transition:
                           'width 260ms cubic-bezier(.32,1.12,.55,1), height 260ms cubic-bezier(.32,1.12,.55,1), top 260ms cubic-bezier(.32,1.12,.55,1)',

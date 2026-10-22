@@ -38,7 +38,7 @@ strategies.forEach((st, i) => {
   SPARKS[st.id] = slice.map((v) => v * scale)
 })
 
-function Sparkline({ id, series, up }: { id: string; series: number[]; up: boolean }) {
+function Sparkline({ series, up }: { series: number[]; up: boolean }) {
   const lo = Math.min(...series)
   const hi = Math.max(...series)
   const span = hi - lo || 1
@@ -55,22 +55,16 @@ function Sparkline({ id, series, up }: { id: string; series: number[]; up: boole
     <svg
       viewBox={`0 0 ${SW} ${SH}`}
       preserveAspectRatio="none"
-      className="h-14 w-full"
+      className="h-10 w-full"
       style={{ direction: 'ltr' }}
       aria-hidden="true"
     >
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" style={{ stopColor: tone, stopOpacity: 0.2 }} />
-          <stop offset="100%" style={{ stopColor: tone, stopOpacity: 0 }} />
-        </linearGradient>
-      </defs>
-      <polygon points={`${SP},${SH} ${pts} ${SW - SP},${SH}`} fill={`url(#${id})`} />
+      <polygon points={`${SP},${SH} ${pts} ${SW - SP},${SH}`} fill={tone} fillOpacity={0.06} />
       <polyline
         points={pts}
         fill="none"
         stroke={tone}
-        strokeWidth="1.6"
+        strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
@@ -130,7 +124,10 @@ export default function StrategyPage() {
                 }`}
                 style={
                   active
-                    ? { background: 'rgba(168,85,247,.16)', color: 'var(--color-fg)' }
+                    ? {
+                        background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)',
+                        color: 'var(--color-fg)',
+                      }
                     : undefined
                 }
               >
@@ -217,7 +214,7 @@ export default function StrategyPage() {
                           </span>
                           <abbr
                             title={s('oosHint')}
-                            className="num no-underline rounded-full px-1.5 py-[3px] text-[9px] leading-none font-medium"
+                            className="num no-underline rounded-lg px-1.5 py-[3px] text-[9px] leading-none font-medium"
                             style={{
                               color: 'var(--color-accent)',
                               background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)',
@@ -236,7 +233,7 @@ export default function StrategyPage() {
                     </div>
 
                     <div className="mt-3">
-                      <Sparkline id={`spark-${st.id}`} series={SPARKS[st.id]} up={up} />
+                      <Sparkline series={SPARKS[st.id]} up={up} />
                     </div>
 
                     <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -245,11 +242,7 @@ export default function StrategyPage() {
                         return (
                           <span
                             key={t}
-                            className="rounded-full px-2.5 py-1 text-[11px] leading-none"
-                            style={{
-                              border: '1px solid var(--color-line)',
-                              color: 'var(--color-muted)',
-                            }}
+                            className="rounded-lg border border-line px-2.5 py-1 text-[11px] leading-none text-muted"
                           >
                             {key ? s(key) : t}
                           </span>

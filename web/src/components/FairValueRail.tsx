@@ -30,7 +30,7 @@ export function FairValueRail({ price, fairValue, labels, format }: Props) {
   // The axis spans fair value ±40%, which keeps both markers on screen for
   // every quote in the mock (the widest gap is 35%).
   const span = 0.4
-  const clamp = (n: number) => Math.max(0.02, Math.min(0.98, n))
+  const clamp = (n: number) => Math.max(0.04, Math.min(0.94, n))
   const pricePos = clamp(0.5 + gap / span / 2)
   const fairPos = 0.5
 
@@ -48,11 +48,11 @@ export function FairValueRail({ price, fairValue, labels, format }: Props) {
       <div className="relative mt-3 h-2" aria-hidden="true">
         <div
           className="absolute inset-y-0 start-0 end-1/2 rounded-s-full"
-          style={{ background: 'color-mix(in srgb, var(--color-up) 22%, transparent)' }}
+          style={{ background: 'color-mix(in srgb, var(--color-up) 14%, transparent)' }}
         />
         <div
           className="absolute inset-y-0 start-1/2 end-0 rounded-e-full"
-          style={{ background: 'color-mix(in srgb, var(--color-down) 22%, transparent)' }}
+          style={{ background: 'color-mix(in srgb, var(--color-down) 14%, transparent)' }}
         />
         <div
           className="absolute inset-y-0 w-px"

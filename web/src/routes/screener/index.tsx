@@ -300,12 +300,7 @@ export default function ScreenerPage() {
               key={id}
               type="button"
               onClick={() => applyPreset(id)}
-              className="flex min-h-11 items-center justify-center rounded-full px-2 py-2 text-[12px] leading-tight font-medium transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
-              style={{
-                border: '1px solid var(--color-line)',
-                background: 'var(--color-surface)',
-                color: 'var(--color-fg)',
-              }}
+              className="flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-2 py-2 text-[12px] leading-tight font-medium text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
             >
               {s(PRESET_KEY[id])}
             </button>
@@ -333,11 +328,7 @@ export default function ScreenerPage() {
               return (
                 <li
                   key={rule.id}
-                  className="flex shrink-0 items-center rounded-full"
-                  style={{
-                    border: '1px solid var(--color-line)',
-                    background: 'var(--color-surface)',
-                  }}
+                  className="flex shrink-0 items-center rounded-full border border-line bg-surface"
                 >
                   <button
                     type="button"
@@ -362,13 +353,13 @@ export default function ScreenerPage() {
           </ul>
         )}
 
-        <div className="panel mt-2 p-3">
+        <div className="panel mt-2 overflow-hidden">
           {rules.length === 0 ? (
-            <p className="px-1 py-3 text-center text-[12px]" style={{ color: 'var(--color-muted)' }}>
+            <p className="px-4 py-6 text-center text-[12px]" style={{ color: 'var(--color-muted)' }}>
               {s('noRules')}
             </p>
           ) : (
-            <ul className="flex flex-col gap-2">
+            <ul>
               {rules.map((rule, index) => {
                 const unit = FIELD_UNIT[rule.field]
                 return (
@@ -377,11 +368,7 @@ export default function ScreenerPage() {
                     ref={(node) => {
                       rowRefs.current[rule.id] = node
                     }}
-                    className="rounded-xl p-2"
-                    style={{
-                      border: '1px solid var(--color-line)',
-                      background: 'color-mix(in srgb, var(--color-fg) 3%, transparent)',
-                    }}
+                    className="row flex-col items-stretch gap-2 py-2.5 sm:py-1.5"
                   >
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                       <div className="relative min-w-0 flex-1">
@@ -391,12 +378,8 @@ export default function ScreenerPage() {
                           onChange={(event) =>
                             updateRule(rule.id, { field: event.target.value as Field })
                           }
-                          className="h-11 w-full appearance-none rounded-lg ps-3 pe-9 text-[14px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
-                          style={{
-                            border: '1px solid var(--color-line)',
-                            background: 'var(--color-bg)',
-                            color: 'var(--color-fg)',
-                          }}
+                          className="h-11 w-full appearance-none rounded-lg border border-line bg-fg/5 ps-3 pe-9 text-[14px] text-fg transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+
                         >
                           {FIELD_ORDER.map((field) => (
                             <option key={field} value={field}>
@@ -426,13 +409,11 @@ export default function ScreenerPage() {
                                 style={
                                   selected
                                     ? {
-                                        background: 'var(--color-fg)',
-                                        color: 'var(--color-bg)',
+                                        background:
+                                          'color-mix(in srgb, var(--color-accent) 16%, transparent)',
+                                        color: 'var(--color-accent)',
                                       }
-                                    : {
-                                        border: '1px solid var(--color-line)',
-                                        color: 'var(--color-muted)',
-                                      }
+                                    : { color: 'var(--color-muted)' }
                                 }
                               >
                                 <span aria-hidden="true">{OP_SYMBOL[option.value]}</span>
@@ -492,22 +473,23 @@ export default function ScreenerPage() {
             </ul>
           )}
 
-          <button
-            type="button"
-            onClick={addRule}
-            disabled={rules.length >= MAX_RULES}
-            className="mt-2 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-dashed text-[12px] font-medium transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent disabled:opacity-40"
-            style={{ borderColor: 'var(--color-line)', color: 'var(--color-fg)' }}
-          >
-            {rules.length < MAX_RULES && <IconPlus />}
-            {rules.length >= MAX_RULES ? s('ruleLimit') : s('addRule')}
-          </button>
+          <div className="border-t border-line p-3">
+            <button
+              type="button"
+              onClick={addRule}
+              disabled={rules.length >= MAX_RULES}
+              className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-line text-[12px] font-medium text-fg transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent disabled:opacity-40"
+            >
+              {rules.length < MAX_RULES && <IconPlus />}
+              {rules.length >= MAX_RULES ? s('ruleLimit') : s('addRule')}
+            </button>
 
-          {showsTurnoverHint && (
-            <p className="mt-2 px-1 text-[11px]" style={{ color: 'var(--color-muted)' }}>
-              {s('turnoverHint')}
-            </p>
-          )}
+            {showsTurnoverHint && (
+              <p className="mt-2 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+                {s('turnoverHint')}
+              </p>
+            )}
+          </div>
         </div>
       </section>
 
@@ -539,10 +521,7 @@ export default function ScreenerPage() {
           </div>
         ) : (
           <div className="panel mt-2 overflow-hidden">
-            <div
-              className="grid grid-cols-[minmax(0,1fr)_78px_66px] gap-x-2 border-b px-3.5 py-1"
-              style={{ borderColor: 'var(--color-line)' }}
-            >
+            <div className="grid min-h-14 grid-cols-[minmax(0,1fr)_78px_66px] gap-x-2 border-b border-line px-3.5 sm:min-h-11">
               {SORT_COLUMNS.map((column) => {
                 const active = sort.key === column.key
                 return (
@@ -551,7 +530,7 @@ export default function ScreenerPage() {
                     type="button"
                     onClick={() => toggleSort(column.key)}
                     aria-pressed={active}
-                    className={`t-kicker flex min-h-9 items-center gap-1 transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
+                    className={`t-kicker flex min-h-11 items-center gap-1 transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
                       column.key === 'name' ? 'justify-start text-start' : 'justify-end text-end'
                     }`}
                     style={kicker}
@@ -568,8 +547,8 @@ export default function ScreenerPage() {
                 )
               })}
             </div>
-            <ul>
-              {results.map((quote, index) => {
+            <ul className="divide-y divide-line">
+              {results.map((quote) => {
                 const up = quote.change >= 0
                 // Every row cleared every active rule, so the reasons are just
                 // those rules rewritten with the quote's own value.
@@ -581,12 +560,7 @@ export default function ScreenerPage() {
                 const reason =
                   extra > 0 ? `${kept.join(' · ')} +${fmtNum(extra, lang, 0)}` : kept.join(' · ')
                 return (
-                  <li
-                    key={quote.symbol}
-                    style={{
-                      borderTop: index === 0 ? 'none' : '1px solid var(--color-line)',
-                    }}
-                  >
+                  <li key={quote.symbol}>
                     <Link
                       to={`/m/${quote.symbol}`}
                       aria-label={`${fillName(s('openAria'), quote.name[lang])} · ${fmtNum(
@@ -594,7 +568,7 @@ export default function ScreenerPage() {
                         lang,
                         2,
                       )} · ${fmtPct(quote.change, lang)}`}
-                      className="block min-h-11 px-3.5 py-2.5 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                      className="block min-h-14 px-3.5 py-2 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent sm:min-h-11 sm:py-1"
                     >
                       <span className="grid grid-cols-[minmax(0,1fr)_78px_66px] items-center gap-x-2">
                         <span className="min-w-0">

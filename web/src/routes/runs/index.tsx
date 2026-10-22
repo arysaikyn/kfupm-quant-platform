@@ -245,16 +245,16 @@ function RunCard({
   const panelId = `run-sources-${run.key}`
 
   return (
-    <article className="panel overflow-hidden">
+    <article>
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        className="block min-h-11 w-full p-4 text-start focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:opacity-70"
+        className="block min-h-11 w-full p-4 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
       >
         <span className="flex items-center justify-between gap-2">
-          <span className="t-kicker num">
+          <span className="num text-[11px] text-muted">
             {s('runLabel').replace('{n}', fmtNum(index + 1, lang, 0))}
           </span>
           <time
@@ -280,10 +280,7 @@ function RunCard({
         </span>
 
         <span className="mt-3 flex flex-wrap items-center gap-2">
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] text-muted"
-            style={{ border: '1px solid var(--color-line)' }}
-          >
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-fg/5 px-2.5 py-1 text-[11px] text-muted">
             <svg
               width="12"
               height="12"
@@ -302,10 +299,7 @@ function RunCard({
           </span>
 
           {run.artifact && (
-            <span
-              className="max-w-[55%] truncate rounded-full px-2.5 py-1 text-[11px] text-muted"
-              style={{ border: '1px solid var(--color-line)' }}
-            >
+            <span className="max-w-[55%] truncate rounded-full bg-fg/5 px-2.5 py-1 text-[11px] text-muted">
               {run.artifact}
             </span>
           )}
@@ -316,12 +310,8 @@ function RunCard({
       </button>
 
       {open && (
-        <div
-          id={panelId}
-          className="px-4 pt-3 pb-4"
-          style={{ borderBlockStart: '1px solid var(--color-line)' }}
-        >
-          <p className="t-kicker text-muted">{s('sourcesTitle')}</p>
+        <div id={panelId} className="border-t border-line px-4 pt-3 pb-4">
+          <p className="text-[11px] font-semibold text-muted">{s('sourcesTitle')}</p>
           {run.sources.length === 0 ? (
             <p className="mt-2 text-[12px] text-muted">{s('noSources')}</p>
           ) : (
@@ -397,22 +387,19 @@ export default function RunsPage() {
             <p className="num text-[26px] leading-none font-semibold">
               {fmtNum(runs.length, lang, 0)}
             </p>
-            <p className="t-kicker mt-2 text-muted">{s('runsLabel')}</p>
+            <p className="mt-2 text-[11px] text-muted">{s('runsLabel')}</p>
           </div>
-          <div
-            className="min-w-0 flex-1 ps-4"
-            style={{ borderInlineStart: '1px solid var(--color-line)' }}
-          >
+          <div className="min-w-0 flex-1 border-s border-line ps-4">
             <p className="num text-[26px] leading-none font-semibold">
               {fmtNum(totalSources, lang, 0)}
             </p>
-            <p className="t-kicker mt-2 text-muted">{s('sourcesLabel')}</p>
+            <p className="mt-2 text-[11px] text-muted">{s('sourcesLabel')}</p>
           </div>
         </section>
 
         {sample && <p className="text-[11px] leading-relaxed text-muted">{s('sampleNote')}</p>}
 
-        <div className="space-y-3 pt-1">
+        <div className="panel divide-y divide-line overflow-hidden">
           {runs.map((run, i) => (
             <RunCard
               key={run.key}
@@ -428,7 +415,7 @@ export default function RunsPage() {
 
         <Link
           to="/ai"
-          className="mt-2 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-5 text-[15px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-5 text-[15px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
         >
           <svg
             width="16"

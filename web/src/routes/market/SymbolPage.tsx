@@ -10,6 +10,10 @@ import { strings } from './strings'
 
 const RANGES = ['1D', '1M', '6M', '1Y']
 
+// Draw the line once per session. Replaying it on every open made navigation
+// look like the page was re-rendering out of order.
+let hasDrawnOnce = false
+
 /** 320×150 area chart; scales with the card so it never clips on a phone. */
 function PriceChart({ data, up }: { data: number[]; up: boolean }) {
   const w = 320
@@ -30,7 +34,7 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`}
-      className="chart-draw h-auto w-full"
+      className={`${hasDrawnOnce ? "" : "chart-draw"} h-auto w-full`}
       style={{ filter: `drop-shadow(0 0 14px color-mix(in srgb, ${stroke} 45%, transparent))` }}
       aria-hidden="true"
     >
@@ -136,6 +140,7 @@ export default function SymbolPage() {
     },
   ]
   const related = news.filter((n) => n.symbols.includes(quote.symbol)).slice(0, 2)
+  hasDrawnOnce = true
 
   return (
     <Screen title={quote.name[lang]} leading={back}>

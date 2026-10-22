@@ -9,6 +9,7 @@ import { canned, followUps } from './replies'
 import type { Reply } from './replies'
 import { AssistantMessage, TypingRow, UserBubble } from './messages'
 import { loadThread, saveThread } from './thread'
+import { takeIntake } from './intake'
 import { toneOf, tokenize } from './chat'
 import type { CtxRef, Msg } from './chat'
 
@@ -97,6 +98,13 @@ export default function AiPage() {
     if (busy) return
     saveThread({ msgs, chips, turn: turn.current })
   }, [msgs, chips, busy])
+
+  // A long press on another screen drops its question here.
+  useEffect(() => {
+    const asked = takeIntake()
+    if (asked) send(asked)
+    // Running twice is harmless: takeIntake removes the value.
+  }, [])
 
   const last = msgs[msgs.length - 1]
   const lastShown = last && last.role === 'assistant' ? last.shown : 0

@@ -3,20 +3,21 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import type { Lang } from '../../i18n'
 import { equity, strategies } from '../../data/mock'
 import { fmtClock } from './format'
 import { EquityChart } from './EquityChart'
 import { detailStrings, listStrings, TAG_KEY } from './strings'
 import type { DetailStrings } from './strings'
 
-type Rule = { key: keyof DetailStrings; field: string }
+type Rule = { key: keyof DetailStrings; field: string; ok: boolean }
 
 /** Four read-only conditions; the technical field stays in code notation. */
 const RULES: Rule[] = [
-  { key: 'rule1', field: 'pe_ttm < 15' },
-  { key: 'rule2', field: 'debt_to_assets < 0.30' },
-  { key: 'rule3', field: 'sector not_in [banks, insurance]' },
-  { key: 'rule4', field: 'sharia_screen = pass' },
+  { key: 'rule1', field: 'pe_ttm < 15', ok: true },
+  { key: 'rule2', field: 'debt_to_assets < 0.30', ok: true },
+  { key: 'rule3', field: 'sector not_in [banks, insurance]', ok: true },
+  { key: 'rule4', field: 'sharia_screen = pass', ok: true },
 ]
 
 const STEPS = ['stepFetch', 'stepFilter', 'stepCompute', 'stepDone'] as const
@@ -24,27 +25,65 @@ const STEPS = ['stepFetch', 'stepFilter', 'stepCompute', 'stepDone'] as const
 /** No turnover field in the mock contract; a fixed figure keeps the row honest. */
 const TURNOVER = 0.78
 
+/** Same year as the chart's first axis label; kept whole because word order differs. */
+const SINCE: Record<Lang, string> = { zh: '2019 年以来', en: 'Since 2019', ar: 'منذ 2019' }
+const PASS: Record<Lang, string> = { zh: '通过', en: 'Pass', ar: 'مطابق' }
+const FAIL: Record<Lang, string> = { zh: '未过', en: 'Fail', ar: 'غير مطابق' }
+
 function Metric({
   value,
   name,
   hint,
   tone,
+  divided,
 }: {
   value: string
   name: string
   hint: string
   tone?: string
+  divided?: boolean
 }) {
   return (
-    <div className="min-w-0">
+    <div
+      className="min-w-0"
+      style={divided ? { borderInlineStart: '1px solid var(--color-line)', paddingInlineStart: 12 } : undefined}
+    >
       <div dir="ltr" className={`num text-[17px] leading-tight font-semibold ${tone ?? ''}`}>
         {value}
       </div>
-      <div className="mt-1 text-[11px] leading-tight">{name}</div>
+      <div className="mt-1 text-[12px] leading-tight">{name}</div>
       <div className="mt-0.5 text-[10px] leading-tight" style={{ color: 'var(--color-muted)' }}>
         {hint}
       </div>
     </div>
+  )
+}
+
+function RuleChip({ ok, label }: { ok: boolean; label: string }) {
+  return (
+    <span
+      className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full px-2 py-[3px] text-[10px] leading-none"
+      style={{
+        color: ok ? 'var(--color-accent)' : 'var(--color-muted)',
+        border: `1px solid ${ok ? 'transparent' : 'var(--color-line)'}`,
+        background: ok ? 'color-mix(in srgb, var(--color-accent) 14%, transparent)' : 'transparent',
+      }}
+    >
+      <svg
+        width="9"
+        height="9"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        {ok ? <path d="M4 12.5l5 5L20 6.5" /> : <path d="M6 6l12 12M18 6L6 18" />}
+      </svg>
+      {label}
+    </span>
   )
 }
 
@@ -128,12 +167,39 @@ export default function StrategyDetail() {
     if (v > peak) peak = v
     if (v / peak - 1 < mdd) mdd = v / peak - 1
   }
+  const tone = total > 0 ? 'text-up' : total < 0 ? 'text-down' : 'text-muted'
 
   return (
     <Screen title={st.name[lang]} leading={back}>
       <div className="space-y-4 pt-1">
-        <div>
-          <p className="text-[13px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+        {/* The verdict first: one big number, the worst fall beside it, then what it is. */}
+        <section>
+          <div className="flex items-end justify-between gap-4">
+            <div className="min-w-0">
+              <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
+                {SINCE[lang]}
+              </p>
+              <div
+                dir="ltr"
+                className={`num t-display mt-1.5 text-[40px] leading-none font-semibold ${tone}`}
+              >
+                {fmtPct(total, lang, 1)}
+              </div>
+            </div>
+            <div className="shrink-0 pb-0.5 text-end">
+              <div
+                dir="ltr"
+                className="num text-[15px] leading-none font-medium"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                {fmtPct(mdd, lang, 1)}
+              </div>
+              <div className="mt-1.5 text-[11px] leading-none" style={{ color: 'var(--color-muted)' }}>
+                {s('mDrawdown')}
+              </div>
+            </div>
+          </div>
+          <p className="mt-3 text-[13px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {st.description[lang]}
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -150,42 +216,6 @@ export default function StrategyDetail() {
               )
             })}
           </div>
-        </div>
-
-        <section className="panel p-4">
-          <h2 className="text-[13px] font-medium">{s('rulesTitle')}</h2>
-          <p className="mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
-            {s('rulesHint')}
-          </p>
-          <ul className="mt-2">
-            {RULES.map((rule, i) => (
-              <li
-                key={rule.key}
-                className="flex items-start gap-3 py-2.5"
-                style={{
-                  borderTop: i === 0 ? 'none' : '1px solid var(--color-line)',
-                }}
-              >
-                <span
-                  className="num mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px]"
-                  style={{ background: 'var(--color-bg)', color: 'var(--color-muted)' }}
-                  aria-hidden="true"
-                >
-                  {i + 1}
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[13px] leading-snug">{s(rule.key)}</span>
-                  <span
-                    className="mt-0.5 block font-mono text-[11px] leading-snug break-all"
-                    style={{ color: 'var(--color-muted)' }}
-                    dir="ltr"
-                  >
-                    {rule.field}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
         </section>
 
         <section className="panel p-4">
@@ -212,10 +242,7 @@ export default function StrategyDetail() {
               {s('legendWithoutCost')}
             </span>
             <span className="flex items-center gap-1.5">
-              <span
-                className="inline-block w-4"
-                style={{ borderTop: '1px dashed var(--color-muted)' }}
-              />
+              <span className="inline-block w-4" style={{ borderTop: '1px dashed var(--color-muted)' }} />
               {s('legendBench')}
             </span>
           </div>
@@ -224,8 +251,37 @@ export default function StrategyDetail() {
           </p>
         </section>
 
+        {/* Rules: plain language first, the field it maps to underneath, verdict trailing. */}
         <section className="panel p-4">
-          <div className="grid grid-cols-3 gap-3">
+          <h2 className="text-[13px] font-medium">{s('rulesTitle')}</h2>
+          <p className="mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+            {s('rulesHint')}
+          </p>
+          <ul className="mt-2">
+            {RULES.map((rule, i) => (
+              <li
+                key={rule.key}
+                className="flex items-start gap-3 py-3"
+                style={{ borderTop: i === 0 ? 'none' : '1px solid var(--color-line)' }}
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] leading-snug">{s(rule.key)}</p>
+                  <p
+                    className="mt-1 font-mono text-[11px] leading-none break-all"
+                    style={{ color: 'var(--color-muted)' }}
+                    dir="ltr"
+                  >
+                    {rule.field}
+                  </p>
+                </div>
+                <RuleChip ok={rule.ok} label={rule.ok ? PASS[lang] : FAIL[lang]} />
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="panel p-4">
+          <div className="grid grid-cols-[1fr_1fr_1.25fr] gap-3">
             <Metric
               value={fmtPct(total, lang, 1)}
               name={s('mTotal')}
@@ -237,11 +293,13 @@ export default function StrategyDetail() {
               name={s('mDrawdown')}
               hint={s('mDrawdownHint')}
               tone={mdd < 0 ? 'text-down' : 'text-muted'}
+              divided
             />
             <Metric
               value={fmtNum(TURNOVER * 100, lang, 0, '%')}
               name={s('mTurnover')}
               hint={s('mTurnoverHint')}
+              divided
             />
           </div>
         </section>

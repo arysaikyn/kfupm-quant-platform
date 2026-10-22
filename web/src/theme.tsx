@@ -36,6 +36,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
+    // The browser chrome follows the app theme, not the OS: a stale dark strip
+    // above a light page is the first thing a user sees.
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'light' ? '#f6f4fb' : '#050309')
     try {
       localStorage.setItem(STORAGE_KEY, theme)
     } catch {

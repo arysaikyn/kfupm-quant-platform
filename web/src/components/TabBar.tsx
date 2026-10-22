@@ -57,7 +57,7 @@ const items: Item[] = [
 ]
 
 export function TabBar() {
-  const { t } = useI18n()
+  const { t, dir } = useI18n()
   const { pathname } = useLocation()
 
   const activeIndex = items.findIndex((it) =>
@@ -77,22 +77,28 @@ export function TabBar() {
     border: '1px solid var(--color-line)',
     boxShadow: 'var(--shadow-float)',
     '--i': index,
+    '--dir': dir === 'rtl' ? -1 : 1,
   } as CSSProperties
 
   return (
     <nav aria-label="Primary" className="fixed z-50 glass" style={barStyle}>
       <div
         aria-hidden
-        className="absolute top-2.5 bottom-2.5 rounded-full transition-[inset-inline-start] duration-[420ms]"
+        className="absolute inset-y-2.5 start-0 w-1/5 transition-transform duration-[420ms]"
         style={{
-          width: 'calc(20% - 20px)',
-          insetInlineStart: 'calc(var(--i) * 20% + 10px)',
-          background: 'rgba(168,85,247,.18)',
-          boxShadow: 'inset 0 0 0 1px rgba(168,85,247,.26)',
-          opacity: index === 2 ? 0 : 1,
+          transform: `translate3d(calc(var(--i) * 100% * var(--dir)), 0, 0)`,
           transitionTimingFunction: 'cubic-bezier(.34,1.32,.64,1)',
+          opacity: index === 2 ? 0 : 1,
         }}
-      />
+      >
+        <div
+          className="mx-[10px] h-full rounded-full"
+          style={{
+            background: 'rgba(168,85,247,.18)',
+            boxShadow: 'inset 0 0 0 1px rgba(168,85,247,.26)',
+          }}
+        />
+      </div>
 
       <ul className="relative grid h-full grid-cols-5">
         {items.map((it, i) => {

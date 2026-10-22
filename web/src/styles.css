@@ -243,8 +243,10 @@ html[dir="rtl"] body {
   animation: none;
 }
 
+/* The outgoing frame is removed at once; only the new screen animates in.
+   Cross-fading two live screens is what reads as a flash. */
 ::view-transition-old(screen) {
-  animation: var(--dur-fast) ease-in both vt-out;
+  animation: none;
 }
 
 ::view-transition-new(screen) {

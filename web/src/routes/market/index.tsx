@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { AnimatedNumber } from '../../components/AnimatedNumber'
 import { BarStrip } from '../../components/BarStrip'
+import { LongPressLink } from '../../components/LongPressLink'
 import { TickerTape } from '../../components/TickerTape'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
@@ -33,6 +33,30 @@ const HEAT_ROWS: Sector[][] = (() => {
 
 const TILE_UNIT = 2.8
 
+/** One grid for the header rail and every row, so the columns stack in a line.
+    Under 430px the 84px strip leaves the name ~90px, so both the strip cell and
+    the column itself drop out of the track list. */
+const ROW_GRID =
+  'grid grid-cols-[18px_minmax(0,1fr)_84px_60px_70px] items-center gap-x-2 ' +
+  'max-[430px]:grid-cols-[16px_minmax(0,1fr)_52px_54px_62px]'
+
+/** A drawn triangle, not ▲: at 8px the text glyph sits on a different baseline
+    in every locale font, which is what made the old rows look unaligned. */
+function TrendArrow({ up }: { up: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      width="8"
+      height="8"
+      viewBox="0 0 8 8"
+      className="shrink-0"
+      style={{ fill: 'currentColor' }}
+    >
+      <path d={up ? 'M4 1.3 7.5 6.9H.5z' : 'M4 6.7.5 1.1h7z'} />
+    </svg>
+  )
+}
+
 export default function MarketPage() {
   const { t, lang } = useI18n()
   const s = useStrings(strings)
@@ -43,6 +67,28 @@ export default function MarketPage() {
     const list = members ? quotes.filter((q) => members.includes(q.symbol)) : quotes
     return [...list].sort((a, b) => b.change - a.change)
   }, [sector])
+
+  // Breadth is read off the rows the user is looking at, not the whole market,
+  // so the summary and the list can never disagree after a sector filter.
+  const breadth = useMemo(() => {
+    const up = ranked.filter((q) => q.change >= 0).length
+    return { up, down: ranked.length - up }
+  }, [ranked])
+
+  const breadthTone =
+    breadth.up > breadth.down
+      ? 'var(--color-up)'
+      : breadth.down > breadth.up
+        ? 'var(--color-down)'
+        : 'var(--color-muted)'
+
+  // .t-kicker sets 10px unlayered, so the rail's 11px has to come inline.
+  const kicker = {
+    color: 'var(--color-muted)',
+    fontSize: 11,
+    // Letter-spacing tears the joins in Arabic script.
+    letterSpacing: lang === 'ar' ? 0 : undefined,
+  }
 
   const scrollToRanking = () =>
     document.getElementById('ranking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -207,40 +253,106 @@ export default function MarketPage() {
           }
         />
       ) : (
-        <ul className="mt-2 space-y-2 min-[900px]:grid min-[900px]:grid-cols-2 min-[900px]:gap-2 min-[900px]:space-y-0">
-          {ranked.map((q) => {
-            const up = q.change >= 0
-            return (
-              <li key={q.symbol}>
-                <Link
-                  to={`/m/${q.symbol}`}
-                  className="panel flex min-h-[64px] items-center gap-3 px-3.5 py-2.5 active:opacity-75"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-medium">{q.name[lang]}</p>
-                    <p className="num mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
-                      {q.symbol}
-                    </p>
-                  </div>
-                  <span
-                    aria-hidden="true"
-                    className={`shrink-0 ${up ? 'text-up' : 'text-down'}`}
-                  >
-                    <BarStrip data={q.spark} up={up} />
-                  </span>
-                  <div className="shrink-0 text-end">
-                    <p className="num text-[15px] leading-none font-semibold">
-                      <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
-                    </p>
-                    <p className={`num mt-1 text-[12px] leading-none ${up ? 'text-up' : 'text-down'}`}>
-                      {fmtPct(q.change, lang)}
-                    </p>
-                  </div>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+        <>
+          {/* Breadth: the shape of the board before the rows themselves */}
+          <div className="mt-3">
+            <p className="text-[12px] leading-none" style={{ color: breadthTone }}>
+              {s('breadthUp')} <span className="num font-semibold">{breadth.up}</span>
+              <span className="mx-1.5" style={{ color: 'var(--color-muted)' }}>
+                ·
+              </span>
+              {s('breadthDown')} <span className="num font-semibold">{breadth.down}</span>
+            </p>
+            <div
+              aria-hidden="true"
+              className="mt-2 flex h-[3px] gap-px overflow-hidden rounded-full"
+              style={{ background: 'var(--color-line)' }}
+            >
+              {breadth.up > 0 && (
+                <span style={{ flexGrow: breadth.up, background: 'var(--color-up)' }} />
+              )}
+              {breadth.down > 0 && (
+                <span style={{ flexGrow: breadth.down, background: 'var(--color-down)' }} />
+              )}
+            </div>
+          </div>
+
+          <div className="panel mt-3 overflow-hidden">
+            {/* Column rail: one grid shared with every row, so the figures sit
+                in a line instead of drifting with each name length. */}
+            <div
+              aria-hidden="true"
+              className={`${ROW_GRID} px-3 py-2`}
+              style={{ borderBottom: '1px solid var(--color-line)' }}
+            >
+              <span className="t-kicker text-center" style={kicker}>
+                #
+              </span>
+              <span className="t-kicker" style={kicker}>
+                {s('colName')}
+              </span>
+              <span className="t-kicker text-center" style={kicker}>
+                {s('col1m')}
+              </span>
+              <span className="t-kicker text-end" style={kicker}>
+                {s('colLast')}
+              </span>
+              <span className="t-kicker text-end" style={kicker}>
+                {s('colChg')}
+              </span>
+            </div>
+
+            <ul className="divide-y divide-line">
+              {ranked.map((q, i) => {
+                const up = q.change >= 0
+                return (
+                  <li key={q.symbol}>
+                    <LongPressLink
+                      to={`/m/${q.symbol}`}
+                      prompt={`${s('askAbout')} ${q.name[lang]}`}
+                      className={`${ROW_GRID} min-h-[56px] px-3 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent`}
+                    >
+                      {/* Rank is positional, so it is not read out as part of the name. */}
+                      <span
+                        aria-hidden="true"
+                        className="num text-center text-[11px] leading-none"
+                        style={{ color: 'var(--color-muted)' }}
+                      >
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-[14px] leading-tight font-medium">
+                          {q.name[lang]}
+                        </span>
+                        <span
+                          className="num mt-0.5 block truncate text-[11px] leading-none"
+                          style={{ color: 'var(--color-muted)' }}
+                        >
+                          {q.symbol}
+                        </span>
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={`flex ${up ? 'text-up' : 'text-down'}`}
+                      >
+                        <BarStrip data={q.spark} up={up} compact />
+                      </span>
+                      <span className="num text-end text-[12px] leading-none">
+                        <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
+                      </span>
+                      <span
+                        className={`num flex items-center justify-end gap-1 text-[15px] leading-none font-semibold ${up ? 'text-up' : 'text-down'}`}
+                      >
+                        <TrendArrow up={up} />
+                        <span>{fmtPct(q.change, lang)}</span>
+                      </span>
+                    </LongPressLink>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </>
       )}
 
       {/* Watchlist — no data yet */}

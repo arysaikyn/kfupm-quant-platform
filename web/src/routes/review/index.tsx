@@ -446,7 +446,12 @@ export default function ReviewPage() {
   }).format(today)
 
   return (
-    <Screen title={s('title')} subtitle={dateLabel}>
+    <Screen title={s('title')}>
+      {/* The date is data, not a subtitle: it stays as a kicker. */}
+      <p className="t-kicker mt-1" style={kicker}>
+        {dateLabel}
+      </p>
+
       {/* 1 · scorecard */}
       <section className="panel mt-2 p-4" aria-label={s('breadthLabel')}>
         <p className="t-kicker" style={kicker}>

@@ -84,7 +84,7 @@ export function TabBar() {
     <nav aria-label="Primary" className="fixed z-50 glass" style={barStyle}>
       <div
         aria-hidden
-        className="absolute inset-y-2.5 start-0 w-1/5 transition-transform duration-[420ms]"
+        className="absolute inset-y-1.5 start-0 w-1/5 transition-transform duration-[420ms]"
         style={{
           transform: `translate3d(calc(var(--i) * 100% * var(--dir)), 0, 0)`,
           transitionTimingFunction: 'cubic-bezier(.34,1.32,.64,1)',
@@ -92,7 +92,7 @@ export function TabBar() {
         }}
       >
         <div
-          className="mx-[10px] h-full rounded-full"
+          className="h-full rounded-[16px]"
           style={{
             background: 'rgba(168,85,247,.18)',
             boxShadow: 'inset 0 0 0 1px rgba(168,85,247,.26)',

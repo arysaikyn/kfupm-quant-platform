@@ -163,7 +163,7 @@ export default function SettingsPage() {
   const rowPad = density === 'compact' ? 'py-1.5' : 'py-3'
 
   return (
-    <Screen title={s('title')} subtitle={s('subtitle')} leading={back}>
+    <Screen title={s('title')} leading={back}>
       <section className="mt-5" aria-labelledby="settings-reading">
         <h2 id="settings-reading" className="px-1 pb-2 text-[12px] font-medium text-muted">
           {s('readingTitle')}

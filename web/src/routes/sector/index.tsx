@@ -95,22 +95,15 @@ function Bars({ data, up }: { data: number[]; up: boolean }) {
 
 function SectionTitle({
   title,
-  hint,
   trailing,
 }: {
   title: string
-  hint?: string
   trailing?: ReactNode
 }) {
   return (
     <div className="mt-6 flex items-end justify-between gap-3">
       <div className="min-w-0">
         <h2 className="text-[15px] font-semibold">{title}</h2>
-        {hint && (
-          <p className="mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
-            {hint}
-          </p>
-        )}
       </div>
       {trailing}
     </div>
@@ -220,7 +213,7 @@ export default function SectorPage() {
         <p className="mt-3 text-[13px] leading-snug">{s(verdictKey(sector.change))}</p>
       </section>
 
-      <SectionTitle title={s('constituentsTitle')} hint={s('constituentsHint')} />
+      <SectionTitle title={s('constituentsTitle')} />
       <div className="panel mt-2 overflow-hidden">
         {members.map((quote) => {
           const watched = watchlist.includes(quote.symbol)
@@ -272,7 +265,6 @@ export default function SectorPage() {
 
       <SectionTitle
         title={s('comparisonTitle')}
-        hint={s('comparisonHint')}
         trailing={
           <span dir="ltr" className="num shrink-0 text-[15px] font-semibold">
             {rankText}

@@ -247,7 +247,6 @@ export default function AlertsPage() {
   return (
     <Screen
       title={s('title')}
-      subtitle={s('subtitle')}
       action={
         <div
           role="group"

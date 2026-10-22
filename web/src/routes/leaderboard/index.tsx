@@ -185,7 +185,7 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <Screen title={s('title')} subtitle={s('subtitle')}>
+    <Screen title={s('title')}>
       <section aria-label={s('summaryStrategies')} className="panel mt-2 p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">

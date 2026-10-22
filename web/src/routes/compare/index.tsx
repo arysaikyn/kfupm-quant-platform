@@ -269,7 +269,7 @@ export default function ComparePage() {
     setPicks((prev) => prev.map((p, i) => (i === slot ? value : p)))
 
   return (
-    <Screen title={s('title')} subtitle={s('subtitle')}>
+    <Screen title={s('title')}>
       <section className="panel mt-4 p-3">
         <h2 className="t-kicker" style={{ color: 'var(--color-muted)' }}>
           {s('slotsTitle')}

@@ -2,7 +2,6 @@ import type { ReactNode } from 'react'
 
 type Props = {
   title?: string
-  subtitle?: string
   /** Rendered at the logical start — the correct home for a back control in RTL. */
   leading?: ReactNode
   action?: ReactNode
@@ -11,7 +10,7 @@ type Props = {
   padded?: boolean
 }
 
-export function Screen({ title, subtitle, leading, action, children, padded = true }: Props) {
+export function Screen({ title, leading, action, children, padded = true }: Props) {
   return (
     <main className="screen-pad mx-auto min-h-full w-full max-w-[520px]">
       {(title || action || leading) && (
@@ -21,11 +20,6 @@ export function Screen({ title, subtitle, leading, action, children, padded = tr
             <div className="min-w-0">
               {title && (
                 <h1 className="t-title truncate py-[1px] text-[24px] leading-[1.3] font-semibold">{title}</h1>
-              )}
-              {subtitle && (
-                <p className="mt-1 truncate text-[12px]" style={{ color: 'var(--color-muted)' }}>
-                  {subtitle}
-                </p>
               )}
             </div>
           </div>

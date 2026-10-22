@@ -234,37 +234,6 @@ html[dir="rtl"] body {
   );
 }
 
-/* Screen changes run through the View Transitions API (React 19 <ViewTransition>).
-   The old frame leaves fast, the new one settles in. */
-/* Only the routed block animates. Animating :root would cross-fade the whole
-   viewport, including the fixed tab bar, which reads as the page dimming. */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-}
-
-/* The outgoing frame is removed at once; only the new screen animates in.
-   Cross-fading two live screens is what reads as a flash. */
-::view-transition-old(screen) {
-  animation: none;
-}
-
-::view-transition-new(screen) {
-  animation: var(--dur-base) var(--ease-soft) both vt-in;
-}
-
-@keyframes vt-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes vt-in {
-  from {
-    opacity: 0;
-  }
-}
-
 .sheet-enter {
   animation: sheet-in var(--dur-base) var(--ease-soft) both;
 }
@@ -322,10 +291,6 @@ html[dir="rtl"] body {
   .sheet-enter,
   .scrim-enter,
   .chart-draw path {
-    animation: none !important;
-  }
-  ::view-transition-old(screen),
-  ::view-transition-new(screen) {
     animation: none !important;
   }
 }

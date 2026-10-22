@@ -326,7 +326,7 @@ export default function SymbolPage() {
       </div>
 
       {/* Rules */}
-      <SectionHead title={s('rulesTitle')} hint={s('rulesHint')} />
+      <SectionHead title={s('rulesTitle')} />
       <div className="mt-2 flex flex-wrap gap-2">
         {rules.map((r) => (
           <div
@@ -368,7 +368,7 @@ export default function SymbolPage() {
       )}
 
       {/* Factor scores */}
-      <SectionHead title={c('factorsTitle')} hint={c('factorsHint')} />
+      <SectionHead title={c('factorsTitle')} />
       <div className="panel mt-3 p-4">
         <ul className="space-y-3">
           {factors.map((f) => (
@@ -394,7 +394,7 @@ export default function SymbolPage() {
       </div>
 
       {/* Peer comparison */}
-      <SectionHead title={c('peersTitle')} hint={c('peersHint')} />
+      <SectionHead title={c('peersTitle')} />
       <div className="panel mt-3 overflow-hidden">
         <div
           aria-hidden="true"
@@ -442,7 +442,7 @@ export default function SymbolPage() {
       </div>
 
       {/* Why it moved */}
-      <SectionHead title={c('whyTitle')} hint={c('whyHint')} />
+      <SectionHead title={c('whyTitle')} />
       <ul className="mt-3 space-y-2">
         {why.map((w) => (
           <li key={w.attr} className="flex items-start gap-2">

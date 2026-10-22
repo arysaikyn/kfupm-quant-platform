@@ -215,10 +215,17 @@ export default function MarketPage() {
   return (
     <Screen
       title={t('tab.market')}
-      subtitle={s('subtitle')}
       action={
-        <Link to="/search" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }} aria-label={s('goSearch')}>
-          {s('goSearch')}
+        <Link
+          to="/search"
+          aria-label={s('goSearch')}
+          className="flex h-11 w-11 items-center justify-center rounded-full"
+          style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="M16 16l4.5 4.5" />
+          </svg>
         </Link>
       }
     >
@@ -348,7 +355,7 @@ export default function MarketPage() {
       </div>
 
       {/* Sector heatmap */}
-      <SectionHead title={s('heatTitle')} hint={s('heatHint')} />
+      <SectionHead title={s('heatTitle')} />
       <div className="mt-2 flex flex-col gap-1.5">
         {HEAT_ROWS.map((row) => {
           const sum = row.reduce((a, r) => a + r.weight, 0)
@@ -409,9 +416,6 @@ export default function MarketPage() {
       <div className="mt-6 flex items-center justify-between gap-3" id="ranking">
         <div className="min-w-0">
           <h2 className="text-[15px] font-semibold">{s('rankTitle')}</h2>
-          <p className="mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
-            {s('rankHint')}
-          </p>
         </div>
         {sector && (
           <button

@@ -233,7 +233,6 @@ export default function StrategyPage() {
   return (
     <Screen
       title={s('title')}
-      subtitle={s('subtitle')}
       action={
         <Link to="/leaderboard" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
           {s('leaderboard')}

@@ -143,7 +143,7 @@ export default function RiskPage() {
 
   if (positions.length === 0) {
     return (
-      <Screen title={s('title')} subtitle={s('subtitle')}>
+      <Screen title={s('title')}>
         <EmptyState
           text={journal.length === 0 ? s('empty') : s('flat')}
           action={
@@ -223,7 +223,7 @@ export default function RiskPage() {
   }
 
   return (
-    <Screen title={s('title')} subtitle={s('subtitle')}>
+    <Screen title={s('title')}>
       <section aria-labelledby="risk-concentration" className="panel mt-4 p-4">
         <div className="flex items-baseline justify-between gap-3">
           <h2

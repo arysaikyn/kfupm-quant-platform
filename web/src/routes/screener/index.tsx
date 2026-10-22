@@ -193,7 +193,6 @@ export default function ScreenerPage() {
   return (
     <Screen
       title={s('title')}
-      subtitle={s('subtitle')}
       action={
         <div className="text-end">
           <p className="t-kicker" style={kicker}>

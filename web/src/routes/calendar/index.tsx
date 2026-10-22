@@ -140,7 +140,7 @@ export default function Calendar() {
     .replace('{end}', fmt.date.format(days[6]))
 
   return (
-    <Screen title={s('title')} subtitle={s('subtitle')}>
+    <Screen title={s('title')}>
       <section aria-labelledby="week-summary" className="panel mt-4 px-4 py-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">

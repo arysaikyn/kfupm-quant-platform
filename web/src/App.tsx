@@ -1,5 +1,5 @@
-import { Suspense, lazy, ViewTransition } from 'react'
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { Suspense, lazy, useEffect, useRef } from 'react'
+import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { TabBar } from './components/TabBar'
 import { RouteFallback } from './components/RouteFallback'
 
@@ -32,15 +32,27 @@ const SettingsPage = lazy(() => import('./routes/settings'))
  * A keyed remount would reset scroll and screen state on every tab tap.
  */
 function Shell() {
+  const { pathname } = useLocation()
+  const screenRef = useRef<HTMLDivElement>(null)
+
+  // A view transition snapshots the whole viewport, which made the fixed tab
+  // bar flicker. A plain opacity ramp on the routed block has no snapshot.
+  useEffect(() => {
+    const el = screenRef.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    el.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 180,
+      easing: 'cubic-bezier(0.241, 0.969, 0.635, 0.997)',
+    })
+  }, [pathname])
+
   return (
     <>
-      <ViewTransition>
-        <div style={{ viewTransitionName: 'screen' }}>
-          <Suspense fallback={<RouteFallback />}>
-            <Outlet />
-          </Suspense>
-        </div>
-      </ViewTransition>
+      <div ref={screenRef}>
+        <Suspense fallback={<RouteFallback />}>
+          <Outlet />
+        </Suspense>
+      </div>
       <div
         aria-hidden
         className="pointer-events-none fixed inset-x-0 bottom-0 z-40 h-28"

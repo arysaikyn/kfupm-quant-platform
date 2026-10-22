@@ -219,7 +219,6 @@ export default function AiPage() {
     <>
       <Screen
       title={t('tab.ai')}
-      subtitle={s('promise')}
       action={
         <Link to="/runs" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
           {s('runs')}

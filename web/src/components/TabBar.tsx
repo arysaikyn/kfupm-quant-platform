@@ -128,12 +128,13 @@ export function TabBar() {
                         top: active ? -25 : -22,
                         background: 'var(--color-accent)',
                         color: '#fff',
-                        boxShadow: active
-                          ? '0 0 0 3px rgba(168,85,247,.22), 0 0 34px rgba(168,85,247,.75)'
-                          : '0 0 26px rgba(168,85,247,.45)',
+                        // One soft halo, barely different when active: the size
+                        // change is the signal. Stacked rings over a blurred
+                        // backdrop read as a flash.
+                        boxShadow: '0 0 18px rgba(168,85,247,.32)',
                         border: '2px solid var(--color-bg)',
                         transition:
-                          'width 260ms cubic-bezier(.32,1.12,.55,1), height 260ms cubic-bezier(.32,1.12,.55,1), top 260ms cubic-bezier(.32,1.12,.55,1), box-shadow 260ms ease',
+                          'width 260ms cubic-bezier(.32,1.12,.55,1), height 260ms cubic-bezier(.32,1.12,.55,1), top 260ms cubic-bezier(.32,1.12,.55,1)',
                       }}
                     >
                       {it.icon}

@@ -1,6 +1,7 @@
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { quotes } from '../../data/mock'
+import { Source, Sources, SourcesContent, SourcesTrigger } from '../../vendor/ai-elements/Sources'
 import { visibleParas } from './chat'
 import type { AssistantMsg } from './chat'
 import { ArtifactCard } from './ArtifactCard'
@@ -125,20 +126,18 @@ export function AssistantMessage({
       {complete && <EvidenceRows symbol={evidenceSymbol} />}
 
       {complete && m.sources.length > 0 && (
-        <div className="mt-3 flex flex-wrap items-center gap-1.5">
-          <span className="text-[10px] tracking-wide text-muted uppercase">
-            {sourcesLabel} · {m.sources.length}
-          </span>
-          {m.sources.map((src) => (
-            <span
-              key={src}
-              className="inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-[11px] text-muted"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-muted" />
-              {src}
-            </span>
-          ))}
-        </div>
+        <Sources defaultOpen className="mt-3 mb-0">
+          <SourcesTrigger count={m.sources.length} className="text-[11px] text-muted">
+            {`${sourcesLabel} · ${m.sources.length}`}
+          </SourcesTrigger>
+          <SourcesContent className="mt-2">
+            {m.sources.map((src) => (
+              <Source key={src} title={src} href="#" className="text-[11px] text-muted">
+                {src}
+              </Source>
+            ))}
+          </SourcesContent>
+        </Sources>
       )}
 
       {complete && m.artifactTitle && <ArtifactCard title={m.artifactTitle} />}

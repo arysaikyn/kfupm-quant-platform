@@ -233,11 +233,6 @@ export default function StrategyPage() {
   return (
     <Screen
       title={s('title')}
-      action={
-        <Link to="/leaderboard" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
-          {s('leaderboard')}
-        </Link>
-      }
     >
       <section aria-labelledby="paper-book-title" className="panel mt-2 mb-3 p-4">
         <div className="flex items-start justify-between gap-3">
@@ -272,29 +267,16 @@ export default function StrategyPage() {
           </button>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <div
-            className="min-w-0 rounded-xl px-3 py-2"
-            style={{ border: '1px solid var(--color-line)' }}
-          >
-            <div className="text-[11px] leading-none" style={{ color: 'var(--color-muted)' }}>
-              {BOOK_POSITIONS[lang]}
-            </div>
-            <div dir="ltr" className="num mt-1.5 text-[15px] leading-none font-medium">
-              {fmtNum(book.open, lang, 0)}
-            </div>
-          </div>
-          <div
-            className="min-w-0 rounded-xl px-3 py-2"
-            style={{ border: '1px solid var(--color-line)' }}
-          >
-            <div className="text-[11px] leading-none" style={{ color: 'var(--color-muted)' }}>
-              {BOOK_CASH[lang]}
-            </div>
-            <div dir="ltr" className="num mt-1.5 truncate text-[15px] leading-none font-medium">
-              {fmtNum(book.cash, lang)}
-            </div>
-          </div>
+        <div className="mt-2 text-[11px] leading-none" style={{ color: 'var(--color-muted)' }}>
+          <span dir="ltr" className="num">
+            {fmtNum(book.open, lang, 0)}
+          </span>{' '}
+          {BOOK_POSITIONS[lang]}
+          <span className="mx-1.5 opacity-50">·</span>
+          <span dir="ltr" className="num">
+            {fmtNum(book.cash, lang)}
+          </span>{' '}
+          {BOOK_CASH[lang]}
         </div>
 
         {formOpen && (
@@ -526,12 +508,13 @@ export default function StrategyPage() {
                 onClick={() => setTag(t)}
                 aria-pressed={active}
                 className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors ${
-                  active ? 'font-medium text-fg' : 'text-muted'
+                  active ? 'font-medium' : 'text-muted'
                 }`}
-                style={{
-                  border: '1px solid var(--color-line)',
-                  background: active ? 'var(--color-surface)' : 'transparent',
-                }}
+                style={
+                  active
+                    ? { background: 'rgba(168,85,247,.16)', color: 'var(--color-fg)' }
+                    : undefined
+                }
               >
                 {t ? s(TAG_KEY[t]) : ALL[lang]}
               </button>
@@ -540,31 +523,28 @@ export default function StrategyPage() {
         </div>
       )}
 
-      <div className="mt-2 flex justify-end">
-        <div
-          role="group"
+      <div className="mt-1 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setSort(sort === 'recent' ? 'return' : 'recent')}
           aria-label={s('sortLabel')}
-          className="flex rounded-full p-1"
-          style={{ border: '1px solid var(--color-line)' }}
+          className="flex min-h-11 items-center gap-1.5 text-[12px]"
+          style={{ color: 'var(--color-muted)' }}
         >
-          {(['recent', 'return'] as const).map((k) => {
-            const active = sort === k
-            return (
-              <button
-                key={k}
-                type="button"
-                onClick={() => setSort(k)}
-                aria-pressed={active}
-                className={`min-h-11 rounded-full px-3.5 text-[13px] transition-colors ${
-                  active ? 'font-medium text-fg' : 'text-muted'
-                }`}
-                style={active ? { background: 'var(--color-surface)' } : undefined}
-              >
-                {s(k === 'recent' ? 'sortRecent' : 'sortReturn')}
-              </button>
-            )
-          })}
-        </div>
+          {s(sort === 'recent' ? 'sortRecent' : 'sortReturn')}
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3" />
+          </svg>
+        </button>
       </div>
 
       <div className="mt-4">

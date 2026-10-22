@@ -61,11 +61,6 @@ export default function MePage() {
   return (
     <Screen
       title={s('title')}
-      action={
-        <Link to="/learn" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px]" style={{ border: '1px solid var(--color-line)' }}>
-          {s('glossary')}
-        </Link>
-      }
     >
       <section className="pt-2">
         {signedIn ? (
@@ -158,6 +153,7 @@ export default function MePage() {
         </h2>
         <div className="panel divide-y divide-line overflow-hidden">
           {[
+            { to: '/learn', label: s('glossary') },
             { to: '/watchlists', label: s('moreWatchlists') },
             { to: '/risk', label: s('moreRisk') },
             { to: '/settings', label: s('moreSettings') },

@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactElement } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useI18n } from '../i18n'
 import type { GlobalKey } from '../i18n'
 
@@ -60,8 +60,31 @@ export function TabBar() {
   const { t, dir } = useI18n()
   const { pathname } = useLocation()
 
+  // A screen reached from a tab keeps that tab lit: /learn is part of 我的,
+  // /screener part of 行情, and so on. Without this the bar fell back to the
+  // first tab on every sub-route.
+  const TAB_OWNER: Record<string, string> = {
+    '/search': '/',
+    '/m': '/',
+    '/screener': '/',
+    '/review': '/',
+    '/alerts': '/',
+    '/compare': '/',
+    '/sector': '/',
+    '/calendar': '/news',
+    '/runs': '/ai',
+    '/report': '/strategy',
+    '/learn': '/me',
+    '/watchlists': '/me',
+    '/risk': '/me',
+    '/settings': '/me',
+  }
+  const owner =
+    Object.entries(TAB_OWNER).find(
+      ([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    )?.[1] ?? pathname
   const activeIndex = items.findIndex((it) =>
-    it.to === '/' ? pathname === '/' || pathname.startsWith('/m/') : pathname.startsWith(it.to),
+    it.to === '/' ? owner === '/' : owner === it.to,
   )
   const index = Math.max(activeIndex, 0)
 
@@ -111,9 +134,8 @@ export function TabBar() {
 
           return (
             <li key={it.to} className="relative">
-              <NavLink
+              <Link
                 to={it.to}
-                end={it.to === '/'}
                 aria-current={active ? 'page' : undefined}
                 className="flex h-full flex-col items-center justify-center gap-1"
                 style={{ color: active ? 'var(--color-fg)' : 'var(--color-muted)' }}
@@ -146,7 +168,7 @@ export function TabBar() {
                 <span className="max-w-full truncate px-1 pb-[1px] text-[10px] leading-[1.6]">
                   {t(it.key)}
                 </span>
-              </NavLink>
+              </Link>
             </li>
           )
         })}

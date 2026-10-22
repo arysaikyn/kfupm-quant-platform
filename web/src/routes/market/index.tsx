@@ -9,6 +9,7 @@ import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import { indices, quotes, sectors } from '../../data/mock'
 import type { Quote, Sector } from '../../data/mock'
+import { useAlerts, triggeredCount } from '../../store/alerts'
 import { toggleWatch, useUser } from '../../store/user'
 import { SectionHead } from './SectionHead'
 import { strings } from './strings'
@@ -48,13 +49,10 @@ const ROW_GRID =
 const SPARK_CELL = 'max-[480px]:hidden'
 
 /** A move this large is worth surfacing on the strip. */
-const ALERT_MOVE = 0.01
 
 type Sort = 'chg' | 'fall' | 'name'
 
 const SORT_KEY = { chg: 'sortGain', fall: 'sortLoss', name: 'sortName' } as const
-
-type Alert = { symbol: string; tone: string; text: string }
 
 /** A drawn triangle, not ▲: at 8px the text glyph sits on a different baseline
     in every locale font, which is what made the old rows look unaligned. */
@@ -140,6 +138,12 @@ export default function MarketPage() {
   }, [sector, sort, lang])
 
   // Symbols arrive newest first from the store; the mock quote is the row.
+  // Alerts belong to the bell, not to the feed. The count is what fired; the
+  // rows that carry one get a small bell, the way Eastmoney marks a watchlist.
+  const alertList = useAlerts()
+  const fired = triggeredCount(alertList)
+  const alertSymbols = useMemo(() => new Set(alertList.map((a) => a.symbol)), [alertList])
+
   const watched = useMemo(
     () =>
       watchlist
@@ -147,44 +151,6 @@ export default function MarketPage() {
         .filter((q): q is Quote => Boolean(q)),
     [watchlist],
   )
-
-  // Alerts are derived on every render pass, never stored: the biggest moves
-  // lead, then the day's extremes fill the strip if fewer than three qualified.
-  const alerts = useMemo(() => {
-    const out: Alert[] = []
-    const add = (q: Quote, tone: string, text: string) => {
-      if (out.length >= 3 || out.some((a) => a.symbol === q.symbol)) return
-      out.push({ symbol: q.symbol, tone, text })
-    }
-    const movers = [...quotes].sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
-    for (const q of movers) {
-      if (Math.abs(q.change) < ALERT_MOVE) continue
-      const up = q.change >= 0
-      add(
-        q,
-        up ? 'var(--color-up)' : 'var(--color-down)',
-        `${fmtPct(q.change, lang)} ${s(up ? 'alertOverUp' : 'alertOverDown')}`,
-      )
-    }
-    const byChange = [...quotes].sort((a, b) => b.change - a.change)
-    const gainer = byChange[0]
-    const loser = byChange[byChange.length - 1]
-    if (gainer) {
-      add(
-        gainer,
-        'var(--color-up)',
-        `${fmtPct(gainer.change, lang)} ${s('alertTopGainer')}`,
-      )
-    }
-    if (loser && loser.change < 0) {
-      add(
-        loser,
-        'var(--color-down)',
-        `${fmtPct(loser.change, lang)} ${s('alertTopLoser')}`,
-      )
-    }
-    return out
-  }, [lang, s])
 
   // Breadth is read off the rows the user is looking at, not the whole market,
   // so the summary and the list can never disagree after a sector filter.
@@ -234,12 +200,14 @@ export default function MarketPage() {
               <path d="M18 8a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" />
               <path d="M13.7 20a2 2 0 0 1-3.4 0" />
             </svg>
-            {alerts.length > 0 && (
+            {fired > 0 && (
               <span
                 aria-hidden="true"
-                className="absolute end-2 top-2 h-1.5 w-1.5 rounded-full"
-                style={{ background: 'var(--color-down)' }}
-              />
+                className="num absolute -end-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none"
+                style={{ background: 'var(--color-down)', color: '#fff' }}
+              >
+                {fired > 9 ? '9+' : fired}
+              </span>
             )}
           </Link>
         </div>
@@ -278,36 +246,6 @@ export default function MarketPage() {
           change={(q) => fmtPct(q.change, lang)}
         />
       </div>
-
-      {/* Alerts: every value is computed from the quotes above, none is stored */}
-      {alerts.length > 0 && (
-        <div className="mt-3">
-          <p className="t-kicker" style={kicker}>
-            {s('alertsLabel')}
-          </p>
-          <div
-            className="-mx-4 mt-1.5 flex gap-2 overflow-x-auto px-4 pb-0.5 [&::-webkit-scrollbar]:hidden"
-            style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
-          >
-            {alerts.map((a) => (
-              <Link
-                key={a.symbol}
-                to={`/m/${a.symbol}`}
-                className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-[11px] whitespace-nowrap transition-colors active:opacity-70"
-                style={{
-                  border: `1px solid color-mix(in srgb, ${a.tone} 30%, transparent)`,
-                  background: `color-mix(in srgb, ${a.tone} 10%, transparent)`,
-                }}
-              >
-                <span className="num font-semibold" style={{ color: a.tone }}>
-                  {a.symbol}
-                </span>
-                <span style={{ color: 'var(--color-fg)' }}>{a.text}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Index masthead: one hero figure, the rest as a single inline row */}
       <div className="mt-3">
@@ -571,11 +509,25 @@ export default function MarketPage() {
                           <span className="block truncate text-[14px] leading-tight font-medium">
                             {q.name[lang]}
                           </span>
-                          <span
-                            className="num mt-0.5 block truncate text-[11px] leading-none"
-                            style={{ color: 'var(--color-muted)' }}
-                          >
-                            {q.symbol}
+                          <span className="mt-0.5 flex items-center gap-1">
+                            <span
+                              className="num truncate text-[11px] leading-none"
+                              style={{ color: 'var(--color-muted)' }}
+                            >
+                              {q.symbol}
+                            </span>
+                            {alertSymbols.has(q.symbol) && (
+                              <span
+                                role="img"
+                                aria-label={s('goAlerts')}
+                                style={{ color: 'var(--color-accent)' }}
+                              >
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                  <path d="M18 8a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" />
+                                  <path d="M13.7 20a2 2 0 0 1-3.4 0" />
+                                </svg>
+                              </span>
+                            )}
                           </span>
                         </span>
                         <span

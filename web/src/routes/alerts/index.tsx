@@ -1,64 +1,18 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
 import { quotes } from '../../data/mock'
+import { addAlert, removeAlert, rowsFor, useAlerts } from '../../store/alerts'
+import type { AlertDir } from '../../store/alerts'
 import { strings } from './strings'
 
-type Dir = 'above' | 'below'
-
-type Alert = {
-  id: string
-  symbol: string
-  dir: Dir
-  threshold: number
-}
-
-const KEY = 'alerts.v1'
+type Dir = AlertDir
 
 const QUOTE_BY_SYMBOL: Record<string, (typeof quotes)[number]> = Object.fromEntries(
   quotes.map((q) => [q.symbol, q] as const),
 )
-
-/** One already met and one still waiting, so both chip states show on load. */
-const SEED: Alert[] = [
-  { id: 'seed-1120', symbol: '1120', dir: 'below', threshold: 61 },
-  { id: 'seed-2222', symbol: '2222', dir: 'above', threshold: 26 },
-]
-
-function isAlert(v: unknown): v is Alert {
-  if (!v || typeof v !== 'object') return false
-  const a = v as Record<string, unknown>
-  return (
-    typeof a.id === 'string' &&
-    typeof a.symbol === 'string' &&
-    Object.hasOwn(QUOTE_BY_SYMBOL, a.symbol) &&
-    (a.dir === 'above' || a.dir === 'below') &&
-    typeof a.threshold === 'number' &&
-    Number.isFinite(a.threshold) &&
-    a.threshold > 0
-  )
-}
-
-/** An empty stored array stays empty: only a missing key or bad JSON reseeds. */
-function load(): Alert[] {
-  let raw: string | null = null
-  try {
-    raw = localStorage.getItem(KEY)
-  } catch {
-    // Private browsing: seeds still render for this session.
-    return SEED
-  }
-  if (raw === null) return SEED
-  try {
-    const parsed: unknown = JSON.parse(raw)
-    if (Array.isArray(parsed)) return parsed.filter(isAlert)
-  } catch {
-    // Corrupt payload: fall back to the seed rather than an empty screen.
-  }
-  return SEED
-}
 
 /** 12px arrow: the text glyphs sit on different baselines in each locale. */
 function DirIcon({ dir }: { dir: Dir }) {
@@ -80,32 +34,6 @@ function DirIcon({ dir }: { dir: Dir }) {
         <path d="M6 2.5v7M6 9.5 2.8 6.3M6 9.5l3.2-3.2" />
       )}
     </svg>
-  )
-}
-
-function StateChip({ triggered, label }: { triggered: boolean; label: string }) {
-  return (
-    <span
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-[3px] text-[11px] leading-none font-medium"
-      style={{
-        borderColor: triggered
-          ? 'color-mix(in srgb, var(--color-accent) 36%, transparent)'
-          : 'var(--color-line)',
-        background: triggered
-          ? 'color-mix(in srgb, var(--color-accent) 14%, transparent)'
-          : 'transparent',
-        color: triggered ? 'var(--color-accent)' : 'var(--color-muted)',
-      }}
-    >
-      <span
-        className="h-1.5 w-1.5 rounded-full"
-        style={{
-          background: triggered ? 'var(--color-accent)' : 'var(--color-muted)',
-          opacity: triggered ? 1 : 0.55,
-        }}
-      />
-      {label}
-    </span>
   )
 }
 
@@ -159,41 +87,22 @@ export default function AlertsPage() {
   const { lang } = useI18n()
   const s = useStrings(strings)
 
-  const [alerts, setAlerts] = useState<Alert[]>(load)
+  const alerts = useAlerts()
   const [symbol, setSymbol] = useState(quotes[0].symbol)
   const [dir, setDir] = useState<Dir>('above')
   const [threshold, setThreshold] = useState(() => String(quotes[0].price))
   const [error, setError] = useState<'invalid' | Dir | null>(null)
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(alerts))
-    } catch {
-      // Persistence is best-effort; the session still works.
-    }
-  }, [alerts])
-
   const quote = QUOTE_BY_SYMBOL[symbol] ?? quotes[0]
 
-  // Trigger state is read off the live quote every render; it is never stored.
-  const rows = useMemo(
-    () =>
-      alerts.flatMap((a) => {
-        const q = QUOTE_BY_SYMBOL[a.symbol]
-        if (!q) return []
-        return [
-          {
-            ...a,
-            quote: q,
-            triggered: a.dir === 'above' ? q.price >= a.threshold : q.price <= a.threshold,
-          },
-        ]
-      }),
-    [alerts],
-  )
+  const rows = useMemo(() => rowsFor(alerts), [alerts])
 
-  const triggered = rows.filter((r) => r.triggered).length
-  const waiting = rows.length - triggered
+  const triggered = rows.filter((r) => r.triggered)
+  const waiting = rows.filter((r) => !r.triggered)
+  const sections = [
+    { key: 'fired' as const, rows: triggered },
+    { key: 'waiting' as const, rows: waiting },
+  ].filter((g) => g.rows.length > 0)
 
   // Arabic joins break under the kicker's tracking; drop it there.
   const kicker = { letterSpacing: lang === 'ar' ? 0 : undefined }
@@ -222,15 +131,7 @@ export default function AlertsPage() {
       setError(dir)
       return
     }
-    setAlerts((prev) => [
-      {
-        id: `a-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        symbol,
-        dir,
-        threshold: value,
-      },
-      ...prev,
-    ])
+    addAlert({ symbol, dir, threshold: value })
     setThreshold(String(quote.price))
     setError(null)
   }
@@ -250,18 +151,18 @@ export default function AlertsPage() {
       action={
         <div
           role="group"
-          aria-label={`${triggered} ${s('triggered')}, ${waiting} ${s('waiting')}`}
+          aria-label={`${triggered.length} ${s('triggered')}, ${waiting.length} ${s('waiting')}`}
           className="flex shrink-0 items-center gap-3 pb-0.5"
         >
           <HeadStat
-            value={triggered}
+            value={triggered.length}
             label={s('triggered')}
             tone="var(--color-accent)"
             tracking={kicker.letterSpacing}
           />
           <span aria-hidden="true" className="h-7 w-px" style={{ background: 'var(--color-line)' }} />
           <HeadStat
-            value={waiting}
+            value={waiting.length}
             label={s('waiting')}
             tone="var(--color-fg)"
             tracking={kicker.letterSpacing}
@@ -407,21 +308,31 @@ export default function AlertsPage() {
         </form>
       </section>
 
-      <section className="mt-5">
-        <div className="flex items-baseline justify-between gap-2">
-          <h2 className="t-kicker" style={{ ...kicker, color: 'var(--color-muted)' }}>
-            {s('listTitle')}
-          </h2>
-          <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
-            {rows.length}
-          </span>
-        </div>
-
-        {rows.length === 0 ? (
+      {rows.length === 0 ? (
+        <section className="mt-5">
           <EmptyState text={s('empty')} />
-        ) : (
-          <ul className="panel mt-2 divide-y divide-line overflow-hidden">
-            {rows.map((r) => (
+        </section>
+      ) : (
+        <>
+          {sections.map((group) => (
+            <section key={group.key} className="mt-5">
+              <div className="flex items-baseline justify-between gap-2">
+                <h2
+                  className="t-kicker"
+                  style={{
+                    ...kicker,
+                    color:
+                      group.key === 'fired' ? 'var(--color-accent)' : 'var(--color-muted)',
+                  }}
+                >
+                  {group.key === 'fired' ? s('triggered') : s('waiting')}
+                </h2>
+                <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
+                  {group.rows.length}
+                </span>
+              </div>
+              <ul className="panel mt-2 divide-y divide-line overflow-hidden">
+                {group.rows.map((r) => (
               <li
                 key={r.id}
                 className="flex items-start gap-2 px-3 py-2.5"
@@ -456,18 +367,13 @@ export default function AlertsPage() {
                         {fmtNum(r.quote.price, lang, 2)}
                       </span>
                     </span>
-                    <span className="ms-auto">
-                      <StateChip
-                        triggered={r.triggered}
-                        label={r.triggered ? s('triggered') : s('waiting')}
-                      />
-                    </span>
+
                   </div>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => setAlerts((prev) => prev.filter((a) => a.id !== r.id))}
+                  onClick={() => removeAlert(r.id)}
                   aria-label={`${s('delete')} ${r.symbol}`}
                   className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                   style={{ color: 'var(--color-muted)' }}
@@ -475,10 +381,12 @@ export default function AlertsPage() {
                   <TrashIcon />
                 </button>
               </li>
-            ))}
-          </ul>
-        )}
-      </section>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </>
+      )}
     </Screen>
   )
 }

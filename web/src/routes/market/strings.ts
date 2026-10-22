@@ -41,11 +41,6 @@ const zh = {
   sortGain: '涨幅',
   sortLoss: '跌幅',
   sortName: '名称',
-  alertsLabel: '今日提醒',
-  alertOverUp: '涨超 1%',
-  alertOverDown: '跌超 1%',
-  alertTopGainer: '今日领涨',
-  alertTopLoser: '今日领跌',
 
   // ── 个股页 ─────────────────────────────────────────────────
   back: '返回',
@@ -111,11 +106,6 @@ const en: typeof zh = {
   sortGain: 'Gainers',
   sortLoss: 'Losers',
   sortName: 'Name',
-  alertsLabel: "Today's alerts",
-  alertOverUp: 'up more than 1%',
-  alertOverDown: 'down more than 1%',
-  alertTopGainer: 'top gainer today',
-  alertTopLoser: 'biggest faller today',
 
   back: 'Back',
   priceLabel: 'Last price',
@@ -180,11 +170,6 @@ const ar: typeof zh = {
   sortGain: 'الصعود',
   sortLoss: 'الهبوط',
   sortName: 'الاسم',
-  alertsLabel: 'تنبيهات اليوم',
-  alertOverUp: 'ارتفع أكثر من 1%',
-  alertOverDown: 'انخفض أكثر من 1%',
-  alertTopGainer: 'الأعلى ربحًا اليوم',
-  alertTopLoser: 'الأكثر انخفاضًا اليوم',
 
   back: 'رجوع',
   priceLabel: 'آخر سعر',

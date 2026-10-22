@@ -8,14 +8,14 @@ type Props = {
 }
 
 /**
- * Bloomberg-style tape. Two identical tracks so the loop has no seam; the
- * second is hidden from assistive tech. Time order stays LTR in Arabic.
+ * Quote strip. Swipeable, not a marquee: a scrolling ticker cut the first
+ * number in half at the edge. Time order stays LTR in Arabic.
  */
 export function TickerTape({ quotes, name, price, change }: Props) {
-  const track = (hidden: boolean) => (
-    <div className="tape__track" aria-hidden={hidden || undefined} dir="ltr">
+  const track = () => (
+    <div className="tape__track" dir="ltr">
       {quotes.map((q) => (
-        <span key={`${hidden ? 'b' : 'a'}-${q.symbol}`} className="flex shrink-0 items-baseline gap-1.5">
+        <span key={q.symbol} className="flex shrink-0 items-baseline gap-1.5">
           <span className="t-kicker" style={{ color: 'var(--color-muted)' }}>
             {q.symbol}
           </span>
@@ -33,8 +33,7 @@ export function TickerTape({ quotes, name, price, change }: Props) {
 
   return (
     <div className="tape py-2" aria-label={name(quotes[0])}>
-      {track(false)}
-      {track(true)}
+      {track()}
     </div>
   )
 }

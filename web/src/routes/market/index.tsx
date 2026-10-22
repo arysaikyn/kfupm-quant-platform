@@ -52,8 +52,6 @@ const ALERT_MOVE = 0.01
 
 type Sort = 'chg' | 'fall' | 'name'
 
-const SORTS = ['chg', 'fall', 'name'] as const
-
 const SORT_KEY = { chg: 'sortGain', fall: 'sortLoss', name: 'sortName' } as const
 
 type Alert = { symbol: string; tone: string; text: string }
@@ -127,6 +125,7 @@ export default function MarketPage() {
   const { watchlist } = useUser()
   const [sector, setSector] = useState<string | null>(null)
   const [sort, setSort] = useState<Sort>('chg')
+  const [view, setView] = useState<'rank' | 'sectors' | 'watch'>('rank')
 
   const ranked = useMemo(() => {
     const members = sector ? (SECTOR_MEMBERS[sector] ?? []) : null
@@ -209,9 +208,6 @@ export default function MarketPage() {
     letterSpacing: lang === 'ar' ? 0 : undefined,
   }
 
-  const scrollToRanking = () =>
-    document.getElementById('ranking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-
   return (
     <Screen
       title={t('tab.market')}
@@ -230,15 +226,15 @@ export default function MarketPage() {
       }
     >
       {/* Market switch — visual only for now. */}
-      <div role="group" aria-label={s('markets')} className="mt-1 flex flex-wrap gap-2">
+      <div role="group" aria-label={s('markets')} className="mt-1 flex gap-1.5">
         {[s('mSaudi'), s('mCn'), s('mHk')].map((label, i) => (
           <span
             key={label}
-            className="rounded-full px-3 py-1.5 text-[12px] font-medium"
+            className="rounded-full px-2.5 py-1 text-[11px] font-medium leading-none"
             style={
               i === 0
                 ? { background: 'var(--color-fg)', color: 'var(--color-bg)' }
-                : { border: '1px solid var(--color-line)', color: 'var(--color-muted)' }
+                : { color: 'var(--color-muted)' }
             }
           >
             {label}
@@ -293,6 +289,369 @@ export default function MarketPage() {
         </div>
       )}
 
+      {/* Index masthead: one hero figure, the rest as a single inline row */}
+      <div className="mt-3">
+        {indices[0] && (
+          <div className="panel px-4 py-3">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
+                {indices[0].name[lang]}
+              </p>
+              <p
+                className="num text-[12px]"
+                style={{ color: indices[0].change >= 0 ? 'var(--color-up)' : 'var(--color-down)' }}
+              >
+                {fmtPct(indices[0].change, lang)}
+              </p>
+            </div>
+            <p className="t-display num mt-1 text-[38px] leading-none font-bold italic">
+              <AnimatedNumber value={indices[0].value} format={(n) => fmtNum(n, lang, 2)} />
+            </p>
+          </div>
+        )}
+        <div className="mt-2 flex gap-5 px-1">
+          {indices.slice(1).map((ix) => {
+            const up = ix.change >= 0
+            return (
+              <div key={ix.symbol} className="flex min-w-0 flex-1 items-baseline gap-1.5">
+                <span className="truncate text-[11px]" style={{ color: 'var(--color-muted)' }}>
+                  {ix.name[lang]}
+                </span>
+                <span className="num shrink-0 text-[12px]">
+                  <AnimatedNumber value={ix.value} format={(n) => fmtNum(n, lang, 0)} />
+                </span>
+                <span
+                  className={`num shrink-0 text-[11px] ${up ? 'text-up' : 'text-down'}`}
+                >
+                  {fmtPct(ix.change, lang, 1)}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* One switch for the three things this screen is for */}
+      <div
+        role="tablist"
+        aria-label={s('moreScreens')}
+        className="mt-4 flex rounded-full p-1"
+        style={{ border: '1px solid var(--color-line)' }}
+      >
+        {([
+          ['rank', s('viewRank')],
+          ['sectors', s('viewSectors')],
+          ['watch', s('viewWatch')],
+        ] as const).map(([key, label]) => {
+          const active = view === key
+          return (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setView(key)}
+              className={`min-h-10 flex-1 rounded-full text-[12px] transition-colors ${
+                active ? 'font-medium' : 'text-muted'
+              }`}
+              style={active ? { background: 'var(--color-surface)' } : undefined}
+            >
+              {label}
+            </button>
+          )
+        })}
+      </div>
+
+      {view === 'sectors' && (
+        <>
+      {/* Sector heatmap */}
+        <SectionHead title={s('heatTitle')} />
+        <div className="mt-2 flex flex-col gap-1.5">
+          {HEAT_ROWS.map((row) => {
+            const sum = row.reduce((a, r) => a + r.weight, 0)
+            return (
+              <div
+                key={row.map((r) => r.id).join('-')}
+                className="flex gap-1.5"
+                style={{ height: Math.max(64, Math.round(sum * TILE_UNIT)) }}
+              >
+                {row.map((sec) => {
+                  const up = sec.change >= 0
+                  const selected = sector === sec.id
+                  const token = up ? 'var(--color-up)' : 'var(--color-down)'
+                  const alpha = 22 + Math.min(Math.abs(sec.change) / 0.02, 1) * 26
+                  return (
+                    <button
+                      key={sec.id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => setSector(selected ? null : sec.id)}
+                      className="flex min-w-0 flex-col justify-between rounded-[14px] p-2.5 text-start"
+                      style={{
+                        flexGrow: sec.weight,
+                        flexBasis: 0,
+                        background: `linear-gradient(165deg, color-mix(in srgb, ${token} ${Math.round(alpha * 0.9)}%, transparent), color-mix(in srgb, ${token} ${Math.round(alpha * 0.2)}%, transparent))`,
+                        border: `1px solid color-mix(in srgb, ${token} 26%, transparent)`,
+                        boxShadow: selected
+                          ? 'inset 0 0 0 2px var(--color-accent)'
+                          : 'var(--card-inset)',
+                      }}
+                    >
+                      <span className="block min-w-0 truncate text-[12px] font-medium">
+                        {sec.name[lang]}
+                      </span>
+                      <span className="num text-[12px]" style={{ color: token }}>
+                        {fmtPct(sec.change, lang)}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>
+  
+        {/* Drill into whichever sector is in focus */}
+        <Link
+          to={`/sector/${sector ?? sectors[0]?.id ?? 'energy'}`}
+          className="panel mt-2 flex min-h-[44px] items-center justify-between gap-3 px-3 text-[12px]"
+        >
+          <span>{s('sectorDetail')}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </Link>
+        </>
+      )}
+
+      {view === 'rank' && (
+        <>
+      {/* Ranking */}
+        {ranked.length === 0 ? (
+          <EmptyState
+            text={s('rankEmpty')}
+            action={
+              <button
+                type="button"
+                onClick={() => setSector(null)}
+                className="min-h-[44px] rounded-full px-4 text-[13px]"
+                style={{ border: '1px solid var(--color-line)' }}
+              >
+                {s('rankPick')}
+              </button>
+            }
+          />
+        ) : (
+          <>
+            {/* One meta row: the shape of the board, plus the two controls */}
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <p className="text-[12px] leading-none" style={{ color: breadthTone }}>
+                {s('breadthUp')} <span className="num font-semibold">{breadth.up}</span>
+                <span className="mx-1.5" style={{ color: 'var(--color-muted)' }}>
+                  ·
+                </span>
+                {s('breadthDown')} <span className="num font-semibold">{breadth.down}</span>
+              </p>
+              <div className="flex shrink-0 items-center gap-2">
+                {sector && (
+                  <button
+                    type="button"
+                    onClick={() => setSector(null)}
+                    className="min-h-11 text-[12px]"
+                    style={{ color: 'var(--color-accent)' }}
+                  >
+                    {s('heatClear')}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSort(sort === 'chg' ? 'fall' : sort === 'fall' ? 'name' : 'chg')
+                  }
+                  className="flex min-h-11 items-center gap-1.5 text-[12px]"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  {s(SORT_KEY[sort])}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div>
+              <div
+                aria-hidden="true"
+                className="mt-2 flex h-[3px] gap-px overflow-hidden rounded-full"
+                style={{ background: 'var(--color-line)' }}
+              >
+                {breadth.up > 0 && (
+                  <span style={{ flexGrow: breadth.up, background: 'var(--color-up)' }} />
+                )}
+                {breadth.down > 0 && (
+                  <span style={{ flexGrow: breadth.down, background: 'var(--color-down)' }} />
+                )}
+              </div>
+            </div>
+  
+            <div className="panel mt-3 overflow-hidden">
+              {/* Column rail: one grid shared with every row, so the figures sit
+                  in a line instead of drifting with each name length. */}
+              <div
+                aria-hidden="true"
+                className={`${ROW_GRID} ps-3 pe-11 py-2`}
+                style={{ borderBottom: '1px solid var(--color-line)' }}
+              >
+                <span className="t-kicker text-center" style={kicker}>
+                  #
+                </span>
+                <span className="t-kicker" style={kicker}>
+                  {s('colName')}
+                </span>
+                <span className={`t-kicker text-center ${SPARK_CELL}`} style={kicker}>
+                  {s('col1m')}
+                </span>
+                <span className="t-kicker text-end" style={kicker}>
+                  {s('colLast')}
+                </span>
+                <span className="t-kicker text-end" style={kicker}>
+                  {s('colChg')}
+                </span>
+              </div>
+  
+              <ul className="divide-y divide-line">
+                {ranked.map((q, i) => {
+                  const up = q.change >= 0
+                  const isWatched = watchlist.includes(q.symbol)
+                  return (
+                    <li key={q.symbol} className="relative">
+                      <LongPressLink
+                        to={`/m/${q.symbol}`}
+                        prompt={`${s('askAbout')} ${q.name[lang]}`}
+                        className={`${ROW_GRID} min-h-[56px] ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent`}
+                      >
+                        {/* Rank is positional, so it is not read out as part of the name. */}
+                        <span
+                          aria-hidden="true"
+                          className="num text-center text-[11px] leading-none"
+                          style={{ color: 'var(--color-muted)' }}
+                        >
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block truncate text-[14px] leading-tight font-medium">
+                            {q.name[lang]}
+                          </span>
+                          <span
+                            className="num mt-0.5 block truncate text-[11px] leading-none"
+                            style={{ color: 'var(--color-muted)' }}
+                          >
+                            {q.symbol}
+                          </span>
+                        </span>
+                        <span
+                          aria-hidden="true"
+                          className={`flex ${SPARK_CELL} ${up ? 'text-up' : 'text-down'}`}
+                        >
+                          <BarStrip data={q.spark} up={up} compact />
+                        </span>
+                        <span className="num text-end text-[12px] leading-none">
+                          <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
+                        </span>
+                        <span
+                          className={`num flex items-center justify-end gap-1 text-[15px] leading-none font-semibold ${up ? 'text-up' : 'text-down'}`}
+                        >
+                          <TrendArrow up={up} />
+                          <span>{fmtPct(q.change, lang)}</span>
+                        </span>
+                      </LongPressLink>
+                      <WatchStar
+                        watched={isWatched}
+                        label={`${isWatched ? s('watchRemove') : s('watchAdd')} ${q.name[lang]}`}
+                        onToggle={() => toggleWatch(q.symbol)}
+                      />
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          </>
+        )}
+        </>
+      )}
+
+      {view === 'watch' && (
+        <>
+      {/* Watchlist — read from the shared store, so a tap anywhere lands here */}
+        <div className="mt-7">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[15px] font-semibold">{s('watchTitle')}</h2>
+            <span
+              className="num rounded-full px-2 py-0.5 text-[11px]"
+              style={{ background: 'var(--color-surface)', color: 'var(--color-muted)' }}
+            >
+              {watched.length}
+            </span>
+          </div>
+          {watched.length === 0 ? (
+            <EmptyState
+              text={s('watchEmpty')}
+              action={
+                <button
+                  type="button"
+                  onClick={() => setView('rank')}
+                  className="min-h-[44px] rounded-full px-4 text-[13px]"
+                  style={{ border: '1px solid var(--color-line)', color: 'var(--color-fg)' }}
+                >
+                  {s('watchCta')}
+                </button>
+              }
+            />
+          ) : (
+            <ul className="panel mt-3 divide-y divide-line overflow-hidden">
+              {watched.map((q) => {
+                const up = q.change >= 0
+                return (
+                  <li key={q.symbol} className="relative">
+                    <LongPressLink
+                      to={`/m/${q.symbol}`}
+                      prompt={`${s('askAbout')} ${q.name[lang]}`}
+                      className="grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate text-[14px] leading-tight font-medium">
+                          {q.name[lang]}
+                        </span>
+                        <span
+                          className="num mt-0.5 block truncate text-[11px] leading-none"
+                          style={{ color: 'var(--color-muted)' }}
+                        >
+                          {q.symbol}
+                        </span>
+                      </span>
+                      <span className="num text-end text-[12px] leading-none">
+                        <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
+                      </span>
+                      <span
+                        className={`num flex items-center justify-end gap-1 text-[14px] leading-none font-semibold ${up ? 'text-up' : 'text-down'}`}
+                      >
+                        <TrendArrow up={up} />
+                        <span>{fmtPct(q.change, lang)}</span>
+                      </span>
+                    </LongPressLink>
+                    <WatchStar
+                      watched
+                      label={`${s('watchRemove')} ${q.name[lang]}`}
+                      onToggle={() => toggleWatch(q.symbol)}
+                    />
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+        </>
+      )}
+
       {/* Ways into the deeper screens, kept to one thumb-height row */}
       <nav className="mt-3 grid grid-cols-4 gap-2" aria-label={s('moreScreens')}>
         {[
@@ -311,342 +670,6 @@ export default function MarketPage() {
         ))}
       </nav>
 
-      {/* Index masthead: one hero figure, then the rest as a compact row */}
-      <div className="mt-5">
-        {indices[0] && (
-          <div className="panel px-4 py-3.5">
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
-                {indices[0].name[lang]}
-              </p>
-              <p
-                className="num text-[12px]"
-                style={{ color: indices[0].change >= 0 ? 'var(--color-up)' : 'var(--color-down)' }}
-              >
-                {fmtPct(indices[0].change, lang)}
-              </p>
-            </div>
-            <p className="t-display num mt-1 text-[40px] leading-none font-bold italic">
-              <AnimatedNumber value={indices[0].value} format={(n) => fmtNum(n, lang, 2)} />
-            </p>
-          </div>
-        )}
-        <div
-          className="mt-2 flex snap-x gap-2.5 overflow-x-auto pb-1"
-          style={{ scrollbarWidth: 'none' }}
-        >
-          {indices.slice(1).map((ix) => {
-            const up = ix.change >= 0
-            return (
-              <div key={ix.symbol} className="panel w-[152px] shrink-0 snap-start p-3">
-                <p className="truncate text-[12px]" style={{ color: 'var(--color-muted)' }}>
-                  {ix.name[lang]}
-                </p>
-                <p className="num mt-1.5 text-[19px] leading-none font-semibold">
-                  <AnimatedNumber value={ix.value} format={(n) => fmtNum(n, lang, 2)} />
-                </p>
-                <p className={`num mt-1.5 text-[12px] ${up ? 'text-up' : 'text-down'}`}>
-                  {fmtPct(ix.change, lang)}
-                </p>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Sector heatmap */}
-      <SectionHead title={s('heatTitle')} />
-      <div className="mt-2 flex flex-col gap-1.5">
-        {HEAT_ROWS.map((row) => {
-          const sum = row.reduce((a, r) => a + r.weight, 0)
-          return (
-            <div
-              key={row.map((r) => r.id).join('-')}
-              className="flex gap-1.5"
-              style={{ height: Math.max(64, Math.round(sum * TILE_UNIT)) }}
-            >
-              {row.map((sec) => {
-                const up = sec.change >= 0
-                const selected = sector === sec.id
-                const token = up ? 'var(--color-up)' : 'var(--color-down)'
-                const alpha = 22 + Math.min(Math.abs(sec.change) / 0.02, 1) * 26
-                return (
-                  <button
-                    key={sec.id}
-                    type="button"
-                    aria-pressed={selected}
-                    onClick={() => setSector(selected ? null : sec.id)}
-                    className="flex min-w-0 flex-col justify-between rounded-[14px] p-2.5 text-start"
-                    style={{
-                      flexGrow: sec.weight,
-                      flexBasis: 0,
-                      background: `linear-gradient(165deg, color-mix(in srgb, ${token} ${Math.round(alpha * 0.9)}%, transparent), color-mix(in srgb, ${token} ${Math.round(alpha * 0.2)}%, transparent))`,
-                      border: `1px solid color-mix(in srgb, ${token} 26%, transparent)`,
-                      boxShadow: selected
-                        ? 'inset 0 0 0 2px var(--color-accent)'
-                        : 'var(--card-inset)',
-                    }}
-                  >
-                    <span className="block min-w-0 truncate text-[12px] font-medium">
-                      {sec.name[lang]}
-                    </span>
-                    <span className="num text-[12px]" style={{ color: token }}>
-                      {fmtPct(sec.change, lang)}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Drill into whichever sector is in focus */}
-      <Link
-        to={`/sector/${sector ?? sectors[0]?.id ?? 'energy'}`}
-        className="panel mt-2 flex min-h-[44px] items-center justify-between gap-3 px-3 text-[12px]"
-      >
-        <span>{s('sectorDetail')}</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
-          <path d="M9 6l6 6-6 6" />
-        </svg>
-      </Link>
-
-      {/* Ranking */}
-      <div className="mt-6 flex items-center justify-between gap-3" id="ranking">
-        <div className="min-w-0">
-          <h2 className="text-[15px] font-semibold">{s('rankTitle')}</h2>
-        </div>
-        {sector && (
-          <button
-            type="button"
-            onClick={() => setSector(null)}
-            className="min-h-[44px] shrink-0 px-1 text-[12px] font-medium text-accent"
-          >
-            {s('heatClear')}
-          </button>
-        )}
-      </div>
-
-      {ranked.length === 0 ? (
-        <EmptyState
-          text={s('rankEmpty')}
-          action={
-            <button
-              type="button"
-              onClick={() => setSector(null)}
-              className="min-h-[44px] rounded-full px-4 text-[13px]"
-              style={{ border: '1px solid var(--color-line)' }}
-            >
-              {s('rankPick')}
-            </button>
-          }
-        />
-      ) : (
-        <>
-          {/* Sort: reorders the rows in place, the active sector is separate state */}
-          <div className="mt-3 flex">
-            <div
-              role="group"
-              aria-label={s('sortLabel')}
-              className="flex rounded-full p-1"
-              style={{ border: '1px solid var(--color-line)' }}
-            >
-              {SORTS.map((k) => {
-                const active = sort === k
-                return (
-                  <button
-                    key={k}
-                    type="button"
-                    onClick={() => setSort(k)}
-                    aria-pressed={active}
-                    className={`min-h-11 rounded-full px-3.5 text-[13px] transition-colors ${
-                      active ? 'font-medium text-fg' : 'text-muted'
-                    }`}
-                    style={active ? { background: 'var(--color-surface)' } : undefined}
-                  >
-                    {s(SORT_KEY[k])}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Breadth: the shape of the board before the rows themselves */}
-          <div className="mt-3">
-            <p className="text-[12px] leading-none" style={{ color: breadthTone }}>
-              {s('breadthUp')} <span className="num font-semibold">{breadth.up}</span>
-              <span className="mx-1.5" style={{ color: 'var(--color-muted)' }}>
-                ·
-              </span>
-              {s('breadthDown')} <span className="num font-semibold">{breadth.down}</span>
-            </p>
-            <div
-              aria-hidden="true"
-              className="mt-2 flex h-[3px] gap-px overflow-hidden rounded-full"
-              style={{ background: 'var(--color-line)' }}
-            >
-              {breadth.up > 0 && (
-                <span style={{ flexGrow: breadth.up, background: 'var(--color-up)' }} />
-              )}
-              {breadth.down > 0 && (
-                <span style={{ flexGrow: breadth.down, background: 'var(--color-down)' }} />
-              )}
-            </div>
-          </div>
-
-          <div className="panel mt-3 overflow-hidden">
-            {/* Column rail: one grid shared with every row, so the figures sit
-                in a line instead of drifting with each name length. */}
-            <div
-              aria-hidden="true"
-              className={`${ROW_GRID} ps-3 pe-11 py-2`}
-              style={{ borderBottom: '1px solid var(--color-line)' }}
-            >
-              <span className="t-kicker text-center" style={kicker}>
-                #
-              </span>
-              <span className="t-kicker" style={kicker}>
-                {s('colName')}
-              </span>
-              <span className={`t-kicker text-center ${SPARK_CELL}`} style={kicker}>
-                {s('col1m')}
-              </span>
-              <span className="t-kicker text-end" style={kicker}>
-                {s('colLast')}
-              </span>
-              <span className="t-kicker text-end" style={kicker}>
-                {s('colChg')}
-              </span>
-            </div>
-
-            <ul className="divide-y divide-line">
-              {ranked.map((q, i) => {
-                const up = q.change >= 0
-                const isWatched = watchlist.includes(q.symbol)
-                return (
-                  <li key={q.symbol} className="relative">
-                    <LongPressLink
-                      to={`/m/${q.symbol}`}
-                      prompt={`${s('askAbout')} ${q.name[lang]}`}
-                      className={`${ROW_GRID} min-h-[56px] ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent`}
-                    >
-                      {/* Rank is positional, so it is not read out as part of the name. */}
-                      <span
-                        aria-hidden="true"
-                        className="num text-center text-[11px] leading-none"
-                        style={{ color: 'var(--color-muted)' }}
-                      >
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block truncate text-[14px] leading-tight font-medium">
-                          {q.name[lang]}
-                        </span>
-                        <span
-                          className="num mt-0.5 block truncate text-[11px] leading-none"
-                          style={{ color: 'var(--color-muted)' }}
-                        >
-                          {q.symbol}
-                        </span>
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className={`flex ${SPARK_CELL} ${up ? 'text-up' : 'text-down'}`}
-                      >
-                        <BarStrip data={q.spark} up={up} compact />
-                      </span>
-                      <span className="num text-end text-[12px] leading-none">
-                        <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
-                      </span>
-                      <span
-                        className={`num flex items-center justify-end gap-1 text-[15px] leading-none font-semibold ${up ? 'text-up' : 'text-down'}`}
-                      >
-                        <TrendArrow up={up} />
-                        <span>{fmtPct(q.change, lang)}</span>
-                      </span>
-                    </LongPressLink>
-                    <WatchStar
-                      watched={isWatched}
-                      label={`${isWatched ? s('watchRemove') : s('watchAdd')} ${q.name[lang]}`}
-                      onToggle={() => toggleWatch(q.symbol)}
-                    />
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        </>
-      )}
-
-      {/* Watchlist — read from the shared store, so a tap anywhere lands here */}
-      <div className="mt-7">
-        <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold">{s('watchTitle')}</h2>
-          <span
-            className="num rounded-full px-2 py-0.5 text-[11px]"
-            style={{ background: 'var(--color-surface)', color: 'var(--color-muted)' }}
-          >
-            {watched.length}
-          </span>
-        </div>
-        {watched.length === 0 ? (
-          <EmptyState
-            text={s('watchEmpty')}
-            action={
-              <button
-                type="button"
-                onClick={scrollToRanking}
-                className="min-h-[44px] rounded-full px-4 text-[13px]"
-                style={{ border: '1px solid var(--color-line)', color: 'var(--color-fg)' }}
-              >
-                {s('watchCta')}
-              </button>
-            }
-          />
-        ) : (
-          <ul className="panel mt-3 divide-y divide-line overflow-hidden">
-            {watched.map((q) => {
-              const up = q.change >= 0
-              return (
-                <li key={q.symbol} className="relative">
-                  <LongPressLink
-                    to={`/m/${q.symbol}`}
-                    prompt={`${s('askAbout')} ${q.name[lang]}`}
-                    className="grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-                  >
-                    <span className="min-w-0">
-                      <span className="block truncate text-[14px] leading-tight font-medium">
-                        {q.name[lang]}
-                      </span>
-                      <span
-                        className="num mt-0.5 block truncate text-[11px] leading-none"
-                        style={{ color: 'var(--color-muted)' }}
-                      >
-                        {q.symbol}
-                      </span>
-                    </span>
-                    <span className="num text-end text-[12px] leading-none">
-                      <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
-                    </span>
-                    <span
-                      className={`num flex items-center justify-end gap-1 text-[14px] leading-none font-semibold ${up ? 'text-up' : 'text-down'}`}
-                    >
-                      <TrendArrow up={up} />
-                      <span>{fmtPct(q.change, lang)}</span>
-                    </span>
-                  </LongPressLink>
-                  <WatchStar
-                    watched
-                    label={`${s('watchRemove')} ${q.name[lang]}`}
-                    onToggle={() => toggleWatch(q.symbol)}
-                  />
-                </li>
-              )
-            })}
-          </ul>
-        )}
-      </div>
     </Screen>
   )
 }

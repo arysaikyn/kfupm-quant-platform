@@ -3,6 +3,8 @@ import type { Dict } from '../../i18n'
 export const strings = {
   zh: {
     title: '新闻',
+    reviewEntry: '今日复盘',
+    reviewHint: '收盘后回答五个问题，留下判断',
     lead: '最新消息',
     today: '今天',
     yesterday: '昨天',
@@ -33,6 +35,8 @@ export const strings = {
   },
   en: {
     title: 'News',
+    reviewEntry: "Today's review",
+    reviewHint: 'Five questions after the close',
     lead: 'Latest stories',
     today: 'Today',
     yesterday: 'Yesterday',
@@ -63,6 +67,8 @@ export const strings = {
   },
   ar: {
     title: 'الأخبار',
+    reviewEntry: 'مراجعة اليوم',
+    reviewHint: 'خمسة أسئلة بعد الإغلاق',
     lead: 'آخر الأخبار',
     today: 'اليوم',
     yesterday: 'أمس',
@@ -93,6 +99,8 @@ export const strings = {
   },
 } satisfies Dict<{
   title: string
+  reviewEntry: string
+  reviewHint: string
   lead: string
   today: string
   yesterday: string

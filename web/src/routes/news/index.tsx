@@ -164,6 +164,27 @@ export default function NewsPage() {
         </Link>
       }
     >
+      <Link
+        to="/review"
+        className="panel flex min-h-[56px] items-center gap-3 px-3.5"
+      >
+        <span style={{ color: 'var(--color-muted)' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 5h11l5 5v9H4z" />
+            <path d="M8 12h8M8 16h5" />
+          </svg>
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[14px] leading-tight">{s('reviewEntry')}</span>
+          <span className="mt-0.5 block truncate text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+            {s('reviewHint')}
+          </span>
+        </span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }} aria-hidden="true">
+          <path d="M9 6l6 6-6 6" />
+        </svg>
+      </Link>
+
       {sources.length > 1 && (
         <div
           role="group"

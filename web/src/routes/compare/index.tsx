@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { quotes } from '../../data/mock'
 import type { Quote } from '../../data/mock'
@@ -182,7 +183,14 @@ function OverlayChart({
 export default function ComparePage() {
   const s = useStrings(strings)
   const { lang } = useI18n()
-  const [picks, setPicks] = useState<number[]>([0, 1, 2])
+  // Opened from a stock page, the first slot starts on that stock. The other
+  // two keep their defaults unless they would repeat it.
+  const [params] = useSearchParams()
+  const [picks, setPicks] = useState<number[]>(() => {
+    const wanted = quotes.findIndex((q) => q.symbol === params.get('a'))
+    if (wanted < 0) return [0, 1, 2]
+    return [wanted, ...[0, 1, 2].filter((i) => i !== wanted)].slice(0, 3)
+  })
 
   const stats = useMemo(() => picks.map((i) => statsFor(quotes[i])), [picks])
 

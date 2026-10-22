@@ -67,7 +67,7 @@ export function TabBar() {
     '/search': '/',
     '/m': '/',
     '/screener': '/',
-    '/review': '/',
+    '/review': '/news',
     '/alerts': '/',
     '/compare': '/',
     '/sector': '/',

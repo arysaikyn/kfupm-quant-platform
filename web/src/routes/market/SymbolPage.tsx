@@ -229,7 +229,19 @@ export default function SymbolPage() {
   hasDrawnOnce = true
 
   return (
-    <Screen title={quote.name[lang]} leading={back}>
+    <Screen
+      title={quote.name[lang]}
+      leading={back}
+      action={
+        <Link
+          to={`/compare?a=${quote.symbol}`}
+          className="flex min-h-11 shrink-0 items-center rounded-full px-3.5 text-[12px]"
+          style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
+        >
+          {s('goCompare')}
+        </Link>
+      }
+    >
       {/* Price header */}
       <div className="mt-1 flex items-start justify-between gap-3">
         <div className="min-w-0">

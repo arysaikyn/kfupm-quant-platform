@@ -13,6 +13,8 @@ const zh = {
   noResults: '没有找到 “{q}”',
   addWatch: '加入自选',
   removeWatch: '移出自选',
+  screenerEntry: '条件选股',
+  screenerHint: '按估值、涨跌、成交筛出一组股票',
 }
 
 const en: typeof zh = {
@@ -28,6 +30,8 @@ const en: typeof zh = {
   noResults: 'No results for “{q}”',
   addWatch: 'Add to watchlist',
   removeWatch: 'Remove from watchlist',
+  screenerEntry: 'Stock screener',
+  screenerHint: 'Filter by valuation, move and volume',
 }
 
 const ar: typeof zh = {
@@ -43,6 +47,8 @@ const ar: typeof zh = {
   noResults: 'لا توجد نتائج لـ «{q}»',
   addWatch: 'أضف إلى قائمة المتابعة',
   removeWatch: 'أزل من قائمة المتابعة',
+  screenerEntry: 'فرز الأسهم',
+  screenerHint: 'فلترة حسب التقييم والحركة والسيولة',
 }
 
 export const strings = { zh, en, ar } satisfies Dict<typeof zh>

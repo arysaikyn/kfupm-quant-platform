@@ -321,6 +321,26 @@ export default function SearchPage() {
         </form>
       </div>
 
+      <Link
+        to="/screener"
+        className="panel mt-3 flex min-h-[56px] items-center gap-3 px-3.5"
+      >
+        <span style={{ color: 'var(--color-muted)' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 5h18l-7 8v6l-4 2v-8z" />
+          </svg>
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[14px] leading-tight">{s('screenerEntry')}</span>
+          <span className="mt-0.5 block truncate text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+            {s('screenerHint')}
+          </span>
+        </span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }} aria-hidden="true">
+          <path d="M9 6l6 6-6 6" />
+        </svg>
+      </Link>
+
       {needle === '' ? (
         <>
           <section className="mt-6" aria-labelledby="search-recent">

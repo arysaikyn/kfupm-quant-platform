@@ -212,17 +212,37 @@ export default function MarketPage() {
     <Screen
       title={t('tab.market')}
       action={
-        <Link
-          to="/search"
-          aria-label={s('goSearch')}
-          className="flex h-11 w-11 items-center justify-center rounded-full"
-          style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="M16 16l4.5 4.5" />
-          </svg>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/search"
+            aria-label={s('goSearch')}
+            className="flex h-10 w-10 items-center justify-center rounded-full"
+            style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5" />
+              <path d="M16 16l4.5 4.5" />
+            </svg>
+          </Link>
+          <Link
+            to="/alerts"
+            aria-label={s('goAlerts')}
+            className="relative flex h-10 w-10 items-center justify-center rounded-full"
+            style={{ border: '1px solid var(--color-line)', color: 'var(--color-muted)' }}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M18 8a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" />
+              <path d="M13.7 20a2 2 0 0 1-3.4 0" />
+            </svg>
+            {alerts.length > 0 && (
+              <span
+                aria-hidden="true"
+                className="absolute end-2 top-2 h-1.5 w-1.5 rounded-full"
+                style={{ background: 'var(--color-down)' }}
+              />
+            )}
+          </Link>
+        </div>
       }
     >
       {/* Market switch — visual only for now. */}
@@ -453,6 +473,16 @@ export default function MarketPage() {
                 {s('breadthDown')} <span className="num font-semibold">{breadth.down}</span>
               </p>
               <div className="flex shrink-0 items-center gap-2">
+                <Link
+                  to="/screener"
+                  aria-label={s('goScreener')}
+                  className="flex min-h-11 min-w-9 items-center justify-center"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M3 5h18l-7 8v6l-4 2v-8z" />
+                  </svg>
+                </Link>
                 {sector && (
                   <button
                     type="button"
@@ -651,24 +681,6 @@ export default function MarketPage() {
         </div>
         </>
       )}
-
-      {/* Ways into the deeper screens, kept to one thumb-height row */}
-      <nav className="mt-3 grid grid-cols-4 gap-2" aria-label={s('moreScreens')}>
-        {[
-          { to: '/screener', label: s('goScreener') },
-          { to: '/review', label: s('goReview') },
-          { to: '/alerts', label: s('goAlerts') },
-          { to: '/compare', label: s('goCompare') },
-        ].map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className="panel flex min-h-[44px] items-center justify-center px-1 text-center text-[11px] leading-tight"
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
 
     </Screen>
   )

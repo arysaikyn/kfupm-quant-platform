@@ -70,7 +70,9 @@ function ItemSurface({
   active: boolean
   children: ReactNode
 }) {
-  const className = 'flex h-full w-full flex-col items-center justify-center gap-1'
+  // Five items cover every screen, so the bar carries its own state set.
+  const className =
+    'flex h-full w-full flex-col items-center justify-center gap-1 rounded-[14px] transition-[color,opacity] duration-150 hover:text-fg active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent'
 
   if (active) {
     return (
@@ -158,7 +160,7 @@ export function TabBar() {
         style={{ borderRadius: 'inherit' }}
       >
         <div
-          className="absolute inset-y-[7px] start-0 w-1/5 transition-transform duration-[420ms]"
+          className="absolute inset-y-[7px] start-0 w-1/5 transition-transform duration-300"
           style={{
             transform: `translate3d(calc(var(--i) * 100% * var(--dir)), 0, 0)`,
             transitionTimingFunction: 'cubic-bezier(.32,1.12,.55,1)',
@@ -185,16 +187,16 @@ export function TabBar() {
                     <span
                       className="absolute flex items-center justify-center rounded-full"
                       style={{
-                        width: active ? 44 : 40,
-                        height: active ? 44 : 40,
-                        top: active ? -25 : -22,
+                        // Transform, not width/height/top: the pill sits on a
+                        // blurred bar, and geometry there re-measures the row.
+                        width: 44,
+                        height: 44,
+                        top: -25,
+                        transform: `translateY(${active ? 0 : 3}px) scale(${active ? 1 : 0.909})`,
                         background: 'var(--color-accent-fill)',
                         color: '#fff',
-                        // No halo: the size change is the signal, and a glow
-                        // fights the flat surface language everywhere else.
                         border: '2px solid var(--color-bg)',
-                        transition:
-                          'width 260ms cubic-bezier(.32,1.12,.55,1), height 260ms cubic-bezier(.32,1.12,.55,1), top 260ms cubic-bezier(.32,1.12,.55,1)',
+                        transition: 'transform 220ms cubic-bezier(.32,1.12,.55,1)',
                       }}
                     >
                       {it.icon}

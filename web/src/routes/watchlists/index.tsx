@@ -493,9 +493,6 @@ export default function WatchlistsPage() {
             </IconBtn>
           </div>
           <div className="mt-1.5 flex items-baseline justify-between gap-2">
-            <span className="text-[11px] text-muted">
-              {s('nameLimit')}
-            </span>
             <span className="num text-[10px] text-muted">
               {newName.length}/{MAX_NAME}
             </span>
@@ -615,7 +612,7 @@ export default function WatchlistsPage() {
                     >
                       <span className="min-w-0 flex-1">
                         <span className="num block text-[14px] leading-tight font-semibold">{q.symbol}</span>
-                        <span className="mt-1 block truncate text-[11.5px] leading-tight text-muted">
+                        <span className="mt-1 block truncate text-[11px] leading-tight text-muted">
                           {q.name[lang]}
                         </span>
                       </span>

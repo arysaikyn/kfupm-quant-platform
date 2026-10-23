@@ -227,7 +227,6 @@ export default function ReportPage() {
       <header className="pt-5">
         <div className="flex items-center justify-between gap-3">
           <BackLink label={s('back')} />
-          <span className="t-kicker text-muted">{s('kicker')}</span>
         </div>
 
         <div className="mt-8">
@@ -237,7 +236,7 @@ export default function ReportPage() {
           <h1 className="t-display mt-2.5 text-[32px] leading-[1.1] font-semibold sm:text-[38px]">
             {st.name[lang]}
           </h1>
-          <p className="mt-3 max-w-[560px] text-[14px] leading-relaxed text-muted">
+          <p className="mt-3 max-w-[62ch] text-[14px] leading-relaxed text-muted">
             {st.description[lang]}
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-muted">
@@ -298,7 +297,6 @@ export default function ReportPage() {
       <div className="mt-4 sm:mt-9 sm:grid sm:grid-cols-[168px_minmax(0,1fr)] sm:gap-8 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-12">
         <aside className="hidden sm:block">
           <nav aria-label={s('navLabel')} className="sticky top-6">
-            <p className="t-kicker ps-3 text-muted">{s('navLabel')}</p>
             <ul className="mt-2">
               {SECTION_IDS.map((sectionId, index) => {
                 const on = active === sectionId
@@ -326,10 +324,10 @@ export default function ReportPage() {
           </nav>
         </aside>
 
-        <article className="min-w-0 max-w-[640px]">
+        <article className="min-w-0 max-w-[68ch]">
           <div className="panel overflow-hidden">
             <section id="conclusion" className="scroll-mt-20 sm:scroll-mt-6 p-4">
-              <h2 className="t-kicker text-muted">{s('conclusionLabel')}</h2>
+              <h2 className="t-section ">{s('conclusionLabel')}</h2>
               <p className="mt-4 text-[20px] leading-[1.5] font-semibold tracking-[-0.01em] sm:text-[22px]">
                 {conclusion}
               </p>
@@ -339,7 +337,7 @@ export default function ReportPage() {
               id="basis"
               className="scroll-mt-20 sm:scroll-mt-6 border-t border-line p-4"
             >
-              <h2 className="t-kicker text-muted">{s('basisLabel')}</h2>
+              <h2 className="t-section ">{s('basisLabel')}</h2>
               <p className="mt-2 text-[12px] leading-relaxed text-muted">{s('basisIntro')}</p>
               <ol className="mt-4 divide-y divide-line">
                 {evidence.map((row, index) => (
@@ -368,7 +366,7 @@ export default function ReportPage() {
             </section>
 
             <section id="risk" className="scroll-mt-20 sm:scroll-mt-6 border-t border-line p-4">
-              <h2 className="t-kicker text-muted">{s('riskLabel')}</h2>
+              <h2 className="t-section ">{s('riskLabel')}</h2>
               <ul className="mt-4 divide-y divide-line">
                 {risks.map((row) => (
                   <li key={row.title} className="py-3.5">
@@ -385,14 +383,14 @@ export default function ReportPage() {
             </section>
 
             <section id="wrong" className="scroll-mt-20 sm:scroll-mt-6 border-t border-line p-4">
-              <h2 className="t-kicker text-muted">{s('wrongLabel')}</h2>
+              <h2 className="t-section ">{s('wrongLabel')}</h2>
               <p className="mt-4 border-s border-line ps-4 text-[14px] leading-[1.75]">
                 {s('wrongWithEquity')}
               </p>
             </section>
 
             <section id="next" className="scroll-mt-20 sm:scroll-mt-6 border-t border-line p-4">
-              <h2 className="t-kicker text-muted">{s('nextLabel')}</h2>
+              <h2 className="t-section ">{s('nextLabel')}</h2>
               <div className="mt-4 divide-y divide-line">
                 <Link
                   to={`/strategy/${st.id}`}

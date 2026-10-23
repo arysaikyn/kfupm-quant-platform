@@ -104,7 +104,7 @@ function EvidenceRow({ label, value, tag }: { label: string; value: string; tag:
   const { lang } = useI18n()
   return (
     <div className="flex min-h-12 items-center gap-2.5 border-t border-line px-4 first:border-t-0">
-      <span className="min-w-0 flex-1 truncate text-[12.5px] text-muted">{label}</span>
+      <span className="min-w-0 flex-1 truncate text-[12px] text-muted">{label}</span>
       <span dir="ltr" className="num text-[14px] font-medium">
         {value}
       </span>
@@ -145,7 +145,7 @@ function ShariaRow({
       </span>
       <span
         dir={ltr ? 'ltr' : undefined}
-        className={`shrink-0 text-[11.5px] ${ltr ? 'num' : ''} ${
+        className={`shrink-0 text-[11px] ${ltr ? 'num' : ''} ${
           ok ? 'text-muted' : 'text-muted line-through'
         }`}
       >
@@ -158,7 +158,7 @@ function ShariaRow({
 function ValueCard({ s }: { s: S }) {
   return (
     <div className="panel overflow-hidden">
-      <p className="px-4 pt-4 pb-3.5 text-[13.5px] leading-[1.5]">“{s('valueQuery')}”</p>
+      <p className="px-4 pt-4 pb-3.5 text-[13px] leading-[1.5]">“{s('valueQuery')}”</p>
       <div className="flex items-center justify-between border-t border-line px-4 py-2.5">
         <span className="text-[11px] text-muted">{s('valueParsed')}</span>
         <span aria-hidden="true" className="flex gap-1">
@@ -357,7 +357,7 @@ export default function OnboardingPage() {
           <button
             type="button"
             onClick={() => go(4)}
-            className={`tap -me-2 rounded-full px-2 text-[12.5px] font-medium text-muted active:bg-fg/10 ${RING}`}
+            className={`tap -me-2 rounded-full px-2 text-[12px] font-medium text-muted active:bg-fg/10 ${RING}`}
           >
             {s('skip')}
           </button>
@@ -379,7 +379,7 @@ export default function OnboardingPage() {
             >
               {s(TITLES[step - 1])}
             </h1>
-            <p className="mt-3 max-w-[42ch] text-[13.5px] leading-[1.6] text-muted">{s(BODIES[step - 1])}</p>
+            <p className="mt-3 max-w-[42ch] text-[13px] leading-[1.6] text-muted">{s(BODIES[step - 1])}</p>
 
             <div className="mt-7">
               {step === 1 && <ValueCard s={s} />}
@@ -424,7 +424,7 @@ export default function OnboardingPage() {
                             <span className="block truncate text-[15px] leading-tight font-medium">
                               {s(copy.name)}
                             </span>
-                            <span className="mt-1 block truncate text-[11.5px] leading-none text-muted">
+                            <span className="mt-1 block truncate text-[11px] leading-none text-muted">
                               {s(copy.sub)}
                             </span>
                           </span>
@@ -467,7 +467,7 @@ export default function OnboardingPage() {
                       <p className="truncate text-[15px] leading-tight font-medium">
                         {s(MARKET_COPY[market].name)}
                       </p>
-                      <p className="mt-1 truncate text-[11.5px] leading-none text-muted">
+                      <p className="mt-1 truncate text-[11px] leading-none text-muted">
                         {s(MARKET_COPY[market].sub)}
                       </p>
                     </div>

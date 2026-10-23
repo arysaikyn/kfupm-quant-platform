@@ -41,7 +41,7 @@ export function ArtifactCard({ title }: { title: string }) {
           type="button"
           onClick={() => setWatched((v) => !v)}
           aria-pressed={watched}
-          className="min-h-11 flex-1 basis-[46%] rounded-xl border border-line px-2 py-2 text-[11.5px] leading-snug"
+          className="min-h-11 flex-1 basis-[46%] rounded-xl border border-line px-2 py-2 text-[11px] leading-snug"
           style={{ color: watched ? 'var(--color-accent)' : 'var(--color-fg)' }}
         >
           {watched ? s('addedWatch') : s('addWatch')}
@@ -50,7 +50,7 @@ export function ArtifactCard({ title }: { title: string }) {
           type="button"
           onClick={() => setSaved((v) => !v)}
           aria-pressed={saved}
-          className="min-h-11 flex-1 basis-[46%] rounded-xl border border-line px-2 py-2 text-[11.5px] leading-snug"
+          className="min-h-11 flex-1 basis-[46%] rounded-xl border border-line px-2 py-2 text-[11px] leading-snug"
           style={{ color: saved ? 'var(--color-accent)' : 'var(--color-fg)' }}
         >
           {saved ? s('savedStrategy') : s('saveStrategy')}

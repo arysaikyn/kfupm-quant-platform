@@ -469,10 +469,6 @@ export default function ReviewPage() {
 
       {/* 1 · scorecard */}
       <section className="panel mt-2 p-4" aria-label={s('breadthLabel')}>
-        <p className="t-kicker" style={kicker}>
-          {s('breadthLabel')}
-        </p>
-
         <div className="mt-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
           <span
             className="num t-display text-[38px] leading-none font-bold"

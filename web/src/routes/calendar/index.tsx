@@ -145,7 +145,7 @@ export default function Calendar() {
       <section aria-labelledby="week-summary" className="panel mt-4 px-4 py-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <h2 id="week-summary" className="t-kicker text-muted">
+            <h2 id="week-summary" className="t-section ">
               {s('weekLabel')}
             </h2>
             <p className="mt-2 flex items-baseline gap-1.5">
@@ -176,7 +176,7 @@ export default function Calendar() {
       {grouped.map((group, day) => (
         <section key={day} aria-labelledby={`calendar-day-${day}`} className="mt-6">
           <div className="mb-2 flex items-center gap-2 px-1">
-            <h2 id={`calendar-day-${day}`} className="t-kicker text-fg">
+            <h2 id={`calendar-day-${day}`} className="t-section text-fg">
               {fmt.weekday.format(group.date)}
             </h2>
             <time dateTime={group.iso} className="num text-[12px] text-muted">

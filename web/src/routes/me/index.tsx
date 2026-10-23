@@ -57,7 +57,7 @@ export default function MePage() {
             </div>
             <div className="min-w-0">
               <p className="truncate text-[18px] leading-tight font-semibold">{name}</p>
-              <p className="mt-1.5 truncate text-[12.5px] text-muted">{s('email')}</p>
+              <p className="mt-1.5 truncate text-[12px] text-muted">{s('email')}</p>
             </div>
           </div>
         ) : (
@@ -91,7 +91,7 @@ export default function MePage() {
       </section>
 
       <section className="mt-6" aria-labelledby="me-appearance">
-        <h2 id="me-appearance" className="t-kicker mb-2 text-muted">
+        <h2 id="me-appearance" className="t-section mb-2 ">
           {s('appearance')}
         </h2>
         <div
@@ -145,7 +145,7 @@ export default function MePage() {
       </section>
 
       <section className="mt-6" aria-labelledby="me-more">
-        <h2 id="me-more" className="t-kicker mb-2 text-muted">
+        <h2 id="me-more" className="t-section mb-2 ">
           {s('moreTitle')}
         </h2>
         <div className="panel overflow-hidden">
@@ -190,7 +190,7 @@ export default function MePage() {
       </section>
 
       <section className="mt-6" aria-labelledby="me-language">
-        <h2 id="me-language" className="t-kicker mb-2 text-muted">
+        <h2 id="me-language" className="t-section mb-2 ">
           {s('language')}
         </h2>
         <div
@@ -210,9 +210,12 @@ export default function MePage() {
               >
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[15px] leading-tight">{s(row.native)}</span>
-                  <span className="mt-1 block truncate text-[12px] leading-tight text-muted">
-                    {s(row.english)}
-                  </span>
+                  {/* The English row would print "English" over "English". */}
+                  {s(row.english) !== s(row.native) && (
+                    <span className="mt-1 block truncate text-[12px] leading-tight text-muted">
+                      {s(row.english)}
+                    </span>
+                  )}
                 </span>
                 {active && (
                   <svg

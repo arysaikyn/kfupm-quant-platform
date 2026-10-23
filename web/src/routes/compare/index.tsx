@@ -297,7 +297,7 @@ export default function ComparePage() {
     <Screen title={s('title')} leading={<BackButton fallback={backTo} />}>
       <section className="panel mt-4 overflow-hidden">
         <div className="p-4">
-          <h2 className="t-kicker text-muted">{s('slotsTitle')}</h2>
+          <h2 className="t-section ">{s('slotsTitle')}</h2>
 
           <div className="mt-3 grid grid-cols-3 gap-2">
             {picks.map((value, i) => (
@@ -341,12 +341,6 @@ export default function ComparePage() {
                     </svg>
                   </div>
 
-                  <span
-                    className="mt-1 block truncate text-[10px] text-muted"
-                    title={quotes[value].name[lang]}
-                  >
-                    {quotes[value].name[lang]}
-                  </span>
                 </label>
               </div>
             ))}
@@ -355,7 +349,7 @@ export default function ComparePage() {
 
         <div className="border-t border-line">
           <div className="flex items-baseline justify-between gap-2 px-4 pt-4 pb-2">
-            <h2 className="text-[13px] font-semibold">{s('tableTitle')}</h2>
+            <h2 className="t-section">{s('tableTitle')}</h2>
             <span className="num shrink-0 text-[10px] text-muted">{s('tableTag')}</span>
           </div>
 

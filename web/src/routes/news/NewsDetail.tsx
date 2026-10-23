@@ -27,14 +27,14 @@ export default function NewsDetail() {
 
   if (!item) {
     return (
-      <Screen title={s('title')} leading={back}>
+      <Screen leading={back}>
         <ErrorState message={s('notFound')} />
       </Screen>
     )
   }
 
   return (
-    <Screen title={s('title')} leading={back}>
+    <Screen leading={back}>
       <article className="pt-1 pb-2">
         <h1 className="text-[23px] leading-[1.3] font-semibold text-fg rtl:leading-[1.55]">
           {item.title[lang]}

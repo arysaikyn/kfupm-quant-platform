@@ -174,7 +174,7 @@ export default function StrategyPage() {
                   <LongPressLink
                     to={`/strategy/${st.id}`}
                     prompt={`${st.name[lang]} — ${st.description[lang]}`}
-                    className="panel block p-4 transition-colors active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="panel block p-4 transition-colors hover:bg-fg/[0.04] active:bg-fg/[0.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
@@ -185,8 +185,8 @@ export default function StrategyPage() {
                             description already is the rule in one sentence, so
                             it carries the accent and is not repeated below. */}
                         <p
-                          className="mt-1 line-clamp-2 text-[12.5px] leading-snug"
-                          style={{ color: 'var(--color-accent)' }}
+                          className="mt-1 line-clamp-2 text-[12px] leading-snug"
+                          style={{ color: 'var(--color-muted)' }}
                         >
                           {st.description[lang]}
                         </p>

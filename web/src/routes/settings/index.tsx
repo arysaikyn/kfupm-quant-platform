@@ -163,11 +163,11 @@ export default function SettingsPage() {
   return (
     <Screen title={s('title')} leading={back}>
       <section className="mt-6" aria-labelledby="settings-reading">
-        <h2 id="settings-reading" className="t-kicker px-1 pb-2 text-muted">
+        <h2 id="settings-reading" className="t-section px-1 pb-2 ">
           {s('readingTitle')}
         </h2>
 
-        <p id="settings-density-label" className="px-1 pb-2 text-[11.5px] leading-snug text-muted">
+        <p id="settings-density-label" className="px-1 pb-2 text-[11px] leading-snug text-muted">
           {s('densityLabel')}
         </p>
         <div
@@ -195,12 +195,11 @@ export default function SettingsPage() {
             )
           })}
         </div>
-        <p className="mt-2 px-1 text-[11.5px] leading-snug text-muted">{s('densityHint')}</p>
+        <p className="mt-2 px-1 text-[11px] leading-snug text-muted">{s('densityHint')}</p>
 
         <div className="panel mt-3 overflow-hidden">
           <div className="px-4 pt-3 pb-2">
             <h3 className="text-[11px] font-medium text-muted">{s('previewTitle')}</h3>
-            <p className="mt-1 text-[11px] leading-snug text-muted">{s('previewHint')}</p>
           </div>
           <ul className="divide-y divide-line">
             {PREVIEW.map((q) => (
@@ -218,7 +217,7 @@ export default function SettingsPage() {
                     {fmtNum(q.price, lang, 2)}
                   </p>
                   <p
-                    className={`num mt-1 text-[11.5px] leading-tight ${
+                    className={`num mt-1 text-[11px] leading-tight ${
                       q.change >= 0 ? 'text-up' : 'text-down'
                     }`}
                   >
@@ -232,10 +231,10 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-6" aria-labelledby="settings-sources">
-        <h2 id="settings-sources" className="t-kicker px-1 pb-2 text-muted">
+        <h2 id="settings-sources" className="t-section px-1 pb-2 ">
           {s('sourcesTitle')}
         </h2>
-        <p className="px-1 pb-2 text-[11.5px] leading-snug text-muted">{s('sourcesHint')}</p>
+        <p className="px-1 pb-2 text-[11px] leading-snug text-muted">{s('sourcesHint')}</p>
         <ul className="panel overflow-hidden">
           {SOURCES.map((source) => (
             <li key={source.name} className="row py-2">
@@ -248,7 +247,7 @@ export default function SettingsPage() {
                 <p className="truncate text-[14.5px] leading-tight font-medium">
                   {s(source.name)}
                 </p>
-                <p className="mt-1 truncate text-[11.5px] leading-tight text-muted">
+                <p className="mt-1 truncate text-[11px] leading-tight text-muted">
                   {s(source.market)}
                 </p>
               </div>
@@ -261,7 +260,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-6" aria-labelledby="settings-notifications">
-        <h2 id="settings-notifications" className="t-kicker px-1 pb-2 text-muted">
+        <h2 id="settings-notifications" className="t-section px-1 pb-2 ">
           {s('notificationsTitle')}
         </h2>
         <div className="panel overflow-hidden">
@@ -297,23 +296,23 @@ export default function SettingsPage() {
               </span>
             </button>
           </div>
-          <p className="border-t border-line px-4 py-2.5 text-[11.5px] leading-snug text-muted">
+          <p className="border-t border-line px-4 py-2.5 text-[11px] leading-snug text-muted">
             {s('alertsHint')}
           </p>
         </div>
       </section>
 
       <section className="mt-6" aria-labelledby="settings-about">
-        <h2 id="settings-about" className="t-kicker px-1 pb-2 text-muted">
+        <h2 id="settings-about" className="t-section px-1 pb-2 ">
           {s('aboutTitle')}
         </h2>
         <div className="panel overflow-hidden">
           <div className="row justify-between">
-            <span className="text-[12.5px] text-muted">{s('appLabel')}</span>
+            <span className="text-[12px] text-muted">{s('appLabel')}</span>
             <span className="truncate text-[14px] leading-tight font-medium">{s('appName')}</span>
           </div>
           <div className="row justify-between">
-            <span className="text-[12.5px] text-muted">{s('versionLabel')}</span>
+            <span className="text-[12px] text-muted">{s('versionLabel')}</span>
             <span className="num text-[13px] leading-tight">{APP_VERSION}</span>
           </div>
           <Link
@@ -324,7 +323,7 @@ export default function SettingsPage() {
               <span className="block truncate text-[14.5px] leading-tight font-medium">
                 {s('learn')}
               </span>
-              <span className="mt-1 block truncate text-[11.5px] leading-tight text-muted">
+              <span className="mt-1 block truncate text-[11px] leading-tight text-muted">
                 {s('learnHint')}
               </span>
             </span>
@@ -348,7 +347,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-6 pb-10" aria-labelledby="settings-reset">
-        <h2 id="settings-reset" className="t-kicker px-1 pb-2 text-muted">
+        <h2 id="settings-reset" className="t-section px-1 pb-2 ">
           {s('resetTitle')}
         </h2>
         <div
@@ -375,14 +374,14 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => setArmed(false)}
-              className="mt-1 flex min-h-11 w-full items-center justify-center rounded-full text-[12.5px] text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+              className="mt-1 flex min-h-11 w-full items-center justify-center rounded-full text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
             >
               {s('resetCancel')}
             </button>
           )}
           <p
             aria-live="polite"
-            className="mt-1 min-h-[1.2em] text-center text-[11.5px] leading-snug"
+            className="mt-1 min-h-[1.2em] text-center text-[11px] leading-snug"
             style={{ color: resetFailed ? danger : 'var(--color-muted)' }}
           >
             {resetFailed ? s('resetError') : armed ? s('resetArmedHint') : ''}

@@ -91,7 +91,7 @@ function NewsRow({
     >
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
-          <h3 className="line-clamp-2 text-[17px] leading-[1.3] font-semibold tracking-[-0.011em] text-fg">
+          <h3 className="line-clamp-2 text-[17px] leading-[1.3] rtl:leading-[1.6] font-semibold tracking-[-0.011em] text-fg">
             {item.title[lang]}
           </h3>
           {deck && (
@@ -233,7 +233,7 @@ export default function NewsPage() {
           {groups.map((group) => (
             <section key={group.stamp}>
               <header className="mb-2 flex items-center gap-3">
-                <h2 className="t-kicker shrink-0 text-muted">
+                <h2 className="t-section shrink-0 ">
                   {group.stamp === todayStamp
                     ? s('today')
                     : group.stamp === yesterdayStamp

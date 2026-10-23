@@ -158,7 +158,7 @@ export default function AlertsPage() {
       }
     >
       <section className="panel mt-4 p-4">
-        <h2 className="t-kicker text-muted" style={kicker}>
+        <h2 className="t-section " style={kicker}>
           {s('formTitle')}
         </h2>
 
@@ -280,15 +280,6 @@ export default function AlertsPage() {
           {sections.map((group) => (
             <section key={group.key} className="mt-6">
               <div className="panel overflow-hidden">
-                <div className="flex items-baseline justify-between gap-2 border-b border-line px-4 py-3">
-                  <h2
-                    className={`t-kicker ${group.key === 'fired' ? 'text-accent' : 'text-muted'}`}
-                    style={kicker}
-                  >
-                    {group.key === 'fired' ? s('triggered') : s('waiting')}
-                  </h2>
-                  <span className="num text-[11px] text-muted">{group.rows.length}</span>
-                </div>
                 <ul>
                 {group.rows.map((r) => (
               <li key={r.id} className="row">

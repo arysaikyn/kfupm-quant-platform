@@ -335,7 +335,7 @@ export default function SearchPage() {
         <>
           <section className="mt-6" aria-labelledby="search-recent">
             <div className="flex items-center justify-between gap-3">
-              <h2 id="search-recent" className="t-kicker text-muted">
+              <h2 id="search-recent" className="t-section ">
                 {s('recent')}
               </h2>
               {recent.length > 0 && (
@@ -385,7 +385,7 @@ export default function SearchPage() {
           {watchedQuotes.length > 0 && (
             <section className="mt-6" aria-labelledby="search-watchlist">
               <div className="flex items-baseline justify-between gap-3">
-                <h2 id="search-watchlist" className="t-kicker text-muted">
+                <h2 id="search-watchlist" className="t-section ">
                   {s('watchlist')}
                 </h2>
                 <span className="num text-[11px] text-muted">{watchedQuotes.length}</span>
@@ -421,7 +421,7 @@ export default function SearchPage() {
       ) : (
         <section className="mt-6" aria-labelledby="search-results-heading">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 id="search-results-heading" className="t-kicker text-muted">
+            <h2 id="search-results-heading" className="t-section ">
               {s('results')}
             </h2>
             <span className="num text-[11px] text-muted">{results.length}</span>

@@ -275,7 +275,7 @@ function RunCard({
 
         <span
           dir="auto"
-          className="mt-1.5 line-clamp-2 text-[12.5px] leading-relaxed break-words text-muted"
+          className="mt-1.5 line-clamp-2 text-[12px] leading-relaxed break-words text-muted"
         >
           {run.answer || s('pending')}
         </span>
@@ -321,7 +321,7 @@ function RunCard({
                 <li
                   key={`${src}-${i}`}
                   dir="auto"
-                  className="flex items-start gap-2 text-[12.5px] leading-relaxed"
+                  className="flex items-start gap-2 text-[12px] leading-relaxed"
                 >
                   <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-muted" />
                   <span className="min-w-0 break-words">{src}</span>

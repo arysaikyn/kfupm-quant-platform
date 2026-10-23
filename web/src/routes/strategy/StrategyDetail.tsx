@@ -535,7 +535,7 @@ export default function StrategyDetail() {
                   : Math.min(100, Math.max(2, (Math.abs(part.value) / maxBar) * 100))
               return (
                 <div key={part.key}>
-                  <div className="flex items-center justify-between gap-3 text-[11.5px] leading-none">
+                  <div className="flex items-center justify-between gap-3 text-[11px] leading-none">
                     <span>{part.label}</span>
                     <span
                       dir="ltr"

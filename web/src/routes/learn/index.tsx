@@ -188,7 +188,7 @@ export default function LearnPage() {
                   <p className="text-[11px] leading-[1.4] font-semibold text-muted">
                     {s('why')}
                   </p>
-                  <p className="mt-1 text-[12.5px] leading-[1.5] text-muted">{item.why}</p>
+                  <p className="mt-1 text-[12px] leading-[1.5] text-muted">{item.why}</p>
                 </div>
               </li>
             ))}

@@ -183,9 +183,6 @@ export default function SectorPage() {
       <section className="panel mt-1 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="t-kicker text-muted" style={kicker}>
-              {s('sectorLabel')}
-            </p>
             <h2 className="t-title mt-1 truncate text-[26px] leading-tight font-semibold">
               {sector.name[lang]}
             </h2>
@@ -240,7 +237,7 @@ export default function SectorPage() {
                     {fmtNum(quote.price, lang, 2)}
                   </span>
                   <span
-                    className="num w-[52px] shrink-0 text-end text-[11.5px] font-medium"
+                    className="num w-[52px] shrink-0 text-end text-[11px] font-medium"
                     style={{ color: toneOf(quote.change) }}
                   >
                     {fmtPct(quote.change, lang)}
@@ -355,13 +352,13 @@ export default function SectorPage() {
       <nav className="mt-6 grid grid-cols-2 gap-2" aria-label={s('linksLabel')}>
         <Link
           to="/"
-          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12.5px] font-medium transition-colors hover:bg-fg/5"
+          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12px] font-medium transition-colors hover:bg-fg/5"
         >
           {s('marketsLink')}
         </Link>
         <Link
           to="/screener"
-          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12.5px] font-medium text-accent transition-colors hover:bg-fg/5"
+          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12px] font-medium text-accent transition-colors hover:bg-fg/5"
         >
           {s('screenerLink')}
         </Link>

@@ -34,7 +34,10 @@ const FRAMES: [HeatFrame, 'frameDay' | 'frameWeek' | 'frameMonth'][] = [
     and change all still fit at 360px. */
 const ROW_GRID =
   'grid grid-cols-[18px_minmax(0,1fr)_84px_60px_70px] items-center gap-x-2 ' +
-  'max-[480px]:grid-cols-[16px_minmax(0,1fr)_54px_62px]'
+  // Under 480 the sparkline leaves and the name takes its room; under 380 the
+  // price leaves too, because 76px of name is five characters.
+  'max-[480px]:grid-cols-[16px_minmax(0,1fr)_54px_62px] ' +
+  'max-[380px]:grid-cols-[16px_minmax(0,1fr)_62px]'
 
 /** Cells that carry the sparkline; the rail header hides with it. */
 const SPARK_CELL = 'max-[480px]:hidden'
@@ -655,7 +658,7 @@ export default function MarketPage() {
                         >
                           <BarStrip data={q.spark} up={up} compact />
                         </span>
-                        <span className="num text-end text-[12px] leading-none">
+                        <span className="num text-end text-[12px] leading-none max-[380px]:hidden">
                           <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
                         </span>
                         <span
@@ -686,7 +689,6 @@ export default function MarketPage() {
         <div className="mt-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-baseline gap-2">
-              <h2 className="truncate text-[15px] font-semibold">{s('watchTitle')}</h2>
               <span className="num rounded-full bg-surface px-2 py-0.5 text-[11px] text-muted">
                 {watched.length}
               </span>

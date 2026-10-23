@@ -351,7 +351,7 @@ export default function SymbolPage() {
         <ul className="panel mt-2 overflow-hidden">
           {related.map((n) => (
             <li key={n.id} className="row">
-              <Link to={`/news/${n.id}`} className="block w-full py-3 transition-colors active:bg-fg/10">
+              <Link to={`/news/${n.id}`} className="block w-full py-3 transition-colors hover:bg-fg/5 active:bg-fg/10">
                 <p className="line-clamp-2 text-[14px] leading-snug">{n.title[lang]}</p>
                 <p className="num mt-1.5 text-[11px] text-muted">
                   {n.source} · {s('timePrefix')} {fmtNum(n.minutesAgo, lang, 0)} {s('timeSuffix')}
@@ -403,7 +403,7 @@ export default function SymbolPage() {
         {rewards.map((k) => (
           <div key={k.id} className="flex items-start gap-2.5 px-4 py-2.5">
             <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-up)' }}>✓</span>
-            <span className="min-w-0 flex-1 text-[12.5px] leading-snug">{k.label[lang]}</span>
+            <span className="min-w-0 flex-1 text-[12px] leading-snug">{k.label[lang]}</span>
             <span className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
           </div>
         ))}
@@ -414,7 +414,7 @@ export default function SymbolPage() {
         {risks.map((k) => (
           <div key={k.id} className="flex items-start gap-2.5 px-4 py-2.5">
             <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-down)' }}>⚠</span>
-            <span className="min-w-0 flex-1 text-[12.5px] leading-snug">{k.label[lang]}</span>
+            <span className="min-w-0 flex-1 text-[12px] leading-snug">{k.label[lang]}</span>
             <span className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
           </div>
         ))}
@@ -435,7 +435,7 @@ export default function SymbolPage() {
               <li key={p.symbol}>
                 <Link
                   to={`/m/${p.symbol}`}
-                  className={`${PEER_GRID} min-h-14 px-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10`}
+                  className={`${PEER_GRID} min-h-14 px-3 py-2 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10`}
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-[13px] leading-tight font-medium">

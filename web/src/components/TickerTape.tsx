@@ -16,6 +16,9 @@ export function TickerTape({ quotes, name, price, change }: Props) {
     <div className="tape__track" dir="ltr">
       {quotes.map((q) => (
         <span key={q.symbol} className="flex shrink-0 items-baseline gap-1.5">
+          <span aria-hidden="true" className="me-1" style={{ color: 'var(--color-muted)', opacity: 0.5 }}>
+            ·
+          </span>
           <span className="t-sym" style={{ color: 'var(--color-muted)' }}>
             {q.symbol}
           </span>

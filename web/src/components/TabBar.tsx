@@ -152,7 +152,7 @@ export function TabBar() {
   } as CSSProperties
 
   return (
-    <nav aria-label="Primary" className="fixed z-50 glass" style={barStyle}>
+    <nav aria-label="Primary" className="tabbar fixed z-50 glass" style={barStyle}>
       {/* Clip layer: the pill may overshoot, the bar's shape decides where it ends. */}
       <div
         aria-hidden
@@ -187,6 +187,7 @@ export function TabBar() {
                 {it.key === 'tab.ai' ? (
                   <span className="relative flex h-[22px] w-full items-center justify-center">
                     <span
+                      data-ai-orb
                       className="absolute flex items-center justify-center rounded-full"
                       style={{
                         // Transform, not width/height/top: the pill sits on a

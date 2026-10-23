@@ -86,7 +86,7 @@ function SectionTitle({
   trailing?: ReactNode
 }) {
   return (
-    <div className="mt-8 flex items-end justify-between gap-3">
+    <div className="mt-8 flex items-center justify-between gap-3">
       <div className="min-w-0">
         <h2 className="text-[15px] font-semibold">{title}</h2>
       </div>

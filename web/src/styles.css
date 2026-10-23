@@ -387,8 +387,8 @@ html[dir="rtl"] body {
 .tape__track {
   display: flex;
   flex: 0 0 auto;
-  gap: 18px;
-  padding-inline-end: 18px;
+  gap: 22px;
+  padding-inline-end: 22px;
 }
 
 /* The card recipe: tinted glass, hairline border, lit top edge.
@@ -471,5 +471,103 @@ html[dir="rtl"] body {
   .animate-pulse,
   .animate-bounce {
     animation: none !important;
+  }
+}
+
+
+/* ── Desktop shell ───────────────────────────────────────────────
+   A phone-shaped column floating in a monitor is not a desktop product.
+   Above 1024 the bottom pill becomes a left rail, the content widens, and
+   the AI lift is dropped because there is no thumb to reach for. */
+@media (min-width: 1024px) {
+  .screen-pad {
+    padding-bottom: 48px;
+    padding-inline-start: calc(88px + 16px);
+  }
+  .tabbar {
+    inset-block: 0 !important;
+    inset-inline: 0 auto !important;
+    width: 88px !important;
+    height: 100dvh !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    border-inline-end: 1px solid var(--color-line) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    background: var(--color-bg) !important;
+  }
+  .tabbar ul {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    gap: 4px;
+    height: auto !important;
+    padding-top: 16px;
+  }
+  .tabbar li {
+    height: 60px;
+  }
+  /* the sliding plate only makes sense on a horizontal bar */
+  .tabbar > div:first-child {
+    display: none !important;
+  }
+  .tabbar [data-ai-orb] {
+    transform: none !important;
+    top: 0 !important;
+    width: 34px !important;
+    height: 34px !important;
+  }
+  .tabbar a,
+  .tabbar button {
+    border-radius: 12px;
+  }
+}
+
+
+/* The sector strip and the tape are the two full-bleed objects; on a desk they
+   get proportionally more height so their labels are not lost. */
+@media (min-width: 1024px) {
+  .market-strip {
+    height: 60px;
+  }
+  .market-strip span {
+    font-size: 11px;
+  }
+  .tape {
+    padding-inline-start: 4px;
+  }
+}
+
+
+/* The tape is a phone affordance: on a desk the header already lists the
+   indices, and a marquee clipped at both ends reads as broken text. */
+@media (min-width: 1024px) {
+  .tape {
+    display: none;
+  }
+}
+
+
+/* The composer is fixed to the viewport, but on a desk the content column is
+   shifted by the rail: align it to the column, not to the window. */
+@media (min-width: 1024px) {
+  /* Same box as <main>: 760 centred, rail offset on the inline start. */
+  .composer {
+    inset-inline: 0 !important;
+    max-width: 760px !important;
+    margin-inline: auto !important;
+    padding-inline: calc(88px + 16px) 16px;
+    box-sizing: border-box;
+    display: flex;
+  }
+  .composer > form {
+    flex: 1;
+    height: 100%;
+    border-radius: 20px;
+    background: var(--bar-bg);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-float);
   }
 }

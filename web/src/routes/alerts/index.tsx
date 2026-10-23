@@ -156,7 +156,7 @@ export default function AlertsPage() {
             <div
               role="group"
               aria-labelledby="alert-dir-label"
-              className="mt-1.5 grid grid-cols-2 gap-2"
+              className="mt-1.5 grid grid-cols-2 gap-1 rounded-[12px] border border-line p-1"
             >
               {(['above', 'below'] as const).map((k) => {
                 const active = dir === k
@@ -169,9 +169,8 @@ export default function AlertsPage() {
                       setDir(k)
                       setError(null)
                     }}
-                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[10px] border text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-fg"
+                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[9px] text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-fg"
                     style={{
-                      borderColor: active ? 'var(--color-fg)' : 'var(--color-line)',
                       background: active ? 'var(--color-fg)' : 'transparent',
                       color: active ? 'var(--color-bg)' : 'var(--color-muted)',
                     }}
@@ -247,7 +246,7 @@ export default function AlertsPage() {
         <>
           {sections.map((group) => (
             <section key={group.key} className="mt-8">
-              <h2 className="t-section flex items-baseline gap-2 pb-2">
+              <h2 className="t-section flex items-baseline justify-between gap-3 pb-3">
                 {s(group.key === 'fired' ? 'triggered' : 'waiting')}
                 <span className="num text-[12px] font-normal text-muted">
                   {group.rows.length}
@@ -255,30 +254,29 @@ export default function AlertsPage() {
               </h2>
               <ul className="border-t border-line">
                 {group.rows.map((r) => (
-                  <li key={r.id} className="row">
+                  <li key={r.id} className="row items-start py-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-baseline gap-1.5">
+                      <div className="flex items-baseline gap-2">
                         <span className="num text-[14px] font-semibold">{r.symbol}</span>
-                        <span className="truncate text-[11px] text-muted">
+                        <span className="truncate text-[12px] text-muted">
                           {r.quote.name[lang]}
                         </span>
                       </div>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
-                        <span className="inline-flex items-center gap-1 text-fg">
-                          <DirIcon dir={r.dir} />
-                          <span className="text-muted">{s(r.dir)}</span>
-                          <span className="num font-medium">
-                            {fmtNum(r.threshold, lang, 2)}
-                          </span>
+                      <div className="mt-1.5 text-[12px] text-muted">{s(r.dir)}</div>
+                    </div>
+
+                    {/* Two prices, two lines, labelled: an unlabelled pair of
+                        numbers a row apart is a guessing game. */}
+                    <div className="me-3 shrink-0 text-end">
+                      <span className="num block text-[14px] leading-none">
+                        {fmtNum(r.threshold, lang, 2)}
+                      </span>
+                      <span className="mt-1.5 block text-[11px] leading-none text-muted">
+                        {s('current')}{' '}
+                        <span className="num" style={{ color: 'var(--color-fg)' }}>
+                          {fmtNum(r.quote.price, lang, 2)}
                         </span>
-                        <span aria-hidden="true" className="text-line">
-                          ·
-                        </span>
-                        <span className="text-muted">
-                          {s('current')}{' '}
-                          <span className="num text-fg">{fmtNum(r.quote.price, lang, 2)}</span>
-                        </span>
-                      </div>
+                      </span>
                     </div>
 
                     <button

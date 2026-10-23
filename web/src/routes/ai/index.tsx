@@ -356,17 +356,13 @@ export default function AiPage() {
 
       {/* composer */}
       <div
-        className="fixed z-40 glass has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-fg"
+        className="composer fixed z-40 glass has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-fg"
         style={{
           insetInline: 12,
           maxWidth: 496,
           marginInline: 'auto',
           bottom: BAR_OFFSET,
           height: COMPOSER_H,
-          borderRadius: 20,
-          background: 'var(--bar-bg)',
-          border: '1px solid var(--color-line)',
-          boxShadow: 'var(--shadow-float)',
         }}
       >
         <form onSubmit={submit} className="flex h-full items-center gap-2 ps-4 pe-1.5">

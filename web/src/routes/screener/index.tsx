@@ -465,7 +465,7 @@ export default function ScreenerPage() {
       </section>
 
       <section className="mt-8" aria-label={s('resultsTitle')}>
-        <div className="flex items-end justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           <div>
             <p
               aria-live="polite"

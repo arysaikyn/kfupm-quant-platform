@@ -350,7 +350,7 @@ export default function MarketPage() {
       {/* Sector strip: the whole market's shape in one line, sized by weight and
           tinted by move. It is the screen's signature and it is real data. */}
       {strip.length > 0 && (
-        <div className="-mx-4 mt-5 flex h-12 gap-px overflow-hidden" role="list" aria-label={s('heatTitle')}>
+        <div className="market-strip -mx-4 mt-5 flex h-12 gap-px overflow-hidden" role="list" aria-label={s('heatTitle')}>
           {strip.map((row) => {
             const up = row.change >= 0
             const tone = up ? 'var(--color-up)' : 'var(--color-down)'
@@ -367,7 +367,7 @@ export default function MarketPage() {
                   background: `color-mix(in srgb, ${tone} ${8 + Math.min(Math.abs(row.change) / 0.02, 1) * 12}%, var(--color-surface))`,
                 }}
               >
-                <span className="truncate text-[9.5px] leading-none" style={{ color: 'var(--color-fg)' }}>
+                <span className="truncate text-[10px] leading-none" style={{ color: 'var(--color-fg)' }}>
                   {row.label}
                 </span>
                 <span className="num truncate text-[9.5px] leading-none" style={{ color: 'var(--color-fg)', opacity: 0.75 }}>

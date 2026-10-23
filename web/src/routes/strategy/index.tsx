@@ -57,59 +57,50 @@ export default function StrategyPage() {
     <Screen
       title={s('title')}
     >
-      {tags.length > 0 && (
-        <div
-          role="group"
-          aria-label={FILTER_LABEL[lang]}
-          className="-mx-4 mt-1 flex gap-2 overflow-x-auto px-4 pb-0.5 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-24px),transparent)]"
-          style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
-        >
-          {[null, ...tags].map((t) => {
-            const active = tag === t
-            return (
-              <button
-                key={t ?? 'all'}
-                type="button"
-                onClick={() => setTag(t)}
-                aria-pressed={active}
-                className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
-                  active ? 'font-medium' : 'text-muted'
-                }`}
-                style={
-                  active
-                    ? {
-                        background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)',
-                        color: 'var(--color-fg)',
-                      }
-                    : undefined
-                }
-              >
-                {t ? s(TAG_KEY[t]) : ALL[lang]}
-              </button>
-            )
-          })}
-        </div>
-      )}
+      <div className="mt-1 flex items-center justify-between gap-3">
+        {tags.length > 0 && (
+          <div
+            role="group"
+            aria-label={FILTER_LABEL[lang]}
+            className="-ms-4 flex min-w-0 gap-1 overflow-x-auto ps-4 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-20px),transparent)]"
+            style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
+          >
+            {[null, ...tags].map((t) => {
+              const active = tag === t
+              return (
+                <button
+                  key={t ?? 'all'}
+                  type="button"
+                  onClick={() => setTag(t)}
+                  aria-pressed={active}
+                  className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
+                    active ? 'font-medium' : 'text-muted'
+                  }`}
+                  style={
+                    active
+                      ? {
+                          background: 'color-mix(in srgb, var(--color-fg) 8%, transparent)',
+                          color: 'var(--color-fg)',
+                        }
+                      : undefined
+                  }
+                >
+                  {t ? s(TAG_KEY[t]) : ALL[lang]}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
-      <div className="mt-1 flex justify-end">
         <button
           type="button"
           onClick={() => setSort(sort === 'recent' ? 'return' : 'recent')}
           aria-label={s('sortLabel')}
-          className="flex min-h-11 items-center gap-1.5 rounded-lg px-1 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="flex min-h-11 shrink-0 items-center gap-1.5 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           style={{ color: 'var(--color-muted)' }}
         >
           {s(sort === 'recent' ? 'sortRecent' : 'sortReturn')}
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
             <path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3" />
           </svg>
         </button>

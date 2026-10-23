@@ -128,7 +128,7 @@ function WatchStar({
         e.preventDefault()
         onToggle()
       }}
-      className="absolute top-1/2 end-0 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+      className="absolute top-1/2 end-0 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
       style={{ color: watched ? 'var(--color-accent)' : 'var(--color-muted)' }}
     >
       <StarIcon filled={watched} />
@@ -259,7 +259,7 @@ export default function MarketPage() {
           <Link
             to="/search"
             aria-label={s('goSearch')}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-surface text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-surface text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
               <circle cx="11" cy="11" r="6.5" />
@@ -269,7 +269,7 @@ export default function MarketPage() {
           <Link
             to="/alerts"
             aria-label={s('goAlerts')}
-            className="relative flex h-11 w-11 items-center justify-center rounded-full bg-surface text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="relative flex h-11 w-11 items-center justify-center rounded-full bg-surface text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M18 8a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" />
@@ -361,7 +361,7 @@ export default function MarketPage() {
                 role="listitem"
                 onClick={() => setSector(row.id)}
                 aria-label={`${row.label} ${fmtPct(row.change, lang)}`}
-                className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-2 text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-2 text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                 style={{
                   flexGrow: row.weight,
                   background: `color-mix(in srgb, ${tone} ${8 + Math.min(Math.abs(row.change) / 0.02, 1) * 12}%, var(--color-surface))`,
@@ -432,7 +432,7 @@ export default function MarketPage() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => setFrame(key)}
-                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <span
                   className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
@@ -554,7 +554,7 @@ export default function MarketPage() {
                 <Link
                   to="/screener"
                   aria-label={s('goScreener')}
-                  className="flex min-h-11 min-w-11 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="flex min-h-11 min-w-11 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                   style={{ color: 'var(--color-muted)' }}
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -565,7 +565,7 @@ export default function MarketPage() {
                   <button
                     type="button"
                     onClick={() => setSector(null)}
-                    className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-[12px] transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-[12px] transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                     style={{ color: 'var(--color-accent)' }}
                   >
                     {s('heatClear')}
@@ -576,7 +576,7 @@ export default function MarketPage() {
                   onClick={() =>
                     setSort(sort === 'chg' ? 'fall' : sort === 'fall' ? 'name' : 'chg')
                   }
-                  className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                   style={{ color: 'var(--color-muted)' }}
                 >
                   {s(SORT_KEY[sort])}
@@ -609,7 +609,7 @@ export default function MarketPage() {
                       <LongPressLink
                         to={`/m/${q.symbol}`}
                         prompt={`${s('askAbout')} ${q.name[lang]}`}
-                        className={`${ROW_GRID} min-h-[56px] ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent`}
+                        className={`${ROW_GRID} min-h-[56px] ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg`}
                       >
                         {/* Rank is positional, so it is not read out as part of the name. */}
                         <span
@@ -688,7 +688,7 @@ export default function MarketPage() {
             {/* Groups live next to the list they group, not inside Profile. */}
             <Link
               to="/watchlists"
-              className="-me-2 flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line px-2.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="-me-2 flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line px-2.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('watchGroups')}
             </Link>
@@ -716,7 +716,7 @@ export default function MarketPage() {
                     <LongPressLink
                       to={`/m/${q.symbol}`}
                       prompt={`${s('askAbout')} ${q.name[lang]}`}
-                      className="grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                      className="grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     >
                       <span className="min-w-0">
                         <span className="block truncate text-[14px] leading-tight font-medium">

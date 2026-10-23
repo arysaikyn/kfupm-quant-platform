@@ -21,7 +21,7 @@ const TITLES: StringKey[] = ['valueTitle', 'evidenceTitle', 'shariaTitle', 'mark
 const BODIES: StringKey[] = ['valueBody', 'evidenceBody', 'shariaBody', 'marketBody', 'doneBody']
 
 const RING =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent'
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg'
 
 /** 180ms slide+fade. The offset is set per step, so RTL slides from the other side. */
 const MOTION_CSS = `
@@ -109,7 +109,7 @@ function EvidenceRow({ label, value, tag }: { label: string; value: string; tag:
         {value}
       </span>
       <span
-        className="shrink-0 rounded-full bg-accent/10 px-2 py-1 text-[9px] leading-none font-medium tracking-[0.04em] text-accent uppercase"
+        className="shrink-0 rounded-full bg-fg/10 px-2 py-1 text-[9px] leading-none font-medium tracking-[0.04em] text-fg uppercase"
         style={{ letterSpacing: lang === 'ar' ? 0 : undefined }}
       >
         {tag}
@@ -133,7 +133,7 @@ function ShariaRow({
     <div className="flex min-h-11 items-center gap-2.5 border-t border-line px-4">
       <span
         className={`grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full ${
-          ok ? 'bg-accent/20 text-accent' : 'border border-line text-muted'
+          ok ? 'bg-fg/15 text-fg' : 'border border-line text-muted'
         }`}
       >
         {ok ? <PassMark /> : <FailMark />}
@@ -159,14 +159,9 @@ function ValueCard({ s }: { s: S }) {
   return (
     <div className="panel overflow-hidden">
       <p className="px-4 pt-4 pb-3.5 text-[13px] leading-[1.5]">“{s('valueQuery')}”</p>
-      <div className="flex items-center justify-between border-t border-line px-4 py-2.5">
-        <span className="text-[11px] text-muted">{s('valueParsed')}</span>
-        <span aria-hidden="true" className="flex gap-1">
-          {[0, 1, 2].map((i) => (
-            <span key={i} className="h-1 w-1 rounded-full bg-accent" />
-          ))}
-        </span>
-      </div>
+      <p className="border-t border-line px-4 py-2.5 text-[11px] text-muted">
+        {s('valueParsed')}
+      </p>
       <RuleRow label={s('valueRule1')} value={s('valueRule1Value')} />
       <RuleRow label={s('valueRule2')} value={s('valueRule2Value')} />
       <RuleRow label={s('valueRule3')} value={s('valueRule3Value')} />
@@ -210,7 +205,7 @@ function ShariaCard({ s }: { s: S }) {
         <span className="t-kicker text-muted" style={{ letterSpacing: lang === 'ar' ? 0 : undefined }}>
           {s('shariaHead')}
         </span>
-        <span dir="ltr" className="num rounded-full bg-accent/10 px-2 py-1 text-[10.5px] leading-none font-medium text-accent">
+        <span dir="ltr" className="num rounded-full bg-fg/10 px-2 py-1 text-[10.5px] leading-none font-medium text-fg">
           {s('shariaCount')}
         </span>
       </div>
@@ -375,7 +370,7 @@ export default function OnboardingPage() {
               id="onb-step-heading"
               ref={headingRef}
               tabIndex={-1}
-              className="t-title rounded-sm text-[26px] leading-[1.2] font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent max-[380px]:text-[24px]"
+              className="t-title rounded-sm text-[26px] leading-[1.2] font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fg max-[380px]:text-[24px]"
             >
               {s(TITLES[step - 1])}
             </h1>
@@ -409,13 +404,13 @@ export default function OnboardingPage() {
                           tabIndex={market ? (selected ? 0 : -1) : i === 0 ? 0 : -1}
                           onClick={() => setMarket(m)}
                           className={`flex min-h-[72px] w-full items-center gap-3 rounded-2xl border px-4 py-3 text-start transition-colors active:bg-fg/5 ${RING} ${
-                            selected ? 'border-accent bg-accent/10' : 'border-line'
+                            selected ? 'border-fg bg-fg/10' : 'border-line'
                           }`}
                         >
                           <span
                             aria-hidden="true"
                             className={`num grid h-9 w-9 shrink-0 place-items-center rounded-full border text-[11px] font-semibold ${
-                              selected ? 'border-accent/40 text-accent' : 'border-line text-muted'
+                              selected ? 'border-fg/40 text-fg' : 'border-line text-muted'
                             }`}
                           >
                             {copy.code}
@@ -431,7 +426,7 @@ export default function OnboardingPage() {
                           <span
                             aria-hidden="true"
                             className={`grid h-[22px] w-[22px] shrink-0 place-items-center rounded-full border ${
-                              selected ? 'border-accent' : 'border-line'
+                              selected ? 'border-fg' : 'border-line'
                             }`}
                           >
                             {selected && <span className="h-[10px] w-[10px] rounded-full bg-accent" />}
@@ -459,7 +454,7 @@ export default function OnboardingPage() {
                   <div className="mt-2.5 flex items-center gap-3">
                     <span
                       aria-hidden="true"
-                      className="num grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent/20 text-[11px] font-semibold text-accent"
+                      className="num grid h-9 w-9 shrink-0 place-items-center rounded-full bg-fg/15 text-[11px] font-semibold text-fg"
                     >
                       {MARKET_COPY[market].code}
                     </span>
@@ -486,7 +481,7 @@ export default function OnboardingPage() {
             onClick={next}
             disabled={step === 4 && !market}
             aria-describedby={step === 4 && !market ? 'onb-market-hint' : undefined}
-            className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-semibold text-white transition-opacity active:opacity-80 disabled:opacity-40 ${RING}`}
+            className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-semibold text-bg transition-opacity active:opacity-80 disabled:opacity-40 ${RING}`}
           >
             {s('continue')}
           </button>
@@ -495,7 +490,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={finish}
-              className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-semibold text-white transition-opacity active:opacity-80 ${RING}`}
+              className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-semibold text-bg transition-opacity active:opacity-80 ${RING}`}
             >
               {s('doneOpen')}
             </button>

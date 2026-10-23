@@ -139,7 +139,7 @@ export default function AlertsPage() {
               id="alert-symbol"
               value={symbol}
               onChange={(e) => pickSymbol(e.target.value)}
-              className="mt-1.5 min-h-11 w-full rounded-[10px] border border-line bg-bg px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-accent"
+              className="mt-1.5 min-h-11 w-full rounded-[10px] border border-line bg-bg px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
             >
               {quotes.map((q) => (
                 <option key={q.symbol} value={q.symbol}>
@@ -169,7 +169,7 @@ export default function AlertsPage() {
                       setDir(k)
                       setError(null)
                     }}
-                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[10px] border text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-accent"
+                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[10px] border text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-fg"
                     style={{
                       borderColor: active ? 'var(--color-fg)' : 'var(--color-line)',
                       background: active ? 'var(--color-fg)' : 'transparent',
@@ -211,8 +211,8 @@ export default function AlertsPage() {
                   setThreshold(e.target.value)
                   if (error) setError(null)
                 }}
-                className={`num min-h-11 w-full rounded-[10px] border bg-bg ps-3 pe-14 text-[14px] text-fg [appearance:textfield] focus-visible:outline-2 focus-visible:outline-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
-                  error ? 'border-accent' : 'border-line'
+                className={`num min-h-11 w-full rounded-[10px] border bg-bg ps-3 pe-14 text-[14px] text-fg [appearance:textfield] focus-visible:outline-2 focus-visible:outline-fg [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
+                  error ? 'border-fg' : 'border-line'
                 }`}
               />
               <span
@@ -232,7 +232,7 @@ export default function AlertsPage() {
 
           <button
             type="submit"
-            className="min-h-11 w-full rounded-full bg-solid text-[13px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="min-h-11 w-full rounded-full bg-solid text-[13px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {s('create')}
           </button>
@@ -285,7 +285,7 @@ export default function AlertsPage() {
                       type="button"
                       onClick={() => removeAlert(r.id)}
                       aria-label={`${s('delete')} ${r.symbol}`}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     >
                       <TrashIcon />
                     </button>

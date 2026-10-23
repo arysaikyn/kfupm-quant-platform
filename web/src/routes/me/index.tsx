@@ -82,7 +82,7 @@ export default function MePage() {
             <button
               type="button"
               onClick={() => setSignedIn(true)}
-              className="h-12 w-full max-w-[280px] rounded-full bg-solid text-[15px] font-semibold text-white active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+              className="h-12 w-full max-w-[280px] rounded-full bg-solid text-[15px] font-semibold text-bg active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
             >
               {s('signIn')}
             </button>
@@ -107,7 +107,7 @@ export default function MePage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setTheme(mode)}
-                className="row w-full text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
+                className="row w-full text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
               >
                 <span className="text-muted">
                   {mode === 'light' ? (
@@ -156,7 +156,7 @@ export default function MePage() {
             <Link
               key={row.to}
               to={row.to}
-              className="row transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
+              className="row transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
             >
               <span className="flex-1 text-[14px]">{row.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)] shrink-0 text-muted">
@@ -167,7 +167,7 @@ export default function MePage() {
           <button
             type="button"
             onClick={replayOnboarding}
-            className="row w-full text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
+            className="row w-full text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
           >
             <span className="flex-1 text-[14px]">{s('replayOnboarding')}</span>
             <svg
@@ -206,7 +206,7 @@ export default function MePage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setLang(row.id)}
-                className="row w-full text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                className="row w-full text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[14px] leading-tight">{s(row.native)}</span>

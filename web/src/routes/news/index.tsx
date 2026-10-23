@@ -87,7 +87,7 @@ function NewsRow({
     <LongPressLink
       to={source === null ? `/news/${item.id}` : `/news/${item.id}?source=${encodeURIComponent(source)}`}
       prompt={`${s('askAi')} — ${item.title[lang]}`}
-      className="block w-full min-w-0 py-3.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
+      className="block w-full min-w-0 py-3.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
     >
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
@@ -174,7 +174,7 @@ export default function NewsPage() {
     <Screen
       title={s('title')}
       action={
-        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full border border-line px-3.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full border border-line px-3.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg">
           {s('calendar')}
         </Link>
       }
@@ -183,7 +183,7 @@ export default function NewsPage() {
           screen, and a boxed entry outranked every headline below it. */}
       <Link
         to="/review"
-        className="row border-b border-line px-0 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
+        className="row border-b border-line px-0 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
       >
         <span className="text-muted">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -217,7 +217,7 @@ export default function NewsPage() {
                 type="button"
                 onClick={() => selectSource(name)}
                 aria-pressed={active}
-                className={`min-h-11 min-w-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                className={`min-h-11 min-w-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                   active ? 'bg-surface font-medium text-fg' : 'text-muted'
                 }`}
               >

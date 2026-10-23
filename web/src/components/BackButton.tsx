@@ -26,7 +26,7 @@ export function BackButton({ fallback }: Props) {
       type="button"
       onClick={goBack}
       aria-label={t('common.back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
     >
       <svg
         width="18"

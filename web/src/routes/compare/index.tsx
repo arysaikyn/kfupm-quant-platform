@@ -312,7 +312,7 @@ export default function ComparePage() {
                     value={value}
                     aria-label={`${s('slotSelect')} ${s(SLOT_KEYS[i])}`}
                     onChange={(e) => setSlot(i, Number(e.target.value))}
-                    className="num min-h-11 w-full appearance-none rounded-lg bg-fg/5 px-2.5 pe-6 text-[12px] font-medium text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="num min-h-11 w-full appearance-none rounded-lg bg-fg/5 px-2.5 pe-6 text-[12px] font-medium text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                   >
                     {quotes.map((q, qi) => (
                       <option

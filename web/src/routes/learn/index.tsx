@@ -133,7 +133,7 @@ export default function LearnPage() {
         <p className="text-[14px] leading-[1.5] text-muted">{s('intro')}</p>
 
         {/* The border lives on the wrapper so focus lights the whole field. */}
-        <div className="panel mt-3 flex h-14 items-center gap-1 ps-4 pe-1.5 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent">
+        <div className="panel mt-3 flex h-14 items-center gap-1 ps-4 pe-1.5 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-fg">
           <span className="flex shrink-0 items-center text-muted">
             <SearchIcon />
           </span>

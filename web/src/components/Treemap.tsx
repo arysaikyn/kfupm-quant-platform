@@ -100,7 +100,7 @@ export function Treemap({
               <button
                 type="button"
                 onClick={() => onGroup(group.id)}
-                className="mb-1 flex min-w-0 flex-col items-start rounded-sm px-0.5 text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="mb-1 flex min-w-0 flex-col items-start rounded-sm px-0.5 text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               >
                 {head}
               </button>
@@ -120,7 +120,7 @@ export function Treemap({
                     aria-pressed={picked}
                     aria-label={`${tile.label} · ${tile.sub} · ${formatChange(tile.change)}`}
                     onClick={() => onPick(tile.key)}
-                    className="flex min-h-11 min-w-0 flex-col justify-between gap-1 overflow-hidden rounded-[10px] px-1 py-1 text-start transition-[background-color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    className="flex min-h-11 min-w-0 flex-col justify-between gap-1 overflow-hidden rounded-[10px] px-1 py-1 text-start transition-[background-color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     style={{
                       flexGrow: tile.weight,
                       flexBasis: 0,

@@ -61,7 +61,7 @@ export default function StrategyPage() {
         <div
           role="group"
           aria-label={FILTER_LABEL[lang]}
-          className="-mx-4 mt-1 flex gap-2 overflow-x-auto px-4 pb-0.5 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,transparent,#000_16px,#000_calc(100%-16px),transparent)]"
+          className="-mx-4 mt-1 flex gap-2 overflow-x-auto px-4 pb-0.5 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-24px),transparent)]"
           style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
         >
           {[null, ...tags].map((t) => {
@@ -72,7 +72,7 @@ export default function StrategyPage() {
                 type="button"
                 onClick={() => setTag(t)}
                 aria-pressed={active}
-                className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
+                className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
                   active ? 'font-medium' : 'text-muted'
                 }`}
                 style={
@@ -96,7 +96,7 @@ export default function StrategyPage() {
           type="button"
           onClick={() => setSort(sort === 'recent' ? 'return' : 'recent')}
           aria-label={s('sortLabel')}
-          className="flex min-h-11 items-center gap-1.5 rounded-lg px-1 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="flex min-h-11 items-center gap-1.5 rounded-lg px-1 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           style={{ color: 'var(--color-muted)' }}
         >
           {s(sort === 'recent' ? 'sortRecent' : 'sortReturn')}
@@ -141,14 +141,14 @@ export default function StrategyPage() {
                   <LongPressLink
                     to={`/strategy/${st.id}`}
                     prompt={`${st.name[lang]} — ${st.description[lang]}`}
-                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 py-4 transition-colors hover:bg-fg/[0.03] active:bg-fg/[0.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 py-4 transition-colors hover:bg-fg/[0.03] active:bg-fg/[0.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                   >
                     <div className="min-w-0">
                       <h2 className="truncate text-[16px] leading-snug font-semibold">
                         {st.name[lang]}
                       </h2>
                       <p
-                        className="mt-1 line-clamp-1 text-[12px] leading-snug"
+                        className="mt-1 line-clamp-2 text-[12px] leading-snug"
                         style={{ color: 'var(--color-muted)' }}
                       >
                         {st.description[lang]}

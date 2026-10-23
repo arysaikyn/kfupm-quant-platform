@@ -285,7 +285,7 @@ export default function ScreenerPage() {
               key={id}
               type="button"
               onClick={() => applyPreset(id)}
-              className="flex min-h-11 items-center justify-center rounded-full bg-surface px-2 py-2 text-[13px] leading-tight font-medium text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+              className="flex min-h-11 items-center justify-center rounded-full bg-surface px-2 py-2 text-[13px] leading-tight font-medium text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
             >
               {s(PRESET_KEY[id])}
             </button>
@@ -322,7 +322,7 @@ export default function ScreenerPage() {
                   <button
                     type="button"
                     onClick={() => focusRule(rule.id)}
-                    className="flex h-11 items-center whitespace-nowrap rounded-s-full ps-3.5 pe-2 text-[11px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    className="flex h-11 items-center whitespace-nowrap rounded-s-full ps-3.5 pe-2 text-[11px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     style={{ color: 'var(--color-fg)' }}
                   >
                     {text}
@@ -331,7 +331,7 @@ export default function ScreenerPage() {
                     type="button"
                     aria-label={fillName(s('removeFilterAria'), text)}
                     onClick={() => removeRule(rule.id)}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-e-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-e-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     style={{ color: 'var(--color-muted)' }}
                   >
                     <IconX size={12} />
@@ -365,7 +365,7 @@ export default function ScreenerPage() {
                     onChange={(event) =>
                       updateRule(rule.id, { field: event.target.value as Field })
                     }
-                    className="h-11 min-h-11 w-full appearance-none rounded-lg bg-fg/5 ps-3 pe-9 text-[14px] text-fg transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+                    className="h-11 min-h-11 w-full appearance-none rounded-lg bg-fg/5 ps-3 pe-9 text-[14px] text-fg transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
                   >
                     {FIELD_ORDER.map((field) => (
                       <option key={field} value={field}>
@@ -391,7 +391,7 @@ export default function ScreenerPage() {
                           aria-pressed={selected}
                           aria-label={s(option.key)}
                           onClick={() => updateRule(rule.id, { op: option.value })}
-                          className="flex h-11 w-11 items-center justify-center rounded-lg text-[15px] font-semibold transition-colors active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+                          className="flex h-11 w-11 items-center justify-center rounded-lg text-[15px] font-semibold transition-colors active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
                           style={
                             selected
                               ? {
@@ -417,7 +417,7 @@ export default function ScreenerPage() {
                       onChange={(event) => updateRule(rule.id, { value: event.target.value })}
                       step={FIELD_STEP[rule.field]}
                       min={rule.field === 'change' ? undefined : 0}
-                      className="num h-11 min-h-11 w-full min-w-0 rounded-lg bg-fg/5 ps-3 text-[15px] text-fg transition-colors [appearance:textfield] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="num h-11 min-h-11 w-full min-w-0 rounded-lg bg-fg/5 ps-3 text-[15px] text-fg transition-colors [appearance:textfield] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       style={{ paddingInlineEnd: unit ? 24 : 10 }}
                     />
                     {unit && (
@@ -435,7 +435,7 @@ export default function ScreenerPage() {
                     type="button"
                     aria-label={s('removeRule')}
                     onClick={() => removeRule(rule.id)}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
                     style={{ color: 'var(--color-muted)' }}
                   >
                     <IconX />
@@ -449,7 +449,7 @@ export default function ScreenerPage() {
               type="button"
               onClick={addRule}
               disabled={rules.length >= MAX_RULES}
-              className="flex min-h-11 w-full items-center gap-1.5 py-1 text-[13px] font-medium transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent disabled:opacity-40"
+              className="flex min-h-11 w-full items-center gap-1.5 py-1 text-[13px] font-medium transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg disabled:opacity-40"
             >
               {rules.length < MAX_RULES && <IconPlus />}
               {rules.length >= MAX_RULES ? s('ruleLimit') : s('addRule')}
@@ -495,7 +495,7 @@ export default function ScreenerPage() {
               <button
                 type="button"
                 onClick={relaxRules}
-                className="min-h-11 rounded-full px-4 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="min-h-11 rounded-full px-4 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 style={{ border: '1px solid var(--color-line)' }}
               >
                 {s('relax')}
@@ -513,7 +513,7 @@ export default function ScreenerPage() {
                     type="button"
                     onClick={() => toggleSort(column.key)}
                     aria-pressed={active}
-                    className={`flex min-h-11 items-center gap-1 text-[11px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                    className={`flex min-h-11 items-center gap-1 text-[11px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                       column.key === 'name' ? 'justify-start text-start' : 'justify-end text-end'
                     }`}
                     style={kicker}
@@ -551,7 +551,7 @@ export default function ScreenerPage() {
                         lang,
                         2,
                       )} · ${fmtPct(quote.change, lang)}`}
-                      className="block min-h-[56px] py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                      className="block min-h-[56px] py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     >
                       <span className="grid grid-cols-[minmax(0,1fr)_78px_66px] items-center gap-x-2">
                         <span className="min-w-0">
@@ -611,7 +611,7 @@ export default function ScreenerPage() {
             enterKeyHint="done"
             placeholder={s('savePlaceholder')}
             aria-label={s('savePlaceholder')}
-            className="h-11 min-w-0 flex-1 rounded-xl px-3 text-[14px] transition-colors placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+            className="h-11 min-w-0 flex-1 rounded-xl px-3 text-[14px] transition-colors placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
             style={{
               border: '1px solid var(--color-line)',
               background: 'var(--color-surface)',
@@ -657,7 +657,7 @@ export default function ScreenerPage() {
                     type="button"
                     onClick={() => openScreen(screen)}
                     aria-label={fillName(s('loadAria'), screen.name)}
-                    className="flex h-11 min-w-0 items-center gap-1.5 rounded-s-full ps-3.5 pe-2 text-[12px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    className="flex h-11 min-w-0 items-center gap-1.5 rounded-s-full ps-3.5 pe-2 text-[12px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                   >
                     <span className="max-w-[180px] truncate">{screen.name}</span>
                     <span
@@ -671,7 +671,7 @@ export default function ScreenerPage() {
                     type="button"
                     onClick={() => deleteScreen(screen.id)}
                     aria-label={fillName(s('deleteAria'), screen.name)}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-e-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-e-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     style={{ color: 'var(--color-muted)' }}
                   >
                     <IconX size={14} />

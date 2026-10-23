@@ -130,16 +130,16 @@ export default function SettingsPage() {
     window.location.reload()
   }
 
-  const danger = theme === 'light' ? '#b42318' : '#ff7a88'
+  const danger = 'var(--color-danger)'
   const dangerContrast = theme === 'light' ? '#ffffff' : '#1b070b'
-  const dangerBg = theme === 'light' ? 'rgba(180, 35, 24, 0.06)' : 'rgba(255, 122, 136, 0.10)'
+  const dangerBg = 'color-mix(in srgb, var(--color-danger) 10%, transparent)'
 
   const back = (
     <button
       type="button"
       onClick={goBack}
       aria-label={s('back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
     >
       <svg
         width="20"
@@ -183,7 +183,7 @@ export default function SettingsPage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => changeDensity(mode)}
-                className="min-h-[44px] flex-1 rounded-full px-3 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                className="min-h-[44px] flex-1 rounded-full px-3 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                 style={
                   active
                     ? { background: 'var(--color-accent-fill)', color: '#fff' }
@@ -270,7 +270,7 @@ export default function SettingsPage() {
               aria-checked={alerts}
               aria-label={s('alertsLabel')}
               onClick={toggleAlerts}
-              className="-me-1 flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="-me-1 flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               <span
                 aria-hidden="true"
@@ -313,7 +313,7 @@ export default function SettingsPage() {
           </div>
           <Link
             to="/learn"
-            className="row transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+            className="row transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
           >
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[14px] leading-tight font-medium">
@@ -354,7 +354,7 @@ export default function SettingsPage() {
             type="button"
             onClick={reset}
             aria-describedby="settings-reset-copy"
-            className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full border border-line px-4 text-[14px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full border border-line px-4 text-[14px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             style={
               armed ? { background: danger, color: dangerContrast } : { background: dangerBg, color: danger }
             }
@@ -365,7 +365,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => setArmed(false)}
-              className="mt-1 flex min-h-11 w-full items-center justify-center rounded-full text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+              className="mt-1 flex min-h-11 w-full items-center justify-center rounded-full text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
             >
               {s('resetCancel')}
             </button>

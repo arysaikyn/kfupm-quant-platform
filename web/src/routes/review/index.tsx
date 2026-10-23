@@ -277,7 +277,7 @@ function RotationChart({
                     'weightLabel',
                   )} ${fmtNum(p.sector.weight, lang, 0, '%')}`}
                   onClick={() => onSelect(isSelected ? null : p.sector.id)}
-                  className="absolute z-10 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                  className="absolute z-10 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                   style={{
                     left: `${p.x}%`,
                     top: `${p.y}%`,

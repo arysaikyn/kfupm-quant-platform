@@ -228,7 +228,7 @@ function IconBtn({
       aria-label={label}
       onClick={onClick}
       disabled={disabled}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
       style={{ color: tone ?? 'var(--color-muted)' }}
     >
       {children}
@@ -425,7 +425,7 @@ export default function WatchlistsPage() {
                   if (next) setPick(next.symbol)
                 }}
                 title={group.name}
-                className={`flex min-h-11 max-w-[220px] shrink-0 items-center gap-1.5 overflow-hidden rounded-full px-3.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                className={`flex min-h-11 max-w-[220px] shrink-0 items-center gap-1.5 overflow-hidden rounded-full px-3.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                   selected ? 'bg-fg text-bg' : 'border border-line text-muted'
                 }`}
               >
@@ -442,7 +442,7 @@ export default function WatchlistsPage() {
             aria-expanded={newOpen}
             aria-controls={newOpen ? 'wl-new-group' : undefined}
             aria-label={s('newGroup')}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-dashed border-line text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-dashed border-line text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
           >
             <PlusIcon />
           </button>
@@ -473,12 +473,12 @@ export default function WatchlistsPage() {
               placeholder={s('groupNamePlaceholder')}
               aria-label={s('groupName')}
               onChange={(e) => setNewName(e.target.value)}
-              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-3 text-[14px] text-fg focus-visible:outline-2 focus-visible:outline-accent"
+              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-3 text-[14px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
             />
             <button
               type="submit"
               disabled={!newName.trim()}
-              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-white disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('create')}
             </button>
@@ -508,7 +508,7 @@ export default function WatchlistsPage() {
               <button
                 type="button"
                 onClick={() => setNewOpen(true)}
-                className="min-h-11 rounded-full bg-solid px-4 text-[13px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="min-h-11 rounded-full bg-solid px-4 text-[13px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               >
                 {s('newGroup')}
               </button>
@@ -533,7 +533,7 @@ export default function WatchlistsPage() {
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') setEditingId(null)
                   }}
-                  className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[14px] text-fg focus-visible:outline-2 focus-visible:outline-accent"
+                  className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[14px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
                 />
                 <IconBtn label={s('save')} type="submit" disabled={!editName.trim()}>
                   <CheckIcon />
@@ -556,7 +556,7 @@ export default function WatchlistsPage() {
                     type="button"
                     onClick={() => tapDelete(active)}
                     aria-label={`${s('confirmDelete')} ${active.name}`}
-                    className="flex min-h-11 shrink-0 items-center rounded-full px-3 text-[11px] font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    className="flex min-h-11 shrink-0 items-center rounded-full px-3 text-[11px] font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     style={{ color: 'var(--color-danger)' }}
                   >
                     {s('confirmDelete')}
@@ -581,7 +581,7 @@ export default function WatchlistsPage() {
               id="wl-add-symbol"
               value={pick}
               onChange={(e) => setPick(e.target.value)}
-              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-accent"
+              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
             >
               {quotes.map((q) => (
                 <option key={q.symbol} value={q.symbol}>
@@ -592,7 +592,7 @@ export default function WatchlistsPage() {
             <button
               type="submit"
               disabled={!canAdd}
-              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-white disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('add')}
             </button>
@@ -609,7 +609,7 @@ export default function WatchlistsPage() {
                   <li key={q.symbol} className="flex min-h-14 items-center gap-1 ps-3 pe-1">
                     <Link
                       to={`/m/${q.symbol}`}
-                      className="flex min-h-11 min-w-0 flex-1 items-center gap-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                      className="flex min-h-11 min-w-0 flex-1 items-center gap-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     >
                       <span className="min-w-0 flex-1">
                         <span className="num block text-[14px] leading-tight font-semibold">{q.symbol}</span>
@@ -631,7 +631,7 @@ export default function WatchlistsPage() {
                       aria-pressed={watched}
                       aria-label={`${watched ? s('removeFromWatch') : s('addToWatch')}: ${q.symbol}`}
                       onClick={() => toggleStar(q.symbol)}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                       style={{ color: watched ? 'var(--color-accent)' : 'var(--color-muted)' }}
                     >
                       <StarIcon filled={watched} />
@@ -640,7 +640,7 @@ export default function WatchlistsPage() {
                       type="button"
                       aria-label={`${s('removeFromGroup')}: ${q.symbol}`}
                       onClick={() => removeSymbol(active, q.symbol)}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     >
                       <MinusIcon />
                     </button>

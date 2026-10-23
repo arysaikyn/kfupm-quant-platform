@@ -215,7 +215,7 @@ export default function SymbolPage() {
             aria-pressed={watched}
             aria-label={`${watched ? c('watchOn') : c('watchAdd')} ${quote.name[lang]}`}
             onClick={() => toggleWatch(quote.symbol)}
-            className="flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:bg-fg/10"
+            className="flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:bg-fg/10"
             style={{ color: watched ? 'var(--color-accent)' : 'var(--color-muted)' }}
           >
             <svg
@@ -298,7 +298,7 @@ export default function SymbolPage() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => setRange(r)}
-                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <span
                   className="px-2 py-1.5 text-[12px]"
@@ -415,7 +415,7 @@ export default function SymbolPage() {
               <li key={p.symbol}>
                 <Link
                   to={`/m/${p.symbol}`}
-                  className={`${PEER_GRID} min-h-[56px] py-2 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10`}
+                  className={`${PEER_GRID} min-h-[56px] py-2 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/10`}
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-[14px] leading-tight font-medium">
@@ -477,7 +477,7 @@ export default function SymbolPage() {
             <li key={n.id} className="border-t border-line">
               <Link
                 to={`/news/${n.id}`}
-                className="block min-h-[56px] py-3 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10"
+                className="block min-h-[56px] py-3 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/10"
               >
                 <p className="line-clamp-2 text-[14px] leading-snug">{n.title[lang]}</p>
                 <p className="num mt-1.5 text-[12px] text-muted">

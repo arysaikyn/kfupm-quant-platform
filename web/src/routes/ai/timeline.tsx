@@ -35,7 +35,7 @@ export function StepTimeline({ shown, total }: { shown: number; total: number })
             <span
               aria-hidden
               className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-200 ${
-                done ? 'bg-accent' : 'bg-muted'
+                done ? 'bg-fg' : 'bg-muted'
               }`}
             />
             <span

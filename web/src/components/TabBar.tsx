@@ -72,7 +72,7 @@ function ItemSurface({
 }) {
   // Five items cover every screen, so the bar carries its own state set.
   const className =
-    'flex h-full w-full flex-col items-center justify-center gap-1 rounded-[14px] transition-[color,opacity] duration-150 hover:text-fg active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent'
+    'flex h-full w-full flex-col items-center justify-center gap-1 rounded-[14px] transition-[color,opacity] duration-150 hover:text-fg active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg'
 
   if (active) {
     return (

@@ -62,7 +62,7 @@ export default function NewsDetail() {
                 <li key={sym} className="flex items-center gap-2">
                   <Link
                     to={`/m/${sym}`}
-                    className="flex min-h-14 min-w-0 flex-1 flex-col justify-center py-2.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:opacity-80"
+                    className="flex min-h-14 min-w-0 flex-1 flex-col justify-center py-2.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:opacity-80"
                   >
                     <span className="flex min-w-0 items-baseline gap-2">
                       <span className="num shrink-0 text-[13px] font-medium text-fg">{sym}</span>
@@ -87,7 +87,7 @@ export default function NewsDetail() {
                     onClick={() => toggleWatch(sym)}
                     aria-pressed={watched}
                     aria-label={`${watched ? s('watchRemove') : s('watchAdd')} · ${sym}`}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
                     style={{ color: watched ? 'var(--color-accent)' : 'var(--color-muted)' }}
                   >
                     <svg
@@ -112,7 +112,7 @@ export default function NewsDetail() {
         <button
           type="button"
           onClick={() => navigate('/ai')}
-          className="mt-8 flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-medium text-white transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
+          className="mt-8 flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-medium text-bg transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
         >
           {s('askAi')}
         </button>

@@ -95,7 +95,7 @@ function BackLink({ label }: { label: string }) {
     <Link
       to="/strategy"
       aria-label={label}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
     >
       <BackIcon />
     </Link>
@@ -163,7 +163,7 @@ export default function ReportPage() {
         <div className="flex justify-center pb-8">
           <Link
             to="/strategy"
-            className="flex min-h-11 items-center justify-center rounded-full border border-line px-5 text-[13px] font-medium transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="flex min-h-11 items-center justify-center rounded-full border border-line px-5 text-[13px] font-medium transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {s('notFoundAction')}
           </Link>
@@ -282,8 +282,8 @@ export default function ReportPage() {
               href={`#${sectionId}`}
               onClick={() => setActive(sectionId)}
               aria-current={on ? 'location' : undefined}
-              className={`flex h-11 min-h-11 shrink-0 items-center rounded-full border px-3 text-[12px] leading-none whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
-                on ? 'border-accent font-medium text-fg' : 'border-line text-muted'
+              className={`flex h-11 min-h-11 shrink-0 items-center rounded-full border px-3 text-[12px] leading-none whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
+                on ? 'border-fg font-medium text-fg' : 'border-line text-muted'
               }`}
             >
               {s(NAV_KEYS[sectionId])}
@@ -304,9 +304,9 @@ export default function ReportPage() {
                       href={`#${sectionId}`}
                       onClick={() => setActive(sectionId)}
                       aria-current={on ? 'location' : undefined}
-                      className={`flex min-h-11 items-center gap-2.5 border-s-2 ps-3 text-[12px] leading-snug transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                      className={`flex min-h-11 items-center gap-2.5 border-s-2 ps-3 text-[12px] leading-snug transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                         on
-                          ? 'border-accent font-medium text-fg'
+                          ? 'border-fg font-medium text-fg'
                           : 'border-transparent text-muted hover:text-fg'
                       }`}
                     >
@@ -394,7 +394,7 @@ export default function ReportPage() {
               <div className="mt-2 divide-y divide-line">
                 <Link
                   to={`/strategy/${st.id}`}
-                  className="-mx-2 flex min-h-14 items-center gap-3 rounded-[10px] px-2 py-4 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="-mx-2 flex min-h-14 items-center gap-3 rounded-[10px] px-2 py-4 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-[14px] font-medium">{s('nextStrategyTitle')}</p>
@@ -407,7 +407,7 @@ export default function ReportPage() {
 
                 <Link
                   to="/ai"
-                  className="-mx-2 flex min-h-14 items-center gap-3 rounded-[10px] px-2 py-4 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="-mx-2 flex min-h-14 items-center gap-3 rounded-[10px] px-2 py-4 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-[14px] font-medium">{s('nextAiTitle')}</p>

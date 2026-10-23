@@ -230,7 +230,7 @@ export default function AiPage() {
       action={
         <Link
           to="/runs"
-          className="flex min-h-[44px] items-center rounded-full border border-line px-3.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="flex min-h-[44px] items-center rounded-full border border-line px-3.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {s('runs')}
         </Link>
@@ -266,7 +266,7 @@ export default function AiPage() {
                   type="button"
                   onClick={() => setChips((prev) => prev.filter((x) => !sameChip(x, c)))}
                   aria-label={`${s('remove')} ${label}`}
-                  className="ms-0.5 flex h-11 w-11 items-center justify-center rounded-full text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                  className="ms-0.5 flex h-11 w-11 items-center justify-center rounded-full text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <path d="M6 6l12 12M18 6L6 18" />
@@ -281,7 +281,7 @@ export default function AiPage() {
               type="button"
               onClick={() => setSheet((v) => !v)}
               aria-expanded={sheet}
-              className="inline-flex h-11 items-center gap-1 rounded-full px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="inline-flex h-11 items-center gap-1 rounded-full px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M12 5v14M5 12h14" />
@@ -302,7 +302,7 @@ export default function AiPage() {
                     type="button"
                     disabled={busy}
                     onClick={() => send(s(preset.prompt))}
-                    className="inline-flex h-11 items-center rounded-full bg-surface px-3 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                    className="inline-flex h-11 items-center rounded-full bg-surface px-3 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-60"
                   >
                     {s(preset.label)}
                   </button>
@@ -316,7 +316,7 @@ export default function AiPage() {
                       type="button"
                       disabled={busy}
                       onClick={() => send(s(c.t))}
-                      className="flex h-full min-h-[72px] w-full items-start gap-2 py-3 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10 disabled:opacity-60 odd:pe-3 even:ps-3"
+                      className="flex h-full min-h-[72px] w-full items-start gap-2 py-3 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/10 disabled:opacity-60 odd:pe-3 even:ps-3"
                     >
                       <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center text-muted">
                         {CAP_ICONS[i]}
@@ -356,7 +356,7 @@ export default function AiPage() {
 
       {/* composer */}
       <div
-        className="fixed z-40 glass has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-accent"
+        className="fixed z-40 glass has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-fg"
         style={{
           insetInline: 12,
           maxWidth: 496,
@@ -383,7 +383,7 @@ export default function AiPage() {
             type="submit"
             disabled={input.trim().length === 0 || busy}
             aria-label={s('send')}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-40"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-40"
             style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -423,7 +423,7 @@ export default function AiPage() {
                 type="button"
                 onClick={() => setSheet(false)}
                 aria-label={s('close')}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M6 6l12 12M18 6L6 18" />
@@ -439,7 +439,7 @@ export default function AiPage() {
                   <button
                     type="button"
                     onClick={() => addChip(o.ref)}
-                    className="flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-start focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    className="flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-start focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                   >
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[13px]">{o.label}</span>

@@ -239,7 +239,7 @@ export default function StrategyDetail() {
       type="button"
       onClick={() => navigate('/strategy')}
       aria-label={s('back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
     >
       <svg
         width="18"
@@ -566,7 +566,7 @@ export default function StrategyDetail() {
         {/* The next screen, not a panel: one hairline row. */}
         <Link
           to={`/report/${st.id}`}
-          className="flex min-h-14 items-center justify-between gap-3 border-t border-line text-[14px] transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="flex min-h-14 items-center justify-between gap-3 border-t border-line text-[14px] transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           <span>{s('fullReport')}</span>
           <svg
@@ -591,7 +591,7 @@ export default function StrategyDetail() {
             onClick={rerun}
             disabled={run.running}
             aria-busy={run.running}
-            className="text-bg min-h-12 w-full rounded-xl px-4 text-[15px] font-medium transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+            className="text-bg min-h-12 w-full rounded-xl px-4 text-[15px] font-medium transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-60"
             style={{ background: 'var(--color-accent-fill)' }}
           >
             {run.running ? s('runningNote') : s('rerun')}

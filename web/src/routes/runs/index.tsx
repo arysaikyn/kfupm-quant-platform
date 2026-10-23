@@ -252,7 +252,7 @@ function RunCard({
         onClick={onToggle}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        className="block min-h-11 w-full px-3 py-3.5 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
+        className="block min-h-11 w-full px-3 py-3.5 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
       >
         <span className="flex items-center justify-between gap-2">
           <span className="num text-[11px] text-muted">
@@ -392,7 +392,7 @@ export default function RunsPage() {
 
         <Link
           to="/ai"
-          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-solid px-5 text-[15px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-solid px-5 text-[15px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
         >
           <svg
             width="16"

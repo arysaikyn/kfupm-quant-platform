@@ -219,7 +219,7 @@ export default function SectorPage() {
               <li key={quote.symbol} className="relative border-t border-line">
                 <Link
                   to={`/m/${quote.symbol}`}
-                  className="flex min-h-[56px] w-full items-center gap-1.5 py-2 pe-12 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10"
+                  className="flex min-h-[56px] w-full items-center gap-1.5 py-2 pe-12 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/10"
                 >
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[14px] font-medium">
@@ -247,7 +247,7 @@ export default function SectorPage() {
                   aria-pressed={watched}
                   aria-label={`${s(watched ? 'watchRemove' : 'watchAdd')} ${quote.name[lang]}`}
                   onClick={() => toggleWatch(quote.symbol)}
-                  className={`absolute top-1/2 end-0 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                  className={`absolute top-1/2 end-0 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                     watched ? 'text-fg' : 'text-muted'
                   }`}
                 >

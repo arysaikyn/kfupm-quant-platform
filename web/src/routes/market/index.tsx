@@ -213,6 +213,20 @@ export default function MarketPage() {
     return groups
   }, [frame, lang])
 
+  // One row per sector that actually has members; the strip and the map share
+  // the same numbers, so the two can never disagree.
+  const strip = useMemo(
+    () =>
+      sectors
+        .filter((sec) => membersOf(sec.id).length > 0)
+        .map((sec) => ({
+          id: sec.id,
+          label: sec.name[lang],
+          change: membersChange(sec.id, '1d'),
+          weight: sec.weight,
+        })),
+    [lang],
+  )
   const pickedQuote = picked ? (quotes.find((q) => q.symbol === picked) ?? null) : null
 
   // Symbols arrive newest first from the store; the mock quote is the row.
@@ -332,6 +346,38 @@ export default function MarketPage() {
           })}
         </div>
       </div>
+
+      {/* Sector strip: the whole market's shape in one line, sized by weight and
+          tinted by move. It is the screen's signature and it is real data. */}
+      {strip.length > 0 && (
+        <div className="-mx-4 mt-5 flex h-12 gap-px overflow-hidden" role="list" aria-label={s('heatTitle')}>
+          {strip.map((row) => {
+            const up = row.change >= 0
+            const tone = up ? 'var(--color-up)' : 'var(--color-down)'
+            return (
+              <button
+                key={row.id}
+                type="button"
+                role="listitem"
+                onClick={() => setSector(row.id)}
+                aria-label={`${row.label} ${fmtPct(row.change, lang)}`}
+                className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-2 text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                style={{
+                  flexGrow: row.weight,
+                  background: `color-mix(in srgb, ${tone} ${8 + Math.min(Math.abs(row.change) / 0.02, 1) * 12}%, var(--color-surface))`,
+                }}
+              >
+                <span className="truncate text-[9.5px] leading-none" style={{ color: 'var(--color-fg)' }}>
+                  {row.label}
+                </span>
+                <span className="num truncate text-[9.5px] leading-none" style={{ color: 'var(--color-fg)', opacity: 0.75 }}>
+                  {fmtPct(row.change, lang, 1)}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       {/* Views read as text tabs with an underline, not a pill bar inside a
           pill bar; the eye should land on the number, then the list. */}

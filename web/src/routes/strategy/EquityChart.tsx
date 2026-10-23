@@ -104,7 +104,8 @@ export function EquityChart({
             d={d}
             fill="none"
             stroke={series[i].tone}
-            strokeWidth={i === 0 ? 2 : 1.4}
+            strokeOpacity={i === 0 ? 0.9 : 0.55}
+            strokeWidth={i === 0 ? 1.5 : 1.1}
             strokeLinecap="round"
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"

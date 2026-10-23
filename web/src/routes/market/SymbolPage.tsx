@@ -60,7 +60,7 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
       <path
         d={line}
         style={{ fill: 'none', stroke }}
-        strokeWidth="2"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -301,10 +301,14 @@ export default function SymbolPage() {
                 className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
               >
                 <span
-                  className="rounded-lg px-3 py-1.5 text-[12px] font-medium"
+                  className="px-2 py-1.5 text-[12px]"
                   style={
                     on
-                      ? { background: 'var(--color-accent-fill)', color: '#fff' }
+                      ? {
+                          color: 'var(--color-fg)',
+                          fontWeight: 600,
+                          borderBottom: '2px solid var(--color-fg)',
+                        }
                       : { color: 'var(--color-muted)' }
                   }
                 >

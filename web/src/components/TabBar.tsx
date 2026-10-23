@@ -169,7 +169,9 @@ export function TabBar() {
           <div
             className="mx-[7px] h-full rounded-[14px]"
             style={{
-              background: 'color-mix(in srgb, var(--color-accent) 15%, transparent)',
+              // Selection is a neutral wash: the active label and icon already carry it,
+              // and a tinted plate was the loudest colour mass in light mode.
+              background: 'color-mix(in srgb, var(--color-fg) 8%, transparent)',
             }}
           />
         </div>
@@ -193,10 +195,17 @@ export function TabBar() {
                         height: 44,
                         top: -25,
                         transform: `translateY(${active ? 0 : 3}px) scale(${active ? 1 : 0.909})`,
-                        background: 'var(--color-accent-fill)',
-                        color: '#fff',
+                        // The lift is the affordance, not a colour block: a
+                        // filled violet disc was the loudest thing on every
+                        // screen, competing with the data behind it.
+                        background: active ? 'var(--color-fg)' : 'var(--color-surface)',
+                        color: active ? 'var(--color-bg)' : 'var(--color-muted)',
                         border: '2px solid var(--color-bg)',
-                        transition: 'transform 220ms cubic-bezier(.32,1.12,.55,1)',
+                        boxShadow: active
+                          ? '0 0 0 1px color-mix(in srgb, var(--color-fg) 30%, transparent)'
+                          : '0 0 0 1px var(--color-line)',
+                        transition:
+                          'transform 220ms cubic-bezier(.32,1.12,.55,1), background-color 180ms ease, color 180ms ease',
                       }}
                     >
                       {it.icon}

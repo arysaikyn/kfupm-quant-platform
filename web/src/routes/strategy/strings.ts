@@ -8,6 +8,7 @@ export type ListStrings = {
   sortRecent: string
   sortReturn: string
   rulesUnit: string
+  vsBench: string
   updated: string
   lastReturn: string
   oos: string
@@ -29,6 +30,7 @@ export const listStrings = {
     sortRecent: '最近更新',
     sortReturn: '收益最高',
     rulesUnit: '条规则',
+  vsBench: '基准 {pct}',
     updated: '更新于',
     lastReturn: '近一年',
     oos: 'OOS',
@@ -48,6 +50,7 @@ export const listStrings = {
     sortRecent: 'Recently updated',
     sortReturn: 'Best return',
     rulesUnit: 'rules',
+  vsBench: '{pct} vs benchmark',
     updated: 'Updated',
     lastReturn: 'Last year',
     oos: 'OOS',
@@ -67,6 +70,7 @@ export const listStrings = {
     sortRecent: 'الأحدث تحديثًا',
     sortReturn: 'الأعلى عائدًا',
     rulesUnit: 'قواعد',
+  vsBench: '{pct} مقابل المؤشر',
     updated: 'حُدِّثت',
     lastReturn: 'آخر سنة',
     oos: 'OOS',

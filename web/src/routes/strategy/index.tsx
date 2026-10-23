@@ -5,7 +5,7 @@ import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
-import { strategies } from '../../data/mock'
+import { bench, strategies } from '../../data/mock'
 import { fmtDate } from './format'
 import { listStrings, TAG_KEY } from './strings'
 
@@ -22,44 +22,10 @@ const FILTER_LABEL: Record<Lang, string> = {
   ar: 'تصفية حسب الوسم',
 }
 
-const SW = 120
-const SH = 56
-const SP = 4
+const benchTotal = (bench[bench.length - 1] ?? 1) - 1
 
-function Sparkline({ series, up }: { series: number[]; up: boolean }) {
-  const lo = Math.min(...series)
-  const hi = Math.max(...series)
-  const span = hi - lo || 1
-  const pts = series
-    .map((v, i) => {
-      const x = SP + (i / Math.max(series.length - 1, 1)) * (SW - SP * 2)
-      const y = SP + (1 - (v - lo) / span) * (SH - SP * 2)
-      return `${x.toFixed(1)},${y.toFixed(1)}`
-    })
-    .join(' ')
-  const tone = up ? 'var(--color-up)' : 'var(--color-down)'
-
-  return (
-    <svg
-      viewBox={`0 0 ${SW} ${SH}`}
-      preserveAspectRatio="none"
-      className="h-10 w-full"
-      style={{ direction: 'ltr' }}
-      aria-hidden="true"
-    >
-      <polygon points={`${SP},${SH} ${pts} ${SW - SP},${SH}`} fill={tone} fillOpacity={0.06} />
-      <polyline
-        points={pts}
-        fill="none"
-        stroke={tone}
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
-  )
-}
+const fill = (tpl: string, vars: Record<string, string>) =>
+  Object.entries(vars).reduce((out, [k, v]) => out.replaceAll(`{${k}}`, v), tpl)
 
 export default function StrategyPage() {
   const { lang } = useI18n()
@@ -164,85 +130,65 @@ export default function StrategyPage() {
             }
           />
         ) : (
-          <ul className="space-y-3">
+          // A returns list, not a card per curve: numbers compare down a column.
+          <ul className="border-t border-line">
             {rows.map((st) => {
               const ret = st.lastReturn
-              const up = ret >= 0
               const tone = ret > 0 ? 'text-up' : ret < 0 ? 'text-down' : 'text-muted'
+              const vsBench = ret - benchTotal
               return (
-                <li key={st.id}>
+                <li key={st.id} className="border-b border-line">
                   <LongPressLink
                     to={`/strategy/${st.id}`}
                     prompt={`${st.name[lang]} — ${st.description[lang]}`}
-                    className="panel block p-4 transition-colors hover:bg-fg/[0.04] active:bg-fg/[0.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 py-4 transition-colors hover:bg-fg/[0.03] active:bg-fg/[0.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <h2 className="truncate text-[16px] leading-snug font-semibold">
-                          {st.name[lang]}
-                        </h2>
-                        {/* Composer's card reads intent → rule → metrics. The
-                            description already is the rule in one sentence, so
-                            it carries the accent and is not repeated below. */}
-                        <p
-                          className="mt-1 line-clamp-2 text-[12px] leading-snug"
-                          style={{ color: 'var(--color-muted)' }}
-                        >
-                          {st.description[lang]}
-                        </p>
-                      </div>
-                      <div className="shrink-0 text-end">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span
-                            dir="ltr"
-                            className={`num t-display text-[28px] leading-none ${tone}`}
-                          >
-                            {fmtPct(ret, lang, 1)}
-                          </span>
-                          <abbr
-                            title={s('oosHint')}
-                            className="num no-underline rounded-md px-1.5 py-1 text-[10px] leading-none font-medium"
-                            style={{
-                              color: 'var(--color-accent)',
-                              background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)',
-                            }}
-                          >
-                            {s('oos')}
-                          </abbr>
-                        </div>
-                        <div
-                          className="mt-1.5 text-[11px] leading-none"
-                          style={{ color: 'var(--color-muted)' }}
-                        >
-                          {s('lastReturn')}
-                        </div>
+                    <div className="min-w-0">
+                      <h2 className="truncate text-[16px] leading-snug font-semibold">
+                        {st.name[lang]}
+                      </h2>
+                      <p
+                        className="mt-1 line-clamp-1 text-[12px] leading-snug"
+                        style={{ color: 'var(--color-muted)' }}
+                      >
+                        {st.description[lang]}
+                      </p>
+                      <div
+                        className="mt-2 flex flex-wrap items-center gap-x-2 text-[11px] leading-none"
+                        style={{ color: 'var(--color-muted)' }}
+                      >
+                        {st.tags.map((t) => {
+                          const key = TAG_KEY[t]
+                          return (
+                            <span key={t} className="flex items-center gap-2">
+                              {key ? s(key) : t}
+                              <span aria-hidden="true">·</span>
+                            </span>
+                          )
+                        })}
+                        <span>
+                          <span className="num">{fmtNum(st.rules.length, lang, 0)}</span>{' '}
+                          {s('rulesUnit')}
+                        </span>
+                        <span aria-hidden="true">·</span>
+                        <span className="truncate">{fmtDate(st.updated, lang)}</span>
                       </div>
                     </div>
 
-                    <div className="mt-3">
-                      <Sparkline series={st.curve} up={up} />
-                    </div>
-
-                    {/* One meta line: what it screens, how many rules, when it ran. */}
-                    <div
-                      className="mt-3 flex flex-wrap items-center gap-x-2 text-[11px] leading-none"
-                      style={{ color: 'var(--color-muted)' }}
-                    >
-                      {st.tags.map((t) => {
-                        const key = TAG_KEY[t]
-                        return (
-                          <span key={t} className="flex items-center gap-2">
-                            {key ? s(key) : t}
-                            <span aria-hidden="true">·</span>
-                          </span>
-                        )
-                      })}
-                      <span>
-                        <span className="num">{fmtNum(st.rules.length, lang, 0)}</span>{' '}
-                        {s('rulesUnit')}
+                    <div className="shrink-0 text-end">
+                      <span
+                        dir="ltr"
+                        className={`num t-display block text-[22px] leading-none ${tone}`}
+                      >
+                        {fmtPct(ret, lang, 1)}
                       </span>
-                      <span aria-hidden="true">·</span>
-                      <span className="truncate">{fmtDate(st.updated, lang)}</span>
+                      <span
+                        dir="ltr"
+                        className="num mt-1.5 block text-[11px] leading-none"
+                        style={{ color: 'var(--color-muted)' }}
+                      >
+                        {fill(s('vsBench'), { pct: fmtPct(vsBench, lang, 1) })}
+                      </span>
                     </div>
                   </LongPressLink>
                 </li>

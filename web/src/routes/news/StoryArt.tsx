@@ -81,19 +81,19 @@ export function StoryArt({ item }: Props) {
               height={h}
               rx={1.6}
               fill={tone}
-              fillOpacity={0.34 + (i / 7) * 0.14}
+              fillOpacity={0.22 + (i / 7) * 0.10}
             />
           ))
         ) : (
           <>
             {/* Flat fill: a gradient glow on a 96px thumbnail reads as a
                 sticker, and the card already carries the number. */}
-            <path d={area} fill={tone} fillOpacity="0.10" />
+            <path d={area} fill={tone} fillOpacity="0.06" />
             <path
               d={line}
               stroke={tone}
-              strokeOpacity="0.5"
-              strokeWidth="1.8"
+              strokeOpacity="0.55"
+              strokeWidth="1.4"
               strokeLinecap="round"
               strokeLinejoin="round"
             />

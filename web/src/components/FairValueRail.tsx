@@ -45,7 +45,7 @@ export function FairValueRail({ price, fairValue, labels, format }: Props) {
         </p>
       </div>
 
-      <div className="relative mt-3 h-2" aria-hidden="true">
+      <div className="relative mt-3 h-1" aria-hidden="true">
         <div
           className="absolute inset-y-0 start-0 end-1/2 rounded-s-full"
           style={{ background: 'color-mix(in srgb, var(--color-up) 14%, transparent)' }}
@@ -62,8 +62,8 @@ export function FairValueRail({ price, fairValue, labels, format }: Props) {
           className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
             insetInlineStart: `${pricePos * 100}%`,
-            background: 'var(--color-accent-fill)',
-            boxShadow: '0 0 0 3px color-mix(in srgb, var(--color-accent) 22%, transparent)',
+            background: 'var(--color-fg)',
+            boxShadow: '0 0 0 3px color-mix(in srgb, var(--color-fg) 16%, transparent)',
           }}
         />
       </div>

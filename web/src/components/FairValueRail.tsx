@@ -62,7 +62,7 @@ export function FairValueRail({ price, fairValue, labels, format }: Props) {
           className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
             insetInlineStart: `${pricePos * 100}%`,
-            background: 'var(--color-accent)',
+            background: 'var(--color-accent-fill)',
             boxShadow: '0 0 0 3px color-mix(in srgb, var(--color-accent) 22%, transparent)',
           }}
         />

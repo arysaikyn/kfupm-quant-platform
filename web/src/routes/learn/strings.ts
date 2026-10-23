@@ -157,7 +157,7 @@ export const terms: Record<Lang, Term[]> = {
     },
     {
       term: 'Rule-based screening',
-      plain: 'A list of conditions you write down — price below one number, dividend above another — that the app then runs over the market.',
+      plain: 'A list of conditions you write down: price below one number, dividend above another. The app then runs them over the market.',
       why: 'Written rules can be rerun and checked, and each pick comes with a reason you can read.',
     },
     {

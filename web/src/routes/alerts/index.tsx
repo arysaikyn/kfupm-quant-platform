@@ -264,7 +264,7 @@ export default function AlertsPage() {
 
           <button
             type="submit"
-            className="min-h-11 w-full rounded-full bg-accent text-[13px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="min-h-11 w-full rounded-full bg-solid text-[13px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {s('create')}
           </button>

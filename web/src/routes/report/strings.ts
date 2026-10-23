@@ -137,7 +137,7 @@ export const strings = {
       'A total return of {pct} covers one stretch only; it is not a forecast for the next.',
     wrongLabel: 'If this is wrong',
     wrongWithEquity:
-      'If the conclusion is wrong, the likely error is treating this backtest as the future. Cost takes a slice of the return first, then a style shift narrows the lead over the benchmark; the rules still pick the same list, so the mistake raises no alarm at the screening step — it only shows up in returns and drawdown.',
+      'If the conclusion is wrong, the likely error is treating this backtest as the future. Cost takes a slice of the return first, then a style shift narrows the lead over the benchmark; the rules still pick the same list, so the mistake raises no alarm at the screening step, it only shows up in returns and drawdown.',
     nextLabel: 'Next',
     nextStrategyTitle: 'Back to the strategy',
     nextStrategyBody: 'See the full rules, thresholds and run history.',

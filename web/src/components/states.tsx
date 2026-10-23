@@ -40,7 +40,7 @@ export function ErrorState({ onRetry, message }: { onRetry?: () => void; message
   return (
     <div className="flex flex-col items-center gap-3 py-16 text-center">
       <p className="text-[13px]" style={{ color: 'var(--color-muted)' }}>
-        {message ?? '—'}
+        {message ?? ''}
       </p>
       {onRetry && (
         <button

@@ -478,7 +478,7 @@ export default function WatchlistsPage() {
             <button
               type="submit"
               disabled={!newName.trim()}
-              className="min-h-11 shrink-0 rounded-full bg-accent px-4 text-[13px] font-medium text-white disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-white disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {s('create')}
             </button>
@@ -511,7 +511,7 @@ export default function WatchlistsPage() {
               <button
                 type="button"
                 onClick={() => setNewOpen(true)}
-                className="min-h-11 rounded-full bg-accent px-4 text-[13px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="min-h-11 rounded-full bg-solid px-4 text-[13px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 {s('newGroup')}
               </button>
@@ -594,7 +594,7 @@ export default function WatchlistsPage() {
             <button
               type="submit"
               disabled={!canAdd}
-              className="min-h-11 shrink-0 rounded-full bg-accent px-4 text-[13px] font-medium text-white disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-white disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {s('add')}
             </button>

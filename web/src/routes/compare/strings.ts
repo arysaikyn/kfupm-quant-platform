@@ -24,7 +24,7 @@ const zh = {
   rowVol: '波动率',
   rowVolHint: '20 日标准差',
   rowScore: '综合分',
-  rowScoreHint: '0–100',
+  rowScoreHint: '0-100',
 
   chartTitle: '相对走势',
   chartTag: '起点 = 100',
@@ -61,7 +61,7 @@ const en: typeof zh = {
   rowVol: 'Volatility',
   rowVolHint: '20-day std',
   rowScore: 'Score',
-  rowScoreHint: '0–100',
+  rowScoreHint: '0-100',
 
   chartTitle: 'Relative path',
   chartTag: 'first point = 100',

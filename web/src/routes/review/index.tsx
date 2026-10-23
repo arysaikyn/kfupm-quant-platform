@@ -49,7 +49,7 @@ const toneOf = (change: number) =>
  * lays the numbers out right-to-left and "3–2" paints as "2–3".
  */
 function scorePair(first: number, second: number, lang: Lang) {
-  return `\u2066${fmtNum(first, lang, 0)}–${fmtNum(second, lang, 0)}\u2069`
+  return `\u2066${fmtNum(first, lang, 0)}-${fmtNum(second, lang, 0)}\u2069`
 }
 
 /** Replace every `{key}` once; templates hold each placeholder a single time. */
@@ -578,7 +578,7 @@ export default function ReviewPage() {
         >
           <span
             className="mt-[7px] h-3 w-[2px] shrink-0 rounded-full"
-            style={{ background: 'var(--color-accent)' }}
+            style={{ background: 'var(--color-accent-fill)' }}
             aria-hidden="true"
           />
           <p className="text-[12px] leading-[1.55]" style={{ color: 'var(--color-muted)' }}>

@@ -76,7 +76,7 @@ export const strings: Dict<Strings> = {
 
     valueTitle: 'Ask in one sentence. Get a tested strategy.',
     valueBody:
-      'Say what you want — “high dividend, low debt”. It becomes rule cards you can edit, then test against years of history.',
+      'Say what you want, “high dividend, low debt”. It becomes rule cards you can edit, then test against years of history.',
     valueQuery: 'High dividend, low debt, steady cash flow',
     valueParsed: '3 rules, editable',
     valueRule1: 'Dividend yield',
@@ -118,7 +118,7 @@ export const strings: Dict<Strings> = {
     shCoreValue: 'Retail',
     shSub: 'Subsidiary income',
     shSubValue: 'Conventional bank',
-    shariaFoot: '1 rule failed — the company is out of the list.',
+    shariaFoot: '1 rule failed, the company is out of the list.',
 
     marketTitle: 'Which market do you follow?',
     marketBody:
@@ -133,7 +133,7 @@ export const strings: Dict<Strings> = {
 
     doneTitle: "You're set.",
     doneBody:
-      'Markets, news and strategies are ready. Everything stays on this device — no account, no email.',
+      'Markets, news and strategies are ready. Everything stays on this device, no account, no email.',
     doneFollowing: 'Following',
     doneOpen: 'Open markets',
     doneBrowse: 'Take a look around',
@@ -203,7 +203,7 @@ export const strings: Dict<Strings> = {
 
     doneTitle: '设置好了。',
     doneBody:
-      '行情、新闻和策略都已就位。所有内容只留在这台设备上——不用账号，不用邮箱。',
+      '行情、新闻和策略都已就位。所有内容只留在这台设备上, 不用账号，不用邮箱。',
     doneFollowing: '关注市场',
     doneOpen: '进入行情',
     doneBrowse: '随便看看',
@@ -217,7 +217,7 @@ export const strings: Dict<Strings> = {
 
     valueTitle: 'اسأل بجملة واحدة، واحصل على استراتيجية مُختبَرة.',
     valueBody:
-      'قل ما تريده — «توزيعات مرتفعة ودين منخفض». تتحوّل الجملة إلى بطاقات قواعد قابلة للتعديل، ثم تُختبر على سنوات من البيانات.',
+      'قل ما تريده, «توزيعات مرتفعة ودين منخفض». تتحوّل الجملة إلى بطاقات قواعد قابلة للتعديل، ثم تُختبر على سنوات من البيانات.',
     valueQuery: 'توزيعات مرتفعة، دين منخفض، تدفق نقدي مستقر',
     valueParsed: '3 قواعد قابلة للتعديل',
     valueRule1: 'عائد التوزيعات',
@@ -259,7 +259,7 @@ export const strings: Dict<Strings> = {
     shCoreValue: 'تجزئة',
     shSub: 'دخل شركة تابعة',
     shSubValue: 'بنك تقليدي',
-    shariaFoot: 'قاعدة واحدة لم تُجتز — استُبعدت الشركة من القائمة.',
+    shariaFoot: 'قاعدة واحدة لم تُجتز, استُبعدت الشركة من القائمة.',
 
     marketTitle: 'أي سوق تتابع؟',
     marketBody:
@@ -274,7 +274,7 @@ export const strings: Dict<Strings> = {
 
     doneTitle: 'كل شيء جاهز.',
     doneBody:
-      'الأسواق والأخبار والخطط جاهزة. كل شيء يبقى على هذا الجهاز — بلا حساب وبلا بريد.',
+      'الأسواق والأخبار والخطط جاهزة. كل شيء يبقى على هذا الجهاز, بلا حساب وبلا بريد.',
     doneFollowing: 'السوق المتابَع',
     doneOpen: 'افتح الأسواق',
     doneBrowse: 'ألقِ نظرة',

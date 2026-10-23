@@ -486,7 +486,7 @@ export default function OnboardingPage() {
             onClick={next}
             disabled={step === 4 && !market}
             aria-describedby={step === 4 && !market ? 'onb-market-hint' : undefined}
-            className={`flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-5 text-[15px] font-semibold text-white transition-opacity active:opacity-80 disabled:opacity-40 ${RING}`}
+            className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-semibold text-white transition-opacity active:opacity-80 disabled:opacity-40 ${RING}`}
           >
             {s('continue')}
           </button>
@@ -495,7 +495,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={finish}
-              className={`flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-5 text-[15px] font-semibold text-white transition-opacity active:opacity-80 ${RING}`}
+              className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-semibold text-white transition-opacity active:opacity-80 ${RING}`}
             >
               {s('doneOpen')}
             </button>

@@ -186,7 +186,7 @@ export default function SettingsPage() {
                 className="min-h-[44px] flex-1 rounded-full px-3 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                 style={
                   active
-                    ? { background: 'var(--color-accent)', color: '#fff' }
+                    ? { background: 'var(--color-accent-fill)', color: '#fff' }
                     : { color: 'var(--color-muted)' }
                 }
               >

@@ -119,7 +119,7 @@ export default function SymbolPage() {
           <Link
             to="/"
             className="flex min-h-11 items-center rounded-full px-4 text-[13px] font-medium"
-            style={{ background: 'var(--color-accent)', color: '#fff' }}
+            style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
           >
             {t('tab.market')}
           </Link>
@@ -318,7 +318,7 @@ export default function SymbolPage() {
                   className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
                   style={
                     on
-                      ? { background: 'var(--color-accent)', color: '#fff' }
+                      ? { background: 'var(--color-accent-fill)', color: '#fff' }
                       : { color: 'var(--color-muted)' }
                   }
                 >

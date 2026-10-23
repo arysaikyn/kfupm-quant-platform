@@ -179,7 +179,7 @@ export default function ReportPage() {
   const total = withEnd - 1
   const excess = withEnd - benchEnd
   const costDrag = (grossEnd - withEnd) * 100
-  const span = `${equityYears.first}–${equityYears.last}`
+  const span = `${equityYears.first}-${equityYears.last}`
 
   const conclusion = fill(s('conclusionWithEquity'), {
     name: st.name[lang],

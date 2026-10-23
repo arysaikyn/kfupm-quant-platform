@@ -188,7 +188,7 @@ export function TabBar() {
                         width: active ? 44 : 40,
                         height: active ? 44 : 40,
                         top: active ? -25 : -22,
-                        background: 'var(--color-accent)',
+                        background: 'var(--color-accent-fill)',
                         color: '#fff',
                         // No halo: the size change is the signal, and a glow
                         // fights the flat surface language everywhere else.

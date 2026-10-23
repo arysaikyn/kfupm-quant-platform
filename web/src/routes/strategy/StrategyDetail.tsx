@@ -574,7 +574,7 @@ export default function StrategyDetail() {
             disabled={run.running}
             aria-busy={run.running}
             className="text-bg min-h-12 w-full rounded-xl px-4 text-[15px] font-medium transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-            style={{ background: 'var(--color-accent)' }}
+            style={{ background: 'var(--color-accent-fill)' }}
           >
             {run.running ? s('runningNote') : s('rerun')}
           </button>
@@ -596,7 +596,7 @@ export default function StrategyDetail() {
                   className="h-full rounded-full transition-all duration-300"
                   style={{
                     width: `${((run.step + 1) / 4) * 100}%`,
-                    background: 'var(--color-accent)',
+                    background: 'var(--color-accent-fill)',
                   }}
                 />
               </div>

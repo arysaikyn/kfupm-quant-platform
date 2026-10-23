@@ -47,7 +47,7 @@ export const strings = {
     runLabel: '第 {n} 次',
     expand: '展开引用',
     collapse: '收起引用',
-    sampleNote: '以下为示例记录 —— 你的提问会出现在这里。',
+    sampleNote: '以下为示例记录,  你的提问会出现在这里。',
     seed1q: '为什么沙特阿美 2222 今天跌了 2.1%？',
     seed1a:
       '这轮下跌跟随布伦特原油回落 1.4%，此前公布的美国库存高于预期。阿美跟的是油价而不是 TASI 指数，两者的分歧解释了今天大部分跌幅。',
@@ -80,10 +80,10 @@ export const strings = {
     runLabel: 'Run {n}',
     expand: 'Show sources',
     collapse: 'Hide sources',
-    sampleNote: 'Example runs — your questions land here.',
+    sampleNote: 'Example runs, your questions land here.',
     seed1q: 'Why did Saudi Aramco (2222) fall 2.1% today?',
     seed1a:
-      'The drop tracks Brent crude down 1.4% after US inventories came in above consensus. Aramco follows the barrel, not the TASI index — the gap between them explains most of the move.',
+      'The drop tracks Brent crude down 1.4% after US inventories came in above consensus. Aramco follows the barrel, not the TASI index, the gap between them explains most of the move.',
     seed2q: 'Which three banks pay the best dividends right now?',
     seed2a:
       'Al Rajhi leads at a 3.8% yield with five years of dividend growth, ahead of SNB and Riyad Bank. The ranking uses the current yield, not the last payment date.',
@@ -113,7 +113,7 @@ export const strings = {
     runLabel: 'المحاولة {n}',
     expand: 'إظهار المصادر',
     collapse: 'إخفاء المصادر',
-    sampleNote: 'أمثلة توضيحية — ستظهر أسئلتك هنا.',
+    sampleNote: 'أمثلة توضيحية, ستظهر أسئلتك هنا.',
     seed1q: 'لماذا انخفض سهم أرامكو 2222 بنسبة 2.1% اليوم؟',
     seed1a:
       'التحرّك يتبع تراجع خام برنت 1.4% بعد بيانات مخزونات أمريكية أعلى من المتوقع. أرامكو تتحرّك مع الخام لا مع مؤشر تاسي، والفارق بينهما يفسّر معظم الانخفاض.',

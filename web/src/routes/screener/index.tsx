@@ -642,7 +642,7 @@ export default function ScreenerPage() {
             type="submit"
             disabled={name.trim() === ''}
             className="h-11 shrink-0 rounded-xl px-4 text-[13px] font-semibold transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-40"
-            style={{ background: 'var(--color-accent)', color: '#fff' }}
+            style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
           >
             {s('save')}
           </button>

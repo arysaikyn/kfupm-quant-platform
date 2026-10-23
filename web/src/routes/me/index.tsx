@@ -82,7 +82,7 @@ export default function MePage() {
             <button
               type="button"
               onClick={() => setSignedIn(true)}
-              className="h-12 w-full rounded-full bg-accent text-[15px] font-semibold text-white active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+              className="h-12 w-full rounded-full bg-solid text-[15px] font-semibold text-white active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
             >
               {s('signIn')}
             </button>

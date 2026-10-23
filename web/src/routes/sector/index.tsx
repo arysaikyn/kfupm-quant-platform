@@ -170,7 +170,7 @@ export default function SectorPage() {
   const tone = change === null ? 'var(--color-muted)' : toneOf(change)
   const rankText =
     change === null
-      ? '—'
+      ? s('noMembers')
       : s('rankValue')
           .replaceAll('{n}', String(rank))
           .replaceAll('{total}', String(measured.length))
@@ -206,7 +206,7 @@ export default function SectorPage() {
             className="num t-display mt-1 text-[36px] leading-none"
             style={{ color: tone }}
           >
-            {change === null ? '—' : fmtPct(change, lang)}
+            {change === null ? s('noMembers') : fmtPct(change, lang)}
           </p>
           <p className="mt-3 text-[13px] leading-snug">
             {change === null ? s('constituentsEmpty') : s(verdictKey(change))}
@@ -344,7 +344,7 @@ export default function SectorPage() {
                     opacity: current ? 1 : 0.72,
                   }}
                 >
-                  {move === null ? '—' : fmtPct(move, lang)}
+                  {move === null ? s('noMembers') : fmtPct(move, lang)}
                 </span>
               </div>
             )

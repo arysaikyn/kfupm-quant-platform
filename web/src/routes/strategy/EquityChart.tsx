@@ -141,7 +141,7 @@ export function EquityChart({
         {s('axisNote')}
       </p>
       <span className="sr-only">
-        {min.toFixed(2)} – {max.toFixed(2)}
+        {min.toFixed(2)} - {max.toFixed(2)}
       </span>
     </div>
   )

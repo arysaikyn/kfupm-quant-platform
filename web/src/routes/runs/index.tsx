@@ -364,7 +364,7 @@ export default function RunsPage() {
           to="/ai"
           aria-label={s('newQuestion')}
           title={s('newQuestion')}
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-solid text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
         >
           <svg
             width="18"
@@ -417,7 +417,7 @@ export default function RunsPage() {
 
         <Link
           to="/ai"
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-5 text-[15px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-solid px-5 text-[15px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
         >
           <svg
             width="16"

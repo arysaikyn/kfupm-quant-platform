@@ -117,7 +117,7 @@ export default function NewsDetail() {
         <button
           type="button"
           onClick={() => navigate('/ai')}
-          className="mt-8 flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-5 text-[15px] font-medium text-white transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
+          className="mt-8 flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-medium text-white transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
         >
           {s('askAi')}
         </button>

@@ -31,7 +31,7 @@ export const strings = {
     kindMacro: '宏观',
     macroName: '指数半年度调整',
     watchMark: '自选',
-    range: '{start} – {end}',
+    range: '{start} - {end}',
   },
   en: {
     title: 'Calendar',
@@ -47,7 +47,7 @@ export const strings = {
     kindMacro: 'Macro',
     macroName: 'Index rebalance',
     watchMark: 'Watchlist',
-    range: '{start} – {end}',
+    range: '{start} - {end}',
   },
   ar: {
     title: 'التقويم',
@@ -63,6 +63,6 @@ export const strings = {
     kindMacro: 'الاقتصاد الكلي',
     macroName: 'إعادة توازن المؤشر',
     watchMark: 'قائمتي',
-    range: '{start} – {end}',
+    range: '{start} - {end}',
   },
 } satisfies Dict<Record<CalendarKey, string>>

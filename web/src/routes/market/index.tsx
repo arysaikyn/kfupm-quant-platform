@@ -415,7 +415,7 @@ export default function MarketPage() {
                   className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
                   style={
                     on
-                      ? { background: 'var(--color-accent)', color: '#fff' }
+                      ? { background: 'var(--color-accent-fill)', color: '#fff' }
                       : { color: 'var(--color-muted)' }
                   }
                 >
@@ -511,7 +511,7 @@ export default function MarketPage() {
                 type="button"
                 onClick={() => setSector(null)}
                 className="min-h-11 rounded-full px-4 text-[13px] font-medium"
-                style={{ background: 'var(--color-accent)', color: '#fff' }}
+                style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
               >
                 {s('rankPick')}
               </button>
@@ -707,7 +707,7 @@ export default function MarketPage() {
                   type="button"
                   onClick={() => setView('rank')}
                   className="min-h-11 rounded-full px-4 text-[13px] font-medium"
-                  style={{ background: 'var(--color-accent)', color: '#fff' }}
+                  style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
                 >
                   {s('watchCta')}
                 </button>

@@ -382,7 +382,7 @@ export default function AiPage() {
             disabled={input.trim().length === 0 || busy}
             aria-label={s('send')}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-40"
-            style={{ background: 'var(--color-accent)', color: '#fff' }}
+            style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 19V5M6 11l6-6 6 6" />

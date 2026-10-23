@@ -86,12 +86,6 @@ const events: CalEvent[] = (() => {
   return rows
 })()
 
-const CHIP_COLOR: Record<EventKind, string> = {
-  earnings: 'var(--color-accent)',
-  dividend: 'var(--color-up)',
-  macro: 'var(--color-fg)',
-}
-
 function makeFormatters(lang: Lang) {
   const locale = lang === 'ar' ? 'ar-u-nu-latn-ca-gregory' : lang
   return {
@@ -142,40 +136,31 @@ export default function Calendar() {
 
   return (
     <Screen title={s('title')} leading={<BackButton fallback="/news" />}>
-      <section aria-labelledby="week-summary" className="panel mt-4 px-4 py-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h2 id="week-summary" className="t-section ">
-              {s('weekLabel')}
-            </h2>
-            <p className="mt-2 flex items-baseline gap-1.5">
-              <span className="num text-[30px] leading-none font-semibold">
-                {fmtNum(total, lang, 0)}
-              </span>
-              <span className="text-[12px] text-muted">
-                {total === 1 ? s('eventOne') : s('eventMany')}
-              </span>
-            </p>
-          </div>
-          <div className="shrink-0 text-end">
-            <p
-              className={`num text-[22px] leading-none font-semibold ${
-                watched > 0 ? 'text-fg' : 'text-muted'
-              }`}
-            >
-              {fmtNum(watched, lang, 0)}
-            </p>
-            <p className="mt-1.5 text-[11px] text-muted">{s('watchLabel')}</p>
-          </div>
-        </div>
-        <p className="num mt-3.5 border-t border-line pt-2.5 text-[11px] text-muted">
-          {range}
+      <section aria-labelledby="week-summary" className="mt-4">
+        <h2 id="week-summary" className="text-[11px] font-medium text-muted">
+          {s('weekLabel')}
+        </h2>
+        <p className="mt-1 flex items-baseline gap-2">
+          <span className="t-display num text-[40px] leading-none">
+            {fmtNum(total, lang, 0)}
+          </span>
+          <span className="text-[12px] text-muted">
+            {total === 1 ? s('eventOne') : s('eventMany')}
+          </span>
+        </p>
+        <p className="mt-2 flex flex-wrap items-baseline gap-x-2 text-[12px] text-muted">
+          <span className="num">{range}</span>
+          <span aria-hidden="true">·</span>
+          <span>
+            <span className="num text-fg">{fmtNum(watched, lang, 0)}</span>{' '}
+            {s('watchLabel')}
+          </span>
         </p>
       </section>
 
       {grouped.map((group, day) => (
-        <section key={day} aria-labelledby={`calendar-day-${day}`} className="mt-6">
-          <div className="mb-2 flex items-center gap-2 px-1">
+        <section key={day} aria-labelledby={`calendar-day-${day}`} className="mt-8">
+          <div className="mb-2 flex items-center gap-2">
             <h2 id={`calendar-day-${day}`} className="t-section text-fg">
               {fmt.weekday.format(group.date)}
             </h2>
@@ -190,15 +175,12 @@ export default function Calendar() {
           </div>
 
           {group.events.length === 0 ? (
-            <p className="panel border-dashed px-4 py-3 text-[12px] text-muted">
-              {s('noEvents')}
-            </p>
+            <p className="text-[12px] text-muted">{s('noEvents')}</p>
           ) : (
-            <ul className="panel divide-y divide-line overflow-hidden">
+            <ul className="divide-y divide-line border-t border-line">
               {group.events.map((event) => {
                 const touched =
                   event.kind !== 'macro' && watchlist.includes(event.symbol)
-                const tone = CHIP_COLOR[event.kind]
                 const chip =
                   event.kind === 'earnings'
                     ? s('kindEarnings')
@@ -215,7 +197,7 @@ export default function Calendar() {
                 return (
                   <li
                     key={event.id}
-                    className="grid min-h-14 grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-x-3 px-4 py-2.5"
+                    className="grid min-h-14 grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-x-3 px-3 py-2.5"
                   >
                     <time
                       dir="ltr"
@@ -246,13 +228,7 @@ export default function Calendar() {
                       <p className="truncate text-[12px] leading-[1.4] text-muted">{name}</p>
                     </div>
 
-                    <span
-                      className="shrink-0 rounded-lg px-2 py-0.5 text-[10px] leading-[1.6] whitespace-nowrap"
-                      style={{
-                        color: tone,
-                        background: `color-mix(in srgb, ${tone} 12%, transparent)`,
-                      }}
-                    >
+                    <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-[10px] leading-[1.6] whitespace-nowrap text-muted">
                       {chip}
                     </span>
                   </li>

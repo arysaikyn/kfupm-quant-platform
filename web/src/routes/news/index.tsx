@@ -87,7 +87,7 @@ function NewsRow({
     <LongPressLink
       to={source === null ? `/news/${item.id}` : `/news/${item.id}?source=${encodeURIComponent(source)}`}
       prompt={`${s('askAi')} — ${item.title[lang]}`}
-      className="w-full min-w-0 flex-1 px-4 py-3.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
+      className="block w-full min-w-0 py-3.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
     >
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
@@ -118,7 +118,7 @@ function NewsRow({
           return (
             <span
               key={sym}
-              className="flex items-center gap-1 rounded-full bg-bg px-2 py-0.5 text-[11px]"
+              className="flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 text-[11px]"
             >
               <span className="num text-fg">{sym}</span>
               {quote && <span className="text-muted">{quote.name[lang]}</span>}
@@ -179,9 +179,11 @@ export default function NewsPage() {
         </Link>
       }
     >
+      {/* One hairline row, not a card: the review is an entry into another
+          screen, and a boxed entry outranked every headline below it. */}
       <Link
         to="/review"
-        className="panel row mt-1 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:bg-fg/5"
+        className="row border-b border-line px-0 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
       >
         <span className="text-muted">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -229,22 +231,21 @@ export default function NewsPage() {
       {groups.length === 0 ? (
         <EmptyState text={source === null ? s('empty') : s('emptySource')} />
       ) : (
-        <div className="mt-6 space-y-6">
+        <div className="mt-7 space-y-8">
           {groups.map((group) => (
             <section key={group.stamp}>
-              <header className="mb-2 flex items-center gap-3">
-                <h2 className="t-section shrink-0 ">
+              <header className="mb-1.5">
+                <h2 className="text-[12px] font-medium text-muted">
                   {group.stamp === todayStamp
                     ? s('today')
                     : group.stamp === yesterdayStamp
                       ? s('yesterday')
                       : formatDay(group.stamp, lang)}
                 </h2>
-                <span aria-hidden="true" className="h-px flex-1 bg-line" />
               </header>
-              <ul className="panel overflow-hidden">
+              <ul className="border-t border-line divide-y divide-line">
                 {group.items.map((item) => (
-                  <li key={item.id} className="row p-0">
+                  <li key={item.id}>
                     <NewsRow item={item} lang={lang} s={s} watchlist={watchlist} source={source} />
                   </li>
                 ))}

@@ -86,7 +86,7 @@ function SectionTitle({
   trailing?: ReactNode
 }) {
   return (
-    <div className="mt-6 flex items-end justify-between gap-3">
+    <div className="mt-8 flex items-end justify-between gap-3">
       <div className="min-w-0">
         <h2 className="text-[15px] font-semibold">{title}</h2>
       </div>
@@ -179,65 +179,64 @@ export default function SectorPage() {
   const kicker = { letterSpacing: lang === 'ar' ? 0 : undefined }
 
   return (
-    <Screen title={s('title')} leading={back}>
-      <section className="panel mt-1 p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h2 className="t-title mt-1 truncate text-[26px] leading-tight font-semibold">
-              {sector.name[lang]}
-            </h2>
-          </div>
-          <span className="flex shrink-0 items-center gap-1 rounded-full border border-line px-2.5 py-1.5 text-[11px]">
-            <span className="num font-semibold">
-              {fmtNum(sector.weight, lang, 0, '%')}
-            </span>
-            <span className="text-muted">{s('weight')}</span>
-          </span>
-        </div>
-
-        <div className="mt-4 border-t border-line pt-4">
-          <p className="text-[11px] leading-none text-muted" style={kicker}>
-            {s('today')}
+    <Screen title={sector.name[lang]} leading={back}>
+      {/* The move owns the screen: one number under the name, no card */}
+      <div className="mt-1">
+        <p className="text-[12px] leading-none text-muted" style={kicker}>
+          {s('today')}
+        </p>
+        {change === null ? (
+          <p className="mt-2 text-[15px] font-medium" style={{ color: 'var(--color-muted)' }}>
+            {s('noMembers')}
           </p>
+        ) : (
           <p
-            className="num t-display mt-1 text-[36px] leading-none"
+            className="num t-display mt-1 text-[44px] leading-[0.95]"
             style={{ color: tone }}
           >
-            {change === null ? s('noMembers') : fmtPct(change, lang)}
+            {fmtPct(change, lang)}
           </p>
-          <p className="mt-3 text-[13px] leading-snug">
-            {change === null ? s('constituentsEmpty') : s(verdictKey(change))}
-          </p>
-        </div>
-      </section>
+        )}
+        <p className="mt-3 text-[14px] leading-snug">
+          {change === null ? s('constituentsEmpty') : s(verdictKey(change))}
+        </p>
+        <p className="mt-3 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+          <span className="num" style={{ color: 'var(--color-fg)' }}>
+            {fmtNum(sector.weight, lang, 0, '%')}
+          </span>{' '}
+          {s('weight')}
+        </p>
+      </div>
 
       <SectionTitle title={s('constituentsTitle')} />
       {members.length === 0 ? (
         <EmptyState text={s('constituentsEmpty')} />
       ) : (
-        <div className="panel mt-2 overflow-hidden">
+        <ul className="mt-2">
           {members.map((quote) => {
             const watched = watchlist.includes(quote.symbol)
             return (
-              <div key={quote.symbol} className="row relative">
+              <li key={quote.symbol} className="relative border-t border-line">
                 <Link
                   to={`/m/${quote.symbol}`}
-                  className="flex min-h-14 w-full items-center gap-1.5 py-2 pe-12 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                  className="flex min-h-[56px] w-full items-center gap-1.5 py-2 pe-12 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px] font-medium">
+                    <span className="block truncate text-[14px] font-medium">
                       {quote.name[lang]}
                     </span>
-                    <span className="num mt-0.5 block truncate text-[10.5px] text-muted">
+                    <span className="num mt-0.5 block truncate text-[12px] text-muted">
                       {quote.symbol} · {quote.currency}
                     </span>
                   </span>
-                  <Bars data={quote.spark} up={quote.change >= 0} />
-                  <span className="num w-[58px] shrink-0 text-end text-[12px]">
+                  <span className="flex max-[400px]:hidden">
+                    <Bars data={quote.spark} up={quote.change >= 0} />
+                  </span>
+                  <span className="num w-[68px] shrink-0 text-end text-[14px]">
                     {fmtNum(quote.price, lang, 2)}
                   </span>
                   <span
-                    className="num w-[52px] shrink-0 text-end text-[11px] font-medium"
+                    className="num w-[58px] shrink-0 text-end text-[14px] font-medium"
                     style={{ color: toneOf(quote.change) }}
                   >
                     {fmtPct(quote.change, lang)}
@@ -248,27 +247,27 @@ export default function SectorPage() {
                   aria-pressed={watched}
                   aria-label={`${s(watched ? 'watchRemove' : 'watchAdd')} ${quote.name[lang]}`}
                   onClick={() => toggleWatch(quote.symbol)}
-                  className={`absolute top-1/2 end-1 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+                  className={`absolute top-1/2 end-0 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
                     watched ? 'text-fg' : 'text-muted'
                   }`}
                 >
                   <StarIcon filled={watched} />
                 </button>
-              </div>
+              </li>
             )
           })}
-        </div>
+        </ul>
       )}
 
       <SectionTitle
         title={s('comparisonTitle')}
         trailing={
-          <span dir="ltr" className="num shrink-0 text-[15px] font-semibold">
+          <span dir="ltr" className="num shrink-0 text-[12px]" style={{ color: 'var(--color-muted)' }}>
             {rankText}
           </span>
         }
       />
-      <div className="panel mt-2 p-4">
+      <div className="mt-2 border-t border-line pt-2">
         <div role="list" aria-label={s('chartLabel')} className="space-y-0.5">
           {rows.map((row) => {
             const item = row.sector
@@ -299,7 +298,7 @@ export default function SectorPage() {
                 key={item.id}
                 role="listitem"
                 aria-current={current ? 'true' : undefined}
-                className="grid grid-cols-[68px_minmax(0,1fr)_52px] items-center gap-2 rounded-lg px-1.5 py-1"
+                className="grid grid-cols-[76px_minmax(0,1fr)_52px] items-center gap-2 rounded-lg px-1 py-1.5"
                 style={{
                   background: current
                     ? 'color-mix(in srgb, var(--color-accent) 10%, transparent)'
@@ -307,7 +306,7 @@ export default function SectorPage() {
                 }}
               >
                 <span
-                  className={`truncate text-[11px] ${current ? 'font-semibold' : ''}`}
+                  className={`truncate text-[12px] ${current ? 'font-semibold' : ''}`}
                   style={{
                     color: current ? 'var(--color-accent)' : 'var(--color-muted)',
                   }}
@@ -335,7 +334,7 @@ export default function SectorPage() {
                   />
                 </span>
                 <span
-                  className="num text-end text-[11px]"
+                  className="num text-end text-[12px]"
                   style={{
                     color: move === null ? 'var(--color-muted)' : toneOf(move),
                     opacity: current ? 1 : 0.72,
@@ -349,16 +348,19 @@ export default function SectorPage() {
         </div>
       </div>
 
-      <nav className="mt-6 grid grid-cols-2 gap-2" aria-label={s('linksLabel')}>
+      <nav
+        className="mt-8 flex flex-wrap items-center gap-6 border-t border-line pt-2"
+        aria-label={s('linksLabel')}
+      >
         <Link
           to="/"
-          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12px] font-medium transition-colors hover:bg-fg/5"
+          className="flex min-h-11 items-center text-[14px] font-medium transition-colors hover:text-muted"
         >
           {s('marketsLink')}
         </Link>
         <Link
           to="/screener"
-          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12px] font-medium text-fg transition-colors hover:bg-fg/5"
+          className="flex min-h-11 items-center text-[14px] font-medium transition-colors hover:text-muted"
         >
           {s('screenerLink')}
         </Link>

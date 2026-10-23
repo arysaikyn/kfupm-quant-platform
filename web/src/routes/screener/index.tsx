@@ -270,24 +270,7 @@ export default function ScreenerPage() {
   const showsTurnoverHint = rules.some((rule) => rule.field === 'turnover')
 
   return (
-    <Screen
-      title={s('title')}
-      action={
-        <div className="max-w-[180px] text-end">
-          <p
-            aria-live="polite"
-            aria-atomic="true"
-            className="text-[12px] leading-snug font-medium"
-          >
-            {fillCount(
-              s('resultsCount'),
-              fmtNum(results.length, lang, 0),
-              fmtNum(quotes.length, lang, 0),
-            )}
-          </p>
-        </div>
-      }
-    >
+    <Screen title={s('title')}>
       <div className="mt-4">
         <p className="t-kicker" style={kicker}>
           {s('presetsLabel')}
@@ -295,14 +278,14 @@ export default function ScreenerPage() {
         <div
           role="group"
           aria-label={s('presetsLabel')}
-          className="mt-1.5 grid grid-cols-3 gap-2"
+          className="mt-2 grid grid-cols-3 gap-2"
         >
           {PRESET_IDS.map((id) => (
             <button
               key={id}
               type="button"
               onClick={() => applyPreset(id)}
-              className="flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-2 py-2 text-[12px] leading-tight font-medium text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+              className="flex min-h-11 items-center justify-center rounded-full bg-surface px-2 py-2 text-[13px] leading-tight font-medium text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
             >
               {s(PRESET_KEY[id])}
             </button>
@@ -310,9 +293,9 @@ export default function ScreenerPage() {
         </div>
       </div>
 
-      <section className="mt-6" aria-labelledby="screener-rules">
+      <section className="mt-8" aria-labelledby="screener-rules">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 id="screener-rules" className="t-title text-[17px] font-semibold">
+          <h2 id="screener-rules" className="t-section">
             {s('rulesTitle')}
           </h2>
           <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
@@ -327,14 +310,14 @@ export default function ScreenerPage() {
         {activeRules.length > 0 && (
           <ul
             aria-label={s('filterChipsLabel')}
-            className="mt-1.5 flex gap-1.5 overflow-x-auto pb-0.5"
+            className="mt-3 flex gap-1.5 overflow-x-auto pb-0.5"
           >
             {activeRules.map(({ rule, value }) => {
               const text = ruleText(rule, value, s(FIELD_KEY[rule.field]), lang)
               return (
                 <li
                   key={rule.id}
-                  className="flex shrink-0 items-center rounded-full border border-line bg-surface"
+                  className="flex shrink-0 items-center rounded-full bg-surface"
                 >
                   <button
                     type="button"
@@ -359,172 +342,169 @@ export default function ScreenerPage() {
           </ul>
         )}
 
-        <div className="panel mt-2 overflow-hidden">
-          {rules.length === 0 ? (
-            <p className="px-4 py-6 text-center text-[12px]" style={{ color: 'var(--color-muted)' }}>
+        <ul className="mt-3 divide-y divide-line border-t border-line">
+          {rules.length === 0 && (
+            <li className="py-3 text-[12px]" style={{ color: 'var(--color-muted)' }}>
               {s('noRules')}
-            </p>
-          ) : (
-            <ul>
-              {rules.map((rule, index) => {
-                const unit = FIELD_UNIT[rule.field]
-                return (
-                  <li
-                    key={rule.id}
-                    ref={(node) => {
-                      rowRefs.current[rule.id] = node
-                    }}
-                    className="row flex-col items-stretch gap-2 py-2.5 sm:py-1.5"
-                  >
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                      <div className="relative min-w-0 flex-1">
-                        <select
-                          value={rule.field}
-                          aria-label={`${s('fieldLabel')} ${index + 1}`}
-                          onChange={(event) =>
-                            updateRule(rule.id, { field: event.target.value as Field })
-                          }
-                          className="h-11 min-h-11 w-full appearance-none rounded-lg border border-line bg-fg/5 ps-3 pe-9 text-[14px] text-fg transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
-                        >
-                          {FIELD_ORDER.map((field) => (
-                            <option key={field} value={field}>
-                              {s(FIELD_KEY[field])}
-                            </option>
-                          ))}
-                        </select>
-                        <IconChevron />
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <div
-                          role="group"
-                          aria-label={s('operatorLabel')}
-                          className="flex shrink-0 gap-1"
-                        >
-                          {OP_OPTIONS.map((option) => {
-                            const selected = rule.op === option.value
-                            return (
-                              <button
-                                key={option.value}
-                                type="button"
-                                aria-pressed={selected}
-                                aria-label={s(option.key)}
-                                onClick={() => updateRule(rule.id, { op: option.value })}
-                                className="flex h-11 w-11 items-center justify-center rounded-lg text-[15px] font-semibold transition-colors active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
-                                style={
-                                  selected
-                                    ? {
-                                        background:
-                                          'color-mix(in srgb, var(--color-accent) 16%, transparent)',
-                                        color: 'var(--color-accent)',
-                                      }
-                                    : { color: 'var(--color-muted)' }
-                                }
-                              >
-                                <span aria-hidden="true">{OP_SYMBOL[option.value]}</span>
-                              </button>
-                            )
-                          })}
-                        </div>
-
-                        <div className="relative min-w-0 flex-1 sm:w-[104px] sm:flex-none">
-                          <input
-                            type="number"
-                            inputMode="decimal"
-                            value={rule.value}
-                            aria-label={`${s('valueLabel')} ${index + 1}`}
-                            onChange={(event) =>
-                              updateRule(rule.id, { value: event.target.value })
-                            }
-                            step={FIELD_STEP[rule.field]}
-                            min={rule.field === 'change' ? undefined : 0}
-                            className="num h-11 min-h-11 w-full min-w-0 rounded-lg bg-bg ps-3 text-[15px] transition-colors [appearance:textfield] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                            style={{
-                              border: '1px solid var(--color-line)',
-                              color: 'var(--color-fg)',
-                              paddingInlineEnd: unit ? 24 : 10,
-                            }}
-                          />
-                          {unit && (
-                            <span
-                              aria-hidden="true"
-                              className="pointer-events-none absolute end-2.5 top-1/2 -translate-y-1/2 text-[11px]"
-                              style={{ color: 'var(--color-muted)' }}
-                            >
-                              {unit}
-                            </span>
-                          )}
-                        </div>
-
-                        <button
-                          type="button"
-                          aria-label={s('removeRule')}
-                          onClick={() => removeRule(rule.id)}
-                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
-                          style={{
-                            border: '1px solid var(--color-line)',
-                            color: 'var(--color-muted)',
-                          }}
-                        >
-                          <IconX />
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
+            </li>
           )}
+          {rules.map((rule, index) => {
+            const unit = FIELD_UNIT[rule.field]
+            return (
+              <li
+                key={rule.id}
+                ref={(node) => {
+                  rowRefs.current[rule.id] = node
+                }}
+                className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center"
+              >
+                <div className="relative min-w-0 flex-1">
+                  <select
+                    value={rule.field}
+                    aria-label={`${s('fieldLabel')} ${index + 1}`}
+                    onChange={(event) =>
+                      updateRule(rule.id, { field: event.target.value as Field })
+                    }
+                    className="h-11 min-h-11 w-full appearance-none rounded-lg bg-fg/5 ps-3 pe-9 text-[14px] text-fg transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+                  >
+                    {FIELD_ORDER.map((field) => (
+                      <option key={field} value={field}>
+                        {s(FIELD_KEY[field])}
+                      </option>
+                    ))}
+                  </select>
+                  <IconChevron />
+                </div>
 
-          <div className="border-t border-line p-3">
+                <div className="flex items-center gap-2">
+                  <div
+                    role="group"
+                    aria-label={s('operatorLabel')}
+                    className="flex shrink-0 gap-1"
+                  >
+                    {OP_OPTIONS.map((option) => {
+                      const selected = rule.op === option.value
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          aria-pressed={selected}
+                          aria-label={s(option.key)}
+                          onClick={() => updateRule(rule.id, { op: option.value })}
+                          className="flex h-11 w-11 items-center justify-center rounded-lg text-[15px] font-semibold transition-colors active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+                          style={
+                            selected
+                              ? {
+                                  background:
+                                    'color-mix(in srgb, var(--color-accent) 16%, transparent)',
+                                  color: 'var(--color-accent)',
+                                }
+                              : { color: 'var(--color-muted)' }
+                          }
+                        >
+                          <span aria-hidden="true">{OP_SYMBOL[option.value]}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  <div className="relative min-w-0 flex-1 sm:w-[104px] sm:flex-none">
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      value={rule.value}
+                      aria-label={`${s('valueLabel')} ${index + 1}`}
+                      onChange={(event) => updateRule(rule.id, { value: event.target.value })}
+                      step={FIELD_STEP[rule.field]}
+                      min={rule.field === 'change' ? undefined : 0}
+                      className="num h-11 min-h-11 w-full min-w-0 rounded-lg bg-fg/5 ps-3 text-[15px] text-fg transition-colors [appearance:textfield] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      style={{ paddingInlineEnd: unit ? 24 : 10 }}
+                    />
+                    {unit && (
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute end-2.5 top-1/2 -translate-y-1/2 text-[11px]"
+                        style={{ color: 'var(--color-muted)' }}
+                      >
+                        {unit}
+                      </span>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    aria-label={s('removeRule')}
+                    onClick={() => removeRule(rule.id)}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+                    style={{ color: 'var(--color-muted)' }}
+                  >
+                    <IconX />
+                  </button>
+                </div>
+              </li>
+            )
+          })}
+          <li>
             <button
               type="button"
               onClick={addRule}
               disabled={rules.length >= MAX_RULES}
-              className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-line text-[12px] font-medium text-fg transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent disabled:opacity-40"
+              className="flex min-h-11 w-full items-center gap-1.5 py-1 text-[13px] font-medium transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent disabled:opacity-40"
             >
               {rules.length < MAX_RULES && <IconPlus />}
               {rules.length >= MAX_RULES ? s('ruleLimit') : s('addRule')}
             </button>
+          </li>
+        </ul>
 
-            {showsTurnoverHint && (
-              <p className="mt-2 text-[11px]" style={{ color: 'var(--color-muted)' }}>
-                {s('turnoverHint')}
-              </p>
-            )}
-          </div>
-        </div>
+        {showsTurnoverHint && (
+          <p className="mt-2 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+            {s('turnoverHint')}
+          </p>
+        )}
       </section>
 
-      <section className="mt-6" aria-labelledby="screener-results">
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 id="screener-results" className="t-title text-[17px] font-semibold">
-            {s('resultsTitle')}
-          </h2>
-          <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+      <section className="mt-8" aria-label={s('resultsTitle')}>
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <p
+              aria-live="polite"
+              aria-atomic="true"
+              className="text-[15px] leading-snug"
+              style={{ color: 'var(--color-fg)' }}
+            >
+              {fillCount(
+                s('resultsCount'),
+                fmtNum(results.length, lang, 0),
+                fmtNum(quotes.length, lang, 0),
+              )}
+            </p>
+          </div>
+          <span
+            className="shrink-0 text-[11px] leading-none"
+            style={{ color: 'var(--color-muted)' }}
+          >
             {s('liveHint')}
           </span>
         </div>
 
         {results.length === 0 ? (
-          <div className="panel mt-2">
-            <EmptyState
-              text={s('resultsEmpty')}
-              action={
-                <button
-                  type="button"
-                  onClick={relaxRules}
-                  className="min-h-11 rounded-full px-4 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  style={{ border: '1px solid var(--color-line)' }}
-                >
-                  {s('relax')}
-                </button>
-              }
-            />
-          </div>
+          <EmptyState
+            text={s('resultsEmpty')}
+            action={
+              <button
+                type="button"
+                onClick={relaxRules}
+                className="min-h-11 rounded-full px-4 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                style={{ border: '1px solid var(--color-line)' }}
+              >
+                {s('relax')}
+              </button>
+            }
+          />
         ) : (
-          <div className="panel mt-2 overflow-hidden">
-            <div className="grid min-h-14 grid-cols-[minmax(0,1fr)_78px_66px] gap-x-2 border-b border-line px-3.5 sm:min-h-11">
+          <div className="mt-5 border-t border-line">
+            <div className="grid min-h-11 grid-cols-[minmax(0,1fr)_78px_66px] items-center gap-x-2">
               {SORT_COLUMNS.map((column) => {
                 const active = sort.key === column.key
                 return (
@@ -533,7 +513,7 @@ export default function ScreenerPage() {
                     type="button"
                     onClick={() => toggleSort(column.key)}
                     aria-pressed={active}
-                    className={`t-kicker flex min-h-11 items-center gap-1 transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
+                    className={`flex min-h-11 items-center gap-1 text-[11px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
                       column.key === 'name' ? 'justify-start text-start' : 'justify-end text-end'
                     }`}
                     style={kicker}
@@ -571,7 +551,7 @@ export default function ScreenerPage() {
                         lang,
                         2,
                       )} · ${fmtPct(quote.change, lang)}`}
-                      className="block min-h-14 px-3.5 py-2 transition-colors active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent sm:min-h-11 sm:py-1"
+                      className="block min-h-[56px] py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
                     >
                       <span className="grid grid-cols-[minmax(0,1fr)_78px_66px] items-center gap-x-2">
                         <span className="min-w-0">
@@ -583,11 +563,11 @@ export default function ScreenerPage() {
                             {quote.symbol}
                           </span>
                         </span>
-                        <span className="num text-end text-[13px] whitespace-nowrap">
+                        <span className="num text-end text-[12px] whitespace-nowrap">
                           {fmtNum(quote.price, lang, 2)}
                         </span>
                         <span
-                          className={`num text-end text-[13px] font-medium whitespace-nowrap ${
+                          className={`num text-end text-[15px] font-semibold whitespace-nowrap ${
                             up ? 'text-up' : 'text-down'
                           }`}
                         >
@@ -611,9 +591,9 @@ export default function ScreenerPage() {
         )}
       </section>
 
-      <section className="mt-6" aria-labelledby="screener-saved">
+      <section className="mt-8" aria-labelledby="screener-saved">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 id="screener-saved" className="t-title text-[17px] font-semibold">
+          <h2 id="screener-saved" className="t-section">
             {s('savedTitle')}
           </h2>
           <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>

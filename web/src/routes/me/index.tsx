@@ -48,23 +48,23 @@ export default function MePage() {
     >
       <section className="pt-2">
         {signedIn ? (
-          <div className="panel row min-h-[88px] gap-4">
+          <div className="flex items-center gap-4">
             <div
               aria-hidden="true"
-              className="num grid h-16 w-16 shrink-0 place-items-center rounded-full bg-bg text-[20px] font-semibold"
+              className="num grid h-14 w-14 shrink-0 place-items-center rounded-full bg-surface text-[15px] font-semibold text-muted"
             >
               {initialsOf(name)}
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[18px] leading-tight font-semibold">{name}</p>
-              <p className="mt-1.5 truncate text-[12px] text-muted">{s('email')}</p>
+              <p className="t-title truncate text-[22px] leading-tight font-semibold">{name}</p>
+              <p className="mt-1 truncate text-[12px] leading-tight text-muted">{s('email')}</p>
             </div>
           </div>
         ) : (
-          <div className="panel flex flex-col items-center gap-5 px-4 py-6">
+          <div className="flex flex-col items-center gap-5 py-6">
             <div
               aria-hidden="true"
-              className="grid h-20 w-20 place-items-center rounded-full bg-bg text-muted"
+              className="grid h-16 w-16 place-items-center rounded-full bg-surface text-muted"
             >
               <svg
                 width="30"
@@ -82,7 +82,7 @@ export default function MePage() {
             <button
               type="button"
               onClick={() => setSignedIn(true)}
-              className="h-12 w-full rounded-full bg-solid text-[15px] font-semibold text-white active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+              className="h-12 w-full max-w-[280px] rounded-full bg-solid text-[15px] font-semibold text-white active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
             >
               {s('signIn')}
             </button>
@@ -90,14 +90,14 @@ export default function MePage() {
         )}
       </section>
 
-      <section className="mt-6" aria-labelledby="me-appearance">
-        <h2 id="me-appearance" className="t-section mb-2 ">
+      <section className="mt-8" aria-labelledby="me-appearance">
+        <h2 id="me-appearance" className="t-section pb-2">
           {s('appearance')}
         </h2>
         <div
           role="group"
           aria-labelledby="me-appearance"
-          className="panel"
+          className="border-t border-line"
         >
           {(['light', 'dark'] as Theme[]).map((mode) => {
             const active = theme === mode
@@ -121,7 +121,7 @@ export default function MePage() {
                     </svg>
                   )}
                 </span>
-                <span className="flex-1 text-[15px]">{s(mode === 'light' ? 'light' : 'dark')}</span>
+                <span className="flex-1 text-[14px]">{s(mode === 'light' ? 'light' : 'dark')}</span>
                 {active && (
                   <svg
                     aria-hidden="true"
@@ -144,11 +144,11 @@ export default function MePage() {
         </div>
       </section>
 
-      <section className="mt-6" aria-labelledby="me-more">
-        <h2 id="me-more" className="t-section mb-2 ">
+      <section className="mt-8" aria-labelledby="me-more">
+        <h2 id="me-more" className="t-section pb-2">
           {s('moreTitle')}
         </h2>
-        <div className="panel overflow-hidden">
+        <div className="border-t border-line">
           {[
             { to: '/learn', label: s('glossary') },
             { to: '/settings', label: s('moreSettings') },
@@ -189,14 +189,14 @@ export default function MePage() {
         </div>
       </section>
 
-      <section className="mt-6" aria-labelledby="me-language">
-        <h2 id="me-language" className="t-section mb-2 ">
+      <section className="mt-8" aria-labelledby="me-language">
+        <h2 id="me-language" className="t-section pb-2">
           {s('language')}
         </h2>
         <div
           role="group"
           aria-labelledby="me-language"
-          className="panel overflow-hidden"
+          className="border-t border-line"
         >
           {LANGUAGES.map((row) => {
             const active = lang === row.id
@@ -209,7 +209,7 @@ export default function MePage() {
                 className="row w-full text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
               >
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[15px] leading-tight">{s(row.native)}</span>
+                  <span className="block truncate text-[14px] leading-tight">{s(row.native)}</span>
                   {/* The English row would print "English" over "English". */}
                   {s(row.english) !== s(row.native) && (
                     <span className="mt-1 block truncate text-[12px] leading-tight text-muted">

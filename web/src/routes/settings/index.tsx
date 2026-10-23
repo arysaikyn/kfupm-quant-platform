@@ -162,12 +162,12 @@ export default function SettingsPage() {
 
   return (
     <Screen title={s('title')} leading={back}>
-      <section className="mt-6" aria-labelledby="settings-reading">
-        <h2 id="settings-reading" className="t-section px-1 pb-2 ">
+      <section className="mt-4" aria-labelledby="settings-reading">
+        <h2 id="settings-reading" className="t-section pb-2">
           {s('readingTitle')}
         </h2>
 
-        <p id="settings-density-label" className="px-1 pb-2 text-[11px] leading-snug text-muted">
+        <p id="settings-density-label" className="pb-2 text-[11px] leading-snug text-muted">
           {s('densityLabel')}
         </p>
         <div
@@ -195,47 +195,43 @@ export default function SettingsPage() {
             )
           })}
         </div>
-        <p className="mt-2 px-1 text-[11px] leading-snug text-muted">{s('densityHint')}</p>
+        <p className="mt-2 text-[11px] leading-snug text-muted">{s('densityHint')}</p>
 
-        <div className="panel mt-3 overflow-hidden">
-          <div className="px-4 pt-3 pb-2">
-            <h3 className="text-[11px] font-medium text-muted">{s('previewTitle')}</h3>
-          </div>
-          <ul className="divide-y divide-line">
-            {PREVIEW.map((q) => (
-              <li key={q.symbol} className={`flex items-center gap-3 px-4 ${rowPad}`}>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14px] leading-tight font-medium">{q.name[lang]}</p>
-                  <p className="num mt-1 text-[11px] leading-tight text-muted">
-                    <bdi dir="ltr">
-                      {q.symbol} · {q.currency}
-                    </bdi>
-                  </p>
-                </div>
-                <div className="shrink-0 text-end">
-                  <p className="num text-[14px] leading-tight font-semibold">
-                    {fmtNum(q.price, lang, 2)}
-                  </p>
-                  <p
-                    className={`num mt-1 text-[11px] leading-tight ${
-                      q.change >= 0 ? 'text-up' : 'text-down'
-                    }`}
-                  >
-                    {fmtPct(q.change, lang)}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <h3 className="mt-4 text-[11px] font-medium text-muted">{s('previewTitle')}</h3>
+        <ul className="mt-1.5 divide-y divide-line border-t border-line">
+          {PREVIEW.map((q) => (
+            <li key={q.symbol} className={`flex items-center gap-3 px-3 ${rowPad}`}>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[14px] leading-tight font-medium">{q.name[lang]}</p>
+                <p className="num mt-1 text-[11px] leading-tight text-muted">
+                  <bdi dir="ltr">
+                    {q.symbol} · {q.currency}
+                  </bdi>
+                </p>
+              </div>
+              <div className="shrink-0 text-end">
+                <p className="num text-[14px] leading-tight font-semibold">
+                  {fmtNum(q.price, lang, 2)}
+                </p>
+                <p
+                  className={`num mt-1 text-[11px] leading-tight ${
+                    q.change >= 0 ? 'text-up' : 'text-down'
+                  }`}
+                >
+                  {fmtPct(q.change, lang)}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </section>
 
-      <section className="mt-6" aria-labelledby="settings-sources">
-        <h2 id="settings-sources" className="t-section px-1 pb-2 ">
+      <section className="mt-8" aria-labelledby="settings-sources">
+        <h2 id="settings-sources" className="t-section pb-2">
           {s('sourcesTitle')}
         </h2>
-        <p className="px-1 pb-2 text-[11px] leading-snug text-muted">{s('sourcesHint')}</p>
-        <ul className="panel overflow-hidden">
+        <p className="pb-2 text-[11px] leading-snug text-muted">{s('sourcesHint')}</p>
+        <ul className="border-t border-line">
           {SOURCES.map((source) => (
             <li key={source.name} className="row py-2">
               <span
@@ -244,7 +240,7 @@ export default function SettingsPage() {
                 style={{ background: 'var(--color-muted)' }}
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[14.5px] leading-tight font-medium">
+                <p className="truncate text-[14px] leading-tight font-medium">
                   {s(source.name)}
                 </p>
                 <p className="mt-1 truncate text-[11px] leading-tight text-muted">
@@ -259,13 +255,13 @@ export default function SettingsPage() {
         </ul>
       </section>
 
-      <section className="mt-6" aria-labelledby="settings-notifications">
-        <h2 id="settings-notifications" className="t-section px-1 pb-2 ">
+      <section className="mt-8" aria-labelledby="settings-notifications">
+        <h2 id="settings-notifications" className="t-section pb-2">
           {s('notificationsTitle')}
         </h2>
-        <div className="panel overflow-hidden">
+        <div className="border-t border-line">
           <div className="row py-2">
-            <span className="min-w-0 flex-1 truncate text-[14.5px] leading-tight font-medium">
+            <span className="min-w-0 flex-1 truncate text-[14px] leading-tight font-medium">
               {s('alertsLabel')}
             </span>
             <button
@@ -296,31 +292,31 @@ export default function SettingsPage() {
               </span>
             </button>
           </div>
-          <p className="border-t border-line px-4 py-2.5 text-[11px] leading-snug text-muted">
+          <p className="px-4 pt-2 text-[11px] leading-snug text-muted">
             {s('alertsHint')}
           </p>
         </div>
       </section>
 
-      <section className="mt-6" aria-labelledby="settings-about">
-        <h2 id="settings-about" className="t-section px-1 pb-2 ">
+      <section className="mt-8" aria-labelledby="settings-about">
+        <h2 id="settings-about" className="t-section pb-2">
           {s('aboutTitle')}
         </h2>
-        <div className="panel overflow-hidden">
+        <div className="border-t border-line">
           <div className="row justify-between">
             <span className="text-[12px] text-muted">{s('appLabel')}</span>
             <span className="truncate text-[14px] leading-tight font-medium">{s('appName')}</span>
           </div>
           <div className="row justify-between">
             <span className="text-[12px] text-muted">{s('versionLabel')}</span>
-            <span className="num text-[13px] leading-tight">{APP_VERSION}</span>
+            <span className="num text-[12px] leading-tight">{APP_VERSION}</span>
           </div>
           <Link
             to="/learn"
             className="row transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
           >
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[14.5px] leading-tight font-medium">
+              <span className="block truncate text-[14px] leading-tight font-medium">
                 {s('learn')}
               </span>
               <span className="mt-1 block truncate text-[11px] leading-tight text-muted">
@@ -346,14 +342,11 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section className="mt-6 pb-10" aria-labelledby="settings-reset">
-        <h2 id="settings-reset" className="t-section px-1 pb-2 ">
+      <section className="mt-8 pb-10" aria-labelledby="settings-reset">
+        <h2 id="settings-reset" className="t-section pb-2">
           {s('resetTitle')}
         </h2>
-        <div
-          className="panel px-4 py-4 transition-colors"
-          style={armed ? { borderColor: danger } : undefined}
-        >
+        <div className="border-t border-line pt-3">
           <p id="settings-reset-copy" className="text-[12px] leading-relaxed text-muted">
             {s('resetHint')}
           </p>
@@ -361,9 +354,7 @@ export default function SettingsPage() {
             type="button"
             onClick={reset}
             aria-describedby="settings-reset-copy"
-            className={`mt-3 flex min-h-12 w-full items-center justify-center rounded-full border px-4 text-[14px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
-              armed ? 'border-transparent' : 'border-line'
-            }`}
+            className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full border border-line px-4 text-[14px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             style={
               armed ? { background: danger, color: dangerContrast } : { background: dangerBg, color: danger }
             }

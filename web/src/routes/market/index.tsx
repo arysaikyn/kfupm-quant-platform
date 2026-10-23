@@ -15,7 +15,7 @@ import type { Quote } from '../../data/mock'
 import { frameChange, membersChange, membersOf } from '../../data/membership'
 import type { HeatFrame } from '../../data/membership'
 import { useAlerts, triggeredCount } from '../../store/alerts'
-import { setMarket, usePrefs } from '../../store/prefs'
+import { usePrefs } from '../../store/prefs'
 import { toggleWatch, useUser } from '../../store/user'
 import { SectionHead } from './SectionHead'
 import { strings } from './strings'
@@ -237,13 +237,6 @@ export default function MarketPage() {
     return { up, down: ranked.length - up }
   }, [ranked])
 
-  const breadthTone =
-    breadth.up > breadth.down
-      ? 'var(--color-up)'
-      : breadth.down > breadth.up
-        ? 'var(--color-down)'
-        : 'var(--color-muted)'
-
   return (
     <Screen
       title={t('tab.market')}
@@ -281,30 +274,6 @@ export default function MarketPage() {
         </div>
       }
     >
-      {/* Market switch: the choice made in onboarding, and changeable here. */}
-      <div role="group" aria-label={s('markets')} className="mt-1 flex gap-1.5">
-        {MARKETS.map((id) => {
-          const active = prefMarket === id.id
-          return (
-            <button
-              key={id.id}
-              type="button"
-              aria-pressed={active}
-              onClick={() => setMarket(id.id)}
-              className="tap rounded-full px-2.5 text-[11px] font-medium"
-              style={
-                active
-                  ? { background: 'var(--color-fg)', color: 'var(--color-bg)' }
-                  : { background: 'var(--color-surface)', color: 'var(--color-muted)' }
-              }
-            >
-              {/* The hit box is 44; the pill stays compact inside it. */}
-              <span className="rounded-full px-2 py-1 leading-none">{s(id.key)}</span>
-            </button>
-          )
-        })}
-      </div>
-
       {/* Live tape: the screen's signature, 0 KB */}
       <div className="mt-3">
         <TickerTape
@@ -322,24 +291,24 @@ export default function MarketPage() {
         />
       </div>
 
-      {/* Index masthead: one hero figure, the rest as a single inline row */}
-      <div className="mt-3">
+      {/* Index masthead: one number owns the screen, no card around it */}
+      <div className="mt-4">
         {heroIndex && (
-          <div className="panel px-4 py-3">
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
-                {heroIndex.name[lang]}
+          <div>
+            <p className="text-[11px] font-medium" style={{ color: 'var(--color-muted)' }}>
+              {heroIndex.name[lang]}
+            </p>
+            <div className="mt-1 flex items-baseline gap-2.5">
+              <p className="t-display num text-[54px] leading-[0.95]">
+                <AnimatedNumber value={heroIndex.value} format={(n) => fmtNum(n, lang, 2)} />
               </p>
               <p
-                className="num text-[12px]"
+                className="num pb-1 text-[14px] font-medium"
                 style={{ color: heroIndex.change >= 0 ? 'var(--color-up)' : 'var(--color-down)' }}
               >
                 {fmtPct(heroIndex.change, lang)}
               </p>
             </div>
-            <p className="t-display num mt-1 text-[38px] leading-none">
-              <AnimatedNumber value={heroIndex.value} format={(n) => fmtNum(n, lang, 2)} />
-            </p>
           </div>
         )}
         <div className="mt-2 flex gap-5 px-1">
@@ -364,11 +333,12 @@ export default function MarketPage() {
         </div>
       </div>
 
-      {/* One switch for the three things this screen is for */}
+      {/* Views read as text tabs with an underline, not a pill bar inside a
+          pill bar; the eye should land on the number, then the list. */}
       <div
         role="tablist"
         aria-label={s('moreScreens')}
-        className="mt-4 flex rounded-full bg-surface p-1"
+        className="mt-5 flex gap-5 border-b border-line"
       >
         {([
           ['rank', s('viewRank')],
@@ -383,10 +353,14 @@ export default function MarketPage() {
               role="tab"
               aria-selected={active}
               onClick={() => setView(key)}
-              className={`min-h-11 flex-1 rounded-full text-[12px] transition-colors ${
-                active ? 'font-medium' : 'text-muted'
+              className={`relative -mb-px min-h-11 pb-2 text-[13px] transition-colors ${
+                active ? 'font-semibold' : 'text-muted hover:text-fg'
               }`}
-              style={active ? { background: 'var(--color-bg)' } : undefined}
+              style={
+                active
+                  ? { color: 'var(--color-fg)', borderBottom: '2px solid var(--color-fg)' }
+                  : undefined
+              }
             >
               {label}
             </button>
@@ -523,13 +497,12 @@ export default function MarketPage() {
         ) : (
           <>
             {/* One meta row: the shape of the board, plus the two controls */}
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <p className="text-[12px] leading-none" style={{ color: breadthTone }}>
-                {s('breadthUp')} <span className="num font-semibold">{breadth.up}</span>
-                <span className="mx-1.5" style={{ color: 'var(--color-muted)' }}>
-                  ·
-                </span>
-                {s('breadthDown')} <span className="num font-semibold">{breadth.down}</span>
+            <div className="mt-5 flex items-center justify-between gap-3">
+              {/* A count, not a signal: the rows below already carry the colour. */}
+              <p className="text-[12px] leading-none" style={{ color: 'var(--color-muted)' }}>
+                {s('breadthUp')} <span className="num" style={{ color: 'var(--color-fg)' }}>{breadth.up}</span>
+                <span className="mx-1.5">·</span>
+                {s('breadthDown')} <span className="num" style={{ color: 'var(--color-fg)' }}>{breadth.down}</span>
               </p>
               <div className="flex shrink-0 items-center gap-2">
                 <Link
@@ -567,34 +540,7 @@ export default function MarketPage() {
                 </button>
               </div>
             </div>
-            {/* A 96px strip, not a page-wide bar: full width made a two-rule
-                summary look like a progress meter. */}
-            <div
-              aria-hidden="true"
-              className="mt-1 flex h-0.5 w-24 gap-0.5 overflow-hidden rounded-full"
-              style={{ background: 'var(--color-line)' }}
-            >
-              {breadth.up > 0 && (
-                <span
-                  className="rounded-full"
-                  style={{
-                    flexGrow: breadth.up,
-                    background: 'color-mix(in srgb, var(--color-up) 70%, transparent)',
-                  }}
-                />
-              )}
-              {breadth.down > 0 && (
-                <span
-                  className="rounded-full"
-                  style={{
-                    flexGrow: breadth.down,
-                    background: 'color-mix(in srgb, var(--color-down) 70%, transparent)',
-                  }}
-                />
-              )}
-            </div>
-  
-            <div className="panel mt-3 divide-y divide-line overflow-hidden">
+            <div className="mt-2 border-t border-line">
               {/* Column rail: one grid shared with every row, so the figures sit
                   in a line instead of drifting with each name length. The panel's
                   divider draws the line under it; the rail draws nothing. */}

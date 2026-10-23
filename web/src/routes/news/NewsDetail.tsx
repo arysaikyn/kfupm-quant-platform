@@ -36,32 +36,33 @@ export default function NewsDetail() {
   return (
     <Screen leading={back}>
       <article className="pt-1 pb-2">
-        <h1 className="text-[23px] leading-[1.3] font-semibold text-fg rtl:leading-[1.55]">
+        {/* The headline is the hero: largest type on the page, on the canvas. */}
+        <h1 className="t-title text-[26px] leading-[1.25] font-semibold text-fg rtl:leading-[1.55]">
           {item.title[lang]}
         </h1>
-        <div className="mt-2.5 flex items-center gap-1.5 text-[12px] text-muted">
+        <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted">
           <span className="truncate">{item.source}</span>
           <span aria-hidden="true">·</span>
           <time className="num shrink-0">{relTime(item.minutesAgo, lang)}</time>
         </div>
 
-        <div className="mt-6 space-y-4 text-[15px] leading-[1.75] text-fg/85 rtl:leading-[1.95]">
+        <div className="mt-6 max-w-[68ch] space-y-4 text-[15px] leading-[1.75] text-fg/85 rtl:leading-[1.95]">
           {item.body.map((paragraph, i) => (
             <p key={i}>{paragraph[lang]}</p>
           ))}
         </div>
 
-        <section className="mt-8">
+        <section className="mt-9">
           <h2 className="text-[12px] font-medium text-muted">{s('related')}</h2>
-          <ul className="mt-2 space-y-2">
+          <ul className="mt-2 border-t border-line divide-y divide-line">
             {item.symbols.map((sym) => {
               const quote = quoteBySymbol[sym]
               const watched = watchlist.includes(sym)
               return (
-                <li key={sym} className="panel flex items-center gap-2 ps-3.5 pe-2">
+                <li key={sym} className="flex items-center gap-2">
                   <Link
                     to={`/m/${sym}`}
-                    className="flex min-h-14 min-w-0 flex-1 flex-col justify-center rounded-xl py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:opacity-80"
+                    className="flex min-h-14 min-w-0 flex-1 flex-col justify-center py-2.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:opacity-80"
                   >
                     <span className="flex min-w-0 items-baseline gap-2">
                       <span className="num shrink-0 text-[13px] font-medium text-fg">{sym}</span>
@@ -86,14 +87,8 @@ export default function NewsDetail() {
                     onClick={() => toggleWatch(sym)}
                     aria-pressed={watched}
                     aria-label={`${watched ? s('watchRemove') : s('watchAdd')} · ${sym}`}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
-                    style={{
-                      borderColor: watched ? 'var(--color-accent)' : 'var(--color-line)',
-                      background: watched
-                        ? 'color-mix(in srgb, var(--color-accent) 14%, transparent)'
-                        : 'transparent',
-                      color: watched ? 'var(--color-accent)' : 'var(--color-muted)',
-                    }}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
+                    style={{ color: watched ? 'var(--color-accent)' : 'var(--color-muted)' }}
                   >
                     <svg
                       width="19"

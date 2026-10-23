@@ -58,17 +58,16 @@ export function StoryArt({ item }: Props) {
   const { line, area } = pricePath(seed, rising)
   const corner = item.symbols[0] ?? item.source.charAt(0)
 
-  // Flat tint plus the hairline. The gradient glow made a 96px thumbnail the
-  // loudest element in the feed, louder than the headline next to it.
+  // Flat tint, no rim. A hairline border on a 96px tile drew a second box inside
+  // the list's own hairlines; the tint alone reads as artwork.
   const tile: CSSProperties = {
-    borderColor: 'var(--color-line)',
-    background: `color-mix(in srgb, ${tone} 8%, var(--color-surface))`,
+    background: `color-mix(in srgb, ${tone} 5%, var(--color-surface))`,
   }
 
   return (
     <div
       aria-hidden="true"
-      className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[14px] border"
+      className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[14px]"
       style={tile}
     >
       <svg viewBox="0 0 96 96" fill="none" className="absolute inset-0 h-full w-full">

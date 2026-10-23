@@ -127,6 +127,9 @@ export default function AiPage() {
   const evidenceSymbol = quoteChip?.kind === 'quote' ? quoteChip.symbol : undefined
 
   useEffect(() => {
+    // An empty thread opens at the top: the title is the first thing the
+    // screen says, and the tail spacer would otherwise scroll it away.
+    if (msgs.length === 0) return
     const el = endRef.current
     if (!el) return
     const doc = document.documentElement
@@ -289,7 +292,7 @@ export default function AiPage() {
         </div>
 
         {/* thread */}
-        <div className="mt-5 space-y-5">
+        <div className="mt-6 space-y-8">
           {msgs.length === 0 && (
             <div className="pt-1">
               <div className="flex flex-wrap gap-2">
@@ -305,31 +308,30 @@ export default function AiPage() {
                   </button>
                 ))}
               </div>
-              <p className="t-kicker mt-6 text-muted">{s('capTitle')}</p>
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <p className="t-kicker mt-8 text-muted">{s('capTitle')}</p>
+              <ul className="mt-2 grid grid-cols-2 border-t border-line">
                 {CAPS.map((c, i) => (
-                  <button
-                    key={c.t}
-                    type="button"
-                    disabled={busy}
-                    onClick={() => send(s(c.t))}
-                    className="panel flex min-h-[74px] items-start gap-2 p-4 text-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-                  >
-                    <span
-                      className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-accent"
+                  <li key={c.t} className="border-b border-line odd:border-e">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => send(s(c.t))}
+                      className="flex h-full min-h-[72px] w-full items-start gap-2 py-3 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10 disabled:opacity-60 odd:pe-3 even:ps-3"
                     >
-                      {CAP_ICONS[i]}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-[13px] font-medium leading-tight">{s(c.t)}</span>
-                      <span className="mt-1 block text-[11px] leading-snug text-muted">
-                        {s(c.h)}
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center text-muted">
+                        {CAP_ICONS[i]}
                       </span>
-                    </span>
-                  </button>
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-medium leading-tight">{s(c.t)}</span>
+                        <span className="mt-1 block text-[11px] leading-snug text-muted">
+                          {s(c.h)}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
                 ))}
-              </div>
-              <p className="mt-4 text-[11px] text-muted">{s('disclaimer')}</p>
+              </ul>
+              <p className="mt-6 text-[11px] text-muted">{s('disclaimer')}</p>
             </div>
           )}
 

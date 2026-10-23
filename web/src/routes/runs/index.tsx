@@ -252,7 +252,7 @@ function RunCard({
         onClick={onToggle}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        className="block min-h-11 w-full p-4 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
+        className="block min-h-11 w-full px-3 py-3.5 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/5"
       >
         <span className="flex items-center justify-between gap-2">
           <span className="num text-[11px] text-muted">
@@ -311,7 +311,7 @@ function RunCard({
       </button>
 
       {open && (
-        <div id={panelId} className="border-t border-line px-4 pt-3 pb-4">
+        <div id={panelId} className="border-t border-line px-3 pt-3 pb-4">
           <p className="text-[11px] font-semibold text-muted">{s('sourcesTitle')}</p>
           {run.sources.length === 0 ? (
             <p className="mt-2 text-[12px] text-muted">{s('noSources')}</p>
@@ -356,52 +356,27 @@ export default function RunsPage() {
     )
 
   return (
-    <Screen
-      title={s('title')}
-      leading={<BackButton fallback="/ai" />}
-      action={
-        <Link
-          to="/ai"
-          aria-label={s('newQuestion')}
-          title={s('newQuestion')}
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-solid text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-        </Link>
-      }
-    >
-      <div className="space-y-3 pt-4">
-        <p className="text-[13px] leading-relaxed text-muted">{s('lead')}</p>
+    <Screen title={s('title')} leading={<BackButton fallback="/ai" />}>
+      <div className="pt-4">
+        <p className="text-[14px] leading-relaxed text-muted">{s('lead')}</p>
 
-        <section className="panel flex items-stretch p-4">
-          <div className="min-w-0 flex-1">
-            <p className="num text-[26px] leading-none font-semibold">
-              {fmtNum(runs.length, lang, 0)}
-            </p>
-            <p className="mt-2 text-[11px] text-muted">{s('runsLabel')}</p>
-          </div>
-          <div className="min-w-0 flex-1 border-s border-line ps-4">
-            <p className="num text-[26px] leading-none font-semibold">
-              {fmtNum(totalSources, lang, 0)}
-            </p>
-            <p className="mt-2 text-[11px] text-muted">{s('sourcesLabel')}</p>
-          </div>
-        </section>
+        <div className="mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <span className="t-display num text-[40px] leading-none">
+            {fmtNum(runs.length, lang, 0)}
+          </span>
+          <span className="text-[12px] text-muted">{s('runsLabel')}</span>
+          <span aria-hidden="true" className="mx-1 text-line">
+            ·
+          </span>
+          <span className="num text-[12px] text-fg">{fmtNum(totalSources, lang, 0)}</span>
+          <span className="text-[12px] text-muted">{s('sourcesLabel')}</span>
+        </div>
 
-        {sample && <p className="text-[11px] leading-relaxed text-muted">{s('sampleNote')}</p>}
+        {sample && (
+          <p className="mt-2 text-[11px] leading-relaxed text-muted">{s('sampleNote')}</p>
+        )}
 
-        <div className="panel divide-y divide-line overflow-hidden">
+        <div className="mt-5 divide-y divide-line border-t border-line">
           {runs.map((run, i) => (
             <RunCard
               key={run.key}
@@ -417,7 +392,7 @@ export default function RunsPage() {
 
         <Link
           to="/ai"
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-solid px-5 text-[15px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-solid px-5 text-[15px] font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-80"
         >
           <svg
             width="16"

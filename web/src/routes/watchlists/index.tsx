@@ -239,9 +239,9 @@ function IconBtn({
 function HeadStat({ value, label, tracking }: { value: number; label: string; tracking: number | undefined }) {
   return (
     <div className="text-end">
-      <p className="num text-[17px] leading-none font-semibold">{value}</p>
+      <p className="num text-[18px] leading-none font-semibold">{value}</p>
       <p
-        className="mt-1.5 max-w-[86px] truncate text-[10px] leading-tight text-muted"
+        className="mt-1.5 max-w-[86px] truncate text-[11px] leading-tight text-muted"
         style={{ letterSpacing: tracking }}
       >
         {label}
@@ -516,8 +516,8 @@ export default function WatchlistsPage() {
           }
         />
       ) : active ? (
-        <section className="panel mt-3 overflow-hidden">
-          <div className="flex items-center gap-1 border-b border-line ps-3 pe-1 py-1.5">
+        <section className="mt-6">
+          <div className="flex items-center gap-1 pb-1">
             {editingId === active.id ? (
               <form onSubmit={saveRename} className="flex min-w-0 flex-1 items-center gap-1">
                 <label htmlFor="wl-rename" className="sr-only">
@@ -544,7 +544,7 @@ export default function WatchlistsPage() {
               </form>
             ) : (
               <>
-                <h2 className="min-w-0 flex-1 truncate text-[15px] font-semibold">{active.name}</h2>
+                <h2 className="t-section min-w-0 flex-1 truncate">{active.name}</h2>
                 <span className="num shrink-0 text-[11px] text-muted">
                   {rows.length}
                 </span>
@@ -572,7 +572,7 @@ export default function WatchlistsPage() {
 
           <form
             onSubmit={addSymbol}
-            className="flex items-center gap-2 border-b border-line px-4 py-2"
+            className="flex items-center gap-2 border-t border-line py-2"
           >
             <label htmlFor="wl-add-symbol" className="sr-only">
               {s('addSymbol')}
@@ -599,14 +599,14 @@ export default function WatchlistsPage() {
           </form>
 
           {rows.length === 0 ? (
-            <p className="px-4 py-8 text-center text-[13px] text-muted">{s('emptyGroup')}</p>
+            <p className="border-t border-line py-6 text-[12px] text-muted">{s('emptyGroup')}</p>
           ) : (
-            <ul>
+            <ul className="divide-y divide-line border-t border-line">
               {rows.map((q) => {
                 const watched = watchlist.includes(q.symbol)
                 const tone = q.change >= 0 ? 'var(--color-up)' : 'var(--color-down)'
                 return (
-                  <li key={q.symbol} className="row pe-1">
+                  <li key={q.symbol} className="flex min-h-14 items-center gap-1 ps-3 pe-1">
                     <Link
                       to={`/m/${q.symbol}`}
                       className="flex min-h-11 min-w-0 flex-1 items-center gap-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"

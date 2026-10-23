@@ -35,7 +35,7 @@ export function FairValueRail({ price, fairValue, labels, format }: Props) {
   const fairPos = 0.5
 
   return (
-    <div className="panel px-4 py-3">
+    <div>
       <div className="flex items-baseline justify-between gap-3">
         <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
           {labels.title}
@@ -68,7 +68,7 @@ export function FairValueRail({ price, fairValue, labels, format }: Props) {
         />
       </div>
 
-      <div className="mt-2 flex items-baseline justify-between text-[11px]">
+      <div className="mt-2 flex items-baseline justify-between text-[12px]">
         <span style={{ color: 'var(--color-muted)' }}>
           {labels.price} <span className="num" style={{ color: 'var(--color-fg)' }}>{format(price)}</span>
         </span>

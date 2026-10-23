@@ -58,23 +58,6 @@ function TrashIcon() {
   )
 }
 
-function HeadStat({
-  value,
-  label,
-  tone,
-}: {
-  value: number
-  label: string
-  tone: string
-}) {
-  return (
-    <div className="text-end">
-      <p className={`num text-[17px] leading-none font-semibold ${tone}`}>{value}</p>
-      <p className="mt-1.5 truncate text-[10px] leading-none text-muted">{label}</p>
-    </div>
-  )
-}
-
 export default function AlertsPage() {
   const { lang } = useI18n()
   const s = useStrings(strings)
@@ -141,24 +124,9 @@ export default function AlertsPage() {
     <Screen
       title={s('title')}
       leading={<BackButton fallback="/" />}
-      action={
-        <div
-          role="group"
-          aria-label={`${triggered.length} ${s('triggered')}, ${waiting.length} ${s('waiting')}`}
-          className="flex shrink-0 items-center gap-3 pb-0.5"
-        >
-          <HeadStat
-            value={triggered.length}
-            label={s('triggered')}
-            tone="text-fg"
-          />
-          <span aria-hidden="true" className="h-7 w-px bg-line" />
-          <HeadStat value={waiting.length} label={s('waiting')} tone="text-fg" />
-        </div>
-      }
     >
       <section className="panel mt-4 p-4">
-        <h2 className="t-section " style={kicker}>
+        <h2 className="t-section" style={kicker}>
           {s('formTitle')}
         </h2>
 
@@ -278,46 +246,52 @@ export default function AlertsPage() {
       ) : (
         <>
           {sections.map((group) => (
-            <section key={group.key} className="mt-6">
-              <div className="panel overflow-hidden">
-                <ul>
+            <section key={group.key} className="mt-8">
+              <h2 className="t-section flex items-baseline gap-2 pb-2">
+                {s(group.key === 'fired' ? 'triggered' : 'waiting')}
+                <span className="num text-[12px] font-normal text-muted">
+                  {group.rows.length}
+                </span>
+              </h2>
+              <ul className="border-t border-line">
                 {group.rows.map((r) => (
-              <li key={r.id} className="row">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="num text-[14px] font-semibold">{r.symbol}</span>
-                    <span className="truncate text-[11px] text-muted">
-                      {r.quote.name[lang]}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
-                    <span className="inline-flex items-center gap-1 text-fg">
-                      <DirIcon dir={r.dir} />
-                      <span className="text-muted">{s(r.dir)}</span>
-                      <span className="num font-medium">{fmtNum(r.threshold, lang, 2)}</span>
-                    </span>
-                    <span aria-hidden="true" className="text-line">
-                      ·
-                    </span>
-                    <span className="text-muted">
-                      {s('current')}{' '}
-                      <span className="num text-fg">{fmtNum(r.quote.price, lang, 2)}</span>
-                    </span>
-                  </div>
-                </div>
+                  <li key={r.id} className="row">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="num text-[14px] font-semibold">{r.symbol}</span>
+                        <span className="truncate text-[11px] text-muted">
+                          {r.quote.name[lang]}
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
+                        <span className="inline-flex items-center gap-1 text-fg">
+                          <DirIcon dir={r.dir} />
+                          <span className="text-muted">{s(r.dir)}</span>
+                          <span className="num font-medium">
+                            {fmtNum(r.threshold, lang, 2)}
+                          </span>
+                        </span>
+                        <span aria-hidden="true" className="text-line">
+                          ·
+                        </span>
+                        <span className="text-muted">
+                          {s('current')}{' '}
+                          <span className="num text-fg">{fmtNum(r.quote.price, lang, 2)}</span>
+                        </span>
+                      </div>
+                    </div>
 
-                <button
-                  type="button"
-                  onClick={() => removeAlert(r.id)}
-                  aria-label={`${s('delete')} ${r.symbol}`}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-                >
-                  <TrashIcon />
-                </button>
-              </li>
+                    <button
+                      type="button"
+                      onClick={() => removeAlert(r.id)}
+                      aria-label={`${s('delete')} ${r.symbol}`}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    >
+                      <TrashIcon />
+                    </button>
+                  </li>
                 ))}
-                </ul>
-              </div>
+              </ul>
             </section>
           ))}
         </>

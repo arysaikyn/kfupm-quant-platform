@@ -10,7 +10,6 @@ import { fundamentalsFor } from '../../data/fundamentals'
 import { news, quotes } from '../../data/mock'
 import { axisScores, checkList, strengthsAndRisks } from './checks'
 import { toggleWatch, useUser } from '../../store/user'
-import { SectionHead } from './SectionHead'
 import { strings } from './strings'
 import { symbolStrings } from './symbolStrings'
 
@@ -56,7 +55,7 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
       {/* A flat 10% wash under the line: a hint of direction, never a glow. */}
       <path
         d={area}
-        style={{ fill: `color-mix(in srgb, ${stroke} 6%, transparent)` }}
+        style={{ fill: `color-mix(in srgb, ${stroke} 4%, transparent)` }}
       />
       <path
         d={line}
@@ -210,77 +209,64 @@ export default function SymbolPage() {
       title={quote.name[lang]}
       leading={back}
       action={
-        <Link
-          to={`/compare?a=${quote.symbol}`}
-          className="flex min-h-11 shrink-0 items-center rounded-full bg-surface px-3.5 text-[12px] text-muted"
-        >
-          {s('goCompare')}
-        </Link>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <button
+            type="button"
+            aria-pressed={watched}
+            aria-label={`${watched ? c('watchOn') : c('watchAdd')} ${quote.name[lang]}`}
+            onClick={() => toggleWatch(quote.symbol)}
+            className="flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:bg-fg/10"
+            style={{ color: watched ? 'var(--color-accent)' : 'var(--color-muted)' }}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill={watched ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 3.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.6 9.7l5.8-.8z" />
+            </svg>
+          </button>
+          <Link
+            to={`/compare?a=${quote.symbol}`}
+            className="flex min-h-11 shrink-0 items-center rounded-full bg-surface px-3.5 text-[12px] text-muted"
+          >
+            {s('goCompare')}
+          </Link>
+        </div>
       }
     >
-      {/* Price header */}
-      <div className="mt-1 flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="num text-[11px] tracking-[0.12em]" style={{ color: 'var(--color-muted)' }}>
-            {quote.symbol} · {quote.currency}
-          </p>
-          <div className="mt-1.5 flex flex-wrap items-end gap-x-2 gap-y-1">
-            <span className="t-display num text-[46px] leading-none">
-              <AnimatedNumber value={quote.price} format={(n) => fmtNum(n, lang, 2)} />
-            </span>
-            <span className="pb-0.5 text-[13px]" style={{ color: 'var(--color-muted)' }}>
-              {quote.currency}
-            </span>
-          </div>
-          <div
-            className="mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1"
-            style={{
-              background: `color-mix(in srgb, ${token} 16%, transparent)`,
-              color: token,
-            }}
+      {/* The price owns the screen: one number, type on the canvas, no card */}
+      <div className="mt-1">
+        <p className="t-sym" style={{ color: 'var(--color-muted)' }}>
+          {quote.symbol} · {quote.currency}
+        </p>
+        <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+          <span className="t-display num text-[56px] leading-[0.95]">
+            <AnimatedNumber value={quote.price} format={(n) => fmtNum(n, lang, 2)} />
+          </span>
+          <span
+            className="num flex items-center gap-1 pb-1 text-[14px] font-medium"
+            style={{ color: token }}
           >
             <svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true">
               <path d={up ? 'M5 1.5 9 8H1z' : 'M5 8.5 1 2h8z'} fill="currentColor" />
             </svg>
-            <span className="num text-[13px] font-medium">{fmtPct(quote.change, lang)}</span>
-            <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
-              {s('today')}
-            </span>
-          </div>
+            {fmtPct(quote.change, lang)}
+          </span>
+          <span className="pb-1 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+            {s('today')}
+          </span>
         </div>
-
-        <button
-          type="button"
-          aria-pressed={watched}
-          onClick={() => toggleWatch(quote.symbol)}
-          className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-75"
-          style={
-            watched
-              ? {
-                  background: 'color-mix(in srgb, var(--color-accent) 16%, transparent)',
-                  color: 'var(--color-accent)',
-                }
-              : { background: 'var(--color-surface)', color: 'var(--color-muted)' }
-          }
-        >
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill={watched ? 'currentColor' : 'none'}
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M12 3.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.6 9.7l5.8-.8z" />
-          </svg>
-          {watched ? c('watchOn') : c('watchAdd')}
-        </button>
       </div>
 
-      {/* Fair value rail: price against the model's fair value, before anything else */}
-      <div className="mt-3">
+      {/* Fair value rail: price against the model's fair value, before anything
+          else. A rule and space, not a second box under the price. */}
+      <div className="mt-8 border-t border-line pt-4">
         <FairValueRail
           price={quote.price}
           fairValue={fairValue}
@@ -296,8 +282,8 @@ export default function SymbolPage() {
         />
       </div>
 
-      {/* Chart */}
-      <div className="panel mt-4 p-3">
+      {/* Chart: full width, no frame; the series is the page's texture */}
+      <div className="mt-8 border-t border-line pt-4">
         <PriceChart data={series} up={up} />
         <div
           role="group"
@@ -315,7 +301,7 @@ export default function SymbolPage() {
                 className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
               >
                 <span
-                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
+                  className="rounded-lg px-3 py-1.5 text-[12px] font-medium"
                   style={
                     on
                       ? { background: 'var(--color-accent-fill)', color: '#fff' }
@@ -330,41 +316,23 @@ export default function SymbolPage() {
         </div>
       </div>
 
-      {/* Rules */}
-      <SectionHead title={s('rulesTitle')} />
-      <div className="panel mt-2">
+      {/* Rules: a hairline list, not a card */}
+      <h2 className="mt-8 text-[15px] font-semibold">{s('rulesTitle')}</h2>
+      <ul className="mt-2">
         {rules.map((r) => (
-          <div key={r.title} className="row justify-between gap-3">
-            <p className="min-w-0 truncate text-[13px]">{r.title}</p>
-            <p className="num shrink-0 text-end text-[11px] text-muted">{r.sub}</p>
-          </div>
+          <li
+            key={r.title}
+            className="flex min-h-[56px] items-center justify-between gap-3 border-t border-line"
+          >
+            <p className="min-w-0 truncate text-[14px]">{r.title}</p>
+            <p className="num shrink-0 text-end text-[12px] text-muted">{r.sub}</p>
+          </li>
         ))}
-      </div>
-
-      {/* Related news */}
-      <SectionHead title={s('newsTitle')} />
-      {related.length === 0 ? (
-        <p className="mt-2 text-[12px]" style={{ color: 'var(--color-muted)' }}>
-          {s('newsEmpty')}
-        </p>
-      ) : (
-        <ul className="panel mt-2 overflow-hidden">
-          {related.map((n) => (
-            <li key={n.id} className="row">
-              <Link to={`/news/${n.id}`} className="block w-full py-3 transition-colors hover:bg-fg/5 active:bg-fg/10">
-                <p className="line-clamp-2 text-[14px] leading-snug">{n.title[lang]}</p>
-                <p className="num mt-1.5 text-[11px] text-muted">
-                  {n.source} · {s('timePrefix')} {fmtNum(n.minutesAgo, lang, 0)} {s('timeSuffix')}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      </ul>
 
       {/* Five-axis score: the polygon is the summary, the rows are the audit */}
-      <SectionHead title={c('factorsTitle')} />
-      <div className="panel mt-3 p-4">
+      <h2 className="mt-8 text-[15px] font-semibold">{c('factorsTitle')}</h2>
+      <div className="mt-3">
         <div className="flex items-center gap-4">
           <Snowflake
             scores={axes.map((a) => a.score)}
@@ -373,7 +341,7 @@ export default function SymbolPage() {
             size={132}
             aria={axes.map((a) => `${axisLabel[a.axis]} ${a.score}/${a.total}`).join(', ')}
           />
-          <ul className="min-w-0 flex-1 space-y-1.5">
+          <ul className="min-w-0 flex-1 space-y-2">
             {axes.map((a) => {
               const tone =
                 a.score >= 4
@@ -383,8 +351,8 @@ export default function SymbolPage() {
                     : 'var(--color-muted)'
               return (
                 <li key={a.axis} className="flex items-baseline justify-between gap-2">
-                  <span className="truncate text-[12px]">{axisLabel[a.axis]}</span>
-                  <span className="num shrink-0 text-[12px] font-semibold" style={{ color: tone }}>
+                  <span className="truncate text-[14px]">{axisLabel[a.axis]}</span>
+                  <span className="num shrink-0 text-[14px] font-semibold" style={{ color: tone }}>
                     {a.score}/{a.total}
                   </span>
                 </li>
@@ -392,41 +360,49 @@ export default function SymbolPage() {
             })}
           </ul>
         </div>
-        <p className="mt-3 text-[11px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-4 text-[12px] leading-snug" style={{ color: 'var(--color-muted)' }}>
           {c('factorsHint')}
         </p>
       </div>
 
-      {/* Strengths / risks: the same checks, read out in words */}
-      <SectionHead title={c('rewardsTitle')} />
-      <div className="panel mt-3 divide-y divide-line overflow-hidden">
-        {rewards.map((k) => (
-          <div key={k.id} className="flex items-start gap-2.5 px-4 py-2.5">
-            <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-up)' }}>✓</span>
-            <span className="min-w-0 flex-1 text-[12px] leading-snug">{k.label[lang]}</span>
-            <span className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
-          </div>
-        ))}
+      {/* Strengths and risks: one list, two group labels. The same checks the
+          axes count, read out in words. */}
+      <h2 className="mt-8 text-[15px] font-semibold">{c('checksTitle')}</h2>
+      <div className="mt-2">
+        <p className="text-[12px] font-medium" style={{ color: 'var(--color-muted)' }}>
+          {c('rewardsTitle')}
+        </p>
+        <ul className="mt-1 divide-y divide-line border-t border-line">
+          {rewards.map((k) => (
+            <li key={k.id} className="flex min-h-[44px] items-start gap-2.5 py-2.5">
+              <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-up)' }}>✓</span>
+              <span className="min-w-0 flex-1 text-[14px] leading-snug">{k.label[lang]}</span>
+              <span className="num shrink-0 text-[12px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-5 text-[12px] font-medium" style={{ color: 'var(--color-muted)' }}>
+          {c('risksTitle')}
+        </p>
+        <ul className="mt-1 divide-y divide-line border-t border-line">
+          {risks.map((k) => (
+            <li key={k.id} className="flex min-h-[44px] items-start gap-2.5 py-2.5">
+              <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-down)' }}>⚠</span>
+              <span className="min-w-0 flex-1 text-[14px] leading-snug">{k.label[lang]}</span>
+              <span className="num shrink-0 text-[12px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      <SectionHead title={c('risksTitle')} />
-      <div className="panel mt-3 divide-y divide-line overflow-hidden">
-        {risks.map((k) => (
-          <div key={k.id} className="flex items-start gap-2.5 px-4 py-2.5">
-            <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-down)' }}>⚠</span>
-            <span className="min-w-0 flex-1 text-[12px] leading-snug">{k.label[lang]}</span>
-            <span className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Peer comparison */}
-      <SectionHead title={c('peersTitle')} />
-      <div className="panel mt-3 divide-y divide-line overflow-hidden">
-        <div aria-hidden="true" className={`${PEER_GRID} px-3 py-2`}>
-          <span className="text-[11px] text-muted">{c('colName')}</span>
-          <span className="text-end text-[11px] text-muted">{c('colPrice')}</span>
-          <span className="text-end text-[11px] text-muted">{c('colChg')}</span>
+      {/* Peers: a hairline list with a column rail, the same shape as the board */}
+      <h2 className="mt-8 text-[15px] font-semibold">{c('peersTitle')}</h2>
+      <div className="mt-2 border-t border-line">
+        <div aria-hidden="true" className={`${PEER_GRID} border-b border-line py-2`}>
+          <span className="text-[12px] text-muted">{c('colName')}</span>
+          <span className="text-end text-[12px] text-muted">{c('colPrice')}</span>
+          <span className="text-end text-[12px] text-muted">{c('colChg')}</span>
         </div>
         <ul className="divide-y divide-line">
           {peers.map((p) => {
@@ -435,24 +411,24 @@ export default function SymbolPage() {
               <li key={p.symbol}>
                 <Link
                   to={`/m/${p.symbol}`}
-                  className={`${PEER_GRID} min-h-14 px-3 py-2 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10`}
+                  className={`${PEER_GRID} min-h-[56px] py-2 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10`}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-[13px] leading-tight font-medium">
+                    <span className="block truncate text-[14px] leading-tight font-medium">
                       {p.name[lang]}
                     </span>
                     <span
-                      className="num mt-0.5 block truncate text-[11px] leading-none"
+                      className="num mt-0.5 block truncate text-[12px] leading-none"
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {p.symbol} · {p.currency}
                     </span>
                   </span>
-                  <span className="num text-end text-[12px]">
+                  <span className="num text-end text-[14px]">
                     <AnimatedNumber value={p.price} format={(n) => fmtNum(n, lang, 2)} />
                   </span>
                   <span
-                    className="num text-end text-[12px]"
+                    className="num text-end text-[14px]"
                     style={{ color: pUp ? 'var(--color-up)' : 'var(--color-down)' }}
                   >
                     {fmtPct(p.change, lang)}
@@ -465,17 +441,17 @@ export default function SymbolPage() {
       </div>
 
       {/* Why it moved */}
-      <SectionHead title={c('whyTitle')} />
-      <ul className="mt-3 space-y-2">
+      <h2 className="mt-8 text-[15px] font-semibold">{c('whyTitle')}</h2>
+      <ul className="mt-3 space-y-2.5">
         {why.map((w) => (
           <li key={w.attr} className="flex items-start gap-2">
             <span
               aria-hidden="true"
-              className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full"
+              className="mt-[8px] h-1.5 w-1.5 shrink-0 rounded-full"
               style={{ background: w.tone }}
             />
-            <p className="min-w-0 text-[12px] leading-relaxed">
-              <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+            <p className="min-w-0 text-[14px] leading-relaxed">
+              <span className="text-[12px]" style={{ color: 'var(--color-muted)' }}>
                 {w.attr} ·{' '}
               </span>
               {w.text}
@@ -483,6 +459,31 @@ export default function SymbolPage() {
           </li>
         ))}
       </ul>
+
+      {/* Related news: the last thing on the page, because it is context for
+          the figures above, not a headline of its own. */}
+      <h2 className="mt-8 text-[15px] font-semibold">{s('newsTitle')}</h2>
+      {related.length === 0 ? (
+        <p className="mt-2 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+          {s('newsEmpty')}
+        </p>
+      ) : (
+        <ul className="mt-2">
+          {related.map((n) => (
+            <li key={n.id} className="border-t border-line">
+              <Link
+                to={`/news/${n.id}`}
+                className="block min-h-[56px] py-3 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent active:bg-fg/10"
+              >
+                <p className="line-clamp-2 text-[14px] leading-snug">{n.title[lang]}</p>
+                <p className="num mt-1.5 text-[12px] text-muted">
+                  {n.source} · {s('timePrefix')} {fmtNum(n.minutesAgo, lang, 0)} {s('timeSuffix')}
+                </p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </Screen>
   )
 }

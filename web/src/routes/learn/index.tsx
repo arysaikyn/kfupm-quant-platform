@@ -130,7 +130,7 @@ export default function LearnPage() {
   return (
     <Screen title={s('title')} leading={<BackButton fallback="/me" />}>
       <div className="pt-4">
-        <p className="text-[13px] leading-[1.5] text-muted">{s('intro')}</p>
+        <p className="text-[14px] leading-[1.5] text-muted">{s('intro')}</p>
 
         {/* The border lives on the wrapper so focus lights the whole field. */}
         <div className="panel mt-3 flex h-14 items-center gap-1 ps-4 pe-1.5 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent">
@@ -170,17 +170,17 @@ export default function LearnPage() {
       </div>
 
       {groups.map((group) => (
-        <section key={group.key} className="mt-6">
+        <section key={group.key} className="mt-8">
           {/* Sticks just under the Screen header (65px tall) while the group
               scrolls past, so the reader always knows the current bucket. */}
-          <h2 className="sticky top-[64px] z-20 -mx-4 flex items-center gap-2 bg-bg px-4 pt-2.5 pb-2 text-[14px] font-semibold">
-            <span className="text-fg">{group.key}</span>
+          <h2 className="sticky top-[64px] z-20 -mx-4 bg-bg px-4 pt-2.5 pb-1.5 text-[12px] font-semibold text-muted">
+            {group.key}
           </h2>
 
-          <ul className="panel divide-y divide-line overflow-hidden">
+          <ul className="divide-y divide-line border-t border-line">
             {group.items.map((item) => (
-              <li key={item.term} className="px-4 py-4">
-                <h3 className="t-title text-[17px] leading-[1.3] font-semibold text-fg">
+              <li key={item.term} className="px-3 py-4">
+                <h3 className="t-title text-[15px] leading-[1.35] font-semibold text-fg">
                   {item.term}
                 </h3>
                 <p className="mt-1.5 text-[14px] leading-[1.55] text-fg/85">{item.plain}</p>

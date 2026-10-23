@@ -41,6 +41,7 @@ type LabCopy = {
   sector: string
   timing: string
   cost: string
+  vsBench: string
 }
 
 /** Copy for the analysis blocks lives here because this screen owns its strings. */
@@ -61,6 +62,7 @@ const LAB: Record<Lang, LabCopy> = {
     sector: '行业',
     timing: '择时',
     cost: '成本',
+    vsBench: '比基准',
   },
   en: {
     simulated: 'Simulated',
@@ -78,6 +80,7 @@ const LAB: Record<Lang, LabCopy> = {
     sector: 'Sector',
     timing: 'Timing',
     cost: 'Costs',
+    vsBench: 'vs benchmark',
   },
   ar: {
     simulated: 'محاكاة',
@@ -95,6 +98,7 @@ const LAB: Record<Lang, LabCopy> = {
     sector: 'القطاع',
     timing: 'التوقيت',
     cost: 'التكلفة',
+    vsBench: 'مقابل المؤشر',
   },
 }
 
@@ -282,6 +286,8 @@ export default function StrategyDetail() {
 
   // Attribution walks from benchmark -> gross -> net, so the four parts close on total.
   const benchTotal = bench[bench.length - 1] - 1
+  // What the headline return earned over simply holding the benchmark.
+  const excess = total - benchTotal
   const grossTotal = st.gross[st.gross.length - 1] - 1
   const cost = total - grossTotal
   const active = grossTotal - benchTotal
@@ -314,57 +320,57 @@ export default function StrategyDetail() {
     sig.dsr >= 0.95
       ? {
           color: 'var(--color-accent)',
-          border: '1px solid transparent',
           background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)',
         }
       : sig.dsr >= 0.75
-        ? { color: 'var(--color-fg)', border: '1px solid var(--color-line)' }
-        : { color: 'var(--color-muted)', border: '1px solid var(--color-line)' }
+        ? { color: 'var(--color-fg)', background: 'var(--color-surface)' }
+        : { color: 'var(--color-muted)', background: 'var(--color-surface)' }
 
   return (
     <Screen title={st.name[lang]} leading={back}>
-      <div className="space-y-6 pt-1">
-        {/* The verdict first: one big number, the worst fall beside it, then what it is. */}
+      <div className="space-y-8 pt-1">
+        {/* One number owns the screen. The benchmark gap sits directly under it,
+            because "beat what you could have bought" is the question a return
+            raises before any other figure does. */}
         <section>
-          <div className="flex items-end justify-between gap-4">
-            <div className="min-w-0">
-              <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
-                {SINCE[lang]}
-              </p>
-              <div
-                dir="ltr"
-                className={`num t-display mt-1.5 text-[40px] leading-none font-semibold ${tone}`}
-              >
-                {fmtPct(total, lang, 1)}
-              </div>
-            </div>
-            <div className="shrink-0 pb-0.5 text-end">
-              <div
-                dir="ltr"
-                className="num text-[15px] leading-none font-medium"
-                style={{ color: 'var(--color-muted)' }}
-              >
-                {fmtPct(mdd, lang, 1)}
-              </div>
-              <div className="mt-1.5 text-[11px] leading-none" style={{ color: 'var(--color-muted)' }}>
-                {s('mDrawdown')}
-              </div>
-            </div>
+          <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
+            {SINCE[lang]}
+          </p>
+          <div
+            dir="ltr"
+            className={`num t-display mt-2 text-[56px] leading-[0.95] ${tone}`}
+          >
+            {fmtPct(total, lang, 1)}
           </div>
-          <p className="mt-2 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <p
+            className="mt-2.5 flex items-baseline gap-1.5 text-[12px] leading-none"
+            style={{ color: 'var(--color-muted)' }}
+          >
+            {lab.vsBench}
+            <span
+              dir="ltr"
+              className={`num ${
+                excess > 0 ? 'text-up' : excess < 0 ? 'text-down' : 'text-fg'
+              }`}
+            >
+              {fmtPct(excess, lang, 1)}
+            </span>
+          </p>
+          <p className="mt-3 text-[11px]" style={{ color: 'var(--color-muted)' }}>
             {oosText}
           </p>
-          <p className="mt-3 text-[13px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-3 text-[14px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {st.description[lang]}
           </p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {st.tags.map((tag) => {
+          <div
+            className="mt-2 flex flex-wrap items-center gap-x-2 text-[11px] leading-none"
+            style={{ color: 'var(--color-muted)' }}
+          >
+            {st.tags.map((tag, index) => {
               const key = TAG_KEY[tag]
               return (
-                <span
-                  key={tag}
-                  className="rounded-lg border border-line px-2.5 py-1 text-[11px] leading-none text-muted"
-                >
+                <span key={tag} className="flex items-center gap-2">
+                  {index > 0 && <span aria-hidden="true">·</span>}
                   {key ? tagLabel(key) : tag}
                 </span>
               )
@@ -372,9 +378,67 @@ export default function StrategyDetail() {
           </div>
         </section>
 
-        {/* The return above in money: what a rerun pays in fees and slippage. */}
-        <section className="panel p-4">
-          <h2 className="text-[13px] font-medium">{s('costTitle')}</h2>
+        {/* The curve answers "did it hold?" before any table does, and it draws
+            straight on the canvas: a chart inside a box reads as a widget. */}
+        <section>
+          <h2 className="t-section">{s('chartTitle')}</h2>
+          <div className="mt-2" dir="ltr">
+            <EquityChart lang={lang} curve={curve} bench={bench} />
+          </div>
+        </section>
+
+        <section className="border-t border-line pt-5">
+          <div className="grid grid-cols-[1fr_1fr_1.25fr] gap-3">
+            <Metric
+              value={fmtPct(total, lang, 1)}
+              name={s('mTotal')}
+              hint={s('mTotalHint')}
+              tone={total > 0 ? 'text-up' : total < 0 ? 'text-down' : 'text-muted'}
+            />
+            <Metric
+              value={fmtPct(mdd, lang, 1)}
+              name={s('mDrawdown')}
+              hint={s('mDrawdownHint')}
+              tone={mdd < 0 ? 'text-down' : 'text-muted'}
+              divided
+            />
+            <Metric
+              value={fmtNum(TURNOVER * 100, lang, 0, '%')}
+              name={s('mTurnover')}
+              hint={s('mTurnoverHint')}
+              divided
+            />
+          </div>
+        </section>
+
+        {/* The rules are this strategy's own data; no screen-side copy of them exists. */}
+        <section className="border-t border-line pt-5">
+          <h2 className="t-section">{s('rulesTitle')}</h2>
+          <p className="mt-1 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+            {s('rulesHint')}
+          </p>
+          <ul className="mt-2 divide-y divide-line">
+            {st.rules.map((rule, index) => (
+              <li key={rule.id} className="flex items-baseline gap-3 py-3">
+                <span
+                  className="num shrink-0 text-[11px]"
+                  style={{ color: 'var(--color-muted)' }}
+                  aria-hidden="true"
+                >
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <p className="min-w-0 flex-1 text-[14px] leading-snug">{rule.label[lang]}</p>
+                <span dir="ltr" className="num shrink-0 text-[12px] leading-none">
+                  {rule.value}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* The same return as cash: what a rerun pays in fees and slippage. */}
+        <section className="border-t border-line pt-5">
+          <h2 className="t-section">{s('costTitle')}</h2>
           <div className="mt-3 grid grid-cols-2">
             <div className="min-w-0 pe-3 pb-3">
               <div dir="ltr" className="num text-[17px] leading-tight font-semibold">
@@ -414,92 +478,24 @@ export default function StrategyDetail() {
           </p>
         </section>
 
-        <Link
-          to={`/report/${st.id}`}
-          className="panel flex min-h-14 items-center justify-between gap-3 p-4 text-[13px] transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          <span>{s('fullReport')}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }} aria-hidden="true">
-            <path d="M9 6l6 6-6 6" />
-          </svg>
-        </Link>
-        <section className="panel p-4">
-          <h2 className="text-[13px] font-medium">{s('chartTitle')}</h2>
-          <div className="mt-2" dir="ltr">
-            <EquityChart lang={lang} curve={curve} bench={bench} />
-          </div>
-        </section>
-
-        {/* The rules are this strategy's own data; no screen-side copy of them exists. */}
-        <section className="panel p-4">
-          <h2 className="text-[13px] font-medium">{s('rulesTitle')}</h2>
-          <p className="mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
-            {s('rulesHint')}
-          </p>
-          <ul className="mt-2 divide-y divide-line">
-            {st.rules.map((rule, index) => (
-              <li key={rule.id} className="flex items-baseline gap-3 py-3">
-                <span
-                  className="num shrink-0 text-[11px]"
-                  style={{ color: 'var(--color-muted)' }}
-                  aria-hidden="true"
-                >
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <p className="min-w-0 flex-1 text-[13px] leading-snug">{rule.label[lang]}</p>
-                <span
-                  dir="ltr"
-                  className="num shrink-0 rounded-lg border border-line px-2 py-0.5 text-[11px] leading-none"
-                >
-                  {rule.value}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="panel p-4">
-          <div className="grid grid-cols-[1fr_1fr_1.25fr] gap-3">
-            <Metric
-              value={fmtPct(total, lang, 1)}
-              name={s('mTotal')}
-              hint={s('mTotalHint')}
-              tone={total > 0 ? 'text-up' : total < 0 ? 'text-down' : 'text-muted'}
-            />
-            <Metric
-              value={fmtPct(mdd, lang, 1)}
-              name={s('mDrawdown')}
-              hint={s('mDrawdownHint')}
-              tone={mdd < 0 ? 'text-down' : 'text-muted'}
-              divided
-            />
-            <Metric
-              value={fmtNum(TURNOVER * 100, lang, 0, '%')}
-              name={s('mTurnover')}
-              hint={s('mTurnoverHint')}
-              divided
-            />
-          </div>
-        </section>
-
-        <section className="panel p-4">
-          <h2 className="text-[13px] font-medium">{lab.sigTitle}</h2>
+        <section className="border-t border-line pt-5">
+          <h2 className="t-section">{lab.sigTitle}</h2>
           <div className="mt-2 grid grid-cols-2 gap-3">
             <div className="min-w-0">
               <div dir="ltr" className="num text-[19px] leading-none font-semibold">
                 {fmtNum(sig.dsr * 100, lang, 0, '%')}
               </div>
-              <div className="mt-1 text-[11px] leading-tight">{lab.deflated}</div>
+              <div className="mt-1 text-[12px] leading-tight">{lab.deflated}</div>
             </div>
             <div className="min-w-0 border-s border-line ps-3">
               <div dir="ltr" className="num text-[19px] leading-none font-semibold">
                 {pText}
               </div>
-              <div className="mt-1 text-[11px] leading-tight">{lab.pValue}</div>
+              <div className="mt-1 text-[12px] leading-tight">{lab.pValue}</div>
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+            <span className="text-[12px]" style={{ color: 'var(--color-muted)' }}>
               {lab.tries}{' '}
               <span dir="ltr" className="num">
                 {st.rules.length * VARIANTS_PER_RULE}
@@ -517,9 +513,9 @@ export default function StrategyDetail() {
           </p>
         </section>
 
-        <section className="panel p-4">
+        <section className="border-t border-line pt-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-[13px] font-medium">{lab.attrTitle}</h2>
+            <h2 className="t-section">{lab.attrTitle}</h2>
             <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
               {lab.simulated}
             </span>
@@ -535,11 +531,11 @@ export default function StrategyDetail() {
                   : Math.min(100, Math.max(2, (Math.abs(part.value) / maxBar) * 100))
               return (
                 <div key={part.key}>
-                  <div className="flex items-center justify-between gap-3 text-[11px] leading-none">
+                  <div className="flex items-center justify-between gap-3 text-[12px] leading-none">
                     <span>{part.label}</span>
                     <span
                       dir="ltr"
-                      className={`num ${part.value > 0 ? 'text-up' : part.value < 0 ? 'text-down' : 'text-muted'}`}
+                      className={`num font-medium ${part.value > 0 ? 'text-up' : part.value < 0 ? 'text-down' : 'text-muted'}`}
                     >
                       {fmtPct(part.shown / 100, lang, 1)}
                     </span>
@@ -559,7 +555,7 @@ export default function StrategyDetail() {
               )
             })}
           </div>
-          <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-2 text-[12px]">
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-2 text-[14px]">
             <span>{s('mTotal')}</span>
             <span dir="ltr" className={`num font-semibold ${tone}`}>
               {fmtPct(total, lang, 1)}
@@ -567,7 +563,29 @@ export default function StrategyDetail() {
           </div>
         </section>
 
-        <section className="panel p-4">
+        {/* The next screen, not a panel: one hairline row. */}
+        <Link
+          to={`/report/${st.id}`}
+          className="flex min-h-14 items-center justify-between gap-3 border-t border-line text-[14px] transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          <span>{s('fullReport')}</span>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            className="rtl:[transform:scaleX(-1)]"
+            style={{ color: 'var(--color-muted)' }}
+            aria-hidden="true"
+          >
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </Link>
+
+        <section className="border-t border-line pt-5">
           <button
             type="button"
             onClick={rerun}

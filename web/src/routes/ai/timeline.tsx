@@ -17,7 +17,7 @@ export function StepTimeline({ shown, total }: { shown: number; total: number })
 
   if (total > 0 && shown >= total) {
     return (
-      <p role="status" className="panel px-4 py-3 text-[11px] leading-[18px] text-muted">
+      <p role="status" className="text-[11px] leading-[1.4] text-muted">
         {STEPS.length} {s('stepsUnit')} · {fmtNum((total * STREAM_MS) / 1000, lang, 1)}
         {s('secUnit')}
       </p>
@@ -27,24 +27,19 @@ export function StepTimeline({ shown, total }: { shown: number; total: number })
   const progress = total > 0 ? Math.min(1, shown / total) : 0
 
   return (
-    <ol className="panel px-4 py-3">
-      {STEPS.map((step, i) => {
+    <ol className="divide-y divide-line">
+      {STEPS.map((step) => {
         const done = progress >= step.at
         return (
-          <li key={step.key} className="flex gap-2.5">
-            <span className="flex w-1.5 shrink-0 flex-col items-center">
-              <span
-                aria-hidden
-                className={`mt-[5px] h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-200 ${
-                  done ? 'bg-accent' : 'bg-muted'
-                }`}
-              />
-              {i < STEPS.length - 1 && (
-                <span aria-hidden className="w-px flex-1 bg-line" />
-              )}
-            </span>
+          <li key={step.key} className="flex items-center gap-2 py-1.5 first:pt-0 last:pb-0">
             <span
-              className={`pb-2 text-[11px] leading-[1.4] transition-colors duration-200 ${
+              aria-hidden
+              className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-200 ${
+                done ? 'bg-accent' : 'bg-muted'
+              }`}
+            />
+            <span
+              className={`text-[11px] leading-[1.4] transition-colors duration-200 ${
                 done ? 'text-fg' : 'text-muted'
               }`}
             >

@@ -95,7 +95,7 @@ export default function StrategyPage() {
         <div
           role="group"
           aria-label={FILTER_LABEL[lang]}
-          className="-mx-4 mt-1 flex gap-2 overflow-x-auto px-4 pb-0.5 [&::-webkit-scrollbar]:hidden"
+          className="-mx-4 mt-1 flex gap-2 overflow-x-auto px-4 pb-0.5 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,transparent,#000_16px,#000_calc(100%-16px),transparent)]"
           style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
         >
           {[null, ...tags].map((t) => {
@@ -195,13 +195,13 @@ export default function StrategyPage() {
                         <div className="flex items-center justify-end gap-1.5">
                           <span
                             dir="ltr"
-                            className={`num text-[22px] leading-none font-semibold ${tone}`}
+                            className={`num t-display text-[28px] leading-none ${tone}`}
                           >
                             {fmtPct(ret, lang, 1)}
                           </span>
                           <abbr
                             title={s('oosHint')}
-                            className="num no-underline rounded-lg px-1.5 py-[3px] text-[9px] leading-none font-medium"
+                            className="num no-underline rounded-md px-1.5 py-1 text-[10px] leading-none font-medium"
                             style={{
                               color: 'var(--color-accent)',
                               background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)',
@@ -223,30 +223,26 @@ export default function StrategyPage() {
                       <Sparkline series={st.curve} up={up} />
                     </div>
 
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {/* One meta line: what it screens, how many rules, when it ran. */}
+                    <div
+                      className="mt-3 flex flex-wrap items-center gap-x-2 text-[11px] leading-none"
+                      style={{ color: 'var(--color-muted)' }}
+                    >
                       {st.tags.map((t) => {
                         const key = TAG_KEY[t]
                         return (
-                          <span
-                            key={t}
-                            className="rounded-lg border border-line px-2.5 py-1 text-[11px] leading-none text-muted"
-                          >
+                          <span key={t} className="flex items-center gap-2">
                             {key ? s(key) : t}
+                            <span aria-hidden="true">·</span>
                           </span>
                         )
                       })}
-                    </div>
-
-                    <div
-                      className="mt-2.5 flex items-center justify-between gap-3 text-[11px]"
-                      style={{ color: 'var(--color-muted)' }}
-                    >
                       <span>
-                        <span className="num">{fmtNum(st.rules.length, lang, 0)}</span> {s('rulesUnit')}
+                        <span className="num">{fmtNum(st.rules.length, lang, 0)}</span>{' '}
+                        {s('rulesUnit')}
                       </span>
-                      <span className="truncate">
-                        {s('updated')} {fmtDate(st.updated, lang)}
-                      </span>
+                      <span aria-hidden="true">·</span>
+                      <span className="truncate">{fmtDate(st.updated, lang)}</span>
                     </div>
                   </LongPressLink>
                 </li>

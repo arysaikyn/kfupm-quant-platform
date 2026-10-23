@@ -482,7 +482,7 @@ export default function MarketPage() {
               </span>
               <Link
                 to={`/m/${pickedQuote.symbol}`}
-                className="flex min-h-11 items-center rounded-full px-3 text-[12px] text-accent"
+                className="flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-fg transition-colors hover:bg-fg/5"
               >
                 {s('openQuote')}
               </Link>
@@ -696,7 +696,7 @@ export default function MarketPage() {
             {/* Groups live next to the list they group, not inside Profile. */}
             <Link
               to="/watchlists"
-              className="-me-2 flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full px-2 text-[12px] text-accent transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="-me-2 flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line px-2.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {s('watchGroups')}
             </Link>

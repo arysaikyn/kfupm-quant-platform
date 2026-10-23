@@ -103,8 +103,8 @@ function NewsRow({
       </div>
       <div className="mt-3 flex items-center gap-2 text-[11px] leading-[1.4] text-muted">
         {watched && (
-          <span className="flex shrink-0 items-center gap-1 text-accent">
-            <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full bg-current" />
+          <span className="flex shrink-0 items-center gap-1 text-fg">
+            <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full" style={{ background: 'var(--color-accent)' }} />
             {s('watchMark')}
           </span>
         )}
@@ -174,7 +174,7 @@ export default function NewsPage() {
     <Screen
       title={s('title')}
       action={
-        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px] text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full border border-line px-3.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
           {s('calendar')}
         </Link>
       }

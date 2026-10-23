@@ -133,7 +133,7 @@ export default function MePage() {
                     strokeWidth="2.2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="shrink-0 text-accent"
+                    className="shrink-0 text-fg"
                   >
                     <path d="M5 12.5l4.6 4.6L19 7.6" />
                   </svg>
@@ -228,7 +228,7 @@ export default function MePage() {
                     strokeWidth="2.2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="shrink-0 text-accent"
+                    className="shrink-0 text-fg"
                   >
                     <path d="M5 12.5l4.6 4.6L19 7.6" />
                   </svg>

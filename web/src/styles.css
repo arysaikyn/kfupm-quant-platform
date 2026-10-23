@@ -54,6 +54,7 @@
   --color-muted: #8b8b93;
   --color-accent: #8b74ff;
   --color-solid: #6d4aff;
+  --color-danger: #ff6b81;
   /* Solid fills carry white text, so they use the deeper step. */
   --color-accent-fill: #6d4aff;
   /* Default is the CN convention: red is a gain. */
@@ -101,6 +102,7 @@ html[data-theme="light"] {
   --color-muted: #6e6e77;
   --color-accent: #6d4aff;
   --color-solid: #6d4aff;
+  --color-danger: #b3132f;
   --color-accent-fill: #6d4aff;
   /* CN convention under light: deeper red for contrast on white. */
   --color-up: #e11d48;

@@ -312,7 +312,7 @@ export default function ReportPage() {
                           : 'border-transparent text-muted hover:text-fg'
                       }`}
                     >
-                      <span className={`num text-[10px] ${on ? 'text-accent' : 'text-muted'}`}>
+                      <span className={`num text-[10px] ${on ? 'text-fg font-semibold' : 'text-muted'}`}>
                         {String(index + 1).padStart(2, '0')}
                       </span>
                       <span>{s(NAV_KEYS[sectionId])}</span>

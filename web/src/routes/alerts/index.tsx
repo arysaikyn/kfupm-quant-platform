@@ -150,7 +150,7 @@ export default function AlertsPage() {
           <HeadStat
             value={triggered.length}
             label={s('triggered')}
-            tone="text-accent"
+            tone="text-fg"
           />
           <span aria-hidden="true" className="h-7 w-px bg-line" />
           <HeadStat value={waiting.length} label={s('waiting')} tone="text-fg" />
@@ -257,7 +257,7 @@ export default function AlertsPage() {
           </div>
 
           {error && (
-            <p id="alert-error" role="alert" className="text-[12px] leading-snug text-accent">
+            <p id="alert-error" role="alert" className="text-[12px] leading-snug" style={{ color: 'var(--color-danger)' }}>
               {errorText}
             </p>
           )}

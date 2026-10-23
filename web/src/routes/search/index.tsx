@@ -342,7 +342,7 @@ export default function SearchPage() {
                 <button
                   type="button"
                   onClick={() => setRecent([])}
-                  className="min-h-11 shrink-0 rounded-full px-2 text-[12px] text-accent transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="min-h-11 shrink-0 rounded-full px-2 text-[12px] text-fg underline decoration-line underline-offset-4 transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   {s('clearAll')}
                 </button>

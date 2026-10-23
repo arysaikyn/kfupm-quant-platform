@@ -556,7 +556,8 @@ export default function WatchlistsPage() {
                     type="button"
                     onClick={() => tapDelete(active)}
                     aria-label={`${s('confirmDelete')} ${active.name}`}
-                    className="flex min-h-11 shrink-0 items-center rounded-full bg-accent/20 px-3 text-[11px] font-medium whitespace-nowrap text-accent focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    className="flex min-h-11 shrink-0 items-center rounded-full px-3 text-[11px] font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
+                    style={{ color: 'var(--color-danger)' }}
                   >
                     {s('confirmDelete')}
                   </button>

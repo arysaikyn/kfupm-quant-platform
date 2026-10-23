@@ -249,7 +249,7 @@ export default function SectorPage() {
                   aria-label={`${s(watched ? 'watchRemove' : 'watchAdd')} ${quote.name[lang]}`}
                   onClick={() => toggleWatch(quote.symbol)}
                   className={`absolute top-1/2 end-1 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
-                    watched ? 'text-accent' : 'text-muted'
+                    watched ? 'text-fg' : 'text-muted'
                   }`}
                 >
                   <StarIcon filled={watched} />
@@ -358,7 +358,7 @@ export default function SectorPage() {
         </Link>
         <Link
           to="/screener"
-          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12px] font-medium text-accent transition-colors hover:bg-fg/5"
+          className="panel flex min-h-12 items-center justify-center px-2 text-center text-[12px] font-medium text-fg transition-colors hover:bg-fg/5"
         >
           {s('screenerLink')}
         </Link>

@@ -227,7 +227,7 @@ export default function AiPage() {
       action={
         <Link
           to="/runs"
-          className="flex min-h-[44px] items-center rounded-full px-3.5 text-[12px] text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="flex min-h-[44px] items-center rounded-full border border-line px-3.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           {s('runs')}
         </Link>

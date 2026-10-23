@@ -172,7 +172,7 @@ function ValueCard({ s }: { s: S }) {
       <RuleRow label={s('valueRule3')} value={s('valueRule3Value')} />
       <div className="flex items-baseline justify-between gap-3 border-t border-line px-4 py-3">
         <span className="text-[11px] text-muted">{s('valueFootLabel')}</span>
-        <span dir="ltr" className="num shrink-0 text-[13px] font-semibold text-accent">
+        <span dir="ltr" className="num shrink-0 text-[13px] font-semibold text-fg">
           {s('valueFootValue')}
         </span>
       </div>

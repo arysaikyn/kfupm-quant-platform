@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 type Props = {
   value: number
@@ -6,19 +7,15 @@ type Props = {
   duration?: number
 }
 
-const REDUCED_MOTION =
-  typeof window !== 'undefined' &&
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
 /** Counts to the value on mount and on change; snaps when motion is reduced. */
 export function AnimatedNumber({ value, format, duration = 720 }: Props) {
   // Start at the value: counting from 0 flashed 0.00 on every mount.
   const [shown, setShown] = useState(value)
   const origin = useRef(value)
+  const reduced = useReducedMotion()
 
   useEffect(() => {
-    if (REDUCED_MOTION) {
-      setShown(value)
+    if (reduced) {
       origin.current = value
       return
     }
@@ -36,7 +33,7 @@ export function AnimatedNumber({ value, format, duration = 720 }: Props) {
 
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [value, duration])
+  }, [value, duration, reduced])
 
-  return <>{format(shown)}</>
+  return <>{format(reduced ? value : shown)}</>
 }

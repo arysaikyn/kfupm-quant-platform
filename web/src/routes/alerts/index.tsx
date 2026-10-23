@@ -1,15 +1,18 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
 import { quotes } from '../../data/mock'
-import { addAlert, removeAlert, rowsFor, useAlerts } from '../../store/alerts'
-import type { AlertDir } from '../../store/alerts'
+import { addAlert, removeAlert, rowsFor, updateAlert, useAlerts } from '../../store/alerts'
+import type { AlertDir, AlertRow } from '../../store/alerts'
 import { strings } from './strings'
 
 type Dir = AlertDir
+/** An armed delete disarms itself, so a stray second tap much later cannot fire. */
+const CONFIRM_MS = 3000
 
 const QUOTE_BY_SYMBOL: Record<string, (typeof quotes)[number]> = Object.fromEntries(
   quotes.map((q) => [q.symbol, q] as const),
@@ -58,15 +61,40 @@ function TrashIcon() {
   )
 }
 
+function PencilIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4.5 19.5H8L18.5 9a2.1 2.1 0 0 0-3-3L5 16.5v3z" />
+      <path d="m13.5 6.5 4 4" />
+    </svg>
+  )
+}
+
 export default function AlertsPage() {
   const { lang } = useI18n()
   const s = useStrings(strings)
 
   const alerts = useAlerts()
-  const [symbol, setSymbol] = useState(quotes[0].symbol)
+  const [params] = useSearchParams()
+  const requested = params.get('symbol')
+  const initialSymbol = requested && QUOTE_BY_SYMBOL[requested] ? requested : quotes[0].symbol
+  const [symbol, setSymbol] = useState(initialSymbol)
   const [dir, setDir] = useState<Dir>('above')
-  const [threshold, setThreshold] = useState(() => String(quotes[0].price))
+  const [threshold, setThreshold] = useState(() => String(QUOTE_BY_SYMBOL[initialSymbol]?.price ?? quotes[0].price))
   const [error, setError] = useState<'invalid' | Dir | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [confirmId, setConfirmId] = useState<string | null>(null)
+  const panelRef = useRef<HTMLElement>(null)
 
   const quote = QUOTE_BY_SYMBOL[symbol] ?? quotes[0]
 
@@ -82,11 +110,49 @@ export default function AlertsPage() {
   // Arabic joins break under the kicker's tracking; drop it there.
   const kicker = { letterSpacing: lang === 'ar' ? 0 : undefined }
 
+  useEffect(() => {
+    if (!confirmId) return
+    const timer = setTimeout(() => setConfirmId(null), CONFIRM_MS)
+    return () => clearTimeout(timer)
+  }, [confirmId])
+
   function pickSymbol(next: string) {
     setSymbol(next)
     const q = QUOTE_BY_SYMBOL[next]
     if (q) setThreshold(String(q.price))
     setError(null)
+  }
+
+  function startEdit(row: AlertRow) {
+    setEditingId(row.id)
+    setSymbol(row.symbol)
+    setDir(row.dir)
+    setThreshold(String(row.threshold))
+    setError(null)
+    setConfirmId(null)
+    // The form sits above the list, so pull it into view and land the caret in
+    // the one field that is allowed to change.
+    requestAnimationFrame(() => {
+      panelRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+      document.getElementById('alert-threshold')?.focus({ preventScroll: true })
+    })
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setThreshold(String(quote.price))
+    setError(null)
+  }
+
+  // First tap arms, second tap deletes; arming another row moves the arm.
+  function tapDelete(row: AlertRow) {
+    if (confirmId !== row.id) {
+      setConfirmId(row.id)
+      return
+    }
+    removeAlert(row.id)
+    if (editingId === row.id) setEditingId(null)
+    setConfirmId(null)
   }
 
   function submit(e: FormEvent) {
@@ -102,11 +168,16 @@ export default function AlertsPage() {
       setError('invalid')
       return
     }
-    if (dir === 'above' ? value <= quote.price : value >= quote.price) {
+    // A new alert must still be actionable, so it cannot start already met.
+    // An edit is allowed to stay on the met side: the price may simply have
+    // moved past a level the user is adjusting, and the row shows that.
+    if (!editingId && (dir === 'above' ? value <= quote.price : value >= quote.price)) {
       setError(dir)
       return
     }
-    addAlert({ symbol, dir, threshold: value })
+    if (editingId) updateAlert(editingId, { dir, threshold: value })
+    else addAlert({ symbol, dir, threshold: value })
+    setEditingId(null)
     setThreshold(String(quote.price))
     setError(null)
   }
@@ -125,10 +196,11 @@ export default function AlertsPage() {
       title={s('title')}
       leading={<BackButton fallback="/" />}
     >
-      <section className="panel mt-4 p-4">
+      <section ref={panelRef} className="panel mt-4 scroll-mt-4 p-4">
         <h2 className="t-section" style={kicker}>
-          {s('formTitle')}
+          {s(editingId ? 'editTitle' : 'formTitle')}
         </h2>
+        {editingId && <p className="mt-1 text-[11px] leading-snug text-muted">{s('editHint')}</p>}
 
         <form className="mt-3 space-y-3" onSubmit={submit} noValidate>
           <div>
@@ -139,8 +211,9 @@ export default function AlertsPage() {
               <select
                 id="alert-symbol"
                 value={symbol}
+                disabled={editingId !== null}
                 onChange={(e) => pickSymbol(e.target.value)}
-                className="min-h-11 w-full appearance-none rounded-[10px] border border-line bg-bg ps-2.5 pe-9 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                className="min-h-11 w-full appearance-none rounded-[10px] border border-line bg-bg ps-2.5 pe-9 text-[13px] text-fg disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               >
                 {quotes.map((q) => (
                   <option key={q.symbol} value={q.symbol}>
@@ -246,12 +319,23 @@ export default function AlertsPage() {
             </p>
           )}
 
-          <button
-            type="submit"
-            className="min-h-11 w-full rounded-full bg-solid text-[13px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-          >
-            {s('create')}
-          </button>
+          <div className="flex items-center gap-2">
+            {editingId && (
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="min-h-11 shrink-0 rounded-full border border-line px-4 text-[13px] text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              >
+                {s('cancel')}
+              </button>
+            )}
+            <button
+              type="submit"
+              className="min-h-11 flex-1 rounded-full bg-solid text-[13px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            >
+              {s(editingId ? 'save' : 'create')}
+            </button>
+          </div>
         </form>
       </section>
 
@@ -271,7 +355,10 @@ export default function AlertsPage() {
               </h2>
               <ul className="border-t border-line">
                 {group.rows.map((r) => (
-                  <li key={r.id} className="row items-start py-3">
+                  <li
+                    key={r.id}
+                    className={`row items-start py-3 ${editingId === r.id ? 'bg-fg/5' : ''}`}
+                  >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline gap-2">
                         <span className="num text-[14px] font-semibold">{r.symbol}</span>
@@ -284,7 +371,7 @@ export default function AlertsPage() {
 
                     {/* Two prices, two lines, labelled: an unlabelled pair of
                         numbers a row apart is a guessing game. */}
-                    <div className="me-4 shrink-0 text-end">
+                    <div className="shrink-0 text-end">
                       <span className="num block text-[14px] leading-none">
                         {fmtNum(r.threshold, lang, 2)}
                       </span>
@@ -296,14 +383,43 @@ export default function AlertsPage() {
                       </span>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => removeAlert(r.id)}
-                      aria-label={`${s('delete')} ${r.symbol}`}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
-                    >
-                      <TrashIcon />
-                    </button>
+                    {/* While a delete is armed the row narrows to one decision,
+                        so the edit target does not sit under the same thumb. */}
+                    {confirmId !== r.id && (
+                      <button
+                        type="button"
+                        onClick={() => (editingId === r.id ? cancelEdit() : startEdit(r))}
+                        aria-pressed={editingId === r.id}
+                        aria-label={`${s('edit')} ${r.symbol}`}
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                        style={{
+                          color: editingId === r.id ? 'var(--color-fg)' : 'var(--color-muted)',
+                        }}
+                      >
+                        <PencilIcon />
+                      </button>
+                    )}
+
+                    {confirmId === r.id ? (
+                      <button
+                        type="button"
+                        onClick={() => tapDelete(r)}
+                        aria-label={`${s('confirmDelete')} ${r.symbol}`}
+                        className="flex min-h-11 shrink-0 items-center rounded-full px-3 text-[11px] font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                        style={{ color: 'var(--color-danger)' }}
+                      >
+                        {s('confirmDelete')}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => tapDelete(r)}
+                        aria-label={`${s('delete')} ${r.symbol}`}
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                      >
+                        <TrashIcon />
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -18,7 +18,11 @@ const WINDOW = 20
 /** Daily volatility treated as fully stressed when scoring calm. */
 const VOL_CEILING = 0.035
 
+/** Slot label keys, in the order of the URL params below. */
 const SLOT_KEYS = ['slotA', 'slotB', 'slotC'] as const
+
+/** `?a=SYM&b=SYM&c=SYM`: the board lives in the link, so a copy restores it. */
+const SLOT_PARAMS = ['a', 'b', 'c'] as const
 
 const CHART_W = 320
 const CHART_H = 152
@@ -64,12 +68,36 @@ function statsFor(q: Quote): Stats {
   return { q, pos, vol, score: Math.round(score * 10) / 10, discount }
 }
 
-function bestFlags(values: number[], dir: 'min' | 'max'): boolean[] {
-  const target = dir === 'min' ? Math.min(...values) : Math.max(...values)
-  return values.map((v) => Math.abs(v - target) < 1e-9)
+/**
+ * The board is read from the URL on every render. A key that is missing keeps
+ * the default board's name, so the stock page's `?a=SYM` still lands on three
+ * columns; a key sent empty is a deliberately cleared column, which is how
+ * "clear" survives a copied link. A symbol asked for twice keeps its first
+ * column only, so nothing is ever compared against itself.
+ */
+function slotsFrom(params: URLSearchParams): (number | null)[] {
+  if (!SLOT_PARAMS.some((key) => params.has(key))) return [0, 1, 2]
+
+  const seen = new Set<number>()
+  const asked = SLOT_PARAMS.map((key) => {
+    if (!params.has(key)) return undefined
+    const symbol = params.get(key)
+    const pick = symbol ? quotes.findIndex((q) => q.symbol === symbol) : -1
+    if (pick < 0 || seen.has(pick)) return null
+    seen.add(pick)
+    return pick
+  })
+
+  return asked.map((pick) => {
+    if (pick !== undefined) return pick
+    const free = quotes.findIndex((_, i) => !seen.has(i))
+    if (free < 0) return null
+    seen.add(free)
+    return free
+  })
 }
 
-type Cell = { text: string; tone?: string; bar?: number }
+type Cell = { text: string; tone?: string; bar?: number; empty?: boolean }
 
 type Row = {
   key: string
@@ -79,9 +107,12 @@ type Row = {
   cells: Cell[]
 }
 
+/** What a column prints once its slot is cleared: a dash, never a fake zero. */
+const EMPTY_CELL: Cell = { text: '—', tone: 'var(--color-muted)', empty: true }
+
 /**
- * Overlay of the three sparks rebased to 100 at their first point. The figure
- * wrapper pins `dir="ltr"` so time still runs left → right inside Arabic.
+ * Overlay of the filled slots' sparks rebased to 100 at their first point. The
+ * figure wrapper pins `dir="ltr"` so time still runs left → right inside Arabic.
  */
 function OverlayChart({
   series,
@@ -186,117 +217,164 @@ function OverlayChart({
 
 export default function ComparePage() {
   const s = useStrings(strings)
-  const { lang } = useI18n()
-  // Opened from a stock page, the first slot starts on that stock. The other
-  // two keep their defaults unless they would repeat it.
-  const [params] = useSearchParams()
-  const [picks, setPicks] = useState<number[]>(() => {
-    const wanted = quotes.findIndex((q) => q.symbol === params.get('a'))
-    if (wanted < 0) return [0, 1, 2]
-    return [wanted, ...[0, 1, 2].filter((i) => i !== wanted)].slice(0, 3)
-  })
+  const { lang, t } = useI18n()
+  const [params, setParams] = useSearchParams()
+  const [copied, setCopied] = useState(false)
+
+  const picks = useMemo(() => slotsFrom(params), [params])
 
   // Opened from a stock page (?a=SYMBOL) a deep link has no history to pop, so
   // back lands on that stock rather than the tab root.
   const focus = params.get('a')
   const backTo = quotes.some((q) => q.symbol === focus) ? `/m/${focus}` : '/'
 
-  const stats = useMemo(() => picks.map((i) => statsFor(quotes[i])), [picks])
-
-  const series = useMemo(
-    () =>
-      stats.map((st) => {
-        const base = st.q.spark[0] || 1
-        return st.q.spark.map((v) => (v / base) * 100)
-      }),
-    [stats],
-  )
-
-  const ranked = useMemo(() => [...stats].sort((a, b) => b.score - a.score), [stats])
-  const leader = ranked[0]
-  const runnerUp = ranked[1]
-  const margin = Math.max(0, Math.round((leader.score - runnerUp.score) * 10) / 10)
-  const verdictVars: Record<string, string> = {
-    name: leader.q.name[lang],
-    pts: fmtNum(margin, lang, 1),
-    a: leader.q.name[lang],
-    b: runnerUp.q.name[lang],
+  /** Rewrite all three slots at once, so the untouched defaults survive the
+      first edit. A cleared slot is written as an empty value, not dropped:
+      dropping it would let the default name back in on the next load. */
+  const setSlot = (slot: number, value: number | null) => {
+    const next = new URLSearchParams(params)
+    picks.forEach((pick, i) => {
+      const chosen = i === slot ? value : pick
+      next.set(SLOT_PARAMS[i], chosen === null ? '' : quotes[chosen].symbol)
+    })
+    setParams(next, { replace: true })
   }
-  const verdict = (margin > 0 ? s('verdictLead') : s('verdictTie')).replace(
-    /\{(\w+)\}/g,
-    (_m, key) => verdictVars[key] ?? '',
+
+  const stats = useMemo(
+    () => picks.map((pick) => (pick === null ? null : statsFor(quotes[pick]))),
+    [picks],
+  )
+  const live = stats.filter((st): st is Stats => st !== null)
+
+  // Only drawn lines carry a colour, so the legend and the chart agree about
+  // which colour belongs to which column even after a slot is emptied.
+  const drawn = stats.flatMap((st, i) =>
+    st === null
+      ? []
+      : [
+          {
+            symbol: st.q.symbol,
+            name: st.q.name[lang],
+            color: SERIES_COLORS[i],
+            series: st.q.spark.map((v) => (v / (st.q.spark[0] || 1)) * 100),
+          },
+        ],
   )
 
-  const discounts = stats.map((st) => st.discount)
-  const changes = stats.map((st) => st.q.change)
-  const positions = stats.map((st) => st.pos)
-  const vols = stats.map((st) => st.vol)
-  const scores = stats.map((st) => st.score)
+  const ranked = [...live].sort((a, b) => b.score - a.score)
+  const [leader, runnerUp] = ranked
+  let verdict = s('verdictNeedTwo')
+  if (leader && runnerUp) {
+    const margin = Math.max(0, Math.round((leader.score - runnerUp.score) * 10) / 10)
+    const verdictVars: Record<string, string> = {
+      name: leader.q.name[lang],
+      pts: fmtNum(margin, lang, 1),
+      a: leader.q.name[lang],
+      b: runnerUp.q.name[lang],
+    }
+    verdict = (margin > 0 ? s('verdictLead') : s('verdictTie')).replace(
+      /\{(\w+)\}/g,
+      (_m, key) => verdictVars[key] ?? '',
+    )
+  }
+
+  /** A row winner only means something once two names are on the board. */
+  const bestFor = (get: (st: Stats) => number, dir: 'min' | 'max'): boolean[] => {
+    if (live.length < 2) return stats.map(() => false)
+    const values = live.map(get)
+    const target = dir === 'min' ? Math.min(...values) : Math.max(...values)
+    return stats.map((st) => st !== null && Math.abs(get(st) - target) < 1e-9)
+  }
 
   const rows: Row[] = [
     {
       key: 'discount',
       label: s('rowDiscount'),
       hint: s('rowDiscountHint'),
-      best: bestFlags(discounts, 'max'),
-      cells: stats.map((st) => ({
-        text: fmtNum(st.discount * 100, lang, 1, '%'),
-        tone:
-          st.discount > 0
-            ? 'var(--color-up)'
-            : st.discount < 0
-              ? 'var(--color-down)'
-              : 'var(--color-muted)',
-      })),
+      best: bestFor((st) => st.discount, 'max'),
+      cells: stats.map((st) =>
+        st === null
+          ? EMPTY_CELL
+          : {
+              text: fmtNum(st.discount * 100, lang, 1, '%'),
+              tone:
+                st.discount > 0
+                  ? 'var(--color-up)'
+                  : st.discount < 0
+                    ? 'var(--color-down)'
+                    : 'var(--color-muted)',
+            },
+      ),
     },
     {
       key: 'change',
       label: s('rowChange'),
       hint: s('rowChangeHint'),
-      best: bestFlags(changes, 'max'),
-      cells: stats.map((st) => ({
-        text: fmtPct(st.q.change, lang),
-        tone:
-          st.q.change > 0
-            ? 'var(--color-up)'
-            : st.q.change < 0
-              ? 'var(--color-down)'
-              : 'var(--color-muted)',
-      })),
+      best: bestFor((st) => st.q.change, 'max'),
+      cells: stats.map((st) =>
+        st === null
+          ? EMPTY_CELL
+          : {
+              text: fmtPct(st.q.change, lang),
+              tone:
+                st.q.change > 0
+                  ? 'var(--color-up)'
+                  : st.q.change < 0
+                    ? 'var(--color-down)'
+                    : 'var(--color-muted)',
+            },
+      ),
     },
     {
       key: 'range',
       label: s('rowRange'),
       hint: s('rowRangeHint'),
-      best: bestFlags(positions, 'max'),
-      cells: stats.map((st) => ({
-        text: fmtNum(st.pos * 100, lang, 0, '%'),
-        bar: st.pos,
-      })),
+      best: bestFor((st) => st.pos, 'max'),
+      cells: stats.map((st) =>
+        st === null ? EMPTY_CELL : { text: fmtNum(st.pos * 100, lang, 0, '%'), bar: st.pos },
+      ),
     },
     {
       key: 'vol',
       label: s('rowVol'),
       hint: s('rowVolHint'),
-      best: bestFlags(vols, 'min'),
-      cells: stats.map((st) => ({ text: fmtNum(st.vol * 100, lang, 2, '%') })),
+      best: bestFor((st) => st.vol, 'min'),
+      cells: stats.map((st) =>
+        st === null ? EMPTY_CELL : { text: fmtNum(st.vol * 100, lang, 2, '%') },
+      ),
     },
     {
       key: 'score',
       label: s('rowScore'),
       hint: s('rowScoreHint'),
-      best: bestFlags(scores, 'max'),
-      cells: stats.map((st) => ({ text: fmtNum(st.score, lang, 1) })),
+      best: bestFor((st) => st.score, 'max'),
+      cells: stats.map((st) => (st === null ? EMPTY_CELL : { text: fmtNum(st.score, lang, 1) })),
     },
   ]
-
-  const setSlot = (slot: number, value: number) =>
-    setPicks((prev) => prev.map((p, i) => (i === slot ? value : p)))
 
   return (
     <Screen title={s('title')} leading={<BackButton fallback={backTo} />}>
       <section className="panel mt-4 p-4">
-        <h2 className="t-section">{s('slotsTitle')}</h2>
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="t-section">{s('slotsTitle')}</h2>
+
+          <button
+            type="button"
+            aria-live="polite"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(window.location.href)
+                setCopied(true)
+                window.setTimeout(() => setCopied(false), 1600)
+              } catch {
+                // Clipboard permission is optional.
+              }
+            }}
+            className="inline-flex min-h-11 shrink-0 items-center rounded-full px-3 text-[11px] text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          >
+            {copied ? t('common.copied') : s('copyLink')}
+          </button>
+        </div>
 
         <div className="mt-3 grid grid-cols-3 gap-2">
           {picks.map((value, i) => (
@@ -309,11 +387,16 @@ export default function ComparePage() {
                 <div className="relative mt-1">
                   <select
                     id={`cmp-slot-${i}`}
-                    value={value}
+                    value={value ?? ''}
                     aria-label={`${s('slotSelect')} ${s(SLOT_KEYS[i])}`}
-                    onChange={(e) => setSlot(i, Number(e.target.value))}
-                    className="num min-h-11 w-full appearance-none rounded-lg bg-fg/5 px-2.5 pe-6 text-[12px] font-medium text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                    onChange={(e) =>
+                      setSlot(i, e.target.value === '' ? null : Number(e.target.value))
+                    }
+                    className={`num min-h-11 w-full appearance-none rounded-lg bg-fg/5 px-2.5 pe-6 text-[12px] font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg ${
+                      value === null ? 'text-muted' : 'text-fg'
+                    }`}
                   >
+                    <option value="">{s('slotEmpty')}</option>
                     {quotes.map((q, qi) => (
                       <option
                         key={q.symbol}
@@ -351,7 +434,16 @@ export default function ComparePage() {
           <span className="num shrink-0 text-[10px] text-muted">{s('tableTag')}</span>
         </div>
 
-        <div role="table" aria-label={s('tableTitle')} className="border-t border-line">
+        <p id="cmp-table-desc" className="sr-only">
+          {s('tableCaption')}
+        </p>
+
+        <div
+          role="table"
+          aria-label={s('tableTitle')}
+          aria-describedby="cmp-table-desc"
+          className="border-t border-line"
+        >
           <div
             role="row"
             className="grid grid-cols-[84px_repeat(3,minmax(0,1fr))] items-end px-3 pt-1.5 pb-1.5"
@@ -359,14 +451,22 @@ export default function ComparePage() {
             <div role="columnheader">
               <span className="sr-only">{s('metric')}</span>
             </div>
-            {stats.map((st) => (
-              <div key={st.q.symbol} role="columnheader" className="px-0.5 text-center">
-                <span className="num block text-[12px] font-semibold">{st.q.symbol}</span>
-                <span className="mt-0.5 block text-[10px] leading-none text-muted">
-                  {st.q.currency}
-                </span>
-              </div>
-            ))}
+            {stats.map((st, i) =>
+              st === null ? (
+                <div key={`slot-${i}`} role="columnheader" className="px-0.5 text-center">
+                  <span className="mt-0.5 block text-[10px] leading-none text-muted">
+                    {s('slotEmpty')}
+                  </span>
+                </div>
+              ) : (
+                <div key={st.q.symbol} role="columnheader" className="px-0.5 text-center">
+                  <span className="num block text-[12px] font-semibold">{st.q.symbol}</span>
+                  <span className="mt-0.5 block text-[10px] leading-none text-muted">
+                    {st.q.currency}
+                  </span>
+                </div>
+              ),
+            )}
           </div>
 
           {rows.map((row) => (
@@ -392,6 +492,7 @@ export default function ComparePage() {
                       style={{ color: cell.tone ?? 'var(--color-fg)' }}
                     >
                       {cell.text}
+                      {cell.empty && <span className="sr-only"> {s('slotEmpty')}</span>}
                       {row.best[i] && <span className="sr-only"> {s('bestMark')}</span>}
                     </span>
 
@@ -427,35 +528,39 @@ export default function ComparePage() {
           <span className="num shrink-0 text-[10px] text-muted">{s('chartTag')}</span>
         </div>
 
-        <ul
-          aria-label={s('legendAria')}
-          className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1.5"
-        >
-          {stats.map((st, i) => (
-            <li key={st.q.symbol} className="flex items-center gap-1.5">
-              <span
-                aria-hidden="true"
-                className="h-2 w-2 shrink-0 rounded-full"
-                style={{ background: SERIES_COLORS[i] }}
-              />
-              <span className="num text-[11px] font-semibold">{st.q.symbol}</span>
-              <span className="whitespace-nowrap text-[11px] text-muted">
-                {st.q.name[lang]}
-              </span>
-            </li>
-          ))}
-        </ul>
+        {drawn.length === 0 ? (
+          <p className="mt-2.5 text-[12px] text-muted">{s('chartEmpty')}</p>
+        ) : (
+          <>
+            <ul
+              aria-label={s('legendAria')}
+              className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1.5"
+            >
+              {drawn.map((line) => (
+                <li key={line.symbol} className="flex items-center gap-1.5">
+                  <span
+                    aria-hidden="true"
+                    className="h-2 w-2 shrink-0 rounded-full"
+                    style={{ background: line.color }}
+                  />
+                  <span className="num text-[11px] font-semibold">{line.symbol}</span>
+                  <span className="whitespace-nowrap text-[11px] text-muted">{line.name}</span>
+                </li>
+              ))}
+            </ul>
 
-        <figure className="mt-2" dir="ltr">
-          <OverlayChart
-            series={series}
-            colors={SERIES_COLORS}
-            lang={lang}
-            aria={`${s('chartAria')}: ${stats.map((st) => st.q.symbol).join(' · ')}`}
-            from={s('axisFrom')}
-            to={s('axisTo')}
-          />
-        </figure>
+            <figure className="mt-2" dir="ltr">
+              <OverlayChart
+                series={drawn.map((line) => line.series)}
+                colors={drawn.map((line) => line.color)}
+                lang={lang}
+                aria={`${s('chartAria')}: ${drawn.map((line) => line.symbol).join(' · ')}`}
+                from={s('axisFrom')}
+                to={s('axisTo')}
+              />
+            </figure>
+          </>
+        )}
       </section>
 
       <p

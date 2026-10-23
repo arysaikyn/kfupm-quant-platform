@@ -5,13 +5,6 @@ type Strings = {
   subtitle: string
   back: string
 
-  readingTitle: string
-  densityLabel: string
-  comfortable: string
-  compact: string
-  densityHint: string
-  previewTitle: string
-  previewHint: string
 
   sourcesTitle: string
   sourcesHint: string
@@ -25,9 +18,6 @@ type Strings = {
   reuters: string
   reutersMarket: string
 
-  notificationsTitle: string
-  alertsLabel: string
-  alertsHint: string
 
   aboutTitle: string
   appLabel: string
@@ -51,13 +41,6 @@ export const strings = {
     subtitle: '偏好只保存在这台设备上。',
     back: '返回',
 
-    readingTitle: '阅读偏好',
-    densityLabel: '列表密度',
-    comfortable: '舒适',
-    compact: '紧凑',
-    densityHint: '只改变本页预览的疏密，不会影响其他页面。',
-    previewTitle: '预览',
-    previewHint: '用三只沙特股票演示当前密度。',
 
     sourcesTitle: '数据源',
     sourcesHint: '只读清单。演示版本不会发起真实请求。',
@@ -71,9 +54,6 @@ export const strings = {
     reuters: 'Reuters',
     reutersMarket: '路透社',
 
-    notificationsTitle: '通知',
-    alertsLabel: '价格提醒',
-    alertsHint: '开关只保存在本机；当前版本未接入后端，不会发送任何通知。',
 
     aboutTitle: '关于',
     appLabel: '应用',
@@ -96,13 +76,6 @@ export const strings = {
     subtitle: 'Preferences stay on this device.',
     back: 'Back',
 
-    readingTitle: 'Reading',
-    densityLabel: 'List density',
-    comfortable: 'Comfortable',
-    compact: 'Compact',
-    densityHint: 'Changes the preview below only. Other screens are unaffected.',
-    previewTitle: 'Preview',
-    previewHint: 'Three Saudi stocks shown at the selected density.',
 
     sourcesTitle: 'Data sources',
     sourcesHint: 'Read-only list. This demo build makes no live requests.',
@@ -116,10 +89,6 @@ export const strings = {
     reuters: 'Reuters',
     reutersMarket: 'News wire',
 
-    notificationsTitle: 'Notifications',
-    alertsLabel: 'Price alerts',
-    alertsHint:
-      'The switch is stored on this device only. No backend is connected, so nothing is sent.',
 
     aboutTitle: 'About',
     appLabel: 'App',
@@ -142,13 +111,6 @@ export const strings = {
     subtitle: 'تبقى تفضيلاتك على هذا الجهاز.',
     back: 'رجوع',
 
-    readingTitle: 'تفضيلات القراءة',
-    densityLabel: 'كثافة القوائم',
-    comfortable: 'مريحة',
-    compact: 'مضغوطة',
-    densityHint: 'تغيّر هذه الكثافة المعاينة في هذه الصفحة فقط، ولا تؤثر في بقية الشاشات.',
-    previewTitle: 'معاينة',
-    previewHint: 'ثلاثة أسهم سعودية بالكثافة المختارة.',
 
     sourcesTitle: 'مصادر البيانات',
     sourcesHint: 'قائمة للقراءة فقط. النسخة التجريبية لا ترسل طلبات حقيقية.',
@@ -162,10 +124,6 @@ export const strings = {
     reuters: 'رويترز',
     reutersMarket: 'وكالة أخبار',
 
-    notificationsTitle: 'الإشعارات',
-    alertsLabel: 'تنبيهات الأسعار',
-    alertsHint:
-      'يُحفظ المفتاح على هذا الجهاز فقط. لا توجد خدمة خلفية متصلة، لذا لن يُرسل أي تنبيه.',
 
     aboutTitle: 'حول',
     appLabel: 'التطبيق',

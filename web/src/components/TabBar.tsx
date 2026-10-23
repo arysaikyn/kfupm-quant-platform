@@ -2,6 +2,7 @@ import type { CSSProperties, ReactElement, ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useI18n } from '../i18n'
 import type { GlobalKey } from '../i18n'
+import { haptic } from '../lib/haptics'
 
 type Item = { to: string; key: GlobalKey; icon: ReactElement }
 
@@ -79,7 +80,10 @@ function ItemSurface({
       <button
         type="button"
         aria-current="page"
-        onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+        onClick={() => {
+          haptic()
+          window.scrollTo({ top: 0, behavior: 'instant' })
+        }}
         className={`${className} focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg`}
         style={{ color: 'var(--color-fg)' }}
       >
@@ -91,6 +95,7 @@ function ItemSurface({
   return (
     <Link
       to={to}
+      onClick={() => haptic()}
       className={`${className} focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg`}
       style={{ color: 'var(--color-muted)' }}
     >
@@ -156,7 +161,7 @@ export function TabBar() {
   } as CSSProperties
 
   return (
-    <nav aria-label="Primary" className="tabbar fixed z-50 glass" style={barStyle}>
+    <nav aria-label={t('nav.primary')} className="tabbar fixed z-50 glass" style={barStyle}>
       {/* Clip layer: the pill may overshoot, the bar's shape decides where it ends. */}
       <div
         aria-hidden

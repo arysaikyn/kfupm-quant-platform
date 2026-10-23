@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AnimatedNumber } from '../../components/AnimatedNumber'
 import { FairValueRail } from '../../components/FairValueRail'
@@ -10,6 +10,7 @@ import { fundamentalsFor } from '../../data/fundamentals'
 import { news, quotes } from '../../data/mock'
 import { axisScores, checkList, strengthsAndRisks } from './checks'
 import { toggleWatch, useUser } from '../../store/user'
+import { setIntake } from '../ai/intake'
 import { strings } from './strings'
 import { symbolStrings } from './symbolStrings'
 
@@ -25,12 +26,16 @@ const fill = (tpl: string, vars: Record<string, string | number>) =>
     tpl,
   )
 
-// Draw the line once per session. Replaying it on every open made navigation
-// look like the page was re-rendering out of order.
-let hasDrawnOnce = false
+// Draw each symbol's line once per session. Replaying it on every open made
+// navigation look like the page was re-rendering out of order.
+const drawnSymbols = new Set<string>()
 
 /** 320×150 area chart; scales with the card so it never clips on a phone. */
-function PriceChart({ data, up }: { data: number[]; up: boolean }) {
+function PriceChart({ data, up, symbol }: { data: number[]; up: boolean; symbol: string }) {
+  const [animate] = useState(() => !drawnSymbols.has(symbol))
+  useEffect(() => {
+    drawnSymbols.add(symbol)
+  }, [symbol])
   const w = 320
   const h = 150
   const pad = 6
@@ -49,7 +54,7 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`}
-      className={`${hasDrawnOnce ? "" : "chart-draw"} h-auto w-full`}
+      className={`${animate ? "chart-draw" : ""} h-auto w-full`}
       aria-hidden="true"
     >
       {/* A flat 10% wash under the line: a hint of direction, never a glow. */}
@@ -202,7 +207,6 @@ export default function SymbolPage() {
     },
   ]
   const related = news.filter((n) => n.symbols.includes(quote.symbol)).slice(0, 2)
-  hasDrawnOnce = true
 
   return (
     <Screen
@@ -262,6 +266,27 @@ export default function SymbolPage() {
             {s('today')}
           </span>
         </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setIntake(`${s('askAbout')} ${quote.name[lang]}`, [{ kind: 'quote', symbol: quote.symbol }])
+              navigate('/ai')
+            }}
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-3 text-[12px] text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 4l1.7 4.6L18 10l-4.3 1.4L12 16l-1.7-4.6L6 10l4.3-1.4z" />
+            </svg>
+            {s('askAbout')}
+          </button>
+          <Link
+            to={`/alerts?symbol=${quote.symbol}`}
+            className="inline-flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          >
+            {s('setAlert')}
+          </Link>
+        </div>
       </div>
 
       {/* Fair value rail: price against the model's fair value, before anything
@@ -271,6 +296,7 @@ export default function SymbolPage() {
           price={quote.price}
           fairValue={fairValue}
           format={(n) => fmtNum(n, lang, 2)}
+          percent={(n) => fmtNum(n, lang, 0, '%')}
           labels={{
             title: c('fairTitle'),
             price: c('fairPrice'),
@@ -284,7 +310,7 @@ export default function SymbolPage() {
 
       {/* Chart: full width, no frame; the series is the page's texture */}
       <div className="mt-8 border-t border-line pt-4">
-        <PriceChart data={series} up={up} />
+        <PriceChart data={series} up={up} symbol={quote.symbol} />
         <div
           role="group"
           aria-label={s('rangeGroup')}

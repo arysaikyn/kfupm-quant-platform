@@ -116,7 +116,7 @@ function isOp(v: unknown): v is Op {
   return typeof v === 'string' && (OPS as readonly string[]).includes(v)
 }
 
-function sanitizeRules(input: unknown[]): Rule[] {
+export function sanitizeRules(input: unknown[]): Rule[] {
   const out: Rule[] = []
   for (const entry of input) {
     if (out.length >= MAX_RULES) break

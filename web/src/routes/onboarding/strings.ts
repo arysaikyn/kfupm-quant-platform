@@ -2,6 +2,10 @@ import type { Dict } from '../../i18n'
 
 type Strings = {
   skip: string
+  languageLabel: string
+  langZh: string
+  langEn: string
+  langAr: string
   back: string
   continue: string
   /** `{n}` is replaced with the current step number. */
@@ -70,6 +74,10 @@ type Strings = {
 export const strings: Dict<Strings> = {
   en: {
     skip: 'Skip',
+    languageLabel: 'Language',
+    langZh: '中',
+    langEn: 'EN',
+    langAr: 'ع',
     back: 'Back',
     continue: 'Continue',
     stepOf: '{n} of 5',
@@ -141,6 +149,10 @@ export const strings: Dict<Strings> = {
 
   zh: {
     skip: '跳过',
+    languageLabel: '语言',
+    langZh: '中文',
+    langEn: 'EN',
+    langAr: 'ع',
     back: '返回',
     continue: '继续',
     stepOf: '{n} / 5',
@@ -211,6 +223,10 @@ export const strings: Dict<Strings> = {
 
   ar: {
     skip: 'تخطٍّ',
+    languageLabel: 'اللغة',
+    langZh: '中',
+    langEn: 'EN',
+    langAr: 'ع',
     back: 'رجوع',
     continue: 'متابعة',
     stepOf: '{n} من 5',

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
@@ -18,6 +18,7 @@ import {
   newRule,
   presetRules,
   ruleValue,
+  sanitizeRules,
   storeScreens,
 } from './rules'
 import type { Field, Op, PresetId, Rule, SavedScreen } from './rules'
@@ -145,13 +146,42 @@ function IconX({ size = 16 }: { size?: number }) {
 export default function ScreenerPage() {
   const { lang } = useI18n()
   const s = useStrings(screenerStrings)
-  const [rules, setRules] = useState<Rule[]>(defaultRules)
+  const [params] = useSearchParams()
+  const [rules, setRules] = useState<Rule[]>(() => {
+    const shared = params.get('rules')
+    if (shared) {
+      try {
+        const parsed: unknown = JSON.parse(shared)
+        if (Array.isArray(parsed)) {
+          const safe = sanitizeRules(parsed)
+          if (safe.length > 0) return safe
+        }
+      } catch {
+        // A broken share link falls back to the default rule.
+      }
+    }
+    const preset = params.get('preset')
+    return preset && (PRESET_IDS as readonly string[]).includes(preset)
+      ? presetRules(preset as PresetId)
+      : defaultRules()
+  })
+  const [shareCopied, setShareCopied] = useState(false)
   const [name, setName] = useState('')
   const [screens, setScreens] = useState<SavedScreen[]>(loadScreens)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [status, setStatus] = useState('')
   const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'change', dir: 'desc' })
   const rowRefs = useRef<Record<string, HTMLLIElement | null>>({})
+
+  // A handoff from the AI carries the preset in the URL. Apply it when the
+  // route is reached with a different preset, without touching manual edits.
+  useEffect(() => {
+    // The URL is external state; applying a new preset must reset the editor.
+    const preset = params.get('preset')
+    if (!preset || !(PRESET_IDS as readonly string[]).includes(preset)) return
+    // oxlint-disable-next-line react/set-state-in-effect
+    setRules(presetRules(preset as PresetId))
+  }, [params])
 
   useEffect(() => {
     if (status === '') return
@@ -255,6 +285,23 @@ export default function ScreenerPage() {
     setStatus(s('saved'))
   }
 
+  function duplicateScreen(id: string) {
+    const source = screens.find((screen) => screen.id === id)
+    if (!source) return
+    const copy: SavedScreen = {
+      id: createId('s'),
+      name: `${source.name} · copy`.slice(0, 40),
+      rules: cloneRules(source.rules),
+    }
+    const next = [copy, ...screens]
+    setScreens(next)
+    storeScreens(next)
+    setActiveId(copy.id)
+    setRules(cloneRules(copy.rules))
+    setName(copy.name)
+    setStatus(s('saved'))
+  }
+
   function deleteScreen(id: string) {
     const next = screens.filter((screen) => screen.id !== id)
     setScreens(next)
@@ -306,6 +353,30 @@ export default function ScreenerPage() {
         <p className="mt-1 text-[12px] leading-snug" style={{ color: 'var(--color-muted)' }}>
           {s('rulesHelper')}
         </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={async () => {
+              const data = rules
+                .filter((rule) => ruleValue(rule) !== null)
+                .map(({ field, op, value }) => ({ field, op, value }))
+              const url = `${window.location.origin}${window.location.pathname}?rules=${encodeURIComponent(JSON.stringify(data))}`
+              try {
+                await navigator.clipboard.writeText(url)
+                setShareCopied(true)
+                window.setTimeout(() => setShareCopied(false), 1600)
+              } catch {
+                // Clipboard permission is optional.
+              }
+            }}
+            className="min-h-11 rounded-full border border-line px-3 text-[12px] text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          >
+            {s('shareLink')}
+          </button>
+          <span role="status" aria-live="polite" className="text-[11px] text-muted">
+            {shareCopied ? s('linkCopied') : ''}
+          </span>
+        </div>
 
         {activeRules.length > 0 && (
           <ul
@@ -546,11 +617,6 @@ export default function ScreenerPage() {
                   <li key={quote.symbol}>
                     <Link
                       to={`/m/${quote.symbol}`}
-                      aria-label={`${fillName(s('openAria'), quote.name[lang])} · ${fmtNum(
-                        quote.price,
-                        lang,
-                        2,
-                      )} · ${fmtPct(quote.change, lang)}`}
                       className="block min-h-[56px] py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     >
                       <span className="grid grid-cols-[minmax(0,1fr)_78px_66px] items-center gap-x-2">
@@ -666,6 +732,18 @@ export default function ScreenerPage() {
                     >
                       {screen.rules.length}
                     </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => duplicateScreen(screen.id)}
+                    aria-label={fillName(s('duplicateAria'), screen.name)}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                    style={{ color: 'var(--color-muted)' }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="8" y="8" width="12" height="12" rx="2" />
+                      <path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" />
+                    </svg>
                   </button>
                   <button
                     type="button"

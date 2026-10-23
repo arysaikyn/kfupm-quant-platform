@@ -27,6 +27,8 @@ type Strings = {
   emptyGroups: string
   emptyGroup: string
   removeFromGroup: string
+  move: string
+  moveTo: string
   addToWatch: string
   removeFromWatch: string
 }
@@ -52,6 +54,8 @@ export const strings = {
     emptyGroups: '还没有分组。新建一个，把想跟的标的归到一起。',
     emptyGroup: '这个分组还没有标的，用上面的选择器添加。',
     removeFromGroup: '移出分组',
+    move: '移动',
+    moveTo: '移动到',
     addToWatch: '加入主自选',
     removeFromWatch: '移出主自选',
   },
@@ -75,6 +79,8 @@ export const strings = {
     emptyGroups: 'No groups yet, create one and gather the symbols you follow.',
     emptyGroup: 'No symbols in this group yet. Add one with the picker above.',
     removeFromGroup: 'Remove from group',
+    move: 'Move',
+    moveTo: 'Move to',
     addToWatch: 'Add to main watchlist',
     removeFromWatch: 'Remove from main watchlist',
   },
@@ -98,6 +104,8 @@ export const strings = {
     emptyGroups: 'لا توجد مجموعات بعد, أنشئ مجموعة واجمع فيها الأسهم التي تتابعها.',
     emptyGroup: 'لا توجد أسهم في هذه المجموعة بعد. أضف سهمًا من الأعلى.',
     removeFromGroup: 'إزالة من المجموعة',
+    move: 'نقل',
+    moveTo: 'نقل إلى',
     addToWatch: 'إضافة إلى قائمة المتابعة',
     removeFromWatch: 'إزالة من قائمة المتابعة',
   },

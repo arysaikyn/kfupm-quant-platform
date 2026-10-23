@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useI18n, useStrings } from '../../i18n'
 import { completeOnboarding } from '../../store/prefs'
 import type { Market } from '../../store/prefs'
+import { safeNext } from '../../lib/next'
 import { strings } from './strings'
 
 type StringKey = keyof (typeof strings)['en']
@@ -219,7 +221,7 @@ function ShariaCard({ s }: { s: S }) {
 }
 
 export default function OnboardingPage() {
-  const { lang, dir } = useI18n()
+  const { lang, dir, setLang } = useI18n()
   const s = useStrings(strings)
 
   const [step, setStep] = useState(1)
@@ -240,13 +242,16 @@ export default function OnboardingPage() {
     [step],
   )
 
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+
   const finish = useCallback(() => {
     if (!market) return
     completeOnboarding(market)
-    // A hard replace: no back button walks into onboarding, and the guard in
-    // App re-reads the stored flag on the next paint.
-    window.location.replace(import.meta.env.BASE_URL)
-  }, [market])
+    // Replace, not push: the browser back button must not walk into the
+    // welcome screens after the account is set up.
+    navigate(safeNext(params.get('next')), { replace: true })
+  }, [market, navigate, params])
 
   const next = useCallback(() => {
     if (step === TOTAL) {
@@ -318,6 +323,28 @@ export default function OnboardingPage() {
       <style href="onb-motion" precedence="default">
         {MOTION_CSS}
       </style>
+
+      <div
+        role="group"
+        aria-label={s('languageLabel')}
+        className="mb-2 flex justify-end gap-1"
+      >
+        {(['zh', 'en', 'ar'] as const).map((code) => {
+          const active = lang === code
+          return (
+            <button
+              key={code}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setLang(code)}
+              className="min-h-11 min-w-11 rounded-full px-2 text-[12px] font-medium text-muted transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              style={active ? { background: 'var(--color-surface)', color: 'var(--color-fg)' } : undefined}
+            >
+              {s(code === 'zh' ? 'langZh' : code === 'en' ? 'langEn' : 'langAr')}
+            </button>
+          )
+        })}
+      </div>
 
       <div aria-hidden="true" className="flex gap-1.5">
         {Array.from({ length: TOTAL }, (_, i) => (

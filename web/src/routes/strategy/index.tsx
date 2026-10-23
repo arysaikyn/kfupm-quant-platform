@@ -7,6 +7,7 @@ import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { bench, strategies } from '../../data/mock'
 import { fmtDate } from './format'
+import { countRules } from '../../i18n/format'
 import { listStrings, TAG_KEY } from './strings'
 
 type Sort = 'recent' | 'return'
@@ -73,7 +74,7 @@ export default function StrategyPage() {
                   type="button"
                   onClick={() => setTag(t)}
                   aria-pressed={active}
-                  className={`min-h-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
+                  className={`min-h-11 min-w-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
                     active ? 'font-medium' : 'text-muted'
                   }`}
                   style={
@@ -132,6 +133,7 @@ export default function StrategyPage() {
                   <LongPressLink
                     to={`/strategy/${st.id}`}
                     prompt={`${st.name[lang]} — ${st.description[lang]}`}
+                    chips={[{ kind: 'strategy', id: st.id }]}
                     className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 py-4 transition-colors hover:bg-fg/[0.03] active:bg-fg/[0.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                   >
                     <div className="min-w-0">
@@ -159,7 +161,7 @@ export default function StrategyPage() {
                         })}
                         <span>
                           <span className="num">{fmtNum(st.rules.length, lang, 0)}</span>{' '}
-                          {s('rulesUnit')}
+                          {countRules(lang, st.rules.length)}
                         </span>
                         <span aria-hidden="true">·</span>
                         <span className="truncate">{fmtDate(st.updated, lang)}</span>

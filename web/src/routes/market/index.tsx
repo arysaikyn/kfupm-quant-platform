@@ -15,7 +15,7 @@ import type { Quote } from '../../data/mock'
 import { frameChange, membersChange, membersOf } from '../../data/membership'
 import type { HeatFrame } from '../../data/membership'
 import { useAlerts, triggeredCount } from '../../store/alerts'
-import { usePrefs } from '../../store/prefs'
+import { setMarket, usePrefs } from '../../store/prefs'
 import { toggleWatch, useUser } from '../../store/user'
 import { SectionHead } from './SectionHead'
 import { strings } from './strings'
@@ -301,10 +301,37 @@ export default function MarketPage() {
             currency: '',
             spark: [ix.value],
           }))).slice(0, 8)}
-          name={(q) => q.name[lang]}
           price={(q) => fmtNum(q.price, lang, 2)}
           change={(q) => fmtPct(q.change, lang)}
+          label={s('tapeLabel')}
         />
+      </div>
+
+      {/* Market focus: the onboarding choice must be changeable here, as promised. */}
+      <div
+        role="group"
+        aria-label={s('marketFocus')}
+        className="mt-3 flex gap-1 rounded-full border border-line bg-surface p-1"
+      >
+        {MARKETS.map((m) => {
+          const active = prefMarket === m.id
+          return (
+            <button
+              key={m.id}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setMarket(m.id)}
+              className="min-h-11 flex-1 rounded-full px-2 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+              style={
+                active
+                  ? { background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }
+                  : { color: 'var(--color-muted)' }
+              }
+            >
+              {s(m.key)}
+            </button>
+          )
+        })}
       </div>
 
       {/* Index masthead: one number owns the screen, no card around it */}
@@ -372,7 +399,7 @@ export default function MarketPage() {
                 <span className="truncate text-[10px] leading-none" style={{ color: 'var(--color-fg)' }}>
                   {row.label}
                 </span>
-                <span className="num truncate text-[9.5px] leading-none" style={{ color: 'var(--color-fg)', opacity: 0.75 }}>
+                <span className="num truncate text-[10.5px] leading-none" style={{ color: 'var(--color-fg)', opacity: 0.75 }}>
                   {fmtPct(row.change, lang, 1)}
                 </span>
               </button>
@@ -401,7 +428,7 @@ export default function MarketPage() {
               role="tab"
               aria-selected={active}
               onClick={() => setView(key)}
-              className={`relative -mb-px min-h-11 pb-2 text-[13px] transition-colors ${
+              className={`relative -mb-px min-h-11 min-w-11 pb-2 text-[13px] transition-colors ${
                 active ? 'font-semibold' : 'text-muted hover:text-fg'
               }`}
               style={
@@ -451,6 +478,12 @@ export default function MarketPage() {
           })}
         </div>
 
+        <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-muted">
+          <span>{s('legendLoss')}</span>
+          <span className="h-1.5 w-8 rounded-full" style={{ background: 'var(--color-down)' }} />
+          <span className="h-1.5 w-8 rounded-full" style={{ background: 'var(--color-up)' }} />
+          <span>{s('legendGain')}</span>
+        </div>
         <div className="mt-2">
           <Treemap
             groups={heatGroups}
@@ -578,6 +611,7 @@ export default function MarketPage() {
                   onClick={() =>
                     setSort(sort === 'chg' ? 'fall' : sort === 'fall' ? 'name' : 'chg')
                   }
+                  aria-label={`${s('sortLabel')}: ${s(SORT_KEY[sort])}`}
                   className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                   style={{ color: 'var(--color-muted)' }}
                 >
@@ -611,6 +645,7 @@ export default function MarketPage() {
                       <LongPressLink
                         to={`/m/${q.symbol}`}
                         prompt={`${s('askAbout')} ${q.name[lang]}`}
+                        chips={[{ kind: 'quote', symbol: q.symbol }]}
                         className={`${ROW_GRID} min-h-[56px] ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg`}
                       >
                         {/* Rank is positional, so it is not read out as part of the name. */}
@@ -718,6 +753,7 @@ export default function MarketPage() {
                     <LongPressLink
                       to={`/m/${q.symbol}`}
                       prompt={`${s('askAbout')} ${q.name[lang]}`}
+                      chips={[{ kind: 'quote', symbol: q.symbol }]}
                       className="grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     >
                       <span className="min-w-0">

@@ -87,6 +87,7 @@ function NewsRow({
     <LongPressLink
       to={source === null ? `/news/${item.id}` : `/news/${item.id}?source=${encodeURIComponent(source)}`}
       prompt={`${s('askAi')} — ${item.title[lang]}`}
+      chips={[{ kind: 'news', id: item.id }]}
       className="block w-full min-w-0 py-3.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
     >
       <div className="flex items-start gap-4">

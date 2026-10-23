@@ -28,6 +28,8 @@ export type ScreenerStrings = {
   /** Placeholders: n, total. */
   resultsCount: string
   liveHint: string
+  shareLink: string
+  linkCopied: string
   resultsEmpty: string
   relax: string
   nameHeader: string
@@ -40,6 +42,7 @@ export type ScreenerStrings = {
   saved: string
   savedCount: string
   deleteAria: string
+  duplicateAria: string
   loadAria: string
   openAria: string
 }
@@ -70,8 +73,10 @@ export const screenerStrings = {
     removeFilterAria: '移除 {name}',
     turnoverHint: '换手由走势长度估算',
     resultsTitle: '筛选结果',
-    resultsCount: '{total} 只中 {n} 只符合',
-    liveHint: '即时更新',
+    resultsCount: '符合：{total} 只中 {n} 只',
+    liveHint: '演示',
+    shareLink: '复制分享链接',
+    linkCopied: '已复制',
     resultsEmpty: '没有符合条件的股票',
     relax: '放宽条件',
     nameHeader: '名称',
@@ -84,6 +89,7 @@ export const screenerStrings = {
     saved: '已保存',
     savedCount: '组',
     deleteAria: '删除 {name}',
+    duplicateAria: '复制 {name}',
     loadAria: '载入 {name}',
     openAria: '打开 {name}',
   },
@@ -112,8 +118,10 @@ export const screenerStrings = {
     removeFilterAria: 'Remove {name}',
     turnoverHint: 'Turnover is estimated from the price line',
     resultsTitle: 'Results',
-    resultsCount: '{n} of {total} stocks match',
-    liveHint: 'Live',
+    resultsCount: 'Matches: {n} of {total}',
+    liveHint: 'Demo',
+    shareLink: 'Copy share link',
+    linkCopied: 'Copied',
     resultsEmpty: 'No stocks match these conditions',
     relax: 'Clear conditions',
     nameHeader: 'Name',
@@ -126,6 +134,7 @@ export const screenerStrings = {
     saved: 'Saved',
     savedCount: 'saved',
     deleteAria: 'Delete {name}',
+    duplicateAria: 'Duplicate {name}',
     loadAria: 'Load {name}',
     openAria: 'Open {name}',
   },
@@ -154,8 +163,10 @@ export const screenerStrings = {
     removeFilterAria: 'إزالة {name}',
     turnoverHint: 'الدوران مقدَّر من طول خط الحركة',
     resultsTitle: 'النتائج',
-    resultsCount: '{n} من {total} سهماً مطابقة',
-    liveHint: 'يتحدث فورًا',
+    resultsCount: 'المطابق: {n} من {total}',
+    liveHint: 'عرض',
+    shareLink: 'نسخ رابط المشاركة',
+    linkCopied: 'تم النسخ',
     resultsEmpty: 'لا أسهم تطابق هذه الشروط',
     relax: 'مسح الشروط',
     nameHeader: 'الاسم',
@@ -168,6 +179,7 @@ export const screenerStrings = {
     saved: 'تم الحفظ',
     savedCount: 'محفوظة',
     deleteAria: 'حذف {name}',
+    duplicateAria: 'نسخ {name}',
     loadAria: 'تحميل {name}',
     openAria: 'فتح {name}',
   },

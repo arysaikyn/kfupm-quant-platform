@@ -4,7 +4,8 @@ import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { bench, equityYears, strategies } from '../../data/mock'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
-import type { Lang } from '../../i18n'
+import { countRules, fill, fmtDate, fmtDateTime } from '../../i18n/format'
+import { setIntake } from '../ai/intake'
 import { strings } from './strings'
 import type { ReportStrings } from './strings'
 
@@ -24,31 +25,6 @@ const TAG_KEYS: Partial<Record<string, keyof ReportStrings>> = {
   sharia: 'tagSharia',
   income: 'tagIncome',
   momentum: 'tagMomentum',
-}
-
-function fill(template: string, values: Record<string, string>): string {
-  return template.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match)
-}
-
-/** Same display convention as the strategy screen; Arabic keeps Latin digits. */
-function fmtDate(iso: string, lang: Lang): string {
-  const d = new Date(`${iso}T00:00:00`)
-  if (Number.isNaN(d.getTime())) return iso
-  return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-u-nu-latn-ca-gregory' : lang, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(d)
-}
-
-function fmtMoment(date: Date, lang: Lang): string {
-  return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-u-nu-latn-ca-gregory' : lang, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date)
 }
 
 function BackIcon() {
@@ -104,11 +80,12 @@ function BackLink({ label }: { label: string }) {
 
 export default function ReportPage() {
   const { id } = useParams()
-  const { lang } = useI18n()
+  const { lang, t } = useI18n()
   const s = useStrings(strings)
 
   // The receipt time is fixed at mount; it never chases the clock.
   const [generatedAt] = useState(() => new Date())
+  const [copied, setCopied] = useState(false)
   const [active, setActive] = useState<SectionId>('conclusion')
   const chipRefs = useRef<Partial<Record<SectionId, HTMLAnchorElement | null>>>({})
   const mounted = useRef(false)
@@ -190,7 +167,7 @@ export default function ReportPage() {
   const evidence: { label: string; value: string; note: string; tone?: string }[] = [
     {
       label: s('basisRulesLabel'),
-      value: `${fmtNum(st.rules.length, lang, 0)} ${s('rulesUnit')}`,
+      value: `${fmtNum(st.rules.length, lang, 0)} ${countRules(lang, st.rules.length)}`,
       note: s('basisRulesNote'),
     },
     {
@@ -245,7 +222,7 @@ export default function ReportPage() {
             </span>
             <span aria-hidden="true">·</span>
             <span>
-              {fmtNum(st.rules.length, lang, 0)} {s('rulesUnit')}
+              {fmtNum(st.rules.length, lang, 0)} {countRules(lang, st.rules.length)}
             </span>
           </div>
           {st.tags.length > 0 && (
@@ -264,6 +241,31 @@ export default function ReportPage() {
           )}
         </div>
       </header>
+
+      <div className="mt-4 flex flex-wrap gap-2 print:hidden">
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(window.location.href)
+              setCopied(true)
+              window.setTimeout(() => setCopied(false), 1600)
+            } catch {
+              // Clipboard permission is optional.
+            }
+          }}
+          className="flex min-h-11 items-center rounded-full border border-line px-4 text-[12px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        >
+          {copied ? t('common.copied') : s('share')}
+        </button>
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="flex min-h-11 items-center rounded-full border border-line px-4 text-[12px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        >
+          {s('print')}
+        </button>
+      </div>
 
       {/* Mobile: the report is long enough that the contents list cannot be a
           sidebar; the same five anchors ride along at the top instead. */}
@@ -407,6 +409,11 @@ export default function ReportPage() {
 
                 <Link
                   to="/ai"
+                  onClick={() =>
+                    setIntake(`${s('nextAiTitle')} — ${st.name[lang]}`, [
+                      { kind: 'strategy', id: st.id },
+                    ])
+                  }
                   className="-mx-2 flex min-h-14 items-center gap-3 rounded-[10px] px-2 py-4 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
                   <div className="min-w-0 flex-1">
@@ -423,7 +430,7 @@ export default function ReportPage() {
 
           <footer className="mt-6">
             <p className="t-kicker text-muted">
-              {fill(s('footerGenerated'), { time: fmtMoment(generatedAt, lang) })}
+              {fill(s('footerGenerated'), { time: fmtDateTime(generatedAt, lang) })}
             </p>
             <p className="mt-2 text-[11px] leading-relaxed text-muted">{s('disclaimer')}</p>
           </footer>

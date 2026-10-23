@@ -5,6 +5,8 @@ export type RunsStrings = {
   lead: string
   newQuestion: string
   askCta: string
+  clear: string
+  confirmClear: string
   runsLabel: string
   sourcesLabel: string
   sourcesShort: string
@@ -37,6 +39,8 @@ export const strings = {
     lead: '每一次提问，和它得到的回答。',
     newQuestion: '新提问',
     askCta: '再问一个',
+    clear: '清空提问记录',
+    confirmClear: '再点一次确认清空',
     runsLabel: '次提问',
     sourcesLabel: '条引用',
     sourcesShort: '引用',
@@ -70,6 +74,8 @@ export const strings = {
     lead: 'Every question, and the answer it earned.',
     newQuestion: 'New question',
     askCta: 'Ask another',
+    clear: 'Clear history',
+    confirmClear: 'Tap again to clear',
     runsLabel: 'runs',
     sourcesLabel: 'sources cited',
     sourcesShort: 'sources',
@@ -103,6 +109,8 @@ export const strings = {
     lead: 'كل سؤال طرحته، والإجابة التي حصل عليها.',
     newQuestion: 'سؤال جديد',
     askCta: 'اسأل سؤالًا آخر',
+    clear: 'مسح السجل',
+    confirmClear: 'اضغط مرة أخرى للمسح',
     runsLabel: 'أسئلة',
     sourcesLabel: 'مصادر مستشهد بها',
     sourcesShort: 'مصادر',

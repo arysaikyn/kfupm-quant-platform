@@ -49,6 +49,28 @@ const EARNINGS_TIMES = [15 * 60 + 30, 16 * 60, 16 * 60 + 30, 17 * 60] as const
 const DIVIDEND_DAY = 5
 const MACRO_DAY = 0
 
+const DAYS_PER_WEEK = 7
+
+/** `2026-10-24`, always local and always gregorian. */
+function isoOf(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${date.getFullYear()}-${month}-${day}`
+}
+
+function addDays(base: Date, days: number): Date {
+  const d = new Date(base)
+  d.setDate(base.getDate() + days)
+  return d
+}
+
+/** Week 0 keeps the authored anchors; other weeks re-seed the day from the
+    event id, so one week always renders the same grid on every reload. */
+function dayFor(event: CalEvent, week: number): number {
+  if (week === 0) return event.day
+  return hashSymbol(`${event.id}#${week}`) % DAYS_PER_WEEK
+}
+
 const events: CalEvent[] = (() => {
   const rows = quotes.map<CalEvent>((quote) => {
     const hash = hashSymbol(quote.symbol)
@@ -107,38 +129,41 @@ export default function Calendar() {
   const fmt = useMemo(() => makeFormatters(lang), [lang])
 
   // Midnight today, fixed at mount so renders stay pure.
-  const [start] = useState(() => {
+  const [base] = useState(() => {
     const d = new Date()
     d.setHours(0, 0, 0, 0)
     return d
   })
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(start)
-    d.setDate(start.getDate() + i)
-    return d
-  })
+  const [week, setWeek] = useState(0)
+
+  const start = addDays(base, week * DAYS_PER_WEEK)
+  const days = Array.from({ length: DAYS_PER_WEEK }, (_, i) => addDays(start, i))
+  const todayIso = isoOf(base)
+
+  const weekEvents = events.map((event) => ({ ...event, day: dayFor(event, week) }))
 
   const grouped = days.map((date, day) => ({
     date,
-    iso: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
-    events: events
+    iso: isoOf(date),
+    events: weekEvents
       .filter((e) => e.day === day)
       .sort((a, b) => a.minutes - b.minutes || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)),
   }))
 
-  const total = events.length
-  const watched = events.filter(
+  const total = weekEvents.length
+  const watched = weekEvents.filter(
     (e) => e.kind !== 'macro' && watchlist.includes(e.symbol),
   ).length
   const range = s('range')
     .replace('{start}', fmt.date.format(days[0]))
     .replace('{end}', fmt.date.format(days[6]))
+  const isCurrentWeek = week === 0
 
   return (
     <Screen title={s('title')} leading={<BackButton fallback="/news" />}>
       <section aria-labelledby="week-summary" className="mt-4">
         <h2 id="week-summary" className="text-[11px] font-medium text-muted">
-          {s('weekLabel')}
+          {s('eventsLabel')}
         </h2>
         <p className="mt-1 flex items-baseline gap-2">
           <span className="t-display num text-[40px] leading-none">
@@ -149,13 +174,78 @@ export default function Calendar() {
           </span>
         </p>
         <p className="mt-2 flex flex-wrap items-baseline gap-x-2 text-[12px] text-muted">
-          <span className="num">{range}</span>
-          <span aria-hidden="true">·</span>
           <span>
             <span className="num text-fg">{fmtNum(watched, lang, 0)}</span>{' '}
             {s('watchLabel')}
           </span>
         </p>
+
+        <div
+          role="group"
+          aria-label={s('weekNav')}
+          className="mt-3 flex items-center gap-1"
+        >
+          <button
+            type="button"
+            onClick={() => setWeek((w) => w - 1)}
+            aria-label={s('prevWeek')}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+          >
+            <svg
+              aria-hidden="true"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="rtl:[transform:scaleX(-1)]"
+            >
+              <path d="M14.5 5.5 8 12l6.5 6.5" />
+            </svg>
+          </button>
+
+          <span
+            aria-live="polite"
+            aria-atomic="true"
+            className="num min-w-0 flex-1 text-center text-[12px] text-muted"
+          >
+            {range}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setWeek((w) => w + 1)}
+            aria-label={s('nextWeek')}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+          >
+            <svg
+              aria-hidden="true"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="rtl:[transform:scaleX(-1)]"
+            >
+              <path d="M9.5 5.5 16 12l-6.5 6.5" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setWeek(0)}
+            disabled={isCurrentWeek}
+            className="min-h-11 shrink-0 rounded-full border border-line px-3 text-[12px] text-fg transition-colors active:bg-fg/10 disabled:border-transparent disabled:text-muted disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+          >
+            {s('today')}
+          </button>
+        </div>
       </section>
 
       {grouped.map((group, day) => (
@@ -167,7 +257,7 @@ export default function Calendar() {
             <time dateTime={group.iso} className="num text-[12px] text-muted">
               {fmt.date.format(group.date)}
             </time>
-            {day === 0 && (
+            {group.iso === todayIso && (
               <span className="rounded-lg bg-fg/10 px-1.5 py-0.5 text-[10px] leading-none whitespace-nowrap text-fg">
                 {s('today')}
               </span>

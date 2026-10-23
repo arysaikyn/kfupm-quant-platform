@@ -8,6 +8,8 @@ type Strings = {
   why: string
   countAll: string
   countHit: string
+  indexAria: string
+  groupCount: string
   empty: string
   emptyAction: string
 }
@@ -25,6 +27,8 @@ export const strings = {
     why: '为什么重要',
     countAll: '共 {n} 个词条',
     countHit: '找到 {n} 个词条',
+    indexAria: '按首字跳转',
+    groupCount: '{n} 个词条',
     empty: '没有匹配的词条，换个说法试试。',
     emptyAction: '清除搜索',
   },
@@ -36,6 +40,8 @@ export const strings = {
     why: 'Why it matters',
     countAll: '{n} terms',
     countHit: '{n} matches',
+    indexAria: 'Jump to a letter',
+    groupCount: '{n} terms',
     empty: 'Nothing matched. Try another word.',
     emptyAction: 'Clear search',
   },
@@ -47,6 +53,8 @@ export const strings = {
     why: 'لماذا يهم',
     countAll: '{n} مصطلحات',
     countHit: '{n} نتيجة',
+    indexAria: 'انتقل إلى حرف',
+    groupCount: '{n} مصطلحات',
     empty: 'لا نتائج مطابقة. جرّب كلمة أخرى.',
     emptyAction: 'امسح البحث',
   },

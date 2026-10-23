@@ -2,6 +2,7 @@ import type { Dict } from '../../i18n'
 
 type Strings = {
   title: string
+  share: string
   breadthLabel: string
   namesUp: string
   namesDown: string
@@ -30,6 +31,7 @@ type Strings = {
 export const strings = {
   zh: {
     title: '复盘',
+    share: '复制链接',
     breadthLabel: '市场宽度',
     namesUp: '上涨',
     namesDown: '下跌',
@@ -55,6 +57,7 @@ export const strings = {
   },
   en: {
     title: 'Daily review',
+    share: 'Copy link',
     breadthLabel: 'Market breadth',
     namesUp: 'up',
     namesDown: 'down',
@@ -80,6 +83,7 @@ export const strings = {
   },
   ar: {
     title: 'المراجعة اليومية',
+    share: 'نسخ الرابط',
     breadthLabel: 'اتساع السوق',
     namesUp: 'صاعد',
     namesDown: 'هابط',

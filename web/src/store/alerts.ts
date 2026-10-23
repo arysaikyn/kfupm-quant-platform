@@ -84,6 +84,14 @@ export function removeAlert(id: string) {
   set(state.filter((a) => a.id !== id))
 }
 
+/** The symbol is the alert's identity, so an edit can only re-aim the trigger. */
+export type AlertPatch = Partial<Pick<PriceAlert, 'dir' | 'threshold'>>
+
+export function updateAlert(id: string, patch: AlertPatch) {
+  if (!state.some((a) => a.id === id)) return
+  set(state.map((a) => (a.id === id ? { ...a, ...patch } : a)))
+}
+
 export type AlertRow = PriceAlert & {
   quote: (typeof quotes)[number]
   triggered: boolean

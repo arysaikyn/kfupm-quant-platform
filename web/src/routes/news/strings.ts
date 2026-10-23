@@ -10,6 +10,9 @@ export const strings = {
     yesterday: '昨天',
     related: '相关股票',
     askAi: '问 AI 这件事',
+    share: '复制链接',
+    save: '收藏',
+    saved: '已收藏',
     notFound: '没有找到这条新闻',
     empty: '暂时没有新闻',
     emptySource: '这个来源暂时没有新闻',
@@ -42,6 +45,9 @@ export const strings = {
     yesterday: 'Yesterday',
     related: 'Related stocks',
     askAi: 'Ask AI about this',
+    share: 'Copy link',
+    save: 'Save',
+    saved: 'Saved',
     notFound: 'This story is not available',
     empty: 'No stories right now',
     emptySource: 'No stories from this source',
@@ -74,6 +80,9 @@ export const strings = {
     yesterday: 'أمس',
     related: 'الأسهم المرتبطة',
     askAi: 'اسأل AI عن هذا الخبر',
+    share: 'نسخ الرابط',
+    save: 'حفظ',
+    saved: 'محفوظ',
     notFound: 'لم نجد هذا الخبر',
     empty: 'لا توجد أخبار الآن',
     emptySource: 'لا توجد أخبار من هذا المصدر',
@@ -106,6 +115,9 @@ export const strings = {
   yesterday: string
   related: string
   askAi: string
+  share: string
+  save: string
+  saved: string
   calendar: string
   notFound: string
   empty: string

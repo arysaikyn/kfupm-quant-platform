@@ -2,9 +2,9 @@ import type { Quote } from '../data/mock'
 
 type Props = {
   quotes: Quote[]
-  name: (q: Quote) => string
   price: (q: Quote) => string
   change: (q: Quote) => string
+  label?: string
 }
 
 /**
@@ -12,7 +12,7 @@ type Props = {
  * hidden from assistive tech. Both edges fade, so the item leaving the frame
  * dissolves instead of being chopped in half. Time order stays LTR in Arabic.
  */
-export function TickerTape({ quotes, name, price, change }: Props) {
+export function TickerTape({ quotes, price, change, label }: Props) {
   const track = (hidden: boolean) => (
     <div className="tape__track" dir="ltr" aria-hidden={hidden || undefined}>
       {quotes.map((q) => (
@@ -36,7 +36,7 @@ export function TickerTape({ quotes, name, price, change }: Props) {
   )
 
   return (
-    <div className="tape py-2" aria-label={name(quotes[0])}>
+    <div className="tape py-2" role="group" aria-label={label}>
       {track(false)}
       {track(true)}
     </div>

@@ -8,6 +8,7 @@ type Strings = {
   appearance: string
   light: string
   dark: string
+  system: string
   language: string
   /** Native names — identical in every dictionary on purpose. */
   langZh: string
@@ -36,6 +37,7 @@ export const strings = {
     appearance: '外观',
     light: '浅色',
     dark: '深色',
+    system: '跟随系统',
     language: '语言',
     langZh: '中文',
     langZhEnglish: 'Chinese',
@@ -61,6 +63,7 @@ export const strings = {
     appearance: 'Appearance',
     light: 'Light',
     dark: 'Dark',
+    system: 'System',
     language: 'Language',
     langZh: '中文',
     langZhEnglish: 'Chinese',
@@ -86,6 +89,7 @@ export const strings = {
     appearance: 'المظهر',
     light: 'فاتح',
     dark: 'داكن',
+    system: 'حسب النظام',
     language: 'اللغة',
     langZh: '中文',
     langZhEnglish: 'Chinese',

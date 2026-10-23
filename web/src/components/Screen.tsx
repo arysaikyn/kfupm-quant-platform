@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
 
 type Props = {
   title?: string
@@ -10,9 +12,26 @@ type Props = {
   padded?: boolean
 }
 
+let lastFocusedPath: string | null = null
+
 export function Screen({ title, leading, action, children, padded = true }: Props) {
+  const { pathname } = useLocation()
+  const headingRef = useRef<HTMLHeadingElement>(null)
+
+  // Move focus to the page name on every real route change. The first paint
+  // also lands here, which gives a screen reader a starting point.
+  useEffect(() => {
+    if (lastFocusedPath === pathname) return
+    lastFocusedPath = pathname
+    headingRef.current?.focus({ preventScroll: true })
+  }, [pathname])
+
   return (
-    <main className="screen-pad mx-auto min-h-full w-full max-w-[520px] lg:max-w-[760px]">
+    <main
+      id="screen"
+      tabIndex={-1}
+      className="screen-pad mx-auto min-h-full w-full max-w-[520px] outline-none sm:max-w-[560px] md:max-w-[680px] lg:max-w-[760px]"
+    >
       {(title || action || leading) && (
         // One optical line: the 44px controls and the title share a vertical
         // centre. items-end put the title's baseline on the button's bottom
@@ -22,7 +41,14 @@ export function Screen({ title, leading, action, children, padded = true }: Prop
             {leading}
             <div className="min-w-0">
               {title && (
-                <h1 className="t-title truncate text-[26px] leading-[1.2] font-semibold">{title}</h1>
+                <h1
+                  ref={headingRef}
+                  tabIndex={-1}
+                  title={title}
+                  className="t-title line-clamp-2 text-[26px] leading-[1.2] font-semibold break-words"
+                >
+                  {title}
+                </h1>
               )}
             </div>
           </div>

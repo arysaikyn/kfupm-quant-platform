@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
@@ -122,6 +122,18 @@ export default function LearnPage() {
   const shown = groups.reduce((n, g) => n + g.items.length, 0)
   const searching = query.trim().length > 0
 
+  // One heading per group, keyed by the group label. The index strip is a
+  // table of contents, so a jump scrolls the group under the sticky header and
+  // moves focus to its heading instead of only scrolling.
+  const heads = useRef<Record<string, HTMLHeadingElement | null>>({})
+
+  const jumpTo = (key: string) => {
+    const heading = heads.current[key]
+    if (!heading) return
+    heading.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    heading.focus({ preventScroll: true })
+  }
+
   const count = (searching ? s('countHit') : s('countAll')).replace(
     '{n}',
     fmtNum(shown, lang, 0),
@@ -167,34 +179,72 @@ export default function LearnPage() {
         <p className="num mt-2.5 text-[12px] text-muted" aria-live="polite">
           {count}
         </p>
+
+        {/* A first-letter strip, horizontal so twenty buckets still fit one
+            line on a phone. It follows the filter: a letter with no hit under
+            the current query is not offered. */}
+        {groups.length > 0 && (
+          <nav aria-label={s('indexAria')} className="mt-2 -mx-4 overflow-x-auto px-4">
+            <ul className="flex w-max gap-1.5 pb-1">
+              {groups.map((group) => (
+                <li key={group.key}>
+                  <button
+                    type="button"
+                    onClick={() => jumpTo(group.key)}
+                    className="num flex h-11 min-w-11 items-center justify-center rounded-full bg-fg/5 px-2 text-[13px] font-semibold text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                  >
+                    {group.key}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
       </div>
 
-      {groups.map((group) => (
-        <section key={group.key} className="mt-8">
-          {/* Sticks just under the Screen header (65px tall) while the group
-              scrolls past, so the reader always knows the current bucket. */}
-          <h2 className="sticky top-[64px] z-20 -mx-4 bg-bg px-4 pt-2.5 pb-1.5 text-[12px] font-semibold text-muted">
-            {group.key}
-          </h2>
+      {groups.map((group) => {
+        const size = fmtNum(group.items.length, lang, 0)
+        return (
+          <section key={group.key} className="mt-8">
+            {/* Sticks just under the Screen header (65px tall) while the group
+                scrolls past, so the reader always knows the current bucket. The
+                letter index focuses this heading, so it must take tabIndex -1. */}
+            <h2
+              ref={(node) => {
+                heads.current[group.key] = node
+              }}
+              tabIndex={-1}
+              className="sticky top-[64px] z-20 -mx-4 scroll-mt-[72px] bg-bg px-4 pt-2.5 pb-1.5 text-[12px] font-semibold text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+            >
+              {group.key}
+              <span className="num ms-1.5 font-normal opacity-70">
+                <span aria-hidden="true">{size}</span>
+                <span className="sr-only">
+                  {' '}
+                  {s('groupCount').replace('{n}', size)}
+                </span>
+              </span>
+            </h2>
 
-          <ul className="divide-y divide-line border-t border-line">
-            {group.items.map((item) => (
-              <li key={item.term} className="px-3 py-4">
-                <h3 className="t-title text-[15px] leading-[1.35] font-semibold text-fg">
-                  {item.term}
-                </h3>
-                <p className="mt-1.5 text-[14px] leading-[1.55] text-fg/85">{item.plain}</p>
-                <div className="mt-3 border-s-2 border-line ps-3">
-                  <p className="text-[11px] leading-[1.4] font-semibold text-muted">
-                    {s('why')}
-                  </p>
-                  <p className="mt-1 text-[12px] leading-[1.5] text-muted">{item.why}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+            <ul className="divide-y divide-line border-t border-line">
+              {group.items.map((item) => (
+                <li key={item.term} className="px-3 py-4">
+                  <h3 className="t-title text-[15px] leading-[1.35] font-semibold text-fg">
+                    {item.term}
+                  </h3>
+                  <p className="mt-1.5 text-[14px] leading-[1.55] text-fg/85">{item.plain}</p>
+                  <div className="mt-3 border-s-2 border-line ps-3">
+                    <p className="text-[11px] leading-[1.4] font-semibold text-muted">
+                      {s('why')}
+                    </p>
+                    <p className="mt-1 text-[12px] leading-[1.5] text-muted">{item.why}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      })}
 
       {groups.length === 0 && (
         <EmptyState

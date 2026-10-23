@@ -18,6 +18,9 @@ const QUOTE_BY_SYMBOL: Record<string, Quote | undefined> = Object.fromEntries(
   quotes.map((quote) => [quote.symbol, quote] as const),
 )
 
+/** DOM id of one result row, referenced by aria-activedescendant. */
+const optionId = (symbol: string) => `search-option-${symbol}`
+
 /** Arabic diacritics, Quranic marks and tatweel carry no search meaning. */
 const ARABIC_MARKS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g
 /** Zero-width and bidi controls arrive with copied Arabic text; drop them. */
@@ -93,6 +96,8 @@ function QuoteRow({
   watchLabel,
   onToggle,
   onOpen,
+  optionId,
+  active = false,
 }: {
   quote: Quote
   lang: Lang
@@ -100,10 +105,18 @@ function QuoteRow({
   watchLabel: string
   onToggle: () => void
   onOpen?: () => void
+  /** Present when the row is one entry of the results listbox. */
+  optionId?: string
+  active?: boolean
 }) {
   const up = quote.change >= 0
   return (
-    <li className="row pe-1">
+    <li
+      id={optionId}
+      role={optionId ? 'option' : undefined}
+      aria-selected={optionId ? active : undefined}
+      className={`row pe-1 transition-colors${active ? ' bg-fg/10' : ''}`}
+    >
       <Link
         to={`/m/${quote.symbol}`}
         onClick={onOpen}
@@ -158,6 +171,7 @@ export default function SearchPage() {
   const { watchlist } = useUser()
   const [query, setQuery] = useState('')
   const [recent, setRecent] = useState<string[]>(loadRecent)
+  const [active, setActive] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -186,6 +200,17 @@ export default function SearchPage() {
     )
   }, [needle, lang])
 
+  /** -1 means the query has no highlight; a shrinking list drops it too. */
+  const activeIndex = active >= 0 && active < results.length ? active : -1
+
+  useEffect(() => {
+    if (activeIndex < 0) return
+    const quote = results[activeIndex]
+    if (quote) {
+      document.getElementById(optionId(quote.symbol))?.scrollIntoView({ block: 'nearest' })
+    }
+  }, [activeIndex, results])
+
   const watchedQuotes = useMemo(
     () =>
       watchlist
@@ -208,17 +233,42 @@ export default function SearchPage() {
 
   const chooseRecent = (term: string) => {
     setQuery(term)
+    setActive(-1)
     commit(term)
     inputRef.current?.focus()
   }
 
   const clearQuery = () => {
     setQuery('')
+    setActive(-1)
     inputRef.current?.focus()
   }
 
+  const openQuote = (quote: Quote) => {
+    commit(query)
+    navigate(`/m/${quote.symbol}`)
+  }
+
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Escape' && !event.nativeEvent.isComposing) clearQuery()
+    if (event.nativeEvent.isComposing) return
+    if (event.key === 'Escape') {
+      clearQuery()
+      return
+    }
+    if (results.length === 0) return
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      // -1 (nothing highlighted) steps into the first row.
+      setActive((i) => (i >= results.length - 1 ? 0 : i + 1))
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      setActive((i) => (i <= 0 ? results.length - 1 : i - 1))
+    } else if (event.key === 'Enter' && activeIndex >= 0) {
+      const quote = results[activeIndex]
+      if (!quote) return
+      event.preventDefault()
+      openQuote(quote)
+    }
   }
 
   const goBack = () => {
@@ -284,10 +334,22 @@ export default function SearchPage() {
             autoCapitalize="none"
             spellCheck={false}
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value)
+              setActive(-1)
+            }}
             onKeyDown={onKeyDown}
             placeholder={s('placeholder')}
             aria-label={s('placeholder')}
+            role="combobox"
+            aria-expanded={results.length > 0}
+            aria-controls={results.length > 0 ? 'search-results' : undefined}
+            aria-autocomplete="list"
+            aria-activedescendant={
+              activeIndex >= 0 && results[activeIndex]
+                ? optionId(results[activeIndex].symbol)
+                : undefined
+            }
             className="h-11 min-w-0 flex-1 appearance-none bg-transparent text-[15px] text-fg placeholder:text-muted focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:appearance-none"
           />
           {query !== '' && (
@@ -344,7 +406,7 @@ export default function SearchPage() {
                   onClick={() => setRecent([])}
                   className="min-h-11 shrink-0 rounded-full px-2 text-[12px] text-fg underline decoration-line underline-offset-4 transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
-                  {s('clearAll')}
+                  {s('clearRecent')}
                 </button>
               )}
             </div>
@@ -426,8 +488,13 @@ export default function SearchPage() {
             </h2>
             <span className="num text-[11px] text-muted">{results.length}</span>
           </div>
-          <ul id="search-results" className="panel mt-2 overflow-hidden">
-            {results.map((quote) => {
+          <ul
+            id="search-results"
+            role="listbox"
+            aria-label={s('results')}
+            className="panel mt-2 overflow-hidden"
+          >
+            {results.map((quote, index) => {
               const watched = watchlist.includes(quote.symbol)
               return (
                 <QuoteRow
@@ -438,6 +505,8 @@ export default function SearchPage() {
                   watchLabel={s(watched ? 'removeWatch' : 'addWatch')}
                   onToggle={() => toggleWatch(quote.symbol)}
                   onOpen={() => commit(query)}
+                  optionId={optionId(quote.symbol)}
+                  active={index === activeIndex}
                 />
               )
             })}

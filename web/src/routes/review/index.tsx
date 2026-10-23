@@ -251,7 +251,7 @@ function RotationChart({
               <span
                 key={`label-${p.sector.id}`}
                 aria-hidden="true"
-                className="pointer-events-none absolute z-[5] whitespace-nowrap text-[9px] leading-none"
+                className="pointer-events-none absolute z-[5] whitespace-nowrap text-[10px] leading-none"
                 style={{
                   left: `${p.x}%`,
                   top: `${p.y}%`,
@@ -303,7 +303,7 @@ function RotationChart({
               <span
                 key={v}
                 aria-hidden="true"
-                className="num absolute top-0 -translate-x-1/2 text-[9px] leading-none"
+                className="num absolute top-0 -translate-x-1/2 text-[10px] leading-none"
                 style={{
                   left: `${((v + span) / (2 * span)) * 100}%`,
                   color: 'var(--color-muted)',
@@ -320,7 +320,7 @@ function RotationChart({
             <span
               key={v}
               aria-hidden="true"
-              className="num absolute right-1 -translate-y-1/2 text-[9px] leading-none"
+              className="num absolute right-1 -translate-y-1/2 text-[10px] leading-none"
               style={{ top: `${(1 - v / top) * 100}%`, color: 'var(--color-muted)' }}
             >
               {fmtNum(v, lang, 0, '%')}
@@ -368,9 +368,10 @@ function RotationChart({
 }
 
 export default function ReviewPage() {
-  const { lang } = useI18n()
+  const { lang, t } = useI18n()
   const s = useStrings(strings)
   const [today] = useState(() => new Date())
+  const [shared, setShared] = useState(false)
   const { watchlist } = useUser()
   const [selected, setSelected] = useState<string | null>(null)
 
@@ -461,7 +462,26 @@ export default function ReviewPage() {
   }).format(today)
 
   return (
-    <Screen title={s('title')}>
+    <Screen
+      title={s('title')}
+      action={
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(window.location.href)
+              setShared(true)
+              window.setTimeout(() => setShared(false), 1600)
+            } catch {
+              // Clipboard permission is optional.
+            }
+          }}
+          className="flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        >
+          {shared ? t('common.copied') : s('share')}
+        </button>
+      }
+    >
       {/* The date is data, not a subtitle: it stays as a kicker. */}
       <p className="t-kicker mt-1" style={kicker}>
         {dateLabel}
@@ -629,7 +649,7 @@ export default function ReviewPage() {
                       <span dir="ltr">
                         {fmtNum(q.price, lang, 2)}{' '}
                         <span
-                          className="text-[9px] font-normal"
+                          className="text-[10px] font-normal"
                           style={{ color: 'var(--color-muted)' }}
                         >
                           {q.currency}

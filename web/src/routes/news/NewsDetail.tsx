@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
@@ -6,16 +7,21 @@ import { news } from '../../data/mock'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import { quoteBySymbol, relTime } from './format'
 import { toggleWatch, useUser } from '../../store/user'
+import { setIntake } from '../ai/intake'
+import { toggleSavedNews, useSavedNews } from '../../store/savedNews'
 import { strings } from './strings'
 
 export default function NewsDetail() {
   const { id } = useParams<{ id: string }>()
-  const { lang } = useI18n()
+  const { lang, t } = useI18n()
   const s = useStrings(strings)
+  const [copied, setCopied] = useState(false)
+  const savedIds = useSavedNews()
   const { watchlist } = useUser()
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const item = news.find((n) => n.id === id)
+  const saved = item ? savedIds.includes(item.id) : false
 
   // The feed's source filter travels with the story's URL. A history pop
   // already restores it; this fallback covers a deep link or a reload, where
@@ -41,9 +47,41 @@ export default function NewsDetail() {
           {item.title[lang]}
         </h1>
         <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted">
-          <span className="truncate">{item.source}</span>
+          <Link
+            to={`/news?source=${encodeURIComponent(item.source)}`}
+            className="truncate underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          >
+            {item.source}
+          </Link>
           <span aria-hidden="true">·</span>
           <time className="num shrink-0">{relTime(item.minutesAgo, lang)}</time>
+          <button
+            type="button"
+            aria-pressed={saved}
+            aria-label={saved ? s('saved') : s('save')}
+            onClick={() => toggleSavedNews(item.id)}
+            className="ms-auto flex h-11 w-11 items-center justify-center rounded-full text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            style={{ color: saved ? 'var(--color-accent)' : undefined }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true">
+              <path d="M6 4h12v16l-6-4-6 4z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(window.location.href)
+                setCopied(true)
+                window.setTimeout(() => setCopied(false), 1600)
+              } catch {
+                // Clipboard permission is optional.
+              }
+            }}
+            className="inline-flex min-h-11 items-center rounded-full px-2 text-[11px] text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          >
+            {copied ? t('common.copied') : s('share')}
+          </button>
         </div>
 
         <div className="mt-6 max-w-[68ch] space-y-4 text-[15px] leading-[1.75] text-fg/85 rtl:leading-[1.95]">
@@ -111,7 +149,10 @@ export default function NewsDetail() {
 
         <button
           type="button"
-          onClick={() => navigate('/ai')}
+          onClick={() => {
+            setIntake(`${s('askAi')} — ${item.title[lang]}`, [{ kind: 'news', id: item.id }])
+            navigate('/ai')
+          }}
           className="mt-8 flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-medium text-bg transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
         >
           {s('askAi')}

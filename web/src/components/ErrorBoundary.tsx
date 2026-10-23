@@ -1,12 +1,18 @@
 import { Component } from 'react'
 import type { ErrorInfo, ReactNode } from 'react'
 
-type Props = { children: ReactNode }
+type Props = {
+  children: ReactNode
+  /** Called with the caught error and a reset function. */
+  fallback: (error: Error, reset: () => void) => ReactNode
+}
+
 type State = { error: Error | null }
 
 /**
  * Without this, one thrown error unmounts the root and the user gets a blank
- * page with no way back. A reload is the honest recovery for a UI this thin.
+ * page with no way back. A retry re-renders the subtree; a reload is the
+ * honest last resort.
  */
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { error: null }
@@ -19,23 +25,10 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('render failed', error, info.componentStack)
   }
 
+  reset = () => this.setState({ error: null })
+
   render() {
     if (!this.state.error) return this.props.children
-    return (
-      <div
-        role="alert"
-        className="mx-auto flex min-h-screen max-w-[520px] flex-col items-center justify-center gap-4 px-6 text-center"
-      >
-        <p className="text-[15px]">Something broke on this screen.</p>
-        <button
-          type="button"
-          onClick={() => window.location.reload()}
-          className="rounded-full px-5 py-2.5 text-[14px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-          style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
-        >
-          Reload
-        </button>
-      </div>
-    )
+    return this.props.fallback(this.state.error, this.reset)
   }
 }

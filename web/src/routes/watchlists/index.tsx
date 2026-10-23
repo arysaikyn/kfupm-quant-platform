@@ -155,6 +155,25 @@ function MinusIcon() {
   )
 }
 
+function MoveIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3.5 7.5V6.2a1.7 1.7 0 0 1 1.7-1.7h3.4l1.7 2.1h8.5a1.7 1.7 0 0 1 1.7 1.7v9.5a1.7 1.7 0 0 1-1.7 1.7H5.2a1.7 1.7 0 0 1-1.7-1.7z" />
+      <path d="M9 13h5.5M12.5 10.5 15 13l-2.5 2.5" />
+    </svg>
+  )
+}
+
 function PlusIcon() {
   return (
     <svg
@@ -262,6 +281,8 @@ export default function WatchlistsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
   const [confirmId, setConfirmId] = useState<string | null>(null)
+  const [movingSymbol, setMovingSymbol] = useState<string | null>(null)
+  const [moveTarget, setMoveTarget] = useState('')
   const [pick, setPick] = useState(
     () => quotes.find((q) => !groups[0]?.symbols.includes(q.symbol))?.symbol ?? quotes[0].symbol,
   )
@@ -327,12 +348,14 @@ export default function WatchlistsPage() {
     setNewOpen(false)
     setEditingId(null)
     setConfirmId(null)
+    setMovingSymbol(null)
   }
 
   function startRename(group: Group) {
     setEditingId(group.id)
     setEditName(group.name)
     setConfirmId(null)
+    setMovingSymbol(null)
   }
 
   function saveRename(e: FormEvent) {
@@ -353,6 +376,41 @@ export default function WatchlistsPage() {
     setActiveId((prev) => (prev === group.id ? null : prev))
     setEditingId((prev) => (prev === group.id ? null : prev))
     setConfirmId(null)
+    setMovingSymbol(null)
+  }
+
+  // Moving is an inline picker rather than drag: a drag is invisible to anyone
+  // who cannot see the screen, and this list has to stay usable with a keyboard.
+  function startMove(group: Group, symbol: string) {
+    const target = groups.find((g) => g.id !== group.id)
+    if (!target) return
+    setMovingSymbol(symbol)
+    setMoveTarget(target.id)
+    setConfirmId(null)
+    setEditingId(null)
+  }
+
+  function commitMove(e: FormEvent, group: Group) {
+    e.preventDefault()
+    const symbol = movingSymbol
+    const target = groups.find((g) => g.id === moveTarget && g.id !== group.id)
+    if (!symbol || !target) return
+    // The seeded group mirrors the shared watchlist, so crossing its edge
+    // also flips the symbol's membership there.
+    if (group.id === DEFAULT_ID) setWatched(symbol, false)
+    if (target.id === DEFAULT_ID) setWatched(symbol, true)
+    setGroups((prev) =>
+      prev.map((g) => {
+        if (g.id === group.id) {
+          return { ...g, symbols: g.symbols.filter((x) => x !== symbol) }
+        }
+        if (g.id === target.id && !g.symbols.includes(symbol)) {
+          return { ...g, symbols: [symbol, ...g.symbols] }
+        }
+        return g
+      }),
+    )
+    setMovingSymbol(null)
   }
 
   function addSymbol(e: FormEvent) {
@@ -421,6 +479,7 @@ export default function WatchlistsPage() {
                   setActiveId(group.id)
                   setEditingId(null)
                   setConfirmId(null)
+                  setMovingSymbol(null)
                   const next = quotes.find((q) => !group.symbols.includes(q.symbol))
                   if (next) setPick(next.symbol)
                 }}
@@ -606,7 +665,12 @@ export default function WatchlistsPage() {
                 const watched = watchlist.includes(q.symbol)
                 const tone = q.change >= 0 ? 'var(--color-up)' : 'var(--color-down)'
                 return (
-                  <li key={q.symbol} className="flex min-h-14 items-center gap-1 ps-3 pe-1">
+                  <li
+                    key={q.symbol}
+                    className={`flex min-h-14 flex-wrap items-center gap-1 ps-3 pe-1 ${
+                      movingSymbol === q.symbol ? 'bg-fg/5' : ''
+                    }`}
+                  >
                     <Link
                       to={`/m/${q.symbol}`}
                       className="flex min-h-11 min-w-0 flex-1 items-center gap-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
@@ -644,6 +708,65 @@ export default function WatchlistsPage() {
                     >
                       <MinusIcon />
                     </button>
+                    {groups.length > 1 && (
+                      <button
+                        type="button"
+                        aria-expanded={movingSymbol === q.symbol}
+                        aria-controls={movingSymbol === q.symbol ? `wl-move-${q.symbol}` : undefined}
+                        aria-label={`${s('moveTo')}: ${q.symbol}`}
+                        onClick={() => {
+                          if (movingSymbol === q.symbol) setMovingSymbol(null)
+                          else startMove(active, q.symbol)
+                        }}
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                        style={{
+                          color:
+                            movingSymbol === q.symbol
+                              ? 'var(--color-fg)'
+                              : 'var(--color-muted)',
+                        }}
+                      >
+                        <MoveIcon />
+                      </button>
+                    )}
+                    {movingSymbol === q.symbol && (
+                      <form
+                        id={`wl-move-${q.symbol}`}
+                        onSubmit={(e) => commitMove(e, active)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') setMovingSymbol(null)
+                        }}
+                        className="flex w-full items-center gap-2 pb-2"
+                      >
+                        <label htmlFor={`wl-move-target-${q.symbol}`} className="sr-only">
+                          {s('moveTo')}
+                        </label>
+                        <select
+                          id={`wl-move-target-${q.symbol}`}
+                          autoFocus
+                          value={moveTarget}
+                          onChange={(e) => setMoveTarget(e.target.value)}
+                          className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
+                        >
+                          {groups
+                            .filter((g) => g.id !== active.id)
+                            .map((g) => (
+                              <option key={g.id} value={g.id}>
+                                {g.name}
+                              </option>
+                            ))}
+                        </select>
+                        <button
+                          type="submit"
+                          className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                        >
+                          {s('move')}
+                        </button>
+                        <IconBtn label={s('cancel')} onClick={() => setMovingSymbol(null)}>
+                          <CloseIcon />
+                        </IconBtn>
+                      </form>
+                    )}
                   </li>
                 )
               })}

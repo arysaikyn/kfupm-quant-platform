@@ -26,6 +26,12 @@ export type AiStrings = {
   cap6h: string
   typing: string
   artifactCount: string
+  artifactEmpty: string
+  editRules: string
+  offlineSend: string
+  answerReady: string
+  demoNote: string
+  threadLabel: string
   addWatch: string
   addedWatch: string
   saveStrategy: string
@@ -72,6 +78,12 @@ export const strings = {
     cap6t: '按教法筛', cap6h: '先过 Sharia 再排名',
     typing: '正在回复',
     artifactCount: '5 只',
+    artifactEmpty: '演示样本里没有符合的股票。',
+    editRules: '在筛选器里改',
+    offlineSend: '当前离线。恢复网络后再试。',
+    answerReady: '回答完成',
+    demoNote: '演示：固定回复 + 本地样本，不是真实回测。',
+    threadLabel: '对话',
     addWatch: '加入自选',
     addedWatch: '已加入自选',
     saveStrategy: '保存为策略',
@@ -116,6 +128,12 @@ export const strings = {
     cap6t: 'Sharia screen', cap6h: 'Filter before ranking',
     typing: 'Replying',
     artifactCount: '5 names',
+    artifactEmpty: 'No symbol in the demo sample matches.',
+    editRules: 'Edit in screener',
+    offlineSend: 'You are offline. Reconnect and retry.',
+    answerReady: 'Answer ready',
+    demoNote: 'Demo: scripted replies and a local sample, not a real backtest.',
+    threadLabel: 'Conversation',
     addWatch: 'Add to watchlist',
     addedWatch: 'In watchlist',
     saveStrategy: 'Save as strategy',
@@ -160,6 +178,12 @@ export const strings = {
     cap6t: 'فحص شرعي', cap6h: 'التصفية قبل الترتيب',
     typing: 'جارٍ الرد',
     artifactCount: '5 أسهم',
+    artifactEmpty: 'لا يوجد سهم مطابق في العينة التجريبية.',
+    editRules: 'عدّل في الفرز',
+    offlineSend: 'أنت غير متصل. أعد الاتصال ثم حاول مجددًا.',
+    answerReady: 'اكتمل الرد',
+    demoNote: 'عرض: ردود ثابتة وعينة محلية، وليس اختبارًا تاريخيًا حقيقيًا.',
+    threadLabel: 'المحادثة',
     addWatch: 'إضافة إلى المتابعة',
     addedWatch: 'في المتابعة',
     saveStrategy: 'حفظ كخطة',

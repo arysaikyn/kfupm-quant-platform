@@ -3,7 +3,10 @@ import type { Dict } from '../../i18n'
 type CalendarKey =
   | 'title'
   | 'subtitle'
-  | 'weekLabel'
+  | 'eventsLabel'
+  | 'weekNav'
+  | 'prevWeek'
+  | 'nextWeek'
   | 'eventOne'
   | 'eventMany'
   | 'watchLabel'
@@ -20,7 +23,10 @@ export const strings = {
   zh: {
     title: '财经日历',
     subtitle: '未来七天的财报与事件',
-    weekLabel: '本周事件',
+    eventsLabel: '事件数',
+    weekNav: '周切换',
+    prevWeek: '上一周',
+    nextWeek: '下一周',
     eventOne: '个事件',
     eventMany: '个事件',
     watchLabel: '在自选',
@@ -36,7 +42,10 @@ export const strings = {
   en: {
     title: 'Calendar',
     subtitle: 'Earnings and events for the next seven days',
-    weekLabel: 'This week',
+    eventsLabel: 'Events',
+    weekNav: 'Week navigation',
+    prevWeek: 'Previous week',
+    nextWeek: 'Next week',
     eventOne: 'event',
     eventMany: 'events',
     watchLabel: 'on watchlist',
@@ -52,7 +61,10 @@ export const strings = {
   ar: {
     title: 'التقويم',
     subtitle: 'أرباح الشركات والأحداث خلال الأيام السبعة القادمة',
-    weekLabel: 'أحداث الأسبوع',
+    eventsLabel: 'عدد الأحداث',
+    weekNav: 'التنقل بين الأسابيع',
+    prevWeek: 'الأسبوع السابق',
+    nextWeek: 'الأسبوع التالي',
     eventOne: 'حدث',
     eventMany: 'أحداث',
     watchLabel: 'في قائمتك',

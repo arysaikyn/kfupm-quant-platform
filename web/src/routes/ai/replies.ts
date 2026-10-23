@@ -1,83 +1,113 @@
 import type { Lang } from '../../i18n'
+import type { Artifact, SourceRef } from './chat'
+
+export type ReplyArtifact = Omit<Artifact, 'symbols'>
 
 export type Reply = {
   paragraphs: string[]
-  sources: string[]
-  artifactTitle?: string
+  sources: SourceRef[]
+  artifact?: ReplyArtifact
 }
 
-/** The first three exchanges are scripted; the third one returns the artifact. */
+/** The first three exchanges are scripted; the third one returns the rule card. */
 export const canned: Record<Lang, Reply[]> = {
   zh: [
     {
       paragraphs: [
         '先用大白话说结论：在沙特、香港和中国内地这三个市场里，你能先看到已经通过教法筛选、基本面还算稳的公司。',
-        '我不会直接叫你买哪一只。我能做的是把符合你条件的公司列出来，告诉你每家的理由，也告诉你它可能出问题的地方。',
+        '这是演示数据。我会把你说的话变成可编辑的规则，不会替你下单，也不会假装跑过真实回测。',
       ],
-      sources: ['行情快照 · Tadawul', '教法筛选规则'],
+      sources: [
+        { label: '行情快照 · Tadawul', href: '/' },
+        { label: '教法筛选规则', href: '/screener' },
+      ],
     },
     {
       paragraphs: [
-        '明白。把「便宜」换成规则，就是市盈率不高、负债有限；把「稳」换成规则，就是盈利没有大起大落，现金流撑得住。',
-        '这两个条件我已经丢进引擎里跑了，结果会直接接在这条对话下面。',
+        '明白。把「便宜」换成规则，就是价格或市盈率不超过一个数；把「稳」换成规则，就是波动和负债有限。',
+        '这条规则可以在筛选器里逐行编辑，也能存成自己的 screen。演示版只筛本地样本，不跑历史回测。',
       ],
-      sources: ['回测引擎 · 4 条规则'],
+      sources: [
+        { label: '筛选器', href: '/screener' },
+        { label: '演示规则 · 1 条', href: '/screener' },
+      ],
     },
     {
       paragraphs: [
-        '跑完了，有 5 家同时满足。都先过了教法筛选，再按估值从低到高排。',
-        '要留意的一点：能源和原材料占了三家。如果油价回落，这一组会一起难受。',
+        '这是规则卡：在演示样本里按价格筛出一组。数字只来自这一屏的样本，不代表市场全貌。',
+        '你可以打开筛选器改条件，或者去看一条已经写好的策略报告。',
       ],
-      sources: ['回测结果 · 近 3 年', '行情快照 · Tadawul'],
-      artifactTitle: '便宜且稳 · 5 只',
+      sources: [
+        { label: '筛选器 · 演示', href: '/screener' },
+        { label: '策略报告', href: '/report/low-debt-value' },
+      ],
+      artifact: { title: '便宜且稳（演示）', rule: '价格 < 80 · 先过教法筛选', preset: 'value' },
     },
   ],
   en: [
     {
       paragraphs: [
         'Plain answer first: across Saudi, Hong Kong and mainland China you can look at companies that already pass the Sharia screen and hold up on the basics.',
-        'I won’t tell you to buy one name. What I can do is list what fits your rule, explain the reason for each, and show where it could go wrong.',
+        'This is demo data. I turn your words into editable rules; I do not place orders or pretend a real backtest ran.',
       ],
-      sources: ['Price snapshot · Tadawul', 'Sharia screen'],
+      sources: [
+        { label: 'Price snapshot · Tadawul', href: '/' },
+        { label: 'Sharia screen', href: '/screener' },
+      ],
     },
     {
       paragraphs: [
-        'Got it. In rules, “cheap” means a modest P/E and limited debt; “steady” means earnings that do not swing and cash flow that holds.',
-        'Both conditions are running through the engine now — the result lands right below in this thread.',
+        'Got it. In rules, “cheap” means a price or P/E below a number; “steady” means limited swing and limited debt.',
+        'You can edit each row in the screener and save it as your own screen. The demo filters the local sample only; it does not run a historical backtest.',
       ],
-      sources: ['Backtest engine · 4 rules'],
+      sources: [
+        { label: 'Screener', href: '/screener' },
+        { label: 'Demo rule · 1 condition', href: '/screener' },
+      ],
     },
     {
       paragraphs: [
-        'Done — five names pass both rules. All clear the Sharia screen first, then ranked from the cheapest valuation.',
-        'One thing to watch: energy and materials make up three of the five. If oil rolls over, this group hurts together.',
+        'Here is the rule card: the demo sample filtered by price. The numbers come from this sample, not the whole market.',
+        'Open the screener to change the condition, or read a strategy report that already exists.',
       ],
-      sources: ['Backtest · last 3 years', 'Price snapshot · Tadawul'],
-      artifactTitle: 'Cheap and steady · 5 names',
+      sources: [
+        { label: 'Screener · demo', href: '/screener' },
+        { label: 'Strategy report', href: '/report/low-debt-value' },
+      ],
+      artifact: { title: 'Value screen (demo)', rule: 'Price < 80 · Sharia first', preset: 'value' },
     },
   ],
   ar: [
     {
       paragraphs: [
         'الخلاصة بكلمات بسيطة: في السعودية وهونغ كونغ والصين القارية تستطيع أن ترى شركات اجتازت فحص الشريعة وأساسياتها متماسكة.',
-        'لن أقول لك اشترِ هذه بالتحديد. ما أستطيعه هو سرد الشركات التي تناسب شرطك، وشرح سبب كل واحدة، وأين قد تتعثر.',
+        'هذه بيانات عرض. أحوّل كلامك إلى قواعد قابلة للتعديل، ولا أنفّذ أوامر ولا أدّعي أن اختبارًا تاريخيًا حقيقيًا جرى.',
       ],
-      sources: ['لقطة أسعار · تداول', 'قواعد فحص الشريعة'],
+      sources: [
+        { label: 'لقطة أسعار · تداول', href: '/' },
+        { label: 'قواعد فحص الشريعة', href: '/screener' },
+      ],
     },
     {
       paragraphs: [
-        '«رخيص» بقواعد الأرقام يعني مكرر ربحية معتدلًا ودينًا محدودًا، و«مستقر» يعني أرباحًا لا تتأرجح وتدفقًا نقديًا يصمد.',
-        'شغّلت الشرطين في المحرك الآن، والنتيجة ستظهر أدناه في هذه المحادثة.',
+        '«رخيص» بقواعد الأرقام يعني سعرًا أو مكرر ربحية تحت رقم محدد، و«مستقر» يعني تقلبًا ودينًا محدودين.',
+        'يمكنك تعديل كل صف في الفرز وحفظه كشاشة خاصة. نسخة العرض تفرز العينة المحلية فقط، ولا تشغّل اختبارًا تاريخيًا.',
       ],
-      sources: ['محرك الاختبار · 4 قواعد'],
+      sources: [
+        { label: 'الفرز', href: '/screener' },
+        { label: 'قاعدة عرض · شرط واحد', href: '/screener' },
+      ],
     },
     {
       paragraphs: [
-        'انتهى الفحص: خمس شركات تحقق الشرطين. كلها اجتازت فحص الشريعة أولًا، ثم رُتبت من الأرخص تقييمًا.',
-        'انتبه إلى نقطة واحدة: الطاقة والمواد تشكل ثلاثًا من الخمس. إذا تراجع النفط ستتألم المجموعة معًا.',
+        'هذه بطاقة القاعدة: العينة التجريبية بعد فرز السعر. الأرقام من هذه العينة فقط، وليست صورة للسوق كله.',
+        'افتح الفرز لتغيير الشرط، أو اقرأ تقرير خطة موجودًا بالفعل.',
       ],
-      sources: ['نتيجة الاختبار · 3 سنوات', 'لقطة أسعار · تداول'],
-      artifactTitle: 'رخيص ومستقر · 5 أسهم',
+      sources: [
+        { label: 'الفرز · عرض', href: '/screener' },
+        { label: 'تقرير الخطة', href: '/report/low-debt-value' },
+      ],
+      artifact: { title: 'فرز القيمة (عرض)', rule: 'السعر < 80 · فحص الشريعة أولًا', preset: 'value' },
     },
   ],
 }
@@ -87,49 +117,49 @@ export const followUps: Record<Lang, Reply[]> = {
   zh: [
     {
       paragraphs: [
-        '记下了。这个演示里我能聊的范围是：行情、新闻、策略回测，还有教法筛选。',
+        '记下了。这个演示能聊的范围是：行情、新闻、策略报告，还有教法筛选。',
         '想看别的，可以换个说法再问一次，或者从上面的对象里挑一只具体看。',
       ],
-      sources: ['范围说明'],
+      sources: [{ label: '范围说明', href: '/learn' }],
     },
     {
       paragraphs: [
-        '换一种问法也行，比如直接给数字条件：「负债率低于 30% 的都有哪些」。',
-        '数字越具体，我越容易把它变成可回测的规则。',
+        '换一种问法也行，比如直接给数字条件：「价格低于 80 的都有哪些」。',
+        '数字越具体，我越容易把它变成可编辑的规则。',
       ],
-      sources: ['策略模板'],
+      sources: [{ label: '筛选器', href: '/screener' }],
     },
   ],
   en: [
     {
       paragraphs: [
-        'Noted. In this demo I can cover prices, news, strategy backtests and the Sharia screen.',
+        'Noted. In this demo I can cover prices, news, strategy reports and the Sharia screen.',
         'Try another angle, or pick one of the objects above and I will go deeper on it.',
       ],
-      sources: ['Scope note'],
+      sources: [{ label: 'Scope note', href: '/learn' }],
     },
     {
       paragraphs: [
-        'Different wording works too — give me a number: “anything with debt under 30%?”',
-        'The more concrete the number, the easier it becomes a rule I can backtest.',
+        'Different wording works too — give me a number: “anything under 80?”',
+        'The more concrete the number, the easier it becomes an editable rule.',
       ],
-      sources: ['Strategy template'],
+      sources: [{ label: 'Screener', href: '/screener' }],
     },
   ],
   ar: [
     {
       paragraphs: [
-        'سُجّل. في هذا العرض أستطيع التحدث عن الأسعار والأخبار واختبار الخطط وفحص الشريعة.',
+        'سُجّل. في هذا العرض أستطيع التحدث عن الأسعار والأخبار وتقارير الخطط وفحص الشريعة.',
         'جرّب زاوية أخرى، أو اختر أحد العناصر أعلاه وسأتعمق فيه.',
       ],
-      sources: ['نطاق العمل'],
+      sources: [{ label: 'نطاق العمل', href: '/learn' }],
     },
     {
       paragraphs: [
-        'صيغة أخرى تنفع أيضًا، مثل شرط رقمي: «ما هي الشركات التي دينها أقل من 30%؟».',
-        'كلما كان الرقم أدق، سهل تحويله إلى قاعدة قابلة للاختبار.',
+        'صيغة أخرى تنفع أيضًا، مثل شرط رقمي: «ما هي الأسعار تحت 80؟».',
+        'كلما كان الرقم أدق، سهل تحويله إلى قاعدة قابلة للتعديل.',
       ],
-      sources: ['قالب خطة'],
+      sources: [{ label: 'الفرز', href: '/screener' }],
     },
   ],
 }

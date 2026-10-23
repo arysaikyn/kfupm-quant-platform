@@ -24,6 +24,8 @@ export type ReportStrings = {
   rulesUnit: string
   ppUnit: string
   metaUpdated: string
+  share: string
+  print: string
   tagValue: string
   tagSharia: string
   tagIncome: string
@@ -74,6 +76,8 @@ export const strings = {
     rulesUnit: '条规则',
     ppUnit: '个百分点',
     metaUpdated: '更新于',
+    share: '复制链接',
+    print: '打印 / 存为 PDF',
     tagValue: '价值',
     tagSharia: '符合教法',
     tagIncome: '收益',
@@ -124,6 +128,8 @@ export const strings = {
     rulesUnit: 'rules',
     ppUnit: 'points',
     metaUpdated: 'Updated',
+    share: 'Copy link',
+    print: 'Print / Save PDF',
     tagValue: 'Value',
     tagSharia: 'Sharia',
     tagIncome: 'Income',
@@ -177,6 +183,8 @@ export const strings = {
     rulesUnit: 'قواعد',
     ppUnit: 'نقطة مئوية',
     metaUpdated: 'آخر تحديث',
+    share: 'نسخ الرابط',
+    print: 'طباعة / حفظ PDF',
     tagValue: 'قيمة',
     tagSharia: 'متوافقة مع الشريعة',
     tagIncome: 'دخل',

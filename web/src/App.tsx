@@ -1,8 +1,24 @@
-import { Suspense, lazy, useEffect, useRef } from 'react'
-import { Navigate, Outlet, Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
+import {
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useNavigationType,
+  useSearchParams,
+} from 'react-router-dom'
 import { TabBar } from './components/TabBar'
 import { RouteFallback } from './components/RouteFallback'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { FatalError } from './components/FatalError'
+import { OfflineBanner } from './components/OfflineBanner'
 import { usePrefs } from './store/prefs'
+import { useI18n } from './i18n'
+import type { GlobalKey } from './i18n'
+import { useOnline } from './lib/useOnline'
+import { safeNext } from './lib/next'
 
 // Every screen is its own chunk; the shell and the tab bar stay in the entry.
 const WelcomePage = lazy(() => import('./routes/onboarding'))
@@ -26,6 +42,42 @@ const SectorPage = lazy(() => import('./routes/sector'))
 const ReportPage = lazy(() => import('./routes/report'))
 const WatchlistsPage = lazy(() => import('./routes/watchlists'))
 const SettingsPage = lazy(() => import('./routes/settings'))
+const NotFoundPage = lazy(() => import('./routes/not-found'))
+
+/** Every path names its screen; the map drives titles and the live announcer. */
+function routeKey(pathname: string): GlobalKey {
+  if (pathname === '/') return 'route.market'
+  if (pathname.startsWith('/m/')) return 'route.symbol'
+  if (pathname === '/news') return 'route.news'
+  if (pathname.startsWith('/news/')) return 'route.article'
+  if (pathname === '/ai') return 'route.ai'
+  if (pathname === '/strategy') return 'route.strategy'
+  if (pathname.startsWith('/strategy/')) return 'route.strategyDetail'
+  if (pathname === '/me') return 'route.me'
+  if (pathname === '/screener') return 'route.screener'
+  if (pathname === '/alerts') return 'route.alerts'
+  if (pathname === '/review') return 'route.review'
+  if (pathname === '/calendar') return 'route.calendar'
+  if (pathname === '/compare') return 'route.compare'
+  if (pathname === '/runs') return 'route.runs'
+  if (pathname === '/learn') return 'route.learn'
+  if (pathname === '/search') return 'route.search'
+  if (pathname.startsWith('/sector/')) return 'route.sector'
+  if (pathname.startsWith('/report/')) return 'route.report'
+  if (pathname === '/watchlists') return 'route.watchlists'
+  if (pathname === '/settings') return 'route.settings'
+  return 'route.notFound'
+}
+
+const TAB_DESTINATIONS = ['/', '/news', '/ai', '/strategy', '/me'] as const
+
+function isTypingTarget(target: EventTarget | null): boolean {
+  return Boolean(
+    (target as HTMLElement | null)?.closest(
+      'input, textarea, select, [contenteditable="true"], [role="textbox"]',
+    ),
+  )
+}
 
 /**
  * One persistent boundary: the shell never remounts, only its children swap.
@@ -34,7 +86,12 @@ const SettingsPage = lazy(() => import('./routes/settings'))
 function Shell() {
   const { pathname } = useLocation()
   const navigationType = useNavigationType()
+  const navigate = useNavigate()
+  const { t, lang } = useI18n()
+  const online = useOnline()
+  const [announcement, setAnnouncement] = useState('')
   const screenRef = useRef<HTMLDivElement>(null)
+  const scrollPositions = useRef(new Map<string, number>())
 
   // Warm the five tab chunks once the first screen is idle, so a tab tap
   // resolves from memory instead of waiting on a network round trip.
@@ -51,11 +108,29 @@ function Shell() {
     else setTimeout(warm, 1200)
   }, [])
 
-  // Reset the scroll position only when a navigation PUSHes a fresh screen.
-  // A POP is the browser taking you back to a screen you already visited, so
-  // resetting there throws away the offset the user left and reads as a jump.
+  // Each screen keeps its own offset. PUSH starts at the top; POP restores
+  // what the reader left, which the browser only does reliably after the lazy
+  // screen has laid out.
   useEffect(() => {
-    if (navigationType === 'PUSH') window.scrollTo(0, 0)
+    const save = () => scrollPositions.current.set(pathname, window.scrollY)
+    window.addEventListener('scroll', save, { passive: true })
+    return () => {
+      save()
+      window.removeEventListener('scroll', save)
+    }
+  }, [pathname])
+
+  useEffect(() => {
+    if (navigationType === 'PUSH') {
+      window.scrollTo(0, 0)
+      return
+    }
+    const y = scrollPositions.current.get(pathname)
+    if (y === undefined) return
+    const frame = requestAnimationFrame(() =>
+      requestAnimationFrame(() => window.scrollTo(0, y)),
+    )
+    return () => cancelAnimationFrame(frame)
   }, [pathname, navigationType])
 
   // A short opacity ramp so tabs read as one surface changing, not two pages.
@@ -70,12 +145,59 @@ function Shell() {
     return () => anim.cancel()
   }, [pathname])
 
+  // The title and the live region are the only way a screen reader learns that
+  // the route changed: focus alone does not say where it went.
+  useEffect(() => {
+    const label = t(routeKey(pathname))
+    document.title = `${label} · Quant Desk`
+    const raf = requestAnimationFrame(() => setAnnouncement(label))
+    return () => cancelAnimationFrame(raf)
+  }, [pathname, lang, t])
+
+  // Keys 1–5 switch tabs; `/` opens search. Typing in a field wins.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return
+      if (isTypingTarget(event.target)) return
+      if (event.key === '/') {
+        event.preventDefault()
+        navigate('/search')
+        return
+      }
+      const index = Number(event.key) - 1
+      if (Number.isInteger(index) && index >= 0 && index < TAB_DESTINATIONS.length) {
+        event.preventDefault()
+        navigate(TAB_DESTINATIONS[index])
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [navigate])
+
   return (
     <>
+      <a
+        href="#screen"
+        className="skip-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        onClick={() => requestAnimationFrame(() => document.getElementById('screen')?.focus())}
+      >
+        {t('common.skip')}
+      </a>
+      {!online && <OfflineBanner />}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </div>
       <div ref={screenRef}>
-        <Suspense fallback={<RouteFallback />}>
-          <Outlet />
-        </Suspense>
+        <ErrorBoundary
+          key={pathname}
+          fallback={(_, reset) => (
+            <FatalError onRetry={reset} onHome={() => navigate('/')} compact />
+          )}
+        >
+          <Suspense fallback={<RouteFallback />}>
+            <Outlet />
+          </Suspense>
+        </ErrorBoundary>
       </div>
       <div
         aria-hidden
@@ -90,7 +212,11 @@ function Shell() {
 /** First run: no shell, no tabs — onboarding owns the whole screen. */
 function WelcomeGate() {
   const { onboarded } = usePrefs()
-  if (onboarded) return <Navigate to="/" replace />
+  const [params] = useSearchParams()
+
+  if (onboarded) {
+    return <Navigate to={safeNext(params.get('next'))} replace />
+  }
   return (
     <Suspense fallback={<RouteFallback />}>
       <WelcomePage />
@@ -101,7 +227,11 @@ function WelcomeGate() {
 /** Tabbed screens sit behind onboarding, so a typed URL cannot skip it. */
 function AppShell() {
   const { onboarded } = usePrefs()
-  if (!onboarded) return <Navigate to="/welcome" replace />
+  const location = useLocation()
+  if (!onboarded) {
+    const next = `${location.pathname}${location.search}`
+    return <Navigate to={`/welcome?next=${encodeURIComponent(next)}`} replace />
+  }
   return <Shell />
 }
 
@@ -130,7 +260,7 @@ export default function App() {
         <Route path="/report/:id" element={<ReportPage />} />
         <Route path="/watchlists" element={<WatchlistsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   )

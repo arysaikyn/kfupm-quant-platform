@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { useI18n, useStrings } from '../../i18n'
 import { useTheme } from '../../theme'
-import type { Theme } from '../../theme'
+import type { ThemePref } from '../../theme'
 import type { Lang } from '../../i18n'
 import { resetOnboarding } from '../../store/prefs'
 import { strings } from './strings'
@@ -26,13 +25,11 @@ function initialsOf(name: string) {
 }
 
 export default function MePage() {
-  const { lang, setLang } = useI18n()
-  const { theme, setTheme } = useTheme()
+  const { lang, setLang, t } = useI18n()
+  const { pref, setTheme } = useTheme()
   const navigate = useNavigate()
   const s = useStrings(strings)
-  // Demo account state only — no real auth in this build.
-  const [signedIn, setSignedIn] = useState(true)
-
+  // Demo identity only — there is no auth in this build.
   const name = s('name')
 
   // Clearing the flag unmounts the tab shell on the next render; the explicit
@@ -47,47 +44,23 @@ export default function MePage() {
       title={s('title')}
     >
       <section className="pt-2">
-        {signedIn ? (
-          <div className="flex items-center gap-4">
-            <div
-              aria-hidden="true"
-              className="num grid h-14 w-14 shrink-0 place-items-center rounded-full bg-surface text-[15px] font-semibold text-muted"
-            >
-              {initialsOf(name)}
-            </div>
-            <div className="min-w-0">
+        <div className="flex items-center gap-4">
+          <div
+            aria-hidden="true"
+            className="num grid h-14 w-14 shrink-0 place-items-center rounded-full bg-surface text-[15px] font-semibold text-muted"
+          >
+            {initialsOf(name)}
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
               <p className="t-title truncate text-[22px] leading-tight font-semibold">{name}</p>
-              <p className="mt-1 truncate text-[12px] leading-tight text-muted">{s('email')}</p>
+              <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-[10px] leading-none text-muted">
+                {t('common.demo')}
+              </span>
             </div>
+            <p className="mt-1 truncate text-[12px] leading-tight text-muted">{s('email')}</p>
           </div>
-        ) : (
-          <div className="flex flex-col items-center gap-5 py-6">
-            <div
-              aria-hidden="true"
-              className="grid h-16 w-16 place-items-center rounded-full bg-surface text-muted"
-            >
-              <svg
-                width="30"
-                height="30"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              >
-                <circle cx="12" cy="9" r="3.4" />
-                <path d="M5.5 19.2c1.1-3.4 3.6-5 6.5-5s5.4 1.6 6.5 5" />
-              </svg>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSignedIn(true)}
-              className="h-12 w-full max-w-[280px] rounded-full bg-solid text-[15px] font-semibold text-bg active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
-            >
-              {s('signIn')}
-            </button>
-          </div>
-        )}
+        </div>
       </section>
 
       <section className="mt-8" aria-labelledby="me-appearance">
@@ -99,8 +72,8 @@ export default function MePage() {
           aria-labelledby="me-appearance"
           className="border-t border-line"
         >
-          {(['light', 'dark'] as Theme[]).map((mode) => {
-            const active = theme === mode
+          {(['system', 'light', 'dark'] as ThemePref[]).map((mode) => {
+            const active = pref === mode
             return (
               <button
                 key={mode}
@@ -110,7 +83,12 @@ export default function MePage() {
                 className="row w-full text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
               >
                 <span className="text-muted">
-                  {mode === 'light' ? (
+                  {mode === 'system' ? (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="12" rx="2" />
+                      <path d="M8 20h8M12 16v4" />
+                    </svg>
+                  ) : mode === 'light' ? (
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                       <circle cx="12" cy="12" r="4" />
                       <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" />
@@ -121,7 +99,7 @@ export default function MePage() {
                     </svg>
                   )}
                 </span>
-                <span className="flex-1 text-[14px]">{s(mode === 'light' ? 'light' : 'dark')}</span>
+                <span className="flex-1 text-[14px]">{s(mode)}</span>
                 {active && (
                   <svg
                     aria-hidden="true"

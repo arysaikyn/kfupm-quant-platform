@@ -11,6 +11,8 @@ type Props = {
     aboutRight: string
   }
   format: (n: number) => string
+  /** Percent number without a sign, already localised. */
+  percent?: (n: number) => string
 }
 
 /**
@@ -18,14 +20,14 @@ type Props = {
  * fair value and a red zone above it. The verdict flips inside a ±5% dead band
  * so a 1% gap does not read as a signal.
  */
-export function FairValueRail({ price, fairValue, labels, format }: Props) {
+export function FairValueRail({ price, fairValue, labels, format, percent = (n) => `${n}%` }: Props) {
   const gap = fairValue > 0 ? price / fairValue - 1 : 0
   const verdict =
     Math.abs(gap) <= 0.05
       ? { text: labels.aboutRight, tone: 'var(--color-muted)' }
       : gap < 0
-        ? { text: `${labels.undervalued} ${Math.round(-gap * 100)}%`, tone: 'var(--color-up)' }
-        : { text: `${labels.overvalued} ${Math.round(gap * 100)}%`, tone: 'var(--color-down)' }
+        ? { text: `${labels.undervalued} ${percent(Math.round(-gap * 100))}`, tone: 'var(--color-up)' }
+        : { text: `${labels.overvalued} ${percent(Math.round(gap * 100))}`, tone: 'var(--color-down)' }
 
   // The axis spans fair value ±40%, which keeps both markers on screen for
   // every quote in the mock (the widest gap is 35%).

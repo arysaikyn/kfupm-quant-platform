@@ -1,15 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { bench, strategies } from '../../data/mock'
-import { fmtClock, fmtDate } from './format'
+import { fmtDate } from './format'
 import { EquityChart } from './EquityChart'
 import { detailStrings, listStrings, TAG_KEY } from './strings'
-
-const STEPS = ['stepFetch', 'stepFilter', 'stepCompute', 'stepDone'] as const
 
 /** No turnover field in the mock contract; a fixed figure keeps the row honest. */
 const TURNOVER = 0.78
@@ -201,38 +198,7 @@ export default function StrategyDetail() {
   const tagLabel = useStrings(listStrings)
   const navigate = useNavigate()
 
-  const [run, setRun] = useState<{ step: number; running: boolean; at: string | null }>({
-    step: -1,
-    running: false,
-    at: null,
-  })
-  const timers = useRef<number[]>([])
-
-  useEffect(() => {
-    return () => {
-      timers.current.forEach((t) => clearTimeout(t))
-    }
-  }, [])
-
   const st = strategies.find((x) => x.id === id)
-
-  const rerun = () => {
-    timers.current.forEach((t) => clearTimeout(t))
-    timers.current = []
-    setRun({ step: 0, running: true, at: null })
-    const marks = [650, 1300, 1950, 2500]
-    marks.forEach((ms, i) => {
-      timers.current.push(
-        window.setTimeout(() => {
-          if (i < marks.length - 1) {
-            setRun((r) => ({ ...r, step: i + 1 }))
-          } else {
-            setRun({ step: 3, running: false, at: fmtClock(new Date(), lang) })
-          }
-        }, ms),
-      )
-    })
-  }
 
   const back = (
     <button
@@ -588,43 +554,14 @@ export default function StrategyDetail() {
         <section className="border-t border-line pt-5">
           <button
             type="button"
-            onClick={rerun}
-            disabled={run.running}
-            aria-busy={run.running}
-            className="text-bg min-h-12 w-full rounded-xl px-4 text-[15px] font-medium transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-60"
-            style={{ background: 'var(--color-accent-fill)' }}
+            disabled
+            className="min-h-12 w-full rounded-xl border border-line px-4 text-[15px] font-medium text-muted"
           >
-            {run.running ? s('runningNote') : s('rerun')}
+            {s('rerun')}
           </button>
-
-          {run.step >= 0 && (
-            <div className="mt-3">
-              <div
-                className="flex items-center justify-between gap-3 text-[11px]"
-                style={{ color: 'var(--color-muted)' }}
-                aria-live="polite"
-              >
-                <span>{s(STEPS[run.step])}</span>
-                <span dir="ltr" className="num">
-                  {run.step + 1} / 4
-                </span>
-              </div>
-              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-line">
-                <div
-                  className="h-full w-full origin-left rounded-full transition-transform duration-300 rtl:origin-right motion-reduce:transition-none"
-                  style={{
-                    transform: `scaleX(${(run.step + 1) / 4})`,
-                    background: 'var(--color-accent-fill)',
-                  }}
-                />
-              </div>
-              {run.at && (
-                <p className="mt-2 text-[12px]" style={{ color: 'var(--color-muted)' }}>
-                  {s('updatedNote')} · <span className="num">{run.at}</span>
-                </p>
-              )}
-            </div>
-          )}
+          <p className="mt-2 text-center text-[11px] leading-relaxed text-muted">
+            {s('rerunOffline')}
+          </p>
         </section>
       </div>
     </Screen>

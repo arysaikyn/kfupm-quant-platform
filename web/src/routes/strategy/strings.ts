@@ -119,6 +119,7 @@ export type DetailStrings = {
   stepDone: string
   runningNote: string
   updatedNote: string
+  rerunOffline: string
   oosFrom: string
   costTitle: string
   costStart: string
@@ -158,6 +159,7 @@ export const detailStrings = {
     stepDone: '完成',
     runningNote: '正在重跑',
     updatedNote: '结果已更新',
+    rerunOffline: '重跑需要后端的回测引擎；这个演示版本没有接入。',
     oosFrom: '未参与建模的数据：{date} 起',
     costTitle: '成本模拟',
     costStart: '初始资金',
@@ -195,6 +197,7 @@ export const detailStrings = {
     stepDone: 'Done',
     runningNote: 'Running',
     updatedNote: 'Results updated',
+    rerunOffline: 'Re-running needs the backtest engine; this demo does not include it.',
     oosFrom: 'Data not used to build the strategy, from {date}',
     costTitle: 'Simulated costs',
     costStart: 'Starting capital',
@@ -232,6 +235,7 @@ export const detailStrings = {
     stepDone: 'تم',
     runningNote: 'جارٍ التشغيل',
     updatedNote: 'تم تحديث النتائج',
+    rerunOffline: 'إعادة التشغيل تحتاج محرك الاختبار الخلفي، وهذه النسخة لا تتضمنه.',
     oosFrom: 'بيانات لم تُستخدم في بناء الخطة، من {date}',
     costTitle: 'تكاليف محاكاة',
     costStart: 'رأس المال الابتدائي',

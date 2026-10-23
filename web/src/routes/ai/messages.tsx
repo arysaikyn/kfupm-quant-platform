@@ -1,9 +1,11 @@
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import { fmtClock } from '../../i18n/format'
 import type { Lang } from '../../i18n'
 import { quotes } from '../../data/mock'
 import { Source, Sources, SourcesContent, SourcesTrigger } from '../../vendor/ai-elements/Sources'
 import { visibleParas } from './chat'
 import type { AssistantMsg } from './chat'
+import type { ReactNode } from 'react'
 import { ArtifactCard } from './ArtifactCard'
 import { StepTimeline } from './timeline'
 import { strings } from './strings'
@@ -69,6 +71,27 @@ function Caret() {
   )
 }
 
+function ActionButton({
+  onClick,
+  disabled,
+  children,
+}: {
+  onClick: () => void
+  disabled?: boolean
+  children: ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="inline-flex min-h-11 items-center rounded-full px-2.5 text-[11px] text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-50"
+    >
+      {children}
+    </button>
+  )
+}
+
 export function UserBubble({ text }: { text: string }) {
   return (
     <div className="flex justify-end">
@@ -84,15 +107,43 @@ export function UserBubble({ text }: { text: string }) {
   )
 }
 
+export function ErrorRow({
+  text,
+  onRetry,
+  retryLabel,
+}: {
+  text: string
+  onRetry: () => void
+  retryLabel: string
+}) {
+  return (
+    <div role="alert" className="panel border-danger/40 p-3">
+      <p className="text-[13px] leading-relaxed" style={{ color: 'var(--color-danger)' }}>
+        {text}
+      </p>
+      <ActionButton onClick={onRetry}>{retryLabel}</ActionButton>
+    </div>
+  )
+}
+
 export function AssistantMessage({
   m,
   sourcesLabel,
-  evidenceSymbol,
+  onCopy,
+  copied,
+  copyLabel,
+  onRetry,
+  retryLabel,
 }: {
   m: AssistantMsg
   sourcesLabel: string
-  evidenceSymbol?: string
+  onCopy: () => void
+  copied: boolean
+  copyLabel: string
+  onRetry: () => void
+  retryLabel: string
 }) {
+  const { lang } = useI18n()
   const text = visibleParas(m.paras, m.shown)
   const complete = m.shown >= m.total
   const lastFilled = text.reduce((acc, p, i) => (p.length > 0 ? i : acc), -1)
@@ -118,24 +169,42 @@ export function AssistantMessage({
         )}
       </div>
 
-      {complete && <EvidenceRows symbol={evidenceSymbol} />}
+      {complete && <EvidenceRows symbol={m.evidenceSymbol} />}
 
       {complete && m.sources.length > 0 && (
         <Sources defaultOpen className="mb-0">
-          <SourcesTrigger count={m.sources.length} className="text-[11px] text-muted">
+          <SourcesTrigger count={m.sources.length} className="min-h-11 text-[11px] text-muted">
             {`${sourcesLabel} · ${m.sources.length}`}
           </SourcesTrigger>
           <SourcesContent className="mt-2">
             {m.sources.map((src) => (
-              <Source key={src} title={src} href="#" className="text-[11px] text-muted">
-                {src}
+              <Source
+                key={`${src.label}-${src.href ?? ''}`}
+                title={src.label}
+                href={src.href ?? '#'}
+                className="text-[11px] text-muted"
+              >
+                {src.label}
               </Source>
             ))}
           </SourcesContent>
         </Sources>
       )}
 
-      {complete && m.artifactTitle && <ArtifactCard title={m.artifactTitle} />}
+      {complete && m.artifact && <ArtifactCard artifact={m.artifact} />}
+
+      {complete && (
+        <div className="flex flex-wrap items-center gap-1 text-muted">
+          <time className="num me-1 text-[10px]" dateTime={new Date(m.at).toISOString()}>
+            {fmtClock(m.at, lang)}
+          </time>
+          <ActionButton onClick={onCopy}>{copyLabel}</ActionButton>
+          <ActionButton onClick={onRetry}>{retryLabel}</ActionButton>
+          <span className="sr-only" aria-live="polite">
+            {copied ? copyLabel : ''}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

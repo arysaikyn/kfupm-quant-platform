@@ -39,7 +39,8 @@ const EXTENSIONS = new Set(['.tsx', '.css', '.html'])
 
 function targets(dir, out = []) {
   for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name === 'dist' || name.startsWith('.')) continue
+    if (name === 'node_modules' || name === 'dist' || name === 'test' || name.startsWith('.')) continue
+    if (name.includes('.test.')) continue
     const path = join(dir, name)
     const stat = statSync(path)
     if (stat.isDirectory()) targets(path, out)

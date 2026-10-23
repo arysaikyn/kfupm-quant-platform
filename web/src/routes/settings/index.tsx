@@ -1,13 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
-import { quotes } from '../../data/mock'
-import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import { useI18n, useStrings } from '../../i18n'
 import { strings } from './strings'
 
-const APP_VERSION = '0.1.0'
-const DENSITY_KEY = 'settings.density'
-const ALERTS_KEY = 'settings.alerts'
+const APP_VERSION = '0.2.0'
 
 /**
  * The reset removes app data, not the reader's language or colour scheme:
@@ -16,40 +13,17 @@ const ALERTS_KEY = 'settings.alerts'
 const RESET_KEYS = [
   'app.user',
   'app.ai.thread',
+  'app.ai.thread.v2',
+  'app.ai.intake',
   'alerts.v1',
   'screener.screens',
   'watchlists.v1',
   'search.recent',
+  'news.saved.v1',
   'strategies.copied',
 ]
 
-const PREVIEW = quotes.slice(0, 3)
-
-type Density = 'comfortable' | 'compact'
-type StringKey = keyof (typeof strings)['en']
-
-const SOURCES: { name: StringKey; market: StringKey }[] = [
-  { name: 'tadawul', market: 'tadawulMarket' },
-  { name: 'sse', market: 'sseMarket' },
-  { name: 'hkex', market: 'hkexMarket' },
-  { name: 'reuters', market: 'reutersMarket' },
-]
-
-function readDensity(): Density {
-  try {
-    return localStorage.getItem(DENSITY_KEY) === 'compact' ? 'compact' : 'comfortable'
-  } catch {
-    return 'comfortable'
-  }
-}
-
-function readAlerts(): boolean {
-  try {
-    return localStorage.getItem(ALERTS_KEY) === 'true'
-  } catch {
-    return false
-  }
-}
+const SESSION_KEYS = ['app.ai.thread', 'app.ai.thread.v2', 'app.ai.intake']
 
 function isResetKey(key: string): boolean {
   if (RESET_KEYS.includes(key)) return true
@@ -66,6 +40,7 @@ function clearLocalData(): boolean {
       if (key && isResetKey(key)) doomed.push(key)
     }
     doomed.forEach((key) => localStorage.removeItem(key))
+    SESSION_KEYS.forEach((key) => sessionStorage.removeItem(key))
     return true
   } catch {
     return false
@@ -73,12 +48,9 @@ function clearLocalData(): boolean {
 }
 
 export default function SettingsPage() {
-  const { lang, dir } = useI18n()
+  const { dir } = useI18n()
   const navigate = useNavigate()
   const s = useStrings(strings)
-
-  const [density, setDensity] = useState<Density>(readDensity)
-  const [alerts, setAlerts] = useState<boolean>(readAlerts)
   const [armed, setArmed] = useState(false)
   const [resetFailed, setResetFailed] = useState(false)
 
@@ -93,25 +65,6 @@ export default function SettingsPage() {
     const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
     if (idx > 0) navigate(-1)
     else navigate('/me')
-  }
-
-  const changeDensity = (next: Density) => {
-    setDensity(next)
-    try {
-      localStorage.setItem(DENSITY_KEY, next)
-    } catch {
-      // Private browsing: the in-memory choice still applies.
-    }
-  }
-
-  const toggleAlerts = () => {
-    const next = !alerts
-    setAlerts(next)
-    try {
-      localStorage.setItem(ALERTS_KEY, String(next))
-    } catch {
-      // Private browsing: the switch still moves, it just will not persist.
-    }
   }
 
   const reset = () => {
@@ -156,147 +109,9 @@ export default function SettingsPage() {
     </button>
   )
 
-  const rowPad = density === 'compact' ? 'py-1.5' : 'py-3'
-
   return (
     <Screen title={s('title')} leading={back}>
-      <section className="mt-4" aria-labelledby="settings-reading">
-        <h2 id="settings-reading" className="t-section pb-2">
-          {s('readingTitle')}
-        </h2>
-
-        <p id="settings-density-label" className="pb-2 text-[11px] leading-snug text-muted">
-          {s('densityLabel')}
-        </p>
-        <div
-          role="group"
-          aria-labelledby="settings-density-label"
-          className="flex gap-1 rounded-full border border-line bg-surface p-1"
-        >
-          {(['comfortable', 'compact'] as Density[]).map((mode) => {
-            const active = density === mode
-            return (
-              <button
-                key={mode}
-                type="button"
-                aria-pressed={active}
-                onClick={() => changeDensity(mode)}
-                className="min-h-[44px] flex-1 rounded-full px-3 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
-                style={
-                  active
-                    ? { background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }
-                    : { color: 'var(--color-muted)' }
-                }
-              >
-                {s(mode === 'comfortable' ? 'comfortable' : 'compact')}
-              </button>
-            )
-          })}
-        </div>
-        <p className="mt-2 text-[11px] leading-snug text-muted">{s('densityHint')}</p>
-
-        <h3 className="mt-4 text-[11px] font-medium text-muted">{s('previewTitle')}</h3>
-        <ul className="mt-1.5 divide-y divide-line border-t border-line">
-          {PREVIEW.map((q) => (
-            <li key={q.symbol} className={`flex items-center gap-3 px-3 ${rowPad}`}>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[14px] leading-tight font-medium">{q.name[lang]}</p>
-                <p className="num mt-1 text-[11px] leading-tight text-muted">
-                  <bdi dir="ltr">
-                    {q.symbol} · {q.currency}
-                  </bdi>
-                </p>
-              </div>
-              <div className="shrink-0 text-end">
-                <p className="num text-[14px] leading-tight font-semibold">
-                  {fmtNum(q.price, lang, 2)}
-                </p>
-                <p
-                  className={`num mt-1 text-[11px] leading-tight ${
-                    q.change >= 0 ? 'text-up' : 'text-down'
-                  }`}
-                >
-                  {fmtPct(q.change, lang)}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mt-8" aria-labelledby="settings-sources">
-        <h2 id="settings-sources" className="t-section pb-2">
-          {s('sourcesTitle')}
-        </h2>
-        <p className="pb-2 text-[11px] leading-snug text-muted">{s('sourcesHint')}</p>
-        <ul className="border-t border-line">
-          {SOURCES.map((source) => (
-            <li key={source.name} className="row py-2">
-              <span
-                aria-hidden="true"
-                className="h-2 w-2 shrink-0 rounded-full"
-                style={{ background: 'var(--color-muted)' }}
-              />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[14px] leading-tight font-medium">
-                  {s(source.name)}
-                </p>
-                <p className="mt-1 truncate text-[11px] leading-tight text-muted">
-                  {s(source.market)}
-                </p>
-              </div>
-              <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-[11px] leading-tight font-semibold text-muted">
-                {s('chipDemo')}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mt-8" aria-labelledby="settings-notifications">
-        <h2 id="settings-notifications" className="t-section pb-2">
-          {s('notificationsTitle')}
-        </h2>
-        <div className="border-t border-line">
-          <div className="row py-2">
-            <span className="min-w-0 flex-1 truncate text-[14px] leading-tight font-medium">
-              {s('alertsLabel')}
-            </span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={alerts}
-              aria-label={s('alertsLabel')}
-              onClick={toggleAlerts}
-              className="-me-1 flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-            >
-              <span
-                aria-hidden="true"
-                className="relative block h-[30px] w-[52px] rounded-full"
-                style={{
-                  background: alerts
-                    ? 'var(--color-accent)'
-                    : 'color-mix(in srgb, var(--color-fg) 18%, transparent)',
-                  transition: 'background-color 180ms var(--ease-soft)',
-                }}
-              >
-                <span
-                  className="absolute top-[3px] block h-6 w-6 rounded-full bg-white"
-                  style={{
-                    insetInlineStart: alerts ? 'calc(100% - 27px)' : '3px',
-                    transition: 'inset-inline-start 180ms var(--ease-soft)',
-                  }}
-                />
-              </span>
-            </button>
-          </div>
-          <p className="px-4 pt-2 text-[11px] leading-snug text-muted">
-            {s('alertsHint')}
-          </p>
-        </div>
-      </section>
-
-      <section className="mt-8" aria-labelledby="settings-about">
+      <section className="mt-4" aria-labelledby="settings-about">
         <h2 id="settings-about" className="t-section pb-2">
           {s('aboutTitle')}
         </h2>
@@ -340,6 +155,38 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      <section className="mt-8" aria-labelledby="settings-sources">
+        <h2 id="settings-sources" className="t-section pb-2">
+          {s('sourcesTitle')}
+        </h2>
+        <p className="pb-2 text-[11px] leading-snug text-muted">{s('sourcesHint')}</p>
+        <ul className="border-t border-line">
+          {(
+            [
+              ['tadawul', 'tadawulMarket'],
+              ['sse', 'sseMarket'],
+              ['hkex', 'hkexMarket'],
+              ['reuters', 'reutersMarket'],
+            ] as const
+          ).map(([name, market]) => (
+            <li key={name} className="row py-2">
+              <span
+                aria-hidden="true"
+                className="h-2 w-2 shrink-0 rounded-full"
+                style={{ background: 'var(--color-muted)' }}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[14px] leading-tight font-medium">{s(name)}</p>
+                <p className="mt-1 truncate text-[11px] leading-tight text-muted">{s(market)}</p>
+              </div>
+              <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-[11px] leading-tight font-semibold text-muted">
+                {s('chipDemo')}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <section className="mt-8 pb-10" aria-labelledby="settings-reset">
         <h2 id="settings-reset" className="t-section pb-2">
           {s('resetTitle')}
@@ -354,7 +201,9 @@ export default function SettingsPage() {
             aria-describedby="settings-reset-copy"
             className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full border border-line px-4 text-[14px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             style={
-              armed ? { background: danger, color: dangerContrast } : { background: dangerBg, color: danger }
+              armed
+                ? { background: danger, color: dangerContrast }
+                : { background: dangerBg, color: danger }
             }
           >
             {s(armed ? 'resetConfirm' : 'resetButton')}

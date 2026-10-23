@@ -331,6 +331,18 @@ export default function AiPage() {
                   </li>
                 ))}
               </ul>
+              {/* The review is a screen, not a chat prompt: it sits beside the
+                  capabilities as a door, not as a seventh cell in a 2x3 grid. */}
+              <Link
+                to="/review"
+                className="mt-4 flex min-h-11 items-center justify-between gap-3 border-t border-line pt-3 text-[13px] transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+              >
+                {s('reviewLink')}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)] text-muted" aria-hidden="true">
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
+              </Link>
+
               <p className="mt-6 text-[11px] text-muted">{s('disclaimer')}</p>
             </div>
           )}

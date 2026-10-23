@@ -19,6 +19,9 @@ type Strings = {
   glossary: string
   moreTitle: string
   moreWatchlists: string
+  moreAlerts: string
+  moreCalendar: string
+  moreReview: string
   moreSettings: string
   replayOnboarding: string
   version: string
@@ -43,6 +46,9 @@ export const strings = {
     glossary: '术语',
     moreTitle: '更多',
     moreWatchlists: '自选分组',
+    moreAlerts: '价格提醒',
+    moreCalendar: '财经日历',
+    moreReview: '每日复盘',
     moreSettings: '设置',
     replayOnboarding: '重看新手引导',
     version: '版本',
@@ -65,6 +71,9 @@ export const strings = {
     glossary: 'Glossary',
     moreTitle: 'More',
     moreWatchlists: 'Watchlist groups',
+    moreAlerts: 'Price alerts',
+    moreCalendar: 'Calendar',
+    moreReview: 'Daily review',
     moreSettings: 'Settings',
     replayOnboarding: 'Replay onboarding',
     version: 'Version',
@@ -87,6 +96,9 @@ export const strings = {
     glossary: 'المصطلحات',
     moreTitle: 'المزيد',
     moreWatchlists: 'مجموعات المتابعة',
+    moreAlerts: 'تنبيهات الأسعار',
+    moreCalendar: 'التقويم',
+    moreReview: 'المراجعة اليومية',
     moreSettings: 'الإعدادات',
     replayOnboarding: 'إعادة الجولة التعريفية',
     version: 'الإصدار',

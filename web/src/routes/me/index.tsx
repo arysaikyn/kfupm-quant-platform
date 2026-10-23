@@ -150,6 +150,9 @@ export default function MePage() {
         </h2>
         <div className="border-t border-line">
           {[
+            { to: '/alerts', label: s('moreAlerts') },
+            { to: '/calendar', label: s('moreCalendar') },
+            { to: '/review', label: s('moreReview') },
             { to: '/learn', label: s('glossary') },
             { to: '/settings', label: s('moreSettings') },
           ].map((row) => (

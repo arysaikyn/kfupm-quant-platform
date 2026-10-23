@@ -8,14 +8,15 @@ type Props = {
 }
 
 /**
- * Quote strip. Swipeable, not a marquee: a scrolling ticker cut the first
- * number in half at the edge. Time order stays LTR in Arabic.
+ * Moving tape. Two identical tracks so the loop has no seam; the second is
+ * hidden from assistive tech. Both edges fade, so the item leaving the frame
+ * dissolves instead of being chopped in half. Time order stays LTR in Arabic.
  */
 export function TickerTape({ quotes, name, price, change }: Props) {
-  const track = () => (
-    <div className="tape__track" dir="ltr">
+  const track = (hidden: boolean) => (
+    <div className="tape__track" dir="ltr" aria-hidden={hidden || undefined}>
       {quotes.map((q) => (
-        <span key={q.symbol} className="flex shrink-0 items-baseline gap-1.5">
+        <span key={`${hidden ? 'b' : 'a'}-${q.symbol}`} className="flex shrink-0 items-baseline gap-1.5">
           <span aria-hidden="true" className="me-1" style={{ color: 'var(--color-muted)', opacity: 0.5 }}>
             ·
           </span>
@@ -36,7 +37,8 @@ export function TickerTape({ quotes, name, price, change }: Props) {
 
   return (
     <div className="tape py-2" aria-label={name(quotes[0])}>
-      {track()}
+      {track(false)}
+      {track(true)}
     </div>
   )
 }

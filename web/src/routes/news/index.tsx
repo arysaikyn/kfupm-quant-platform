@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { news } from '../../data/mock'
@@ -95,7 +95,7 @@ function NewsRow({
             {item.title[lang]}
           </h3>
           {deck && (
-            <p className="mt-1.5 line-clamp-2 text-[14px] leading-[1.45] text-muted">{deck}</p>
+            <p className="mt-1.5 line-clamp-1 text-[13px] leading-[1.45] text-muted">{deck}</p>
           )}
           {why && <p className="mt-1.5 text-[12px] leading-[1.45] text-muted">{why}</p>}
         </div>
@@ -171,42 +171,12 @@ export default function NewsPage() {
   }, [now, source])
 
   return (
-    <Screen
-      title={s('title')}
-      action={
-        <Link to="/calendar" className="flex min-h-[44px] items-center rounded-full border border-line px-3.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg">
-          {s('calendar')}
-        </Link>
-      }
-    >
-      {/* One hairline row, not a card: the review is an entry into another
-          screen, and a boxed entry outranked every headline below it. */}
-      <Link
-        to="/review"
-        className="row border-b border-line px-0 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
-      >
-        <span className="text-muted">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M4 5h11l5 5v9H4z" />
-            <path d="M8 12h8M8 16h5" />
-          </svg>
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-[14px] leading-tight">{s('reviewEntry')}</span>
-          <span className="mt-0.5 block truncate text-[11px] leading-tight text-muted">
-            {s('reviewHint')}
-          </span>
-        </span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)] text-muted" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" />
-        </svg>
-      </Link>
-
+    <Screen title={s('title')}>
       {sources.length > 1 && (
         <div
           role="group"
           aria-label={s('filterLabel')}
-          className="mt-3 flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden"
+          className="mt-3 flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-28px),transparent)]"
           style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
         >
           {[null, ...sources].map((name) => {

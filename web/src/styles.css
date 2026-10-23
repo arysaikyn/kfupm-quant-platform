@@ -374,21 +374,33 @@ html[dir="rtl"] body {
    half at the edge, which read as a missing value. */
 .tape {
   display: flex;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
+  overflow: hidden;
   direction: ltr;
-  scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
-  mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
-}
-.tape::-webkit-scrollbar {
-  display: none;
+  /* both edges fade: the item leaving the frame dissolves, never gets chopped */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent);
 }
 .tape__track {
   display: flex;
   flex: 0 0 auto;
   gap: 22px;
   padding-inline-end: 22px;
+  min-width: 100%;
+  animation: tape 42s linear infinite;
+}
+.tape:hover .tape__track,
+.tape:focus-within .tape__track {
+  animation-play-state: paused;
+}
+@keyframes tape {
+  to {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tape__track {
+    animation: none;
+  }
 }
 
 /* The card recipe: tinted glass, hairline border, lit top edge.

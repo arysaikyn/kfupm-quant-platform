@@ -11,6 +11,7 @@ export type AiStrings = {
   noMore: string
   sectorLabel: string
   capTitle: string
+  reviewLink: string
   cap1t: string
   cap1h: string
   cap2t: string
@@ -62,6 +63,7 @@ export const strings = {
     noMore: '能加的都加进来了',
     sectorLabel: '板块',
     capTitle: '能帮你做什么',
+    reviewLink: '打开今日复盘',
     cap1t: '帮我选股', cap1h: '说一句条件就行',
     cap2t: '看一只股票', cap2h: '它为什么涨跌',
     cap3t: '对比两家', cap3h: '同一行业谁更好',
@@ -105,6 +107,7 @@ export const strings = {
     noMore: 'Everything is already in the thread',
     sectorLabel: 'Sector',
     capTitle: 'What I can do',
+    reviewLink: "Open today's review",
     cap1t: 'Find stocks', cap1h: 'Start with one sentence',
     cap2t: 'Explain a stock', cap2h: 'Why it moved',
     cap3t: 'Compare two', cap3h: 'Who is better in the sector',
@@ -148,6 +151,7 @@ export const strings = {
     noMore: 'كل العناصر موجودة أصلًا',
     sectorLabel: 'قطاع',
     capTitle: 'ما أستطيع فعله',
+    reviewLink: 'افتح مراجعة اليوم',
     cap1t: 'ابحث عن أسهم', cap1h: 'جملة واحدة تكفي',
     cap2t: 'اشرح سهمًا', cap2h: 'لماذا تحرك',
     cap3t: 'قارن بين سهمين', cap3h: 'أيهما أفضل في القطاع',

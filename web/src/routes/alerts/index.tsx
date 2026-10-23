@@ -135,18 +135,35 @@ export default function AlertsPage() {
             <label htmlFor="alert-symbol" className="text-[11px] leading-none text-muted">
               {s('symbol')}
             </label>
-            <select
-              id="alert-symbol"
-              value={symbol}
-              onChange={(e) => pickSymbol(e.target.value)}
-              className="mt-1.5 min-h-11 w-full rounded-[10px] border border-line bg-bg px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
-            >
-              {quotes.map((q) => (
-                <option key={q.symbol} value={q.symbol}>
-                  {q.symbol} · {q.name[lang]}
-                </option>
-              ))}
-            </select>
+            <div className="relative mt-1.5">
+              <select
+                id="alert-symbol"
+                value={symbol}
+                onChange={(e) => pickSymbol(e.target.value)}
+                className="min-h-11 w-full appearance-none rounded-[10px] border border-line bg-bg ps-2.5 pe-9 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              >
+                {quotes.map((q) => (
+                  <option key={q.symbol} value={q.symbol}>
+                    {q.symbol} · {q.name[lang]}
+                  </option>
+                ))}
+              </select>
+              <svg
+                aria-hidden="true"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </div>
           </div>
 
           <div>
@@ -267,7 +284,7 @@ export default function AlertsPage() {
 
                     {/* Two prices, two lines, labelled: an unlabelled pair of
                         numbers a row apart is a guessing game. */}
-                    <div className="me-3 shrink-0 text-end">
+                    <div className="me-4 shrink-0 text-end">
                       <span className="num block text-[14px] leading-none">
                         {fmtNum(r.threshold, lang, 2)}
                       </span>

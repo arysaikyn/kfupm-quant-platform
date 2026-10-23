@@ -268,7 +268,9 @@ export default function MarketPage() {
           </Link>
           <Link
             to="/alerts"
-            aria-label={s('goAlerts')}
+            aria-label={
+              fired > 0 ? `${s('goAlerts')}: ${fired}` : s('goAlerts')
+            }
             className="relative flex h-11 w-11 items-center justify-center rounded-full bg-surface text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -633,7 +635,7 @@ export default function MarketPage() {
                             {alertSymbols.has(q.symbol) && (
                               <span
                                 role="img"
-                                aria-label={s('goAlerts')}
+                                aria-label={s('hasAlert')}
                                 style={{ color: 'var(--color-accent)' }}
                               >
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

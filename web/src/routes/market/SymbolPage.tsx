@@ -118,7 +118,7 @@ export default function SymbolPage() {
           <Link
             to="/"
             className="flex min-h-11 items-center rounded-full px-4 text-[13px] font-medium"
-            style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
+            style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
           >
             {t('tab.market')}
           </Link>
@@ -392,7 +392,13 @@ export default function SymbolPage() {
         <ul className="mt-1 divide-y divide-line border-t border-line">
           {risks.map((k) => (
             <li key={k.id} className="flex min-h-[44px] items-start gap-2.5 py-2.5">
-              <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-down)' }}>⚠</span>
+              <span className="mt-0.5 shrink-0" style={{ color: 'var(--color-down)' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="block">
+                  <path d="M12 4 2.6 20h18.8L12 4Z" />
+                  <path d="M12 10v3.5" />
+                  <path d="M12 17.2v.2" />
+                </svg>
+              </span>
               <span className="min-w-0 flex-1 text-[14px] leading-snug">{k.label[lang]}</span>
               <span className="num shrink-0 text-[12px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
             </li>

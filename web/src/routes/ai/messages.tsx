@@ -64,7 +64,7 @@ function Caret() {
   return (
     <span
       aria-hidden
-      className="ms-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] animate-pulse bg-fg align-baseline"
+      className="ms-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] animate-pulse motion-reduce:animate-none bg-fg align-baseline"
     />
   )
 }
@@ -146,7 +146,7 @@ export function TypingRow({ label }: { label: string }) {
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted"
+          className="h-1.5 w-1.5 animate-pulse motion-reduce:animate-none rounded-full bg-muted"
           style={{ animationDelay: `${i * 120}ms`, animationDuration: '820ms' }}
         />
       ))}

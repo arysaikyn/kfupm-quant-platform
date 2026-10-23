@@ -176,7 +176,7 @@ export default function NewsPage() {
         <div
           role="group"
           aria-label={s('filterLabel')}
-          className="mt-3 flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-28px),transparent)]"
+          className="fade-end mt-3 flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden"
           style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
         >
           {[null, ...sources].map((name) => {

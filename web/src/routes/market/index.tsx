@@ -281,7 +281,7 @@ export default function MarketPage() {
               <span
                 aria-hidden="true"
                 className="num absolute -end-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none"
-                style={{ background: 'var(--color-down)', color: '#fff' }}
+                style={{ background: 'var(--color-down)', color: 'var(--color-bg)' }}
               >
                 {fired > 9 ? '9+' : fired}
               </span>
@@ -440,7 +440,7 @@ export default function MarketPage() {
                   className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
                   style={
                     on
-                      ? { background: 'var(--color-accent-fill)', color: '#fff' }
+                      ? { background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }
                       : { color: 'var(--color-muted)' }
                   }
                 >
@@ -518,7 +518,7 @@ export default function MarketPage() {
           className="panel mt-2 flex min-h-[44px] items-center justify-between gap-3 px-3 text-[12px] transition-colors active:bg-fg/10"
         >
           <span>{s('sectorDetail')}</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
             <path d="M9 6l6 6-6 6" />
           </svg>
         </Link>
@@ -536,7 +536,7 @@ export default function MarketPage() {
                 type="button"
                 onClick={() => setSector(null)}
                 className="min-h-11 rounded-full px-4 text-[13px] font-medium"
-                style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
+                style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
               >
                 {s('rankPick')}
               </button>
@@ -703,7 +703,7 @@ export default function MarketPage() {
                   type="button"
                   onClick={() => setView('rank')}
                   className="min-h-11 rounded-full px-4 text-[13px] font-medium"
-                  style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
+                  style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
                 >
                   {s('watchCta')}
                 </button>

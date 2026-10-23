@@ -62,7 +62,7 @@ export default function StrategyPage() {
           <div
             role="group"
             aria-label={FILTER_LABEL[lang]}
-            className="-ms-4 flex min-w-0 gap-1 overflow-x-auto ps-4 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-20px),transparent)]"
+            className="-ms-4 flex min-w-0 gap-1 overflow-x-auto ps-4 [&::-webkit-scrollbar]:hidden fade-end"
             style={{ scrollbarWidth: 'none', overscrollBehaviorX: 'contain' }}
           >
             {[null, ...tags].map((t) => {

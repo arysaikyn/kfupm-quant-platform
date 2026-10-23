@@ -101,17 +101,13 @@ function RuleRow({ label, value }: { label: string; value: string }) {
 }
 
 function EvidenceRow({ label, value, tag }: { label: string; value: string; tag: string }) {
-  const { lang } = useI18n()
   return (
     <div className="flex min-h-12 items-center gap-2.5 border-t border-line px-4 first:border-t-0">
       <span className="min-w-0 flex-1 truncate text-[12px] text-muted">{label}</span>
       <span dir="ltr" className="num text-[14px] font-medium">
         {value}
       </span>
-      <span
-        className="shrink-0 rounded-full bg-fg/10 px-2 py-1 text-[9px] leading-none font-medium tracking-[0.04em] text-fg uppercase"
-        style={{ letterSpacing: lang === 'ar' ? 0 : undefined }}
-      >
+      <span className="shrink-0 rounded-full bg-fg/10 px-2 py-1 text-[11px] leading-none font-medium text-fg">
         {tag}
       </span>
     </div>

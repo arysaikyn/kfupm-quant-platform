@@ -106,7 +106,7 @@ export const strings = {
 
     sourcesTitle: 'Data sources',
     sourcesHint: 'Read-only list. This demo build makes no live requests.',
-    chipDemo: 'DEMO',
+    chipDemo: 'Demo',
     tadawul: 'Tadawul',
     tadawulMarket: 'Saudi Exchange',
     sse: 'SSE',

@@ -22,7 +22,7 @@ export function EmptyState({ text, action }: { text?: string; action?: React.Rea
         className="flex h-12 w-12 items-center justify-center rounded-full"
         style={{ background: 'var(--color-surface)' }}
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
           <circle cx="12" cy="12" r="8" opacity=".4" />
           <path d="M8.5 12h7" opacity=".7" />
         </svg>
@@ -45,7 +45,7 @@ export function ErrorState({ onRetry, message }: { onRetry?: () => void; message
       {onRetry && (
         <button
           onClick={onRetry}
-          className="rounded-full px-4 py-2 text-[13px]"
+          className="rounded-full px-4 py-2 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           style={{ border: '1px solid var(--color-line)' }}
         >
           {t('common.retry')}

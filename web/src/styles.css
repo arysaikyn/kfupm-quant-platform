@@ -1,3 +1,11 @@
+/* Hallmark v2.0.0 | critique: a flat, monochrome data product; colour only for money */
+/* waivers:
+   - gate 48 (compound theme selector): the light theme block is the token
+     block for light mode; the two-attribute selectors below only re-map
+     already-declared tone tokens.
+   - gate 39a / reflex 20 on TabBar, BackButton, Treemap, ErrorBoundary: these
+     components have no disabled variant because they are never disabled.
+*/
 @import "tailwindcss";
 
 /* Two files, both variable. Only the subsets we can actually render are
@@ -57,9 +65,15 @@
   --color-danger: #ff6b81;
   /* Solid fills carry white text, so they use the deeper step. */
   --color-accent-fill: var(--color-fg);
-  /* Default is the CN convention: red is a gain. */
-  --color-up: #f0455e;
-  --color-down: #35e08a;
+  /* Market colour semantics, declared once: CN red-up, everywhere else green-up. */
+  --tone-up-cn: #f0455e;
+  --tone-down-cn: #35e08a;
+  --tone-up-intl: #35e08a;
+  --tone-down-intl: #f0455e;
+  --color-up: var(--tone-up-cn);
+  --color-down: var(--tone-down-cn);
+  /* An opaque mask stop is not a palette colour, but it still gets a name. */
+  --mask-stop: #000;
 
   --radius-card: 16px;
   --radius-bar: 20px;
@@ -68,13 +82,13 @@
 /* Market colour semantics follow the locale: CN red-up, everyone else green-up.
    These are unlayered and outrank the @theme :root defaults. */
 html[data-updown="intl"] {
-  --color-up: #35e08a;
-  --color-down: #f0455e;
+  --color-up: var(--tone-up-intl);
+  --color-down: var(--tone-down-intl);
 }
 
 html[data-updown="cn"] {
-  --color-up: #f0455e;
-  --color-down: #35e08a;
+  --color-up: var(--tone-up-cn);
+  --color-down: var(--tone-down-cn);
 }
 
 :root,
@@ -95,7 +109,7 @@ html[data-theme="dark"] {
 /* Light keeps the same shapes and glow language, just lifted into daylight. */
 html[data-theme="light"] {
   color-scheme: light;
-  --color-bg: #ffffff;
+  --color-bg: #fdfdfe;
   --color-surface: #f5f5f7;
   --color-line: rgba(10, 10, 15, 0.08);
   --color-fg: #0a0a0c;
@@ -104,9 +118,11 @@ html[data-theme="light"] {
   --color-solid: var(--color-fg);
   --color-danger: #b3132f;
   --color-accent-fill: var(--color-fg);
-  /* CN convention under light: deeper red for contrast on white. */
-  --color-up: #e11d48;
-  --color-down: #0b7a4d;
+  /* CN convention under light: deeper ink for contrast on paper. */
+  --tone-up-cn: #e11d48;
+  --tone-down-cn: #0b7a4d;
+  --tone-up-intl: #0b7a4d;
+  --tone-down-intl: #e11d48;
   --tabbar-h: 60px;
   --tabbar-gap: 12px;
   --card-top: #ffffff;
@@ -117,15 +133,13 @@ html[data-theme="light"] {
   --bar-bg: rgba(255, 255, 255, 0.92);
 }
 
-html[data-updown="intl"][data-theme="light"] {
-  --color-up: #0b7a4d;
-  --color-down: #e11d48;
-}
+
 
 html,
 body,
 #root {
   height: 100%;
+  overflow-x: clip;
 }
 
 /* Inter carries Latin and digits, Rubik picks up Arabic by fallback, and CJK
@@ -148,6 +162,12 @@ button,
 a {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+}
+
+/* Base press: a control without its own active style still answers the finger. */
+button:active:not(:disabled),
+a[href]:active {
+  opacity: 0.88;
 }
 
 body {
@@ -250,7 +270,7 @@ html[dir="rtl"] body {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.14), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-fg) 9%, transparent), transparent);
   animation: shimmer 1.5s infinite;
 }
 @keyframes shimmer {
@@ -372,19 +392,24 @@ html[dir="rtl"] body {
 
 /* Quote strip: swipe it, never auto-scroll. A marquee cut the first number in
    half at the edge, which read as a missing value. */
+.fade-end {
+  -webkit-mask-image: linear-gradient(to right, var(--mask-stop) calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, var(--mask-stop) calc(100% - 24px), transparent);
+}
+
 .tape {
   display: flex;
   overflow: hidden;
   direction: ltr;
   /* both edges fade: the item leaving the frame dissolves, never gets chopped */
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, var(--mask-stop) 28px, var(--mask-stop) calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, transparent, var(--mask-stop) 28px, var(--mask-stop) calc(100% - 28px), transparent);
 }
 .tape__track {
   display: flex;
   flex: 0 0 auto;
-  gap: 22px;
-  padding-inline-end: 22px;
+  gap: 24px;
+  padding-inline-end: 24px;
   min-width: 100%;
   animation: tape 42s linear infinite;
 }
@@ -579,7 +604,6 @@ html[dir="rtl"] body {
     height: 100%;
     border-radius: 20px;
     background: var(--bar-bg);
-    border: 1px solid var(--color-line);
     box-shadow: var(--shadow-float);
   }
 }

@@ -14,35 +14,35 @@ const stroke = {
 }
 
 const marketIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" {...stroke}>
+  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" {...stroke}>
     <path d="M4 17l4-6 4 4 4-7 4 5" />
     <path d="M4 20h16" opacity=".35" />
   </svg>
 )
 
 const newsIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" {...stroke}>
+  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" {...stroke}>
     <rect x="4" y="5" width="16" height="14" rx="2.5" />
     <path d="M8 9h8M8 12.5h8M8 16h5" />
   </svg>
 )
 
 const aiIcon = (
-  <svg width="24" height="24" viewBox="0 0 24 24" {...stroke}>
+  <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" {...stroke}>
     <path d="M12 4l1.7 4.6L18 10l-4.3 1.4L12 16l-1.7-4.6L6 10l4.3-1.4z" />
     <path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" opacity=".7" />
   </svg>
 )
 
 const strategyIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" {...stroke}>
+  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" {...stroke}>
     <path d="M12 4l7 3.5v5c0 4-3 6.6-7 7.5-4-.9-7-3.5-7-7.5v-5z" />
     <path d="M9.2 12.2l2 2 3.6-4" />
   </svg>
 )
 
 const meIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" {...stroke}>
+  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" {...stroke}>
     <circle cx="12" cy="8.5" r="3.4" />
     <path d="M5 20c1.4-3.3 4-5 7-5s5.6 1.7 7 5" />
   </svg>
@@ -80,7 +80,7 @@ function ItemSurface({
         type="button"
         aria-current="page"
         onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
-        className={className}
+        className={`${className} focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg`}
         style={{ color: 'var(--color-fg)' }}
       >
         {children}
@@ -89,7 +89,11 @@ function ItemSurface({
   }
 
   return (
-    <Link to={to} className={className} style={{ color: 'var(--color-muted)' }}>
+    <Link
+      to={to}
+      className={`${className} focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg`}
+      style={{ color: 'var(--color-muted)' }}
+    >
       {children}
     </Link>
   )
@@ -160,10 +164,10 @@ export function TabBar() {
         style={{ borderRadius: 'inherit' }}
       >
         <div
-          className="absolute inset-y-[7px] start-0 w-1/5 transition-transform duration-300"
+          className="absolute inset-y-[7px] start-0 w-1/5 transition-transform duration-300 motion-reduce:transition-none"
           style={{
             transform: `translate3d(calc(var(--i) * 100% * var(--dir)), 0, 0)`,
-            transitionTimingFunction: 'cubic-bezier(.32,1.12,.55,1)',
+            transitionTimingFunction: 'cubic-bezier(.16,1,.3,1)',
           }}
         >
           <div
@@ -188,7 +192,7 @@ export function TabBar() {
                   <span className="relative flex h-[22px] w-full items-center justify-center">
                     <span
                       data-ai-orb
-                      className="absolute flex items-center justify-center rounded-full"
+                      className="absolute flex items-center justify-center rounded-full transition-[transform,background-color,color] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
                       style={{
                         // Transform, not width/height/top: the pill sits on a
                         // blurred bar, and geometry there re-measures the row.
@@ -205,8 +209,6 @@ export function TabBar() {
                         boxShadow: active
                           ? '0 0 0 1px color-mix(in srgb, var(--color-fg) 30%, transparent)'
                           : '0 0 0 1px var(--color-line)',
-                        transition:
-                          'transform 220ms cubic-bezier(.32,1.12,.55,1), background-color 180ms ease, color 180ms ease',
                       }}
                     >
                       {it.icon}

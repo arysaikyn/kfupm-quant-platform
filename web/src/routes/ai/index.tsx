@@ -268,7 +268,7 @@ export default function AiPage() {
                   aria-label={`${s('remove')} ${label}`}
                   className="ms-0.5 flex h-11 w-11 items-center justify-center rounded-full text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                     <path d="M6 6l12 12M18 6L6 18" />
                   </svg>
                 </button>
@@ -283,7 +283,7 @@ export default function AiPage() {
               aria-expanded={sheet}
               className="inline-flex h-11 items-center gap-1 rounded-full px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <path d="M12 5v14M5 12h14" />
               </svg>
               {s('addObject')}
@@ -392,9 +392,9 @@ export default function AiPage() {
             disabled={input.trim().length === 0 || busy}
             aria-label={s('send')}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-40"
-            style={{ background: 'var(--color-accent-fill)', color: '#fff' }}
+            style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 19V5M6 11l6-6 6 6" />
             </svg>
           </button>
@@ -405,8 +405,7 @@ export default function AiPage() {
       {sheet && (
         <>
           <div
-            className="scrim-enter fixed inset-0 z-40"
-            style={{ background: 'rgba(4, 2, 10, 0.55)' }}
+            className="scrim-enter fixed inset-0 z-40 bg-bg/55"
             onClick={() => setSheet(false)}
             aria-hidden
           />
@@ -433,7 +432,7 @@ export default function AiPage() {
                 aria-label={s('close')}
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                   <path d="M6 6l12 12M18 6L6 18" />
                 </svg>
               </button>

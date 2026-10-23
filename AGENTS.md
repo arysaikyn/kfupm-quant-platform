@@ -23,7 +23,9 @@ Three writers. One owner per product directory; `docs/` shared. Only Arys merges
 
 1. Branch `agent/<slug>`.
 2. Smallest working change. Reuse before adding.
-3. Run the changed path. A compile is not proof.
+3. Run the changed path. A compile is not proof. `npm run design` is the
+   design gate: it lints every source file with Hallmark and fails if the
+   FAIL count grows past `design-baseline.json`.
 4. Commit with `INTENDED / ACTUAL / DRIFT / VERIFIED`.
 5. Update the doc that owns the fact. One fact, one home.
 

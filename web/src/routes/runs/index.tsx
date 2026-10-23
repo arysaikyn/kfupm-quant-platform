@@ -220,7 +220,7 @@ function Chevron({ open }: { open: boolean }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className="ms-auto shrink-0 text-muted transition-transform"
+      className="ms-auto shrink-0 text-muted transition-transform motion-reduce:transition-none"
       style={{ transform: open ? 'rotate(180deg)' : undefined }}
     >
       <path d="M6 9l6 6 6-6" />

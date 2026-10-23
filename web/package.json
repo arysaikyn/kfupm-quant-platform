@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "design": "node scripts/design-check.mjs",
+    "design:update": "node scripts/design-check.mjs --update"
   },
   "dependencies": {
     "@radix-ui/react-collapsible": "^1.2.1",

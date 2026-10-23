@@ -611,9 +611,9 @@ export default function StrategyDetail() {
               </div>
               <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-line">
                 <div
-                  className="h-full rounded-full transition-all duration-300"
+                  className="h-full w-full origin-left rounded-full transition-transform duration-300 rtl:origin-right motion-reduce:transition-none"
                   style={{
-                    width: `${((run.step + 1) / 4) * 100}%`,
+                    transform: `scaleX(${(run.step + 1) / 4})`,
                     background: 'var(--color-accent-fill)',
                   }}
                 />

@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { quotes } from '../../data/mock'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
-import { useTheme } from '../../theme'
 import { strings } from './strings'
 
 const APP_VERSION = '0.1.0'
@@ -75,7 +74,6 @@ function clearLocalData(): boolean {
 
 export default function SettingsPage() {
   const { lang, dir } = useI18n()
-  const { theme } = useTheme()
   const navigate = useNavigate()
   const s = useStrings(strings)
 
@@ -131,7 +129,7 @@ export default function SettingsPage() {
   }
 
   const danger = 'var(--color-danger)'
-  const dangerContrast = theme === 'light' ? '#ffffff' : '#1b070b'
+  const dangerContrast = 'var(--color-bg)'
   const dangerBg = 'color-mix(in srgb, var(--color-danger) 10%, transparent)'
 
   const back = (
@@ -186,7 +184,7 @@ export default function SettingsPage() {
                 className="min-h-[44px] flex-1 rounded-full px-3 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                 style={
                   active
-                    ? { background: 'var(--color-accent-fill)', color: '#fff' }
+                    ? { background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }
                     : { color: 'var(--color-muted)' }
                 }
               >
@@ -247,7 +245,7 @@ export default function SettingsPage() {
                   {s(source.market)}
                 </p>
               </div>
-              <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-[10px] leading-tight font-semibold tracking-[0.06em] text-muted">
+              <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-[11px] leading-tight font-semibold text-muted">
                 {s('chipDemo')}
               </span>
             </li>

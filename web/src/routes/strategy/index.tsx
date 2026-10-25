@@ -58,7 +58,7 @@ export default function StrategyPage() {
     <Screen
       title={s('title')}
     >
-      <div className="mt-1 flex items-center justify-between gap-3">
+      <div className="mt-3 flex items-center justify-between gap-3">
         {tags.length > 0 && (
           <div
             role="group"

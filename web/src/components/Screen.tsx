@@ -23,7 +23,15 @@ export function Screen({ title, leading, action, children, padded = true }: Prop
   useEffect(() => {
     if (lastFocusedPath === pathname) return
     lastFocusedPath = pathname
-    headingRef.current?.focus({ preventScroll: true })
+    // Title-less detail screens put their h1 inside the body. Focus the page
+    // itself rather than leaving the cursor on the link that just unmounted.
+    const target =
+      headingRef.current ??
+      document.getElementById('screen')?.querySelector<HTMLElement>('h1') ??
+      null
+    if (!target) return
+    if (!target.hasAttribute('tabindex')) target.tabIndex = -1
+    target.focus({ preventScroll: true })
   }, [pathname])
 
   return (
@@ -36,7 +44,10 @@ export function Screen({ title, leading, action, children, padded = true }: Prop
         // One optical line: the 44px controls and the title share a vertical
         // centre. items-end put the title's baseline on the button's bottom
         // edge, so the text looked like it was sliding off the circle.
-        <header className="flex min-h-11 items-center justify-between gap-3 px-4 pt-6 pb-3">
+        <header
+          className="flex min-h-11 items-center justify-between gap-3 px-4 pb-3"
+          style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top))' }}
+        >
           <div className="flex min-w-0 items-center gap-2">
             {leading}
             <div className="min-w-0">

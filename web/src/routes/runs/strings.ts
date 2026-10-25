@@ -12,6 +12,9 @@ export type RunsStrings = {
   lead: string
   newQuestion: string
   askCta: string
+  askFirst: string
+  statusActive: string
+  statusIdle: string
   clear: string
   confirmClear: string
   runsLabel: string
@@ -53,6 +56,9 @@ export const strings = {
     lead: '每一次提问，和它得到的回答。',
     newQuestion: '新提问',
     askCta: '再问一个',
+    askFirst: '问第一个问题',
+    statusActive: '进行中',
+    statusIdle: '空闲',
     clear: '清空提问记录',
     confirmClear: '再点一次确认清空',
     runsLabel: '次提问',
@@ -65,7 +71,7 @@ export const strings = {
     runLabel: '第 {n} 次',
     expand: '展开引用',
     collapse: '收起引用',
-    sampleNote: '以下为示例记录,  你的提问会出现在这里。',
+    sampleNote: '以下为示例记录，你的提问会出现在这里。',
     seed1q: '为什么沙特阿美 2222 今天跌了 2.1%？',
     seed1a:
       '这轮下跌跟随布伦特原油回落 1.4%，此前公布的美国库存高于预期。阿美跟的是油价而不是 TASI 指数，两者的分歧解释了今天大部分跌幅。',
@@ -95,6 +101,9 @@ export const strings = {
     lead: 'Every question, and the answer it earned.',
     newQuestion: 'New question',
     askCta: 'Ask another',
+    askFirst: 'Ask a question',
+    statusActive: 'Active',
+    statusIdle: 'Idle',
     clear: 'Clear history',
     confirmClear: 'Tap again to clear',
     runsLabel: 'runs',
@@ -137,6 +146,9 @@ export const strings = {
     lead: 'كل سؤال طرحته، والإجابة التي حصل عليها.',
     newQuestion: 'سؤال جديد',
     askCta: 'اسأل سؤالًا آخر',
+    askFirst: 'اسأل سؤالًا',
+    statusActive: 'نشطة',
+    statusIdle: 'خاملة',
     clear: 'مسح السجل',
     confirmClear: 'اضغط مرة أخرى للمسح',
     runsLabel: 'أسئلة',
@@ -149,7 +161,7 @@ export const strings = {
     runLabel: 'المحاولة {n}',
     expand: 'إظهار المصادر',
     collapse: 'إخفاء المصادر',
-    sampleNote: 'أمثلة توضيحية, ستظهر أسئلتك هنا.',
+    sampleNote: 'أمثلة توضيحية، ستظهر أسئلتك هنا.',
     seed1q: 'لماذا انخفض سهم أرامكو 2222 بنسبة 2.1% اليوم؟',
     seed1a:
       'التحرّك يتبع تراجع خام برنت 1.4% بعد بيانات مخزونات أمريكية أعلى من المتوقع. أرامكو تتحرّك مع الخام لا مع مؤشر تاسي، والفارق بينهما يفسّر معظم الانخفاض.',

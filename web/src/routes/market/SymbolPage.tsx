@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AnimatedNumber } from '../../components/AnimatedNumber'
 import { FairValueRail } from '../../components/FairValueRail'
 import { Snowflake } from '../../components/Snowflake'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
@@ -76,7 +77,7 @@ function PriceChart({ data, up, symbol }: { data: number[]; up: boolean; symbol:
 export default function SymbolPage() {
   const { symbol = '' } = useParams<{ symbol: string }>()
   const navigate = useNavigate()
-  const { t, lang, dir } = useI18n()
+  const { t, lang } = useI18n()
   const s = useStrings(strings)
   const c = useStrings(symbolStrings)
   const { watchlist } = useUser()
@@ -85,35 +86,7 @@ export default function SymbolPage() {
   const quote = quotes.find((q) => q.symbol === symbol)
   const watched = watchlist.includes(symbol)
 
-  const goBack = () => {
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
-    if (idx > 0) navigate(-1)
-    else navigate('/')
-  }
-
-  const back = (
-    <button
-      type="button"
-      onClick={goBack}
-      aria-label={t('common.back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        style={{ transform: dir === 'rtl' ? 'scaleX(-1)' : undefined }}
-      >
-        <path d="M14.5 5.5 8 12l6.5 6.5" />
-      </svg>
-    </button>
-  )
+  const back = <BackButton fallback="/" />
 
   if (!quote) {
     return (
@@ -327,14 +300,10 @@ export default function SymbolPage() {
                 className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <span
-                  className="px-2 py-1.5 text-[12px]"
+                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
                   style={
                     on
-                      ? {
-                          color: 'var(--color-fg)',
-                          fontWeight: 600,
-                          borderBottom: '2px solid var(--color-fg)',
-                        }
+                      ? { background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }
                       : { color: 'var(--color-muted)' }
                   }
                 >

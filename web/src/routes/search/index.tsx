@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
@@ -165,7 +166,7 @@ function QuoteRow({
 }
 
 export default function SearchPage() {
-  const { lang, dir } = useI18n()
+  const { lang } = useI18n()
   const s = useStrings(strings)
   const navigate = useNavigate()
   const { watchlist } = useUser()
@@ -217,6 +218,16 @@ export default function SearchPage() {
         .map((symbol) => QUOTE_BY_SYMBOL[symbol])
         .filter((quote): quote is Quote => quote !== undefined),
     [watchlist],
+  )
+
+  // A first visit has no history and no watchlist. Four movers give the page
+  // something useful to do instead of ending on "no recent searches".
+  const popularQuotes = useMemo(
+    () =>
+      [...quotes]
+        .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+        .slice(0, 4),
+    [],
   )
 
   const commit = (term: string) => {
@@ -271,35 +282,7 @@ export default function SearchPage() {
     }
   }
 
-  const goBack = () => {
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
-    if (idx > 0) navigate(-1)
-    else navigate('/')
-  }
-
-  const back = (
-    <button
-      type="button"
-      onClick={goBack}
-      aria-label={s('back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-fg"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        style={{ transform: dir === 'rtl' ? 'scaleX(-1)' : undefined }}
-      >
-        <path d="M14.5 5.5 8 12l6.5 6.5" />
-      </svg>
-    </button>
-  )
+  const back = <BackButton fallback="/" />
 
   return (
     <Screen title={s('title')} leading={back}>
@@ -376,7 +359,7 @@ export default function SearchPage() {
         </form>
       </div>
 
-      <Link to="/screener" className="panel row mt-3 gap-3">
+      <Link to="/screener" className="panel row mt-3 gap-3 p-3">
         <span className="shrink-0 text-muted">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M3 5h18l-7 8v6l-4 2v-8z" />
@@ -395,12 +378,12 @@ export default function SearchPage() {
 
       {needle === '' ? (
         <>
-          <section className="mt-6" aria-labelledby="search-recent">
-            <div className="flex items-center justify-between gap-3">
-              <h2 id="search-recent" className="t-section ">
-                {s('recent')}
-              </h2>
-              {recent.length > 0 && (
+          {recent.length > 0 && (
+            <section className="mt-6" aria-labelledby="search-recent">
+              <div className="flex items-center justify-between gap-3">
+                <h2 id="search-recent" className="t-section">
+                  {s('recent')}
+                </h2>
                 <button
                   type="button"
                   onClick={() => setRecent([])}
@@ -408,11 +391,7 @@ export default function SearchPage() {
                 >
                   {s('clearRecent')}
                 </button>
-              )}
-            </div>
-            {recent.length === 0 ? (
-              <p className="mt-2 text-[12px] text-muted">{s('noRecent')}</p>
-            ) : (
+              </div>
               <div className="panel mt-2 overflow-hidden">
                 {recent.map((term) => (
                   <button
@@ -441,8 +420,33 @@ export default function SearchPage() {
                   </button>
                 ))}
               </div>
-            )}
-          </section>
+            </section>
+          )}
+
+          {recent.length === 0 && watchedQuotes.length === 0 && (
+            <section className="mt-6" aria-labelledby="search-popular">
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 id="search-popular" className="t-section">
+                  {s('popular')}
+                </h2>
+                <span className="num text-[11px] text-muted">{popularQuotes.length}</span>
+              </div>
+              <ul className="panel mt-2 overflow-hidden">
+                {popularQuotes.map((quote) => (
+                  <QuoteRow
+                    key={quote.symbol}
+                    quote={quote}
+                    lang={lang}
+                    watched={watchlist.includes(quote.symbol)}
+                    watchLabel={s(
+                      watchlist.includes(quote.symbol) ? 'removeWatch' : 'addWatch',
+                    )}
+                    onToggle={() => toggleWatch(quote.symbol)}
+                  />
+                ))}
+              </ul>
+            </section>
+          )}
 
           {watchedQuotes.length > 0 && (
             <section className="mt-6" aria-labelledby="search-watchlist">

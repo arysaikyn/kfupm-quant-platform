@@ -1,16 +1,10 @@
 import type { Dict } from '../../i18n'
 
-/**
- * The first group every install gets. Its name is fixed, not localised: the
- * seeded row is the one wired to the shared watchlist, so it keeps the same
- * identity in storage regardless of the language the app is opened in.
- */
-export const SEED_GROUP_NAME = '默认'
-
 type Strings = {
   title: string
   subtitle: string
   groups: string
+  defaultGroup: string
   uniqueSymbols: string
   newGroup: string
   groupName: string
@@ -38,6 +32,7 @@ export const strings = {
     title: '自选分组',
     subtitle: '按主题整理自选；默认分组与主自选保持同步',
     groups: '分组',
+    defaultGroup: '默认分组',
     uniqueSymbols: '去重标的',
     newGroup: '新增分组',
     groupName: '分组名称',
@@ -63,6 +58,7 @@ export const strings = {
     title: 'Watchlists',
     subtitle: 'Group what you follow. The default group stays in step with your main list',
     groups: 'Groups',
+    defaultGroup: 'Main list',
     uniqueSymbols: 'Unique symbols',
     newGroup: 'New group',
     groupName: 'Group name',
@@ -86,8 +82,9 @@ export const strings = {
   },
   ar: {
     title: 'قوائم المتابعة',
-    subtitle: 'نظّم ما تتابعه, المجموعة الافتراضية تبقى متزامنة مع قائمتك الرئيسية',
+    subtitle: 'نظّم ما تتابعه، المجموعة الافتراضية تبقى متزامنة مع قائمتك الرئيسية',
     groups: 'المجموعات',
+    defaultGroup: 'القائمة الرئيسية',
     uniqueSymbols: 'رموز فريدة',
     newGroup: 'مجموعة جديدة',
     groupName: 'اسم المجموعة',
@@ -101,7 +98,7 @@ export const strings = {
     confirmDelete: 'تأكيد الحذف',
     addSymbol: 'إضافة سهم',
     add: 'إضافة',
-    emptyGroups: 'لا توجد مجموعات بعد, أنشئ مجموعة واجمع فيها الأسهم التي تتابعها.',
+    emptyGroups: 'لا توجد مجموعات بعد، أنشئ مجموعة واجمع فيها الأسهم التي تتابعها.',
     emptyGroup: 'لا توجد أسهم في هذه المجموعة بعد. أضف سهمًا من الأعلى.',
     removeFromGroup: 'إزالة من المجموعة',
     move: 'نقل',

@@ -1,5 +1,6 @@
 import { useI18n, useStrings } from '../../i18n'
 import { fmtNum } from '../../i18n'
+import { plural } from '../../i18n/format'
 import type { ChatMessage, LiveTurn } from './remote'
 import { toolLabel } from './remote'
 import { strings } from './strings'
@@ -46,6 +47,13 @@ export function ThinkingPanel({
   const seconds = live
     ? Math.max(0, (now - live.startedAt) / 1000)
     : (message?.elapsedMs ?? 0) / 1000
+  const toolUnit = plural(lang, tools.length, {
+    other: lang === 'zh' ? '个工具' : lang === 'ar' ? 'أداة' : 'tools',
+    one: lang === 'ar' ? 'أداة' : 'tool',
+    two: 'أداتان',
+    few: 'أدوات',
+    many: 'أداة',
+  })
   const stateLabel = busy
     ? live?.status === 'thinking'
       ? s('thinking')
@@ -56,7 +64,7 @@ export function ThinkingPanel({
       ? s('failed')
       : message?.status === 'cancelled'
         ? s('cancelled')
-        : `${tools.length} ${s('toolsUnit')}`
+        : `${tools.length} ${toolUnit}`
 
   return (
     <details open={busy} className="group border-t border-line pt-2">

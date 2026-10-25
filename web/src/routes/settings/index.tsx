@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { useI18n, useStrings } from '../../i18n'
 import { strings } from './strings'
@@ -19,15 +20,12 @@ const RESET_KEYS = [
   'watchlists.v1',
   'search.recent',
   'news.saved.v1',
-  'strategies.copied',
 ]
 
 const SESSION_KEYS = ['app.ai.intake']
 
 function isResetKey(key: string): boolean {
-  if (RESET_KEYS.includes(key)) return true
-  if (key.startsWith('settings.')) return true
-  return key.startsWith('strategy.') && key.endsWith('.rules')
+  return RESET_KEYS.includes(key)
 }
 
 /** Collect first, remove second: mutating during key(i) iteration skips entries. */
@@ -48,7 +46,6 @@ function clearLocalData(): boolean {
 
 export default function SettingsPage() {
   const { dir } = useI18n()
-  const navigate = useNavigate()
   const s = useStrings(strings)
   const [armed, setArmed] = useState(false)
   const [resetFailed, setResetFailed] = useState(false)
@@ -59,12 +56,6 @@ export default function SettingsPage() {
     const timer = window.setTimeout(() => setArmed(false), 6000)
     return () => window.clearTimeout(timer)
   }, [armed])
-
-  const goBack = () => {
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
-    if (idx > 0) navigate(-1)
-    else navigate('/me')
-  }
 
   const reset = () => {
     if (!armed) {
@@ -84,29 +75,7 @@ export default function SettingsPage() {
   const dangerContrast = 'var(--color-bg)'
   const dangerBg = 'color-mix(in srgb, var(--color-danger) 10%, transparent)'
 
-  const back = (
-    <button
-      type="button"
-      onClick={goBack}
-      aria-label={s('back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        style={{ transform: dir === 'rtl' ? 'scaleX(-1)' : undefined }}
-      >
-        <path d="M14.5 5.5 8 12l6.5 6.5" />
-      </svg>
-    </button>
-  )
+  const back = <BackButton fallback="/me" />
 
   return (
     <Screen title={s('title')} leading={back}>

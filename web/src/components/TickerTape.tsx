@@ -36,7 +36,7 @@ export function TickerTape({ quotes, price, change, label }: Props) {
   )
 
   return (
-    <div className="tape py-2" role="group" aria-label={label}>
+    <div className="tape py-2" role="group" aria-label={label} tabIndex={0}>
       {track(false)}
       {track(true)}
     </div>

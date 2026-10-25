@@ -64,7 +64,7 @@ export const strings = {
 
     resetTitle: '重置本地数据',
     resetHint:
-      '清除自选、AI 对话、提醒、筛选方案、搜索记录、策略规则、已复制的策略和本页设置。此操作无法撤销；语言与主题会保留。',
+      '清除自选、AI 对话、提醒、筛选方案、搜索记录和已保存新闻。此操作无法撤销；语言、主题、市场与引导状态会保留。',
     resetButton: '重置本地数据',
     resetConfirm: '再次点击确认清除',
     resetCancel: '取消',
@@ -99,7 +99,7 @@ export const strings = {
 
     resetTitle: 'Reset local data',
     resetHint:
-      'Clears watchlists, AI threads, alerts, screens, recent searches, strategy rules, copied strategies and the settings on this page. This cannot be undone; language and theme are kept.',
+      'Clears watchlists, AI threads, alerts, saved screens, recent searches and saved news. This cannot be undone; language, theme, market and onboarding stay.',
     resetButton: 'Reset local data',
     resetConfirm: 'Tap again to confirm',
     resetCancel: 'Cancel',
@@ -134,7 +134,7 @@ export const strings = {
 
     resetTitle: 'مسح البيانات المحلية',
     resetHint:
-      'يمسح قوائم المتابعة ومحادثات الذكاء الاصطناعي والتنبيهات وخطط الفرز وعمليات البحث وقواعد الخطط والخطط المنسوخة وإعدادات هذه الصفحة. لا يمكن التراجع، وتُحفظ اللغة والمظهر.',
+      'يمسح قوائم المتابعة ومحادثات الذكاء الاصطناعي والتنبيهات وخطط الفرز والبحث والأخبار المحفوظة. لا يمكن التراجع، وتُحفظ اللغة والمظهر والسوق والتهيئة.',
     resetButton: 'مسح البيانات المحلية',
     resetConfirm: 'اضغط مرة أخرى للتأكيد',
     resetCancel: 'إلغاء',

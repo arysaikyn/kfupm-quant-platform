@@ -42,6 +42,7 @@ export type ScreenerStrings = {
   saved: string
   savedCount: string
   deleteAria: string
+  confirmDelete: string
   duplicateAria: string
   loadAria: string
   openAria: string
@@ -89,6 +90,7 @@ export const screenerStrings = {
     saved: '已保存',
     savedCount: '组',
     deleteAria: '删除 {name}',
+    confirmDelete: '再点一次删除',
     duplicateAria: '复制 {name}',
     loadAria: '载入 {name}',
     openAria: '打开 {name}',
@@ -134,6 +136,7 @@ export const screenerStrings = {
     saved: 'Saved',
     savedCount: 'saved',
     deleteAria: 'Delete {name}',
+    confirmDelete: 'Tap again to delete',
     duplicateAria: 'Duplicate {name}',
     loadAria: 'Load {name}',
     openAria: 'Open {name}',
@@ -179,6 +182,7 @@ export const screenerStrings = {
     saved: 'تم الحفظ',
     savedCount: 'محفوظة',
     deleteAria: 'حذف {name}',
+    confirmDelete: 'اضغط مرة أخرى للحذف',
     duplicateAria: 'نسخ {name}',
     loadAria: 'تحميل {name}',
     openAria: 'فتح {name}',

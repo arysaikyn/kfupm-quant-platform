@@ -7,7 +7,7 @@ import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import { quotes } from '../../data/mock'
 import { toggleWatch, useUser } from '../../store/user'
-import { strings, SEED_GROUP_NAME } from './strings'
+import { strings } from './strings'
 
 type Group = {
   id: string
@@ -52,20 +52,20 @@ function toGroup(value: unknown): Group | null {
   return { id: raw.id, name, symbols: cleanSymbols(raw.symbols) }
 }
 
-function seed(watchlist: string[]): Group[] {
-  return [{ id: DEFAULT_ID, name: SEED_GROUP_NAME, symbols: cleanSymbols(watchlist) }]
+function seed(watchlist: string[], defaultName: string): Group[] {
+  return [{ id: DEFAULT_ID, name: defaultName, symbols: cleanSymbols(watchlist) }]
 }
 
 /** A stored empty array stays empty; only a missing key or bad payload reseeds. */
-function load(watchlist: string[]): Group[] {
+function load(watchlist: string[], defaultName: string): Group[] {
   let raw: string | null = null
   try {
     raw = localStorage.getItem(KEY)
   } catch {
     // Private browsing: seed still renders for this session.
-    return seed(watchlist)
+    return seed(watchlist, defaultName)
   }
-  if (raw === null) return seed(watchlist)
+  if (raw === null) return seed(watchlist, defaultName)
   try {
     const parsed: unknown = JSON.parse(raw)
     if (Array.isArray(parsed)) {
@@ -78,7 +78,7 @@ function load(watchlist: string[]): Group[] {
   } catch {
     // Corrupt payload: start from the seed rather than an unusable screen.
   }
-  return seed(watchlist)
+  return seed(watchlist, defaultName)
 }
 
 function StarIcon({ filled }: { filled: boolean }) {
@@ -274,7 +274,16 @@ export default function WatchlistsPage() {
   const s = useStrings(strings)
   const { watchlist } = useUser()
 
-  const [groups, setGroups] = useState<Group[]>(() => load(watchlist))
+  const [groups, setGroups] = useState<Group[]>(() => {
+    const loaded = load(watchlist, s('defaultGroup'))
+    // A group seeded before localisation carries the old Chinese name. Rename
+    // only that untouched seed; a user's own rename is left alone.
+    return loaded.map((group) =>
+      group.id === DEFAULT_ID && group.name === '默认'
+        ? { ...group, name: s('defaultGroup') }
+        : group,
+    )
+  })
   const [activeId, setActiveId] = useState<string | null>(null)
   const [newOpen, setNewOpen] = useState(false)
   const [newName, setNewName] = useState('')

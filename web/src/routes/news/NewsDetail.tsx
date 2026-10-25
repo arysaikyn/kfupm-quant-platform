@@ -49,7 +49,7 @@ export default function NewsDetail() {
         <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted">
           <Link
             to={`/news?source=${encodeURIComponent(item.source)}`}
-            className="truncate underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="inline-flex min-h-11 min-w-0 items-center truncate underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {item.source}
           </Link>

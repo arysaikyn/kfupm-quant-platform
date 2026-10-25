@@ -47,3 +47,40 @@ test('workspace uploads a file and hands it to the agent', async ({ page }) => {
   await expect(page).toHaveURL(/\/ai$/)
   await expect(page.getByRole('textbox', { name: /Try:/ })).toHaveValue(/mock\.pdf/)
 })
+
+test('workspace empty tabs each offer a next step', async ({ page }) => {
+  await prime(page)
+  await page.route('**/api/ai/runs', (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }),
+  )
+  await page.route('**/api/ai/api/paper-accounts', (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }),
+  )
+  await page.route('**/api/ai/api/portfolio', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ status: 'ok', snapshot: null }),
+    }),
+  )
+  await page.route('**/api/ai/alpha/list**', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ total: 0, alphas: [] }),
+    }),
+  )
+  await page.route('**/api/ai/scheduled-runs', (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }),
+  )
+  await page.goto('/workspace')
+  await expect(page.getByText('No runs yet. Ask for a backtest to start one.')).toBeVisible()
+  await page.getByRole('tab', { name: 'Paper' }).click()
+  await expect(page.getByText('No paper accounts yet. Create one through the agent.')).toBeVisible()
+  await page.getByRole('tab', { name: 'Portfolio' }).click()
+  await expect(page.getByText('No portfolio snapshot yet. Ask the agent to review it.')).toBeVisible()
+  await page.getByRole('tab', { name: 'Alphas' }).click()
+  await expect(page.getByText('No alphas loaded. Ask the agent what is available.')).toBeVisible()
+  await page.getByRole('tab', { name: 'Scheduled' }).click()
+  await expect(page.getByText('Nothing scheduled yet. Ask for a recurring review.')).toBeVisible()
+})

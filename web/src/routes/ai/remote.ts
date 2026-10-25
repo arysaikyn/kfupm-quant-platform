@@ -113,7 +113,7 @@ export function reduceAgentEvent(
           elapsedMs: num(data.elapsed_ms),
           model: str(data.model) || str(data.configured_model) || undefined,
           runId: runIdFromDir(data.run_dir),
-          error: failed ? str(data.summary) || str(data.error) || 'The agent run failed.' : undefined,
+          error: failed ? str(data.summary) || str(data.error) || undefined : undefined,
         },
       }
     }
@@ -185,7 +185,7 @@ export function reduceAgentEvent(
       }
     }
     case 'attempt.failed': {
-      const error = str(data.summary) || str(data.error) || 'The agent run failed.'
+      const error = str(data.summary) || str(data.error) || undefined
       return {
         live: null,
         completed: {
@@ -257,7 +257,6 @@ export function messagesFromHistory(items: MessageItem[]): ChatMessage[] {
         elapsedMs: typeof meta.elapsed_ms === 'number' ? meta.elapsed_ms : undefined,
         model: typeof meta.model === 'string' ? meta.model : undefined,
         runId: typeof meta.run_id === 'string' ? meta.run_id : undefined,
-        error: status === 'failed' ? 'The run failed.' : undefined,
       } satisfies ChatMessage,
     ]
   })

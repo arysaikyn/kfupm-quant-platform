@@ -124,9 +124,11 @@ export default function AiPage() {
   const keyboardInset = useKeyboardInset()
   const [params, setParams] = useSearchParams()
   const sessionParam = params.get('session')
-  const [sessionId, setSessionId] = useState<string | null>(
-    () => sessionParam ?? localStorage.getItem(SESSION_KEY),
-  )
+  const [sessionId, setSessionId] = useState<string | null>(() => {
+    // A history CTA opens a fresh thread even when the last session is stored.
+    if (params.get('new') === '1') return null
+    return sessionParam ?? localStorage.getItem(SESSION_KEY)
+  })
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [live, setLive] = useState<LiveTurn | null>(null)
   const [loading, setLoading] = useState(false)
@@ -137,6 +139,8 @@ export default function AiPage() {
   const [chips, setChips] = useState<CtxRef[]>([])
   const [sheet, setSheet] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [failedPrompt, setFailedPrompt] = useState('')
+  const [reloadTick, setReloadTick] = useState(0)
   const [now, setNow] = useState(() => Date.now())
   const liveActive = live !== null
 
@@ -146,7 +150,9 @@ export default function AiPage() {
   const previewFetched = useRef(new Set<string>())
   const intakeDone = useRef(false)
   const assistantBaseline = useRef(0)
+  const previousMessageCount = useRef(0)
   const stoppedAt = useRef(0)
+  const stoppedAttempt = useRef<string | null>(null)
   const streamReady = useRef<{
     sid: string | null
     ready: boolean
@@ -216,7 +222,7 @@ export default function AiPage() {
           setSessionId(null)
           return
         }
-        setError(err instanceof Error ? err.message : 'Could not load this session.')
+        setError(s('errLoad'))
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -224,7 +230,7 @@ export default function AiPage() {
     return () => {
       cancelled = true
     }
-  }, [sessionId])
+  }, [sessionId, reloadTick, s])
 
   // Live event stream. EventSource reconnects on its own; the server replays
   // the active attempt so a reload does not lose the answer.
@@ -239,6 +245,14 @@ export default function AiPage() {
       if (!completed) return
       if (finalized.current.has(completed.attemptId)) return
       finalized.current.add(completed.attemptId)
+      // The server may finish the turn even though the reader pressed Stop.
+      // Do not append a second, full answer over the partial they chose to keep.
+      if (
+        completed.attemptId === stoppedAttempt.current &&
+        nowMs() - stoppedAt.current < 10_000
+      ) {
+        return
+      }
       if (completed.status === 'cancelled' && nowMs() - stoppedAt.current < 10_000) return
       const last = messagesRef.current[messagesRef.current.length - 1]
       if (completed.text && last?.role === 'assistant' && last.text === completed.text) {
@@ -343,7 +357,7 @@ export default function AiPage() {
       if (Date.now() - started > 120_000) {
         window.clearInterval(timer)
         setBusy(false)
-        setError('The agent did not finish within two minutes.')
+        setError(s('errTimeout'))
         return
       }
       aiApi
@@ -366,7 +380,7 @@ export default function AiPage() {
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [busy, sessionId])
+  }, [busy, sessionId, s])
 
   useEffect(() => {
     if (!liveActive) return
@@ -384,14 +398,29 @@ export default function AiPage() {
   const liveTextLength = live?.text.length ?? 0
   const liveToolCount = live?.tools.length ?? 0
   useEffect(() => {
-    if (messages.length === 0 && !liveActive) return
+    if (messages.length === 0 && !liveActive) {
+      previousMessageCount.current = 0
+      return
+    }
     const el = endRef.current
     if (!el) return
+    const firstPaint = messages.length > 0 && previousMessageCount.current === 0
+    previousMessageCount.current = messages.length
     const doc = document.documentElement
     const nearBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 260
-    if (!nearBottom) return
+    // Opening a stored conversation starts at the top of a tall document.
+    // The first non-empty paint is a resume, not a new message, so land at the end.
+    if (!firstPaint && !nearBottom) return
     el.scrollIntoView({ block: 'end' })
   }, [messages.length, liveActive, liveTextLength, liveToolCount])
+
+  // Drop the one-shot new flag once the clean thread has mounted.
+  useEffect(() => {
+    if (params.get('new') !== '1') return
+    const next = new URLSearchParams(params)
+    next.delete('new')
+    setParams(next, { replace: true })
+  }, [params, setParams])
 
   // Long-press handoff: prefill the question and context, never auto-spend tokens.
   useEffect(() => {
@@ -425,8 +454,8 @@ export default function AiPage() {
       const created = await aiApi.createSession(title)
       setSessionId(created.session_id)
       return created.session_id
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not create a session.')
+    } catch {
+      setError(s('errCreate'))
       return null
     }
   }
@@ -435,9 +464,11 @@ export default function AiPage() {
     const text = raw.trim()
     if (!text || busy) return
     setError(null)
+    setFailedPrompt(text)
     setInput('')
     setSheet(false)
     setBusy(true)
+    stoppedAttempt.current = null
     const sid = await ensureSession(text)
     if (!sid) {
       setBusy(false)
@@ -454,9 +485,13 @@ export default function AiPage() {
     setMessages((prev) => [...prev, user])
     try {
       await aiApi.sendMessage(sid, `${contextBlock(chips, lang)}${text}`)
-    } catch (err) {
+      setFailedPrompt('')
+    } catch {
+      // The optimistic bubble was never accepted; remove it so a retry does
+      // not leave the same question twice in the thread.
+      setMessages((prev) => prev.filter((message) => message.id !== user.id))
       setBusy(false)
-      setError(err instanceof Error ? err.message : 'The agent did not accept the message.')
+      setError(s('errSend'))
     }
   }
 
@@ -465,11 +500,17 @@ export default function AiPage() {
     // The SSE connection is separate from this fetch: stamp first so a
     // cancelled frame cannot beat the local marker and create two bubbles.
     stoppedAt.current = nowMs()
+    stoppedAttempt.current = liveRef.current?.attemptId ?? null
+    // Capture before the network round trip: the cancelled frame can clear
+    // the live turn while the request is in flight.
+    const partial = liveRef.current
     try {
       await aiApi.cancel(sessionId)
     } catch {
       // The run may have completed between the tap and the request.
     }
+    // Keep what the reader already sees. Clearing the live turn used to make
+    // a long partial answer vanish and leave only the word "Stopped".
     setLive(null)
     liveRef.current = null
     setBusy(false)
@@ -478,25 +519,36 @@ export default function AiPage() {
       {
         id: `stopped-${crypto.randomUUID()}`,
         role: 'assistant',
-        text: '',
+        text: partial?.text ?? '',
         at: nowMs(),
+        reasoning: partial?.reasoning,
+        tools: partial?.tools,
+        elapsedMs: partial ? nowMs() - partial.startedAt : undefined,
+        model: partial?.model,
         status: 'cancelled',
       },
     ])
   }
 
   function newChat() {
-    if (sessionId && busy) void aiApi.cancel(sessionId).catch(() => {})
+    if (sessionId && busy) {
+      stoppedAt.current = nowMs()
+      stoppedAttempt.current = liveRef.current?.attemptId ?? null
+      void aiApi.cancel(sessionId).catch(() => {})
+    }
     setSessionId(null)
     setMessages([])
     setLive(null)
     setBusy(false)
+    setLoading(false)
     setError(null)
     setInput('')
     setChips([])
     setSheet(false)
     setCopiedId(null)
+    setFailedPrompt('')
     liveRef.current = null
+    stoppedAttempt.current = null
     finalized.current.clear()
     composerRef.current?.focus()
   }
@@ -602,7 +654,7 @@ export default function AiPage() {
               ? s('connected')
               : connected === 'offline'
                 ? s('offline')
-                : s('thinking')}
+                : s('connecting')}
           </span>
           {!online && <span>· {t('common.offline')}</span>}
         </div>
@@ -652,13 +704,32 @@ export default function AiPage() {
             <p className="text-[12px]" style={{ color: 'var(--color-danger)' }}>
               {error}
             </p>
-            <button
-              type="button"
-              onClick={() => setError(null)}
-              className="mt-1 min-h-11 text-[11px] text-muted underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-            >
-              {t('common.close')}
-            </button>
+            <div className="mt-1 flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => {
+                  const prompt = failedPrompt
+                  setError(null)
+                  if (prompt) {
+                    setFailedPrompt('')
+                    setInput(prompt)
+                    composerRef.current?.focus()
+                  } else {
+                    setReloadTick((n) => n + 1)
+                  }
+                }}
+                className="min-h-11 rounded-full border border-line px-3 text-[11px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              >
+                {t('common.retry')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setError(null)}
+                className="min-h-11 px-2 text-[11px] text-muted underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              >
+                {t('common.close')}
+              </button>
+            </div>
           </div>
         )}
 
@@ -689,7 +760,15 @@ export default function AiPage() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-6 text-[11px] text-muted">{s('disclaimer')}</p>
+              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px]">
+                <Link
+                  to="/review"
+                  className="inline-flex min-h-11 items-center text-muted underline decoration-line underline-offset-4 transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                >
+                  {s('reviewLink')}
+                </Link>
+              </div>
+              <p className="mt-3 text-[11px] text-muted">{s('disclaimer')}</p>
             </div>
           )}
 
@@ -724,9 +803,9 @@ export default function AiPage() {
                     {message.status === 'cancelled' && !message.text && (
                       <p className="text-[12px] text-muted">{s('cancelled')}</p>
                     )}
-                    {message.status === 'failed' && message.error && (
+                    {message.status === 'failed' && (
                       <p className="text-[12px]" style={{ color: 'var(--color-danger)' }}>
-                        {message.error}
+                        {message.error ?? s('failed')}
                       </p>
                     )}
                     <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted">
@@ -749,6 +828,12 @@ export default function AiPage() {
               </Fragment>
             )
           })}
+
+          {busy && !live && (
+            <p className="text-[13px] text-muted" role="status">
+              {s('thinking')}
+            </p>
+          )}
 
           {live && (
             <div className="space-y-3">

@@ -1,4 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
@@ -200,29 +201,7 @@ export default function StrategyDetail() {
 
   const st = strategies.find((x) => x.id === id)
 
-  const back = (
-    <button
-      type="button"
-      onClick={() => navigate('/strategy')}
-      aria-label={s('back')}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
-    >
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="rtl:rotate-180"
-        aria-hidden="true"
-      >
-        <path d="M15 5l-7 7 7 7" />
-      </svg>
-    </button>
-  )
+  const back = <BackButton fallback="/strategy" />
 
   if (!st) {
     return (

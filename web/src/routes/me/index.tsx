@@ -43,7 +43,7 @@ export default function MePage() {
     <Screen
       title={s('title')}
     >
-      <section className="pt-2">
+      <section className="pt-3">
         <div className="flex items-center gap-4">
           <div
             aria-hidden="true"

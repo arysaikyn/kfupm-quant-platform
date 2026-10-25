@@ -206,7 +206,7 @@ export default function LearnPage() {
         const size = fmtNum(group.items.length, lang, 0)
         return (
           <section key={group.key} className="mt-8">
-            {/* Sticks just under the Screen header (65px tall) while the group
+            {/* Sticks to the top of the viewport while the group
                 scrolls past, so the reader always knows the current bucket. The
                 letter index focuses this heading, so it must take tabIndex -1. */}
             <h2
@@ -214,7 +214,8 @@ export default function LearnPage() {
                 heads.current[group.key] = node
               }}
               tabIndex={-1}
-              className="sticky top-[64px] z-20 -mx-4 scroll-mt-[72px] bg-bg px-4 pt-2.5 pb-1.5 text-[12px] font-semibold text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+              style={{ top: 'env(safe-area-inset-top)' }}
+              className="sticky top-0 z-20 -mx-4 scroll-mt-0 bg-bg px-4 pt-2.5 pb-1.5 text-[12px] font-semibold text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
             >
               {group.key}
               <span className="num ms-1.5 font-normal opacity-70">

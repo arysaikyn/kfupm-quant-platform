@@ -32,6 +32,26 @@ export type WorkspaceStrings = {
   error: string
   retry: string
   empty: string
+  emptyRuns: string
+  emptyPortfolio: string
+  emptyPaper: string
+  emptyAlphas: string
+  emptyScheduled: string
+  startBacktest: string
+  startPaper: string
+  startAlpha: string
+  startSchedule: string
+  statusSuccess: string
+  statusCompleted: string
+  statusCancelled: string
+  statusFailed: string
+  statusActive: string
+  statusPaused: string
+  total: string
+  uploadDrag: string
+  uploading: string
+  filePrompt: string
+  removeFile: string
   status: string
   date: string
   totalReturn: string
@@ -94,6 +114,26 @@ const en: WorkspaceStrings = {
   error: 'The AI backend could not load this.',
   retry: 'Retry',
   empty: 'Nothing here yet.',
+  emptyRuns: 'No runs yet. Ask for a backtest to start one.',
+  emptyPortfolio: 'No portfolio snapshot yet. Ask the agent to review it.',
+  emptyPaper: 'No paper accounts yet. Create one through the agent.',
+  emptyAlphas: 'No alphas loaded. Ask the agent what is available.',
+  emptyScheduled: 'Nothing scheduled yet. Ask for a recurring review.',
+  startBacktest: 'Backtest a buy-and-hold strategy on Saudi Aramco for 2024.',
+  startPaper: 'Create a paper account and show me how to start.',
+  startAlpha: 'Recommend an alpha from the library and explain it.',
+  startSchedule: 'Schedule a weekly review of my watchlist.',
+  statusSuccess: 'Success',
+  statusCompleted: 'Completed',
+  statusCancelled: 'Cancelled',
+  statusFailed: 'Failed',
+  statusActive: 'Active',
+  statusPaused: 'Paused',
+  total: 'Total',
+  uploadDrag: 'Drop a file here or choose one',
+  uploading: 'Uploading…',
+  filePrompt: 'Analyze the attached file.\nFilename: {name}\nPath: {path}',
+  removeFile: 'Remove file',
   status: 'Status',
   date: 'Date',
   totalReturn: 'Return',
@@ -159,6 +199,26 @@ export const strings: Dict<WorkspaceStrings> = {
     error: 'AI 后端加载失败。',
     retry: '重试',
     empty: '暂时没有内容。',
+    emptyRuns: '还没有回测。让 Agent 跑一个，就有了第一条。',
+    emptyPortfolio: '还没有组合快照。让 Agent 帮你检查一次。',
+    emptyPaper: '还没有模拟盘。让 Agent 帮你创建一个。',
+    emptyAlphas: '还没有因子。问 Agent 现在有什么可用。',
+    emptyScheduled: '还没有定时任务。让 Agent 安排一次定期复盘。',
+    startBacktest: '回测一个 2024 年买入并持有沙特阿美的策略。',
+    startPaper: '创建一个模拟盘，并告诉我怎么开始。',
+    startAlpha: '从因子里挑一个适合现在的，并解释它。',
+    startSchedule: '每周复盘一次我的自选。',
+    statusSuccess: '成功',
+    statusCompleted: '完成',
+    statusCancelled: '已取消',
+    statusFailed: '失败',
+    statusActive: '运行中',
+    statusPaused: '已暂停',
+    total: '合计',
+    uploadDrag: '把文件拖到这里，或选择一个文件',
+    uploading: '正在上传…',
+    filePrompt: '分析这个附件。\n文件名：{name}\n路径：{path}',
+    removeFile: '移除文件',
     status: '状态',
     date: '日期',
     totalReturn: '收益',
@@ -221,6 +281,26 @@ export const strings: Dict<WorkspaceStrings> = {
     error: 'تعذّر على الخادم تحميل هذا.',
     retry: 'إعادة',
     empty: 'لا يوجد شيء بعد.',
+    emptyRuns: 'لا اختبارات بعد. اطلب اختبارًا ليبدأ الأول.',
+    emptyPortfolio: 'لا توجد لقطة للمحفظة بعد. اطلب من الوكيل مراجعتها.',
+    emptyPaper: 'لا محافظ تجريبية بعد. اطلب من الوكيل إنشاء واحدة.',
+    emptyAlphas: 'لا عوامل محمّلة. اسأل الوكيل عمّا هو متاح.',
+    emptyScheduled: 'لا مهام مجدولة بعد. اطلب مراجعة دورية.',
+    startBacktest: 'اختبر استراتيجية شراء واحتفاظ في أرامكو لعام 2024.',
+    startPaper: 'أنشئ محفظة تجريبية ووضّح لي كيف أبدأ.',
+    startAlpha: 'اقترح عاملًا مناسبًا من المكتبة واشرحه.',
+    startSchedule: 'جدول مراجعة أسبوعية لقائمة متابعتي.',
+    statusSuccess: 'ناجح',
+    statusCompleted: 'مكتمل',
+    statusCancelled: 'ملغى',
+    statusFailed: 'فشل',
+    statusActive: 'نشط',
+    statusPaused: 'متوقف',
+    total: 'الإجمالي',
+    uploadDrag: 'أفلت ملفًا هنا أو اختر ملفًا',
+    uploading: 'جارٍ الرفع…',
+    filePrompt: 'حلّل المرفق.\nاسم الملف: {name}\nالمسار: {path}',
+    removeFile: 'إزالة الملف',
     status: 'الحالة',
     date: 'التاريخ',
     totalReturn: 'العائد',

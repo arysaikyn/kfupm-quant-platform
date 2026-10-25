@@ -321,9 +321,15 @@ html[dir="rtl"] body {
   letter-spacing: -0.03em;
   text-box-trim: trim-both;
   text-box-edge: cap alphabetic;
+  text-wrap: balance;
 }
 .t-title {
   letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+/* Prose is set to avoid orphans; short data labels are unaffected. */
+p {
+  text-wrap: pretty;
 }
 /* Tickers are data, and data may be mono. This is the only mono voice. */
 .t-sym {
@@ -356,6 +362,11 @@ html[dir="rtl"] body {
 .fade-end {
   -webkit-mask-image: linear-gradient(to right, var(--mask-stop) calc(100% - 24px), transparent);
   mask-image: linear-gradient(to right, var(--mask-stop) calc(100% - 24px), transparent);
+}
+/* In RTL the scroller starts at the right, so the clipped end is the left. */
+html[dir="rtl"] .fade-end {
+  -webkit-mask-image: linear-gradient(to left, var(--mask-stop) calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to left, var(--mask-stop) calc(100% - 24px), transparent);
 }
 
 .tape {
@@ -412,7 +423,6 @@ html[dir="rtl"] body {
     align-items: center;
     gap: 12px;
     min-height: 56px;
-    padding-inline: 16px;
   }
   .row + .row {
     border-top: 1px solid var(--color-line);
@@ -575,17 +585,39 @@ html[dir="rtl"] body {
 }
 
 
+/* The composer is the one floating surface on the phone after the tab bar.
+   It needs its own glass: .glass has no base rule (TabBar styles itself). */
+.composer {
+  background: var(--bar-bg);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-bar);
+  box-shadow: var(--shadow-float);
+  backdrop-filter: blur(20px) saturate(180%);
+  overflow: hidden;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .composer {
+    background: var(--color-surface);
+  }
+}
+
 /* The composer is fixed to the viewport, but on a desk the content column is
    shifted by the rail: align it to the column, not to the window. */
 @media (min-width: 1024px) {
-  /* Same box as <main>: 760 centred, rail offset on the inline start. */
+  /* Same content box as <main>: 760 centred, then the rail offset. */
   .composer {
     inset-inline: 0 !important;
+    bottom: 24px !important;
     max-width: 760px !important;
     margin-inline: auto !important;
-    padding-inline: calc(88px + 16px) 16px;
+    padding-inline: calc(88px + 32px) 16px;
     box-sizing: border-box;
     display: flex;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    overflow: visible;
   }
   .composer > form {
     flex: 1;

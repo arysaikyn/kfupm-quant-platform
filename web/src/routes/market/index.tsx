@@ -646,7 +646,7 @@ export default function MarketPage() {
                         to={`/m/${q.symbol}`}
                         prompt={`${s('askAbout')} ${q.name[lang]}`}
                         chips={[{ kind: 'quote', symbol: q.symbol }]}
-                        className={`${ROW_GRID} min-h-[56px] ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg`}
+                        className={`${ROW_GRID} min-h-[56px] ps-0 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg`}
                       >
                         {/* Rank is positional, so it is not read out as part of the name. */}
                         <span
@@ -721,6 +721,7 @@ export default function MarketPage() {
               <span className="num rounded-full bg-surface px-2 py-0.5 text-[11px] text-muted">
                 {watched.length}
               </span>
+              <span className="text-[12px] text-muted">{s('viewWatch')}</span>
             </div>
             {/* Groups live next to the list they group, not inside Profile. */}
             <Link

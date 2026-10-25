@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
@@ -169,6 +170,7 @@ export default function ScreenerPage() {
   const [name, setName] = useState('')
   const [screens, setScreens] = useState<SavedScreen[]>(loadScreens)
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [status, setStatus] = useState('')
   const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'change', dir: 'desc' })
   const rowRefs = useRef<Record<string, HTMLLIElement | null>>({})
@@ -302,8 +304,19 @@ export default function ScreenerPage() {
     setStatus(s('saved'))
   }
 
+  useEffect(() => {
+    if (!confirmDelete) return
+    const timer = window.setTimeout(() => setConfirmDelete(null), 3000)
+    return () => window.clearTimeout(timer)
+  }, [confirmDelete])
+
   function deleteScreen(id: string) {
+    if (confirmDelete !== id) {
+      setConfirmDelete(id)
+      return
+    }
     const next = screens.filter((screen) => screen.id !== id)
+    setConfirmDelete(null)
     setScreens(next)
     storeScreens(next)
     if (activeId === id) setActiveId(null)
@@ -317,7 +330,7 @@ export default function ScreenerPage() {
   const showsTurnoverHint = rules.some((rule) => rule.field === 'turnover')
 
   return (
-    <Screen title={s('title')}>
+    <Screen title={s('title')} leading={<BackButton fallback="/search" />}>
       <div className="mt-4">
         <p className="t-kicker" style={kicker}>
           {s('presetsLabel')}
@@ -748,11 +761,26 @@ export default function ScreenerPage() {
                   <button
                     type="button"
                     onClick={() => deleteScreen(screen.id)}
-                    aria-label={fillName(s('deleteAria'), screen.name)}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-e-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
-                    style={{ color: 'var(--color-muted)' }}
+                    aria-label={
+                      confirmDelete === screen.id
+                        ? s('confirmDelete')
+                        : fillName(s('deleteAria'), screen.name)
+                    }
+                    className={`flex h-11 shrink-0 items-center justify-center rounded-e-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
+                      confirmDelete === screen.id ? 'min-w-0 px-2' : 'w-11'
+                    }`}
+                    style={{
+                      color:
+                        confirmDelete === screen.id
+                          ? 'var(--color-danger)'
+                          : 'var(--color-muted)',
+                    }}
                   >
-                    <IconX size={14} />
+                    {confirmDelete === screen.id ? (
+                      <span className="whitespace-nowrap text-[11px]">{s('confirmDelete')}</span>
+                    ) : (
+                      <IconX size={14} />
+                    )}
                   </button>
                 </li>
               )

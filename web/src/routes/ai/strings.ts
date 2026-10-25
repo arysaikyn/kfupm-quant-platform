@@ -47,7 +47,13 @@ export type AiStrings = {
   modelLabel: string
   connected: string
   offline: string
+  connecting: string
   noAnswer: string
+  errLoad: string
+  errTimeout: string
+  errCreate: string
+  errSend: string
+  jumpLatest: string
   history: string
   workspace: string
   metricReturn: string
@@ -122,7 +128,13 @@ export const strings = {
     modelLabel: '模型',
     connected: '本地 Agent 已连接',
     offline: '本地 Agent 未连接',
+    connecting: '正在连接本地 Agent',
     noAnswer: '这次运行没有返回答案。',
+    errLoad: '这次对话没能加载，请重试。',
+    errTimeout: '两分钟内没有完成，请重试。',
+    errCreate: '没能创建对话，请重试。',
+    errSend: '消息没有发出去，请重试。',
+    jumpLatest: '回到最新',
     history: '历史会话',
     workspace: '工作台',
     metricReturn: '总收益',
@@ -195,7 +207,13 @@ export const strings = {
     modelLabel: 'Model',
     connected: 'Local agent connected',
     offline: 'Local agent offline',
+    connecting: 'Connecting to the local agent',
     noAnswer: 'This run ended without an answer.',
+    errLoad: 'This conversation could not load. Try again.',
+    errTimeout: 'The agent did not finish in two minutes. Try again.',
+    errCreate: 'Could not create a conversation. Try again.',
+    errSend: 'The message did not send. Try again.',
+    jumpLatest: 'Jump to latest',
     history: 'Session history',
     workspace: 'Workspace',
     metricReturn: 'Total return',
@@ -268,7 +286,13 @@ export const strings = {
     modelLabel: 'النموذج',
     connected: 'الوكيل المحلي متصل',
     offline: 'الوكيل المحلي غير متصل',
+    connecting: 'جارٍ الاتصال بالوكيل المحلي',
     noAnswer: 'انتهى التشغيل دون إجابة.',
+    errLoad: 'تعذر تحميل المحادثة. حاول مجددًا.',
+    errTimeout: 'لم ينتهِ الوكيل خلال دقيقتين. حاول مجددًا.',
+    errCreate: 'تعذر إنشاء محادثة. حاول مجددًا.',
+    errSend: 'لم تُرسل الرسالة. حاول مجددًا.',
+    jumpLatest: 'الانتقال إلى الأحدث',
     history: 'سجل الجلسات',
     workspace: 'مساحة العمل',
     metricReturn: 'العائد الكلي',

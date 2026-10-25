@@ -2,6 +2,13 @@ import type { Dict } from '../../i18n'
 
 export type RunsStrings = {
   title: string
+  sessionLabel: string
+  empty: string
+  delete: string
+  confirmDelete: string
+  offline: string
+  retry: string
+  loading: string
   lead: string
   newQuestion: string
   askCta: string
@@ -35,7 +42,14 @@ export type RunsStrings = {
 
 export const strings = {
   zh: {
-    title: '提问记录',
+    title: '对话记录',
+    sessionLabel: '个会话',
+    empty: '还没有对话。',
+    delete: '删除',
+    confirmDelete: '再点一次删除',
+    offline: 'AI 后端未连接。',
+    retry: '重试',
+    loading: '正在加载…',
     lead: '每一次提问，和它得到的回答。',
     newQuestion: '新提问',
     askCta: '再问一个',
@@ -70,7 +84,14 @@ export const strings = {
     srcScreener: '筛选结果',
   },
   en: {
-    title: 'Runs',
+    title: 'Sessions',
+    sessionLabel: 'sessions',
+    empty: 'No conversations yet.',
+    delete: 'Delete',
+    confirmDelete: 'Tap again to delete',
+    offline: 'The AI backend is not reachable.',
+    retry: 'Retry',
+    loading: 'Loading…',
     lead: 'Every question, and the answer it earned.',
     newQuestion: 'New question',
     askCta: 'Ask another',
@@ -105,7 +126,14 @@ export const strings = {
     srcScreener: 'Screener result',
   },
   ar: {
-    title: 'سجلّ الأسئلة',
+    title: 'سجل الجلسات',
+    sessionLabel: 'جلسات',
+    empty: 'لا توجد محادثات بعد.',
+    delete: 'حذف',
+    confirmDelete: 'اضغط مرة أخرى للحذف',
+    offline: 'خادم الذكاء الاصطناعي غير متصل.',
+    retry: 'إعادة',
+    loading: 'جارٍ التحميل…',
     lead: 'كل سؤال طرحته، والإجابة التي حصل عليها.',
     newQuestion: 'سؤال جديد',
     askCta: 'اسأل سؤالًا آخر',

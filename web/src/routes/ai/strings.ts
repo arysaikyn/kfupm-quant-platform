@@ -13,6 +13,9 @@ export type AiStrings = {
   capTitle: string
   reviewLink: string
   cap1t: string
+  cap2Prompt: string
+  cap3Prompt: string
+  cap4Prompt: string
   cap1h: string
   cap2t: string
   cap2h: string
@@ -32,6 +35,26 @@ export type AiStrings = {
   answerReady: string
   demoNote: string
   threadLabel: string
+
+  thinking: string
+  working: string
+  answering: string
+  toolsUnit: string
+  reasoning: string
+  failed: string
+  cancelled: string
+  runTitle: string
+  modelLabel: string
+  connected: string
+  offline: string
+  noAnswer: string
+  history: string
+  metricReturn: string
+  metricAnnual: string
+  metricSharpe: string
+  metricDrawdown: string
+  metricWin: string
+  metricTrades: string
   addWatch: string
   addedWatch: string
   saveStrategy: string
@@ -71,6 +94,9 @@ export const strings = {
     capTitle: '能帮你做什么',
     reviewLink: '打开今日复盘',
     cap1t: '帮我选股', cap1h: '说一句条件就行',
+    cap2Prompt: '解释一下沙特阿美今天为什么涨跌，接下来该看什么。',
+    cap3Prompt: '对比沙特阿美和沙特基础工业的估值与风险。',
+    cap4Prompt: '读一下沙特阿美最新的新闻，告诉我它影响谁。',
     cap2t: '看一只股票', cap2h: '它为什么涨跌',
     cap3t: '对比两家', cap3h: '同一行业谁更好',
     cap4t: '读懂新闻', cap4h: '这条消息影响谁',
@@ -84,13 +110,32 @@ export const strings = {
     answerReady: '回答完成',
     demoNote: '演示：固定回复 + 本地样本，不是真实回测。',
     threadLabel: '对话',
+    thinking: '思考中',
+    working: '调用工具',
+    answering: '写答案',
+    toolsUnit: '个工具',
+    reasoning: '推理过程',
+    failed: '这次运行失败了',
+    cancelled: '已停止',
+    runTitle: '回测结果',
+    modelLabel: '模型',
+    connected: '本地 Agent 已连接',
+    offline: '本地 Agent 未连接',
+    noAnswer: '这次运行没有返回答案。',
+    history: '历史会话',
+    metricReturn: '总收益',
+    metricAnnual: '年化',
+    metricSharpe: '夏普',
+    metricDrawdown: '最大回撤',
+    metricWin: '胜率',
+    metricTrades: '交易数',
     addWatch: '加入自选',
     addedWatch: '已加入自选',
     saveStrategy: '保存为策略',
     savedStrategy: '已保存',
     sources: '来源',
     runs: '历史',
-    disclaimer: '演示数据，不构成投资建议。',
+    disclaimer: '仅供研究，不构成投资建议。',
     close: '关闭',
     presetValue: '低估值',
     presetValuePrompt: '按低估值帮我筛一遍：市盈率低、负债不高。',
@@ -121,6 +166,9 @@ export const strings = {
     capTitle: 'What I can do',
     reviewLink: "Open today's review",
     cap1t: 'Find stocks', cap1h: 'Start with one sentence',
+    cap2Prompt: 'Explain why Saudi Aramco moved today and what to watch next.',
+    cap3Prompt: 'Compare Saudi Aramco and SABIC on valuation and risk.',
+    cap4Prompt: 'Read the latest news on Saudi Aramco and tell me who it affects.',
     cap2t: 'Explain a stock', cap2h: 'Why it moved',
     cap3t: 'Compare two', cap3h: 'Who is better in the sector',
     cap4t: 'Read the news', cap4h: 'Who this affects',
@@ -134,13 +182,32 @@ export const strings = {
     answerReady: 'Answer ready',
     demoNote: 'Demo: scripted replies and a local sample, not a real backtest.',
     threadLabel: 'Conversation',
+    thinking: 'Thinking',
+    working: 'Using a tool',
+    answering: 'Writing',
+    toolsUnit: 'tools',
+    reasoning: 'Reasoning',
+    failed: 'This run failed',
+    cancelled: 'Stopped',
+    runTitle: 'Backtest result',
+    modelLabel: 'Model',
+    connected: 'Local agent connected',
+    offline: 'Local agent offline',
+    noAnswer: 'This run ended without an answer.',
+    history: 'Session history',
+    metricReturn: 'Total return',
+    metricAnnual: 'Annual',
+    metricSharpe: 'Sharpe',
+    metricDrawdown: 'Max drawdown',
+    metricWin: 'Win rate',
+    metricTrades: 'Trades',
     addWatch: 'Add to watchlist',
     addedWatch: 'In watchlist',
     saveStrategy: 'Save as strategy',
     savedStrategy: 'Saved',
     sources: 'Sources',
     runs: 'History',
-    disclaimer: 'Demo data. Not investment advice.',
+    disclaimer: 'Research only. Not investment advice.',
     close: 'Close',
     presetValue: 'Value',
     presetValuePrompt: 'Screen for low valuation: modest P/E and low debt.',
@@ -171,6 +238,9 @@ export const strings = {
     capTitle: 'ما أستطيع فعله',
     reviewLink: 'افتح مراجعة اليوم',
     cap1t: 'ابحث عن أسهم', cap1h: 'جملة واحدة تكفي',
+    cap2Prompt: 'اشرح لماذا تحرك سهم أرامكو اليوم وما الذي يجب متابعته.',
+    cap3Prompt: 'قارن أرامكو وسابك من حيث التقييم والمخاطر.',
+    cap4Prompt: 'اقرأ آخر أخبار أرامكو وقل لي من يتأثر بها.',
     cap2t: 'اشرح سهمًا', cap2h: 'لماذا تحرك',
     cap3t: 'قارن بين سهمين', cap3h: 'أيهما أفضل في القطاع',
     cap4t: 'اقرأ الخبر', cap4h: 'من يتأثر به',
@@ -184,13 +254,32 @@ export const strings = {
     answerReady: 'اكتمل الرد',
     demoNote: 'عرض: ردود ثابتة وعينة محلية، وليس اختبارًا تاريخيًا حقيقيًا.',
     threadLabel: 'المحادثة',
+    thinking: 'يفكّر',
+    working: 'يستخدم أداة',
+    answering: 'يكتب',
+    toolsUnit: 'أدوات',
+    reasoning: 'مسار التفكير',
+    failed: 'فشل هذا التشغيل',
+    cancelled: 'أُوقف',
+    runTitle: 'نتيجة الاختبار',
+    modelLabel: 'النموذج',
+    connected: 'الوكيل المحلي متصل',
+    offline: 'الوكيل المحلي غير متصل',
+    noAnswer: 'انتهى التشغيل دون إجابة.',
+    history: 'سجل الجلسات',
+    metricReturn: 'العائد الكلي',
+    metricAnnual: 'السنوي',
+    metricSharpe: 'شارب',
+    metricDrawdown: 'أقصى تراجع',
+    metricWin: 'نسبة الفوز',
+    metricTrades: 'الصفقات',
     addWatch: 'إضافة إلى المتابعة',
     addedWatch: 'في المتابعة',
     saveStrategy: 'حفظ كخطة',
     savedStrategy: 'تم الحفظ',
     sources: 'المصادر',
     runs: 'السجل',
-    disclaimer: 'بيانات عرض، وليست نصيحة استثمارية.',
+    disclaimer: 'للبحث فقط، وليست نصيحة استثمارية.',
     close: 'إغلاق',
     presetValue: 'قيمة منخفضة',
     presetValuePrompt: 'رشّح لي بالقيمة المنخفضة: مكرر ربحية منخفض ودين محدود.',

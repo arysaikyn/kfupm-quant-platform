@@ -16,6 +16,7 @@ The loop is the product. A list of names is not.
 - **Research environment.** The agent writes the spec.
 - **Backtest.** Costs, rebalancing, drawdown, turnover.
 - **Sharia screen.** Explicit rules, applied before ranking.
+- **AI backend.** Vibe-Trading (MIT) agent through a local proxy; its tools and backtests are real, while Saudi/Sharia data remains ours to build.
 
 ## Why it wins
 

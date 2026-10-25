@@ -1,65 +1,57 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
-import { fmtPct, useI18n, useStrings } from '../../i18n'
-import { fmtDate } from '../../i18n/format'
-import type { Lang } from '../../i18n'
+import { Skeleton } from '../../components/states'
+import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import { news, quotes, sectors, strategies } from '../../data/mock'
 import { membersChange, membersOf } from '../../data/membership'
-import { applyRules, presetRules } from '../screener/rules'
 import { useOnline } from '../../lib/useOnline'
 import { useKeyboardInset } from '../../lib/useKeyboardInset'
-import { strings } from './strings'
-import { canned, followUps } from './replies'
-import type { Reply } from './replies'
-import { AssistantMessage, ErrorRow, TypingRow, UserBubble } from './messages'
-import { STREAM_MS } from './timeline'
-import { clearThread, loadThread, nextId, saveThread } from './thread'
+import { nowMs } from '../../lib/now'
+import { AiApiError, aiApi, eventsUrl } from '../../api/ai'
+import type { RunPreview } from '../../api/ai'
+import { AgentMarkdown } from './Markdown'
+import { ThinkingPanel } from './ThinkingPanel'
+import { RunCard } from './RunCard'
+import { mergeChips, sameChip, toneOf } from './chat'
+import type { CtxRef } from './chat'
 import { takeIntake } from './intake'
-import { mergeChips, sameChip, tokenize, toneOf } from './chat'
-import type { Artifact, CtxRef, Msg } from './chat'
-
-const INITIAL_CHIPS: CtxRef[] = [
-  { kind: 'quote', symbol: '2222' },
-  { kind: 'sector', id: 'energy' },
-]
+import { messagesFromHistory, reduceAgentEvent } from './remote'
+import type { ChatMessage, CompletedTurn, LiveTurn } from './remote'
+import { strings } from './strings'
 
 const MAX_CHIPS = 6
 const COMPOSER_MIN = 56
 const COMPOSER_MAX = 132
+const SESSION_KEY = 'app.ai.session'
+const STREAM_EVENTS = [
+  'attempt.created',
+  'attempt.started',
+  'attempt.completed',
+  'attempt.failed',
+  'attempt.cancelled',
+  'text_delta',
+  'reasoning_delta',
+  'tool_call',
+  'tool_result',
+  'llm_waiting',
+  'grounding_status',
+  'done',
+  'heartbeat',
+] as const
 
-/* Composer sits above the tab bar and above the lifted centre tab.
-   Bar top is 72px up; its raised AI icon reaches another 17px. 40px of air
-   leaves the composer clear of that icon at 390x844. */
 const BAR_OFFSET =
   'calc(env(safe-area-inset-bottom) + var(--tabbar-h) + var(--tabbar-gap) + 40px)'
-/* Space under the last message so it clears the composer, not just the tab bar. */
 const TAIL_SPACE =
   'calc(env(safe-area-inset-bottom) + var(--tabbar-h) + var(--tabbar-gap) + 112px)'
 
-function pickReply(lang: Lang, turn: number): Reply {
-  const scripted = canned[lang]
-  if (turn < scripted.length) return scripted[turn]
-  const pool = followUps[lang]
-  return pool[(turn - scripted.length) % pool.length]
-}
-
 const CAPS = [
-  { t: 'cap1t', h: 'cap1h' },
-  { t: 'cap2t', h: 'cap2h' },
-  { t: 'cap3t', h: 'cap3h' },
-  { t: 'cap4t', h: 'cap4h' },
-  { t: 'cap5t', h: 'cap5h' },
-  { t: 'cap6t', h: 'cap6h' },
-] as const
-
-const PRESETS = [
-  { label: 'presetValue', prompt: 'presetValuePrompt' },
-  { label: 'presetDividend', prompt: 'presetDividendPrompt' },
-  { label: 'presetSharia', prompt: 'presetShariaPrompt' },
-  { label: 'presetMomentum', prompt: 'presetMomentumPrompt' },
+  { t: 'cap1t', h: 'cap1h', prompt: 'presetValuePrompt' },
+  { t: 'cap2t', h: 'cap2h', prompt: 'cap2Prompt' },
+  { t: 'cap3t', h: 'cap3h', prompt: 'cap3Prompt' },
+  { t: 'cap4t', h: 'cap4h', prompt: 'cap4Prompt' },
 ] as const
 
 const ICON_PATHS = [
@@ -67,8 +59,6 @@ const ICON_PATHS = [
   'M12 5v14M5 12h14',
   'M7 8h7a4 4 0 010 8H7zM4 5l3 3M4 19l3-3',
   'M5 6h14M5 12h9M5 18h12',
-  'M4 18V9m5 9V5m5 13v-6m5 6V8',
-  'M12 4l7 3.5v5c0 4-3 6.6-7 7.5-4-.9-7-3.5-7-7.5v-5z',
 ]
 const CAP_ICONS = ICON_PATHS.map((d) => (
   <svg key={d} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -78,7 +68,7 @@ const CAP_ICONS = ICON_PATHS.map((d) => (
 
 type ChipView = { label: string; sub: string; change: number | null }
 
-function chipView(ref: CtxRef, lang: Lang, sectorLabel: string): ChipView {
+function chipView(ref: CtxRef, lang: 'zh' | 'en' | 'ar', sectorLabel: string): ChipView {
   if (ref.kind === 'quote') {
     const quote = quotes.find((q) => q.symbol === ref.symbol)
     return quote
@@ -87,11 +77,10 @@ function chipView(ref: CtxRef, lang: Lang, sectorLabel: string): ChipView {
   }
   if (ref.kind === 'sector') {
     const sector = sectors.find((s) => s.id === ref.id)
-    const membership = sector ? membersOf(sector.id) : []
     return {
       label: sector?.name[lang] ?? ref.id,
       sub: sectorLabel,
-      change: membership.length > 0 ? membersChange(ref.id, '1d') : null,
+      change: sector && membersOf(sector.id).length > 0 ? membersChange(ref.id, '1d') : null,
     }
   }
   if (ref.kind === 'news') {
@@ -102,50 +91,289 @@ function chipView(ref: CtxRef, lang: Lang, sectorLabel: string): ChipView {
   return { label: strategy?.name[lang] ?? ref.id, sub: strategy?.tags.join(' · ') ?? '', change: null }
 }
 
+/** Vibe-Trading takes a prompt, not attachments; the selected objects become a preamble. */
+function contextBlock(refs: CtxRef[], lang: 'zh' | 'en' | 'ar'): string {
+  if (refs.length === 0) return ''
+  const lines = refs.flatMap((ref) => {
+    if (ref.kind === 'quote') {
+      const q = quotes.find((x) => x.symbol === ref.symbol)
+      return q ? [`- Stock ${q.symbol} ${q.name[lang]} (${q.price} ${q.currency}, ${fmtPct(q.change, lang)})`] : []
+    }
+    if (ref.kind === 'sector') {
+      const sector = sectors.find((x) => x.id === ref.id)
+      return sector ? [`- Sector ${ref.id} ${sector.name[lang]}`] : []
+    }
+    if (ref.kind === 'news') {
+      const item = news.find((x) => x.id === ref.id)
+      return item ? [`- News ${item.id}: ${item.title[lang]} (${item.source})`] : []
+    }
+    const strategy = strategies.find((x) => x.id === ref.id)
+    return strategy ? [`- Strategy ${strategy.id}: ${strategy.name[lang]}`] : []
+  })
+  return `App context selected by the user:\n${lines.join('\n')}\n\n`
+}
+
+function statusText(live: LiveTurn, s: (k: 'thinking' | 'working' | 'answering') => string): string {
+  return live.status === 'thinking' ? s('thinking') : live.status === 'working' ? s('working') : s('answering')
+}
+
 export default function AiPage() {
   const { t, lang } = useI18n()
   const s = useStrings(strings)
   const online = useOnline()
   const keyboardInset = useKeyboardInset()
-
-  const restored = useRef(loadThread())
-  const [msgs, setMsgs] = useState<Msg[]>(() => restored.current?.msgs ?? [])
-  const [input, setInput] = useState('')
-  const [chips, setChips] = useState<CtxRef[]>(() => restored.current?.chips ?? INITIAL_CHIPS)
-  const [sheet, setSheet] = useState(false)
-  const [typing, setTyping] = useState(false)
+  const [params, setParams] = useSearchParams()
+  const sessionParam = params.get('session')
+  const [sessionId, setSessionId] = useState<string | null>(
+    () => sessionParam ?? localStorage.getItem(SESSION_KEY),
+  )
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [live, setLive] = useState<LiveTurn | null>(null)
+  const [loading, setLoading] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [copiedId, setCopiedId] = useState<number | null>(null)
+  const [connected, setConnected] = useState<'connecting' | 'online' | 'offline'>('connecting')
+  const [error, setError] = useState<string | null>(null)
+  const [input, setInput] = useState('')
+  const [chips, setChips] = useState<CtxRef[]>([])
+  const [sheet, setSheet] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [now, setNow] = useState(() => Date.now())
+  const liveActive = live !== null
 
-  const seq = useRef(nextId(restored.current?.msgs ?? []))
-  const turn = useRef(restored.current?.turn ?? 0)
-  const shownRef = useRef(0)
-  const timeoutRef = useRef(0)
-  const intervalRef = useRef(0)
-  const busyRef = useRef(false)
-  const activeId = useRef(0)
+  const liveRef = useRef<LiveTurn | null>(null)
+  const messagesRef = useRef<ChatMessage[]>([])
+  const finalized = useRef(new Set<string>())
+  const previewFetched = useRef(new Set<string>())
+  const intakeDone = useRef(false)
+  const assistantBaseline = useRef(0)
+  const stoppedAt = useRef(0)
+  const streamReady = useRef<{
+    sid: string | null
+    ready: boolean
+    waiters: Array<() => void>
+  }>({ sid: null, ready: false, waiters: [] })
   const endRef = useRef<HTMLDivElement | null>(null)
   const composerRef = useRef<HTMLTextAreaElement | null>(null)
-  const chipsRef = useRef(chips)
-  const msgsRef = useRef(msgs)
+
+  // Health is a hint, not a gate: messages still load if the check races.
+  useEffect(() => {
+    let cancelled = false
+    aiApi
+      .health()
+      .then(() => {
+        if (!cancelled) setConnected('online')
+      })
+      .catch(() => {
+        if (!cancelled) setConnected('offline')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
-    chipsRef.current = chips
-  }, [chips])
+    if (sessionId) localStorage.setItem(SESSION_KEY, sessionId)
+    else localStorage.removeItem(SESSION_KEY)
+  }, [sessionId])
 
   useEffect(() => {
-    msgsRef.current = msgs
-  }, [msgs])
+    liveRef.current = live
+  }, [live])
 
-  useEffect(
-    () => () => {
-      window.clearTimeout(timeoutRef.current)
-      window.clearInterval(intervalRef.current)
-    },
-    [],
-  )
+  useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
 
-  // Autosize the composer between one and four lines.
+  // Keep the URL in sync so a reload/history link opens the same session.
+  useEffect(() => {
+    if (sessionParam === sessionId) return
+    const next = new URLSearchParams(params)
+    if (sessionId) next.set('session', sessionId)
+    else next.delete('session')
+    setParams(next, { replace: true })
+  }, [sessionId, sessionParam, params, setParams])
+
+  useEffect(() => {
+    if (!sessionId) return
+    let cancelled = false
+    // External state: the session body comes from the server.
+    // oxlint-disable-next-line react/set-state-in-effect
+    setLoading(true)
+    setError(null)
+    aiApi
+      .messages(sessionId)
+      .then((items) => {
+        if (cancelled) return
+        const mapped = messagesFromHistory(items)
+        messagesRef.current = mapped
+        setMessages(mapped)
+        assistantBaseline.current = mapped.filter((m) => m.role === 'assistant').length
+        if (mapped[mapped.length - 1]?.role === 'user') setBusy(true)
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return
+        if (err instanceof AiApiError && err.status === 404) {
+          setSessionId(null)
+          return
+        }
+        setError(err instanceof Error ? err.message : 'Could not load this session.')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [sessionId])
+
+  // Live event stream. EventSource reconnects on its own; the server replays
+  // the active attempt so a reload does not lose the answer.
+  useEffect(() => {
+    if (!sessionId) return
+    streamReady.current.sid = sessionId
+    streamReady.current.ready = false
+    const source = new EventSource(eventsUrl(sessionId))
+    const seen = new Set<string>()
+
+    const finalize = (completed: CompletedTurn | null) => {
+      if (!completed) return
+      if (finalized.current.has(completed.attemptId)) return
+      finalized.current.add(completed.attemptId)
+      if (completed.status === 'cancelled' && nowMs() - stoppedAt.current < 10_000) return
+      const last = messagesRef.current[messagesRef.current.length - 1]
+      if (completed.text && last?.role === 'assistant' && last.text === completed.text) {
+        setBusy(false)
+        setLive(null)
+        liveRef.current = null
+        return
+      }
+      const id = completed.attemptId || `attempt-${Date.now()}`
+      const text = completed.text || ''
+      setMessages((prev) => [
+        ...prev,
+        {
+          id,
+          role: 'assistant',
+          text: text || s('noAnswer'),
+          at: nowMs(),
+          reasoning: completed.reasoning,
+          tools: completed.tools,
+          status: completed.status,
+          elapsedMs: completed.elapsedMs,
+          model: completed.model,
+          runId: completed.runId,
+          error: completed.error,
+        },
+      ])
+      setBusy(false)
+      setLive(null)
+      liveRef.current = null
+      if (completed.runId) {
+        aiApi
+          .runPreview(completed.runId)
+          .then((run: RunPreview) => {
+            setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, run } : m)))
+          })
+          .catch(() => {})
+      }
+    }
+
+    const handle = (type: string) => (event: MessageEvent) => {
+      if (event.lastEventId) {
+        if (seen.has(event.lastEventId)) return
+        seen.add(event.lastEventId)
+        if (seen.size > 500) seen.clear()
+      }
+      let data: Record<string, unknown> = {}
+      try {
+        data = JSON.parse(event.data) as Record<string, unknown>
+      } catch {
+        data = { raw: event.data }
+      }
+      const outcome = reduceAgentEvent(liveRef.current, type, data)
+      if (outcome.live !== liveRef.current) {
+        liveRef.current = outcome.live
+        setLive(outcome.live)
+        setBusy(Boolean(outcome.live))
+      }
+      if (outcome.completed) finalize(outcome.completed)
+      if (type === 'attempt.started' || type === 'attempt.created') setBusy(true)
+      if (type === 'done') setBusy(false)
+    }
+
+    for (const type of STREAM_EVENTS) source.addEventListener(type, handle(type))
+    source.onopen = () => {
+      setConnected('online')
+      if (streamReady.current.sid === sessionId) {
+        streamReady.current.ready = true
+        streamReady.current.waiters.forEach((resolve) => resolve())
+        streamReady.current.waiters = []
+      }
+    }
+    source.onerror = () => setConnected('offline')
+
+    return () => source.close()
+  }, [sessionId, s])
+
+  // Historical turns store run_id in metadata; hydrate their cards once.
+  useEffect(() => {
+    for (const message of messages) {
+      if (message.role !== 'assistant' || !message.runId || message.run) continue
+      if (previewFetched.current.has(message.runId)) continue
+      previewFetched.current.add(message.runId)
+      aiApi
+        .runPreview(message.runId)
+        .then((run) => {
+          setMessages((prev) =>
+            prev.map((item) => (item.runId === message.runId ? { ...item, run } : item)),
+          )
+        })
+        .catch(() => {})
+    }
+  }, [messages])
+
+  // A missed SSE window must not strand a finished answer. The server has the
+  // durable message; poll only while a turn is busy, and stop at the first
+  // assistant message beyond the pre-send baseline.
+  useEffect(() => {
+    if (!busy || !sessionId) return
+    let cancelled = false
+    const started = Date.now()
+    const timer = window.setInterval(() => {
+      if (Date.now() - started > 120_000) {
+        window.clearInterval(timer)
+        setBusy(false)
+        setError('The agent did not finish within two minutes.')
+        return
+      }
+      aiApi
+        .messages(sessionId)
+        .then((items) => {
+          if (cancelled) return
+          const mapped = messagesFromHistory(items)
+          const assistants = mapped.filter((m) => m.role === 'assistant').length
+          if (assistants > assistantBaseline.current) {
+            messagesRef.current = mapped
+            setMessages(mapped)
+            setLive(null)
+            liveRef.current = null
+            setBusy(false)
+          }
+        })
+        .catch(() => {})
+    }, 2500)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [busy, sessionId])
+
+  useEffect(() => {
+    if (!liveActive) return
+    const timer = window.setInterval(() => setNow(Date.now()), 600)
+    return () => window.clearInterval(timer)
+  }, [liveActive])
+
   useEffect(() => {
     const el = composerRef.current
     if (!el) return
@@ -153,192 +381,145 @@ export default function AiPage() {
     el.style.height = `${Math.min(COMPOSER_MAX, Math.max(COMPOSER_MIN - 20, el.scrollHeight))}px`
   }, [input])
 
-  // Persist only settled threads: writing every streamed token would thrash.
+  const liveTextLength = live?.text.length ?? 0
+  const liveToolCount = live?.tools.length ?? 0
   useEffect(() => {
-    if (busy) return
-    saveThread({ version: 2, msgs, chips, turn: turn.current })
-  }, [msgs, chips, busy])
-
-  // Context handed over by another screen. The timer is deliberately not
-  // cleared: StrictMode's simulated unmount would otherwise eat the question.
-  const sendRef = useRef(send)
-
-  useEffect(() => {
-    sendRef.current = send
-  })
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const intake = takeIntake()
-      if (!intake) return
-      if (intake.chips.length > 0) {
-        const next = mergeChips(chipsRef.current, intake.chips, MAX_CHIPS)
-        chipsRef.current = next
-        setChips(next)
-      }
-      if (intake.prompt.trim()) sendRef.current(intake.prompt, intake.chips)
-    }, 0)
-    return () => void timer
-  }, [])
-
-  const last = msgs[msgs.length - 1]
-  const lastShown = last && last.role === 'assistant' ? last.shown : 0
-  const completed = msgs.filter(
-    (m) => m.role === 'assistant' && m.shown >= m.total,
-  ).length
-
-  useEffect(() => {
-    // An empty thread opens at the top: the title is the first thing the
-    // screen says, and the tail spacer would otherwise scroll it away.
-    if (msgs.length === 0) return
+    if (messages.length === 0 && !liveActive) return
     const el = endRef.current
     if (!el) return
     const doc = document.documentElement
     const nearBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 260
     if (!nearBottom) return
     el.scrollIntoView({ block: 'end' })
-  }, [msgs.length, typing, lastShown])
+  }, [messages.length, liveActive, liveTextLength, liveToolCount])
 
-  function send(raw: string, context: CtxRef[] = []) {
-    const value = raw.trim()
-    if (!value || busyRef.current) return
-
-    if (!online) {
-      const errorId = ++seq.current
-      setMsgs((prev) => [
-        ...prev,
-        { id: errorId, role: 'error', text: s('offlineSend'), at: Date.now() } satisfies Msg,
-      ])
-      return
+  // Long-press handoff: prefill the question and context, never auto-spend tokens.
+  useEffect(() => {
+    if (intakeDone.current) return
+    intakeDone.current = true
+    const intake = takeIntake()
+    if (!intake) return
+    if (intake.chips.length > 0) {
+      // oxlint-disable-next-line react/set-state-in-effect
+      setChips((prev) => mergeChips(prev, intake.chips, MAX_CHIPS))
     }
+    if (intake.prompt) {
+      setInput(intake.prompt)
+      window.setTimeout(() => composerRef.current?.focus(), 0)
+    }
+  }, [])
 
-    const nextChips = mergeChips(chipsRef.current, context, MAX_CHIPS)
-    chipsRef.current = nextChips
-    setChips(nextChips)
+  function waitForStream(sid: string): Promise<void> {
+    if (streamReady.current.sid === sid && streamReady.current.ready) return Promise.resolve()
+    return new Promise((resolve) => {
+      const done = () => resolve()
+      streamReady.current.waiters.push(done)
+      window.setTimeout(done, 2500)
+    })
+  }
 
-    busyRef.current = true
-    setBusy(true)
+  async function ensureSession(first: string): Promise<string | null> {
+    if (sessionId) return sessionId
+    try {
+      const title = first.replace(/\s+/g, ' ').trim().slice(0, 60) || 'New session'
+      const created = await aiApi.createSession(title)
+      setSessionId(created.session_id)
+      return created.session_id
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not create a session.')
+      return null
+    }
+  }
+
+  async function send(raw: string) {
+    const text = raw.trim()
+    if (!text || busy) return
+    setError(null)
     setInput('')
     setSheet(false)
-    const userId = ++seq.current
-    setMsgs((prev) => [
-      ...prev,
-      { id: userId, role: 'user', text: value, at: Date.now() } satisfies Msg,
-    ])
-    setTyping(true)
-
-    const reply = pickReply(lang, turn.current)
-    turn.current += 1
-    const paras = reply.paragraphs.map((p) => tokenize(p, lang))
-    const total = paras.reduce((n, p) => n + p.length, 0)
-    const evidenceSymbol =
-      context.find((c) => c.kind === 'quote')?.symbol ??
-      nextChips.find((c) => c.kind === 'quote')?.symbol
-    const artifact: Artifact | undefined = reply.artifact
-      ? {
-          ...reply.artifact,
-          symbols: applyRules(quotes, presetRules(reply.artifact.preset)).map((q) => q.symbol),
-        }
-      : undefined
-
-    timeoutRef.current = window.setTimeout(() => {
-      setTyping(false)
-      const id = ++seq.current
-      activeId.current = id
-      setMsgs((prev) => [
-        ...prev,
-        {
-          id,
-          role: 'assistant',
-          paras,
-          sources: reply.sources,
-          artifact,
-          total,
-          shown: 0,
-          at: Date.now(),
-          evidenceSymbol,
-        } satisfies Msg,
-      ])
-
-      shownRef.current = 0
-      intervalRef.current = window.setInterval(() => {
-        shownRef.current += 1
-        const shown = shownRef.current
-        setMsgs((prev) =>
-          prev.map((m) => (m.id === id && m.role === 'assistant' ? { ...m, shown } : m)),
-        )
-        if (shown >= total) {
-          window.clearInterval(intervalRef.current)
-          intervalRef.current = 0
-          busyRef.current = false
-          setBusy(false)
-        }
-      }, STREAM_MS)
-    }, 700)
+    setBusy(true)
+    const sid = await ensureSession(text)
+    if (!sid) {
+      setBusy(false)
+      return
+    }
+    assistantBaseline.current = messages.filter((m) => m.role === 'assistant').length
+    await waitForStream(sid)
+    const user: ChatMessage = {
+      id: `local-${crypto.randomUUID()}`,
+      role: 'user',
+      text,
+      at: nowMs(),
+    }
+    setMessages((prev) => [...prev, user])
+    try {
+      await aiApi.sendMessage(sid, `${contextBlock(chips, lang)}${text}`)
+    } catch (err) {
+      setBusy(false)
+      setError(err instanceof Error ? err.message : 'The agent did not accept the message.')
+    }
   }
 
-  function stop() {
-    window.clearTimeout(timeoutRef.current)
-    window.clearInterval(intervalRef.current)
-    if (activeId.current) {
-      const id = activeId.current
-      setMsgs((prev) =>
-        prev.map((m) =>
-          m.id === id && m.role === 'assistant' ? { ...m, shown: m.total } : m,
-        ),
-      )
+  async function stop() {
+    if (!sessionId) return
+    // The SSE connection is separate from this fetch: stamp first so a
+    // cancelled frame cannot beat the local marker and create two bubbles.
+    stoppedAt.current = nowMs()
+    try {
+      await aiApi.cancel(sessionId)
+    } catch {
+      // The run may have completed between the tap and the request.
     }
-    busyRef.current = false
+    setLive(null)
+    liveRef.current = null
     setBusy(false)
-    setTyping(false)
-  }
-
-  function retry() {
-    const source = msgsRef.current
-    let index = -1
-    for (let i = source.length - 1; i >= 0; i -= 1) {
-      if (source[i].role === 'user') {
-        index = i
-        break
-      }
-    }
-    if (index < 0) return
-    const lastUser = source[index]
-    if (lastUser.role !== 'user') return
-    stop()
-    setMsgs(source.slice(0, index))
-    send(lastUser.text)
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `stopped-${crypto.randomUUID()}`,
+        role: 'assistant',
+        text: '',
+        at: nowMs(),
+        status: 'cancelled',
+      },
+    ])
   }
 
   function newChat() {
-    stop()
-    clearThread()
-    seq.current = 0
-    turn.current = 0
-    activeId.current = 0
-    setMsgs([])
-    setChips(INITIAL_CHIPS)
-    chipsRef.current = INITIAL_CHIPS
+    if (sessionId && busy) void aiApi.cancel(sessionId).catch(() => {})
+    setSessionId(null)
+    setMessages([])
+    setLive(null)
+    setBusy(false)
+    setError(null)
     setInput('')
+    setChips([])
     setSheet(false)
+    setCopiedId(null)
+    liveRef.current = null
+    finalized.current.clear()
     composerRef.current?.focus()
   }
 
-  function addChip(ref: CtxRef) {
-    const next = mergeChips(chipsRef.current, [ref], MAX_CHIPS)
-    chipsRef.current = next
-    setChips(next)
-    setSheet(false)
-  }
-
-  async function copy(text: string, id: number) {
+  async function copy(text: string, id: string) {
     try {
       await navigator.clipboard.writeText(text)
       setCopiedId(id)
       window.setTimeout(() => setCopiedId((current) => (current === id ? null : current)), 1600)
     } catch {
-      // Clipboard permission is optional; the answer remains selectable.
+      // Clipboard permission is optional.
     }
+  }
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    void send(input)
+  }
+
+  function onComposerKey(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing) return
+    event.preventDefault()
+    void send(input)
   }
 
   const chipOptions = [
@@ -372,17 +553,6 @@ export default function AiPage() {
     })),
   ]
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    send(input)
-  }
-
-  function onComposerKey(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing) return
-    event.preventDefault()
-    send(input)
-  }
-
   return (
     <>
       <Screen
@@ -391,9 +561,9 @@ export default function AiPage() {
           <div className="flex items-center gap-2">
             <Link
               to="/runs"
-              className="flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-fg transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
-              {s('runs')}
+              {s('history')}
             </Link>
             <button
               type="button"
@@ -408,9 +578,23 @@ export default function AiPage() {
           </div>
         }
       >
-        <p className="mt-1 text-[11px] leading-snug text-muted">{s('demoNote')}</p>
+        <div className="-mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              connected === 'online' ? 'bg-up' : connected === 'offline' ? 'bg-down' : 'bg-muted'
+            }`}
+            aria-hidden
+          />
+          <span>
+            {connected === 'online'
+              ? s('connected')
+              : connected === 'offline'
+                ? s('offline')
+                : s('thinking')}
+          </span>
+          {!online && <span>· {t('common.offline')}</span>}
+        </div>
 
-        {/* context tray */}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {chips.map((ref) => {
             const view = chipView(ref, lang, s('sectorLabel'))
@@ -420,20 +604,12 @@ export default function AiPage() {
                 className="inline-flex h-11 items-center rounded-full bg-surface ps-3 pe-0.5"
               >
                 <span className="max-w-[180px] truncate text-[12px]">{view.label}</span>
-                <span
-                  className={`num ms-2 text-[11px] ${
-                    view.change === null ? 'text-muted' : toneOf(view.change)
-                  }`}
-                >
+                <span className={`num ms-2 text-[11px] ${view.change === null ? 'text-muted' : toneOf(view.change)}`}>
                   {view.change === null ? '—' : fmtPct(view.change, lang)}
                 </span>
                 <button
                   type="button"
-                  onClick={() => {
-                    const next = chipsRef.current.filter((x) => !sameChip(x, ref))
-                    chipsRef.current = next
-                    setChips(next)
-                  }}
+                  onClick={() => setChips((prev) => prev.filter((x) => !sameChip(x, ref)))}
                   aria-label={`${s('remove')} ${view.label}`}
                   className="ms-0.5 flex h-11 w-11 items-center justify-center rounded-full text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                 >
@@ -444,12 +620,10 @@ export default function AiPage() {
               </span>
             )
           })}
-
           {chips.length < MAX_CHIPS && (
             <button
               type="button"
-              onClick={() => setSheet((v) => !v)}
-              aria-expanded={sheet}
+              onClick={() => setSheet(true)}
               aria-haspopup="dialog"
               className="inline-flex h-11 items-center gap-1 rounded-full px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
@@ -461,101 +635,129 @@ export default function AiPage() {
           )}
         </div>
 
-        {/* thread */}
+        {error && (
+          <div role="alert" className="panel mt-4 border-danger/40 p-3">
+            <p className="text-[12px]" style={{ color: 'var(--color-danger)' }}>
+              {error}
+            </p>
+            <button
+              type="button"
+              onClick={() => setError(null)}
+              className="mt-1 min-h-11 text-[11px] text-muted underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            >
+              {t('common.close')}
+            </button>
+          </div>
+        )}
+
         <div className="mt-6 space-y-8" role="log" aria-label={s('threadLabel')}>
-          {msgs.length === 0 && (
+          {loading && <Skeleton rows={3} />}
+
+          {!loading && messages.length === 0 && !live && (
             <div className="pt-1">
-              <div className="flex flex-wrap gap-2">
-                {PRESETS.map((preset) => (
-                  <button
-                    key={preset.label}
-                    type="button"
-                    disabled={busy}
-                    onClick={() => send(s(preset.prompt))}
-                    className="inline-flex h-11 items-center rounded-full bg-surface px-3 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-60"
-                  >
-                    {s(preset.label)}
-                  </button>
-                ))}
-              </div>
+              <p className="text-[15px] leading-relaxed text-muted">{s('promise')}</p>
               <p className="t-kicker mt-8 text-muted">{s('capTitle')}</p>
               <ul className="mt-2 grid grid-cols-2 border-t border-line">
-                {CAPS.map((c, i) => (
-                  <li key={c.t} className="border-b border-line odd:border-e">
+                {CAPS.map((cap, i) => (
+                  <li key={cap.t} className="border-b border-line odd:border-e">
                     <button
                       type="button"
                       disabled={busy}
-                      onClick={() => send(s(c.t))}
-                      className="flex h-full min-h-[72px] w-full items-start gap-2 py-3 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/10 disabled:opacity-60 odd:pe-3 even:ps-3"
+                      onClick={() => void send(s(cap.prompt))}
+                      className="flex h-full min-h-[84px] w-full items-start gap-2 py-3 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/10 disabled:opacity-60 odd:pe-3 even:ps-3"
                     >
                       <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center text-muted">
                         {CAP_ICONS[i]}
                       </span>
                       <span className="min-w-0">
-                        <span className="block text-[14px] font-medium leading-tight">{s(c.t)}</span>
-                        <span className="mt-1 block text-[11px] leading-snug text-muted">
-                          {s(c.h)}
-                        </span>
+                        <span className="block text-[14px] font-medium leading-tight">{s(cap.t)}</span>
+                        <span className="mt-1 block text-[11px] leading-snug text-muted">{s(cap.h)}</span>
                       </span>
                     </button>
                   </li>
                 ))}
               </ul>
-              <Link
-                to="/review"
-                className="mt-4 flex min-h-11 items-center justify-between gap-3 border-t border-line pt-3 text-[13px] transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
-              >
-                {s('reviewLink')}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)] text-muted" aria-hidden="true">
-                  <path d="M9 6l6 6-6 6" />
-                </svg>
-              </Link>
-
               <p className="mt-6 text-[11px] text-muted">{s('disclaimer')}</p>
             </div>
           )}
 
-          {msgs.map((m, index) => {
-            const previous = msgs[index - 1]
+          {messages.map((message, index) => {
+            const previous = messages[index - 1]
             const showDay =
-              !previous || new Date(previous.at).toDateString() !== new Date(m.at).toDateString()
+              !previous || new Date(previous.at).toDateString() !== new Date(message.at).toDateString()
             return (
-              <Fragment key={m.id}>
+              <Fragment key={message.id}>
                 {showDay && (
                   <p className="text-center text-[11px] leading-none text-muted">
-                    {fmtDate(m.at, lang, { weekday: 'short', month: 'short', day: 'numeric' })}
+                    {new Intl.DateTimeFormat(lang === 'ar' ? 'ar-u-nu-latn' : lang, {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                    }).format(new Date(message.at))}
                   </p>
                 )}
-                {m.role === 'user' ? (
-                  <UserBubble text={m.text} />
-                ) : m.role === 'error' ? (
-                  <ErrorRow text={m.text} onRetry={retry} retryLabel={t('common.retry')} />
+                {message.role === 'user' ? (
+                  <div className="flex justify-end">
+                    <div className="max-w-[85%] rounded-2xl bg-surface px-4 py-2.5">
+                      <p dir="auto" className="text-start text-[14px] leading-relaxed break-words whitespace-pre-wrap">
+                        {message.text}
+                      </p>
+                    </div>
+                  </div>
                 ) : (
-                  <AssistantMessage
-                    m={m}
-                    sourcesLabel={s('sources')}
-                    onCopy={() => copy(m.paras.map((p) => p.join('')).join('\n\n'), m.id)}
-                    copied={copiedId === m.id}
-                    copyLabel={copiedId === m.id ? t('common.copied') : t('common.copy')}
-                    onRetry={retry}
-                    retryLabel={t('common.retry')}
-                  />
+                  <div className="space-y-3">
+                    <ThinkingPanel message={message} now={now} />
+                    {message.text && <AgentMarkdown text={message.text} />}
+                    {message.run && <RunCard run={message.run} />}
+                    {message.status === 'cancelled' && !message.text && (
+                      <p className="text-[12px] text-muted">{s('cancelled')}</p>
+                    )}
+                    {message.status === 'failed' && message.error && (
+                      <p className="text-[12px]" style={{ color: 'var(--color-danger)' }}>
+                        {message.error}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted">
+                      {message.model && <span>{message.model}</span>}
+                      {message.elapsedMs != null && (
+                        <span className="num">{fmtNum(message.elapsedMs / 1000, lang, 1)}s</span>
+                      )}
+                      {message.text && (
+                        <button
+                          type="button"
+                          onClick={() => void copy(message.text, message.id)}
+                          className="min-h-11 rounded-full px-2 text-[11px] text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                        >
+                          {copiedId === message.id ? t('common.copied') : t('common.copy')}
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 )}
               </Fragment>
             )
           })}
 
-          {typing && <TypingRow label={s('typing')} />}
-        </div>
-
-        <div aria-live="polite" className="sr-only">
-          {completed > 0 ? `${s('answerReady')} ${completed}` : ''}
+          {live && (
+            <div className="space-y-3">
+              <ThinkingPanel live={live} now={now} />
+              {live.text ? (
+                <div>
+                  <AgentMarkdown text={live.text} />
+                  <span aria-hidden className="ms-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-fg align-baseline motion-reduce:animate-none" />
+                </div>
+              ) : (
+                <p className="text-[13px] text-muted" role="status">
+                  {statusText(live, s)}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <div ref={endRef} aria-hidden style={{ height: TAIL_SPACE }} />
       </Screen>
 
-      {/* composer */}
       <div
         className="composer fixed z-40 glass has-[textarea:focus-visible]:outline-2 has-[textarea:focus-visible]:outline-offset-2 has-[textarea:focus-visible]:outline-fg"
         style={{
@@ -566,11 +768,11 @@ export default function AiPage() {
           minHeight: COMPOSER_MIN,
         }}
       >
-        <form onSubmit={submit} className="flex h-full items-end gap-2 ps-4 pe-1.5 py-1.5">
+        <form onSubmit={submit} className="flex h-full items-end gap-2 py-1.5 ps-4 pe-1.5">
           <textarea
             ref={composerRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(event) => setInput(event.target.value)}
             onKeyDown={onComposerKey}
             rows={1}
             placeholder={s('placeholder')}
@@ -583,7 +785,7 @@ export default function AiPage() {
           {busy ? (
             <button
               type="button"
-              onClick={stop}
+              onClick={() => void stop()}
               aria-label={t('common.stop')}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
@@ -641,18 +843,17 @@ export default function AiPage() {
             <li key={option.key}>
               <button
                 type="button"
-                onClick={() => addChip(option.ref)}
+                onClick={() => {
+                  setChips((prev) => mergeChips(prev, [option.ref], MAX_CHIPS))
+                  setSheet(false)
+                }}
                 className="flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-start focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px]">{option.view.label}</span>
                   <span className="block truncate text-[11px] text-muted">{option.view.sub}</span>
                 </span>
-                <span
-                  className={`num shrink-0 text-[12px] ${
-                    option.view.change === null ? 'text-muted' : toneOf(option.view.change)
-                  }`}
-                >
+                <span className={`num shrink-0 text-[12px] ${option.view.change === null ? 'text-muted' : toneOf(option.view.change)}`}>
                   {option.view.change === null ? '—' : fmtPct(option.view.change, lang)}
                 </span>
               </button>

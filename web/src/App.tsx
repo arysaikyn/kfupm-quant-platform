@@ -91,7 +91,6 @@ function Shell() {
   const online = useOnline()
   const [announcement, setAnnouncement] = useState('')
   const screenRef = useRef<HTMLDivElement>(null)
-  const scrollPositions = useRef(new Map<string, number>())
 
   // Warm the five tab chunks once the first screen is idle, so a tab tap
   // resolves from memory instead of waiting on a network round trip.
@@ -108,29 +107,10 @@ function Shell() {
     else setTimeout(warm, 1200)
   }, [])
 
-  // Each screen keeps its own offset. PUSH starts at the top; POP restores
-  // what the reader left, which the browser only does reliably after the lazy
-  // screen has laid out.
+  // PUSH starts at the top; POP leaves scroll restoration to the browser,
+  // which waits for the lazy screen to lay out before restoring.
   useEffect(() => {
-    const save = () => scrollPositions.current.set(pathname, window.scrollY)
-    window.addEventListener('scroll', save, { passive: true })
-    return () => {
-      save()
-      window.removeEventListener('scroll', save)
-    }
-  }, [pathname])
-
-  useEffect(() => {
-    if (navigationType === 'PUSH') {
-      window.scrollTo(0, 0)
-      return
-    }
-    const y = scrollPositions.current.get(pathname)
-    if (y === undefined) return
-    const frame = requestAnimationFrame(() =>
-      requestAnimationFrame(() => window.scrollTo(0, y)),
-    )
-    return () => cancelAnimationFrame(frame)
+    if (navigationType === 'PUSH') window.scrollTo(0, 0)
   }, [pathname, navigationType])
 
   // A short opacity ramp so tabs read as one surface changing, not two pages.

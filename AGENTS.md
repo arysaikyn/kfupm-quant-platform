@@ -11,11 +11,11 @@ Decision support only. No execution, broker, or stock advice.
 - The Sharia screen is a filter before ranking. `unknown` is not compliant.
 - One engine; market differences live in config.
 - `model/signals.json` is the only data contract for `web/`. Schema: `model/signals.schema.json`. Example: `model/signals.example.json`.
-- No secrets, raw vendor data, or generated output in git.
+- No secrets, raw vendor data, or generated output in git. The Vibe-Trading key stays in `backend/`, never in `web/`.
 
 ## Layout
 
-`agent/` question -> spec -> engine -> explanation. `data/` ingestion. `model/` factors, screens, backtest. `web/` UI. `docs/product.md` product and scope.
+`agent/` question -> spec -> engine -> explanation. `data/` ingestion. `model/` factors, screens, backtest. `web/` UI. `backend/` local AI proxy in front of Vibe-Trading. `docs/product.md` product and scope.
 
 Three writers. One owner per product directory; `docs/` shared. Only Arys merges to `main`.
 

@@ -1,5 +1,5 @@
 /* A deliberately small shell cache: warm start offline, never stale API data. */
-const VERSION = 'quant-v1'
+const VERSION = 'quant-v2'
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png']
 
 self.addEventListener('install', (event) => {
@@ -22,6 +22,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
+  // API and SSE are live data; never serve them from the shell cache.
+  if (url.pathname.startsWith('/api/')) return
 
   // Navigations always prefer the network so a deploy lands; the cached shell
   // is only the offline fallback.

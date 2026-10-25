@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { mergeChips, tokenize, visibleParas } from './chat'
+import { mergeChips } from './chat'
 import type { CtxRef } from './chat'
 import { setIntake, takeIntake } from './intake'
 
@@ -22,15 +22,6 @@ describe('chat helpers', () => {
     expect(mergeChips([], chips, 6)).toHaveLength(6)
   })
 
-  it('streams Chinese per character and English per word', () => {
-    expect(tokenize('你好', 'zh')).toEqual(['你', '好'])
-    expect(tokenize('two words', 'en')).toEqual(['two ', 'words'])
-  })
-
-  it('reveals only the streamed prefix', () => {
-    expect(visibleParas([['a', 'b'], ['c']], 2)).toEqual(['ab', ''])
-    expect(visibleParas([['a', 'b'], ['c']], 3)).toEqual(['ab', 'c'])
-  })
 })
 
 describe('intake', () => {

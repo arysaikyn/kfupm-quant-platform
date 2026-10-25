@@ -12,8 +12,7 @@ const APP_VERSION = '0.2.0'
  */
 const RESET_KEYS = [
   'app.user',
-  'app.ai.thread',
-  'app.ai.thread.v2',
+  'app.ai.session',
   'app.ai.intake',
   'alerts.v1',
   'screener.screens',
@@ -23,7 +22,7 @@ const RESET_KEYS = [
   'strategies.copied',
 ]
 
-const SESSION_KEYS = ['app.ai.thread', 'app.ai.thread.v2', 'app.ai.intake']
+const SESSION_KEYS = ['app.ai.intake']
 
 function isResetKey(key: string): boolean {
   if (RESET_KEYS.includes(key)) return true

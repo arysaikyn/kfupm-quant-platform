@@ -1,8 +1,9 @@
 # Quant Desk — web
 
-A plain-language screen that turns a sentence into editable rules, a local
-sample result, and a readable report. **This is a front-end demo.** All data is
-local (`src/data/mock.ts`); there is no API, backtest engine or vendor feed.
+A plain-language screen that turns a sentence into rules, a test and a
+readable result. The AI tab is backed by the local **Vibe-Trading** agent via
+`../backend`; the market and news screens still use local demo data
+(`src/data/mock.ts`).
 
 ## Run
 
@@ -18,7 +19,7 @@ npm run typecheck
 npm run build
 npm run design          # Hallmark sloplint, ratcheted by design-baseline.json
 npm run test            # unit/component tests (Vitest)
-npm run test:e2e        # route matrix (Playwright, system Chrome)
+npm run test:e2e        # route matrix + AI stream (Playwright, system Chrome)
 ```
 
 ## Routes
@@ -35,7 +36,8 @@ search, sector, watchlists, settings, and a real 404.
 - `src/components/` — shell primitives (`Screen`, `TabBar`, `Sheet`, …).
 - `src/i18n/` — typed zh/en/ar dictionaries, number/date/plural formatting.
 - `src/store/` — local-first state (`prefs`, `user`, `alerts`).
-- `src/data/` — mock universe and deterministic derived fundamentals.
+- `src/api/ai.ts` — the session/SSE client for the local AI backend.
+- `src/data/` — mock universe for the non-AI screens.
 - `src/theme.tsx` — dark, light, or system; resolved before first paint by
   the inline script in `index.html`.
 - `public/` — manifest, icons and the offline shell worker.

@@ -29,7 +29,7 @@ npm ci
 npm run typecheck
 npm run lint
 npm run test
-npm run design
+npm run design   # optional; needs the local Hallmark linter
 npm run build
 
 cd ../backend

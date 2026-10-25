@@ -108,7 +108,7 @@ npm run typecheck
 npm run lint
 npm run test
 npm run test:e2e
-npm run design
+npm run design   # needs Hallmark's local sloplint; CI skips this external gate
 npm run build
 
 cd ../backend && uv run python -m unittest discover -s tests

@@ -27,6 +27,7 @@ const SymbolPage = lazy(() => import('./routes/market/SymbolPage'))
 const NewsPage = lazy(() => import('./routes/news'))
 const NewsDetail = lazy(() => import('./routes/news/NewsDetail'))
 const AiPage = lazy(() => import('./routes/ai'))
+const AiProviderPage = lazy(() => import('./routes/ai/ProviderPage'))
 const StrategyPage = lazy(() => import('./routes/strategy'))
 const StrategyDetail = lazy(() => import('./routes/strategy/StrategyDetail'))
 const MePage = lazy(() => import('./routes/me'))
@@ -51,6 +52,7 @@ function routeKey(pathname: string): GlobalKey {
   if (pathname.startsWith('/m/')) return 'route.symbol'
   if (pathname === '/news') return 'route.news'
   if (pathname.startsWith('/news/')) return 'route.article'
+  if (pathname === '/ai/provider') return 'route.aiProvider'
   if (pathname === '/ai') return 'route.ai'
   if (pathname === '/strategy') return 'route.strategy'
   if (pathname.startsWith('/strategy/')) return 'route.strategyDetail'
@@ -227,6 +229,7 @@ export default function App() {
         <Route path="/news" element={<NewsPage />} />
         <Route path="/news/:id" element={<NewsDetail />} />
         <Route path="/ai" element={<AiPage />} />
+        <Route path="/ai/provider" element={<AiProviderPage />} />
         <Route path="/strategy" element={<StrategyPage />} />
         <Route path="/strategy/:id" element={<StrategyDetail />} />
         <Route path="/me" element={<MePage />} />

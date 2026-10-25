@@ -33,7 +33,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in origins if origin.strip()],
     allow_origin_regex=r"^http://(localhost|127\.0\.0\.1):\d+$",
-    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Last-Event-ID"],
 )
 
@@ -181,7 +181,7 @@ async def events(session_id: str, request: Request) -> StreamingResponse:
 
 @app.api_route(
     "/api/ai/{path:path}",
-    methods=["GET", "POST", "PATCH", "DELETE"],
+    methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
 )
 async def proxy(path: str, request: Request) -> Response:
     return await upstream_request(request.method, path, request)

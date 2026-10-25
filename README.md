@@ -60,6 +60,21 @@ Workspace with runs, paper accounts, portfolio status, alphas, scheduled jobs,
 model status and uploads. The app is installable (manifest + offline shell) and
 keeps its local state on the device.
 
+### Demo by default
+
+The app opens in **demo mode**. It does not send a prompt to any provider and it
+does not use a developer key; the AI returns pre-recorded text, tool rows and
+workspace samples. A developer needs no API key to run the dashboard.
+
+To use a real OpenAI-compatible provider, open **AI → Connect a model** (or
+**Profile → AI provider**), enter the base URL, model and your own key. The key
+is written to the local Vibe settings, never to browser storage. The chat then
+uses that provider and its tools.
+
+`./dev.sh` starts with `AI_DEMO=1` and deliberately passes no provider key to
+Vibe. Use `AI_DEMO=0 ./dev.sh` only when you want the old developer-key path
+from `backend/.env.upstream`.
+
 ## Loop
 
 Ask -> strategy spec -> point-in-time backtest -> plain-language result.

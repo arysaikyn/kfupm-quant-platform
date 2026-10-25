@@ -14,6 +14,10 @@ const APP_VERSION = '0.2.0'
 const RESET_KEYS = [
   'app.user',
   'app.ai.session',
+  'app.ai.demo.session',
+  'app.ai.demo.sessions',
+  'app.ai.mode',
+  'app.ai.provider',
   'app.ai.intake',
   'alerts.v1',
   'screener.screens',

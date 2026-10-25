@@ -6,6 +6,7 @@ async function prime(page: Page) {
     localStorage.setItem('app.prefs', JSON.stringify({ onboarded: true, market: 'sa' }))
     localStorage.setItem('app.lang', 'en')
     localStorage.setItem('app.theme', 'dark')
+    localStorage.setItem('app.ai.mode', 'live')
   })
 }
 

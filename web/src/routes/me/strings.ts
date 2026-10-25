@@ -24,6 +24,7 @@ type Strings = {
   moreCalendar: string
   moreReview: string
   moreSettings: string
+  moreProvider: string
   replayOnboarding: string
   version: string
 }
@@ -52,6 +53,7 @@ export const strings = {
     moreCalendar: '财经日历',
     moreReview: '每日复盘',
     moreSettings: '设置',
+    moreProvider: 'AI 提供方',
     replayOnboarding: '重看新手引导',
     version: '版本',
   },
@@ -78,6 +80,7 @@ export const strings = {
     moreCalendar: 'Calendar',
     moreReview: 'Daily review',
     moreSettings: 'Settings',
+    moreProvider: 'AI provider',
     replayOnboarding: 'Replay onboarding',
     version: 'Version',
   },
@@ -104,6 +107,7 @@ export const strings = {
     moreCalendar: 'التقويم',
     moreReview: 'المراجعة اليومية',
     moreSettings: 'الإعدادات',
+    moreProvider: 'مزوّد AI',
     replayOnboarding: 'إعادة الجولة التعريفية',
     version: 'الإصدار',
   },

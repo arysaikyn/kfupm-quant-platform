@@ -132,6 +132,7 @@ export default function MePage() {
             { to: '/calendar', label: s('moreCalendar') },
             { to: '/review', label: s('moreReview') },
             { to: '/learn', label: s('glossary') },
+            { to: '/ai/provider', label: s('moreProvider') },
             { to: '/settings', label: s('moreSettings') },
           ].map((row) => (
             <Link

@@ -10,7 +10,7 @@ import { membersChange, membersOf } from '../../data/membership'
 import { useOnline } from '../../lib/useOnline'
 import { useKeyboardInset } from '../../lib/useKeyboardInset'
 import { nowMs } from '../../lib/now'
-import { AiApiError, aiApi, eventsUrl } from '../../api/ai'
+import { AiApiError, aiApi } from '../../api/ai'
 import type { RunPreview } from '../../api/ai'
 import { AgentMarkdown } from './Markdown'
 import { ThinkingPanel } from './ThinkingPanel'
@@ -21,26 +21,12 @@ import { takeIntake } from './intake'
 import { messagesFromHistory, reduceAgentEvent } from './remote'
 import type { ChatMessage, CompletedTurn, LiveTurn } from './remote'
 import { strings } from './strings'
+import { useAiMode } from '../../store/aiMode'
 
 const MAX_CHIPS = 6
 const COMPOSER_MIN = 56
 const COMPOSER_MAX = 132
-const SESSION_KEY = 'app.ai.session'
-const STREAM_EVENTS = [
-  'attempt.created',
-  'attempt.started',
-  'attempt.completed',
-  'attempt.failed',
-  'attempt.cancelled',
-  'text_delta',
-  'reasoning_delta',
-  'tool_call',
-  'tool_result',
-  'llm_waiting',
-  'grounding_status',
-  'done',
-  'heartbeat',
-] as const
+const SESSION_KEYS = { demo: 'app.ai.demo.session', live: 'app.ai.session' } as const
 
 const BAR_OFFSET =
   'calc(env(safe-area-inset-bottom) + var(--tabbar-h) + var(--tabbar-gap) + 40px)'
@@ -120,6 +106,8 @@ function statusText(live: LiveTurn, s: (k: 'thinking' | 'working' | 'answering')
 export default function AiPage() {
   const { t, lang } = useI18n()
   const s = useStrings(strings)
+  const mode = useAiMode()
+  const demo = mode === 'demo'
   const online = useOnline()
   const keyboardInset = useKeyboardInset()
   const [params, setParams] = useSearchParams()
@@ -127,13 +115,15 @@ export default function AiPage() {
   const [sessionId, setSessionId] = useState<string | null>(() => {
     // A history CTA opens a fresh thread even when the last session is stored.
     if (params.get('new') === '1') return null
-    return sessionParam ?? localStorage.getItem(SESSION_KEY)
+    return sessionParam ?? localStorage.getItem(SESSION_KEYS[mode])
   })
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [live, setLive] = useState<LiveTurn | null>(null)
   const [loading, setLoading] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [connected, setConnected] = useState<'connecting' | 'online' | 'offline'>('connecting')
+  const [connected, setConnected] = useState<'connecting' | 'online' | 'offline' | 'demo'>(
+    mode === 'demo' ? 'demo' : 'connecting',
+  )
   const [error, setError] = useState<string | null>(null)
   const [input, setInput] = useState('')
   const [chips, setChips] = useState<CtxRef[]>([])
@@ -161,9 +151,16 @@ export default function AiPage() {
   const endRef = useRef<HTMLDivElement | null>(null)
   const composerRef = useRef<HTMLTextAreaElement | null>(null)
 
-  // Health is a hint, not a gate: messages still load if the check races.
+  // Demo never contacts the backend. Live health is a hint, not a gate.
   useEffect(() => {
+    if (demo) {
+      // oxlint-disable-next-line react/set-state-in-effect
+      setConnected('demo')
+      return
+    }
     let cancelled = false
+    // oxlint-disable-next-line react/set-state-in-effect
+    setConnected('connecting')
     aiApi
       .health()
       .then(() => {
@@ -175,12 +172,28 @@ export default function AiPage() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [demo])
 
   useEffect(() => {
-    if (sessionId) localStorage.setItem(SESSION_KEY, sessionId)
-    else localStorage.removeItem(SESSION_KEY)
-  }, [sessionId])
+    if (sessionId) localStorage.setItem(SESSION_KEYS[mode], sessionId)
+    else localStorage.removeItem(SESSION_KEYS[mode])
+  }, [sessionId, mode])
+
+  // Switching demo ↔ live must not carry a session id into the other transport.
+  const lastMode = useRef(mode)
+  useEffect(() => {
+    if (lastMode.current === mode) return
+    lastMode.current = mode
+    setSessionId(null)
+    setMessages([])
+    setLive(null)
+    setBusy(false)
+    setLoading(false)
+    setError(null)
+    setChips([])
+    setInput('')
+    setConnected(mode === 'demo' ? 'demo' : 'connecting')
+  }, [mode])
 
   useEffect(() => {
     liveRef.current = live
@@ -232,13 +245,12 @@ export default function AiPage() {
     }
   }, [sessionId, reloadTick, s])
 
-  // Live event stream. EventSource reconnects on its own; the server replays
-  // the active attempt so a reload does not lose the answer.
+  // Demo and live share one transport interface. Live EventSource reconnects
+  // on its own and the server replays the active attempt.
   useEffect(() => {
     if (!sessionId) return
     streamReady.current.sid = sessionId
     streamReady.current.ready = false
-    const source = new EventSource(eventsUrl(sessionId))
     const seen = new Set<string>()
 
     const finalize = (completed: CompletedTurn | null) => {
@@ -315,19 +327,19 @@ export default function AiPage() {
       if (type === 'done') setBusy(false)
     }
 
-    for (const type of STREAM_EVENTS) source.addEventListener(type, handle(type))
-    source.onopen = () => {
-      setConnected('online')
-      if (streamReady.current.sid === sessionId) {
-        streamReady.current.ready = true
-        streamReady.current.waiters.forEach((resolve) => resolve())
-        streamReady.current.waiters = []
-      }
-    }
-    source.onerror = () => setConnected('offline')
-
-    return () => source.close()
-  }, [sessionId, s])
+    return aiApi.subscribeSession(sessionId, {
+      onEvent: (type, event) => handle(type)(event),
+      onOpen: () => {
+        setConnected(demo ? 'demo' : 'online')
+        if (streamReady.current.sid === sessionId) {
+          streamReady.current.ready = true
+          streamReady.current.waiters.forEach((resolve) => resolve())
+          streamReady.current.waiters = []
+        }
+      },
+      onError: () => setConnected('offline'),
+    })
+  }, [sessionId, s, demo])
 
   // Historical turns store run_id in metadata; hydrate their cards once.
   useEffect(() => {
@@ -650,13 +662,21 @@ export default function AiPage() {
             aria-hidden
           />
           <span>
-            {connected === 'online'
-              ? s('connected')
-              : connected === 'offline'
-                ? s('offline')
-                : s('connecting')}
+            {connected === 'demo'
+              ? s('demoStatus')
+              : connected === 'online'
+                ? s('connected')
+                : connected === 'offline'
+                  ? s('offline')
+                  : s('connecting')}
           </span>
           {!online && <span>· {t('common.offline')}</span>}
+          <Link
+            to="/ai/provider"
+            className="ms-auto inline-flex min-h-11 items-center rounded-full px-2 text-[11px] text-fg underline decoration-line underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          >
+            {demo ? s('connectProvider') : s('providerSettings')}
+          </Link>
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">

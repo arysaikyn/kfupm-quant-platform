@@ -1,3 +1,35 @@
+import { isDemoMode } from '../store/aiMode'
+import { demoAi } from './demoAi'
+
+/** Events the Vibe agent stream can emit. */
+export const AGENT_EVENTS = [
+  'attempt.created',
+  'attempt.started',
+  'attempt.completed',
+  'attempt.failed',
+  'attempt.cancelled',
+  'text_delta',
+  'reasoning_delta',
+  'tool_call',
+  'tool_result',
+  'llm_waiting',
+  'grounding_status',
+  'done',
+  'heartbeat',
+] as const
+
+export type AgentStreamHandlers = {
+  onEvent: (type: string, event: MessageEvent) => void
+  onOpen: () => void
+  onError: () => void
+}
+
+export type ProviderConfig = {
+  baseUrl: string
+  model: string
+  apiKey?: string
+}
+
 /** Thin client for the local backend. The browser never sees the upstream key. */
 
 export type SessionItem = {
@@ -130,7 +162,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 }
 
-export const aiApi = {
+const liveApi = {
   health: () => request<{ ok: boolean; upstream: string }>('/api/ai/health'),
   listSessions: () => request<SessionItem[]>('/api/ai/sessions'),
   createSession: (title: string) =>
@@ -187,8 +219,71 @@ export const aiApi = {
     }
     return (await response.json()) as UploadResult
   },
+  configureProvider: (config: ProviderConfig) =>
+    request<LlmSettings>('/api/ai/settings/llm', {
+      method: 'PUT',
+      body: JSON.stringify({
+        provider: 'openai',
+        model_name: config.model,
+        base_url: config.baseUrl,
+        api_key: config.apiKey || undefined,
+        temperature: 0,
+        timeout_seconds: 120,
+        max_retries: 2,
+      }),
+    }),
 }
 
 export function eventsUrl(sessionId: string): string {
   return `${BASE}/api/ai/sessions/${encodeURIComponent(sessionId)}/events?replay=active`
+}
+
+function subscribeLiveSession(
+  sessionId: string,
+  handlers: AgentStreamHandlers,
+): () => void {
+  const source = new EventSource(eventsUrl(sessionId))
+  for (const type of AGENT_EVENTS) {
+    source.addEventListener(type, (event) => {
+      handlers.onEvent(type, event as MessageEvent)
+    })
+  }
+  source.onopen = () => handlers.onOpen()
+  source.onerror = () => handlers.onError()
+  return () => source.close()
+}
+
+/**
+ * One transport for both modes. Demo methods are local and never touch the
+ * backend, so a developer key in the environment cannot be consumed by default.
+ */
+export const aiApi = {
+  health: () => (isDemoMode() ? demoAi.health() : liveApi.health()),
+  listSessions: () => (isDemoMode() ? demoAi.listSessions() : liveApi.listSessions()),
+  createSession: (title: string) =>
+    isDemoMode() ? demoAi.createSession(title) : liveApi.createSession(title),
+  renameSession: (id: string, title: string) =>
+    isDemoMode() ? demoAi.renameSession(id, title) : liveApi.renameSession(id, title),
+  deleteSession: (id: string) =>
+    isDemoMode() ? demoAi.deleteSession(id) : liveApi.deleteSession(id),
+  messages: (id: string) => (isDemoMode() ? demoAi.messages(id) : liveApi.messages(id)),
+  sendMessage: (id: string, content: string) =>
+    isDemoMode() ? demoAi.sendMessage(id, content) : liveApi.sendMessage(id, content),
+  cancel: (id: string) => (isDemoMode() ? demoAi.cancel(id) : liveApi.cancel(id)),
+  autoTitle: (id: string) => (isDemoMode() ? demoAi.autoTitle(id) : liveApi.autoTitle(id)),
+  runPreview: (runId: string) =>
+    isDemoMode() ? demoAi.runPreview() : liveApi.runPreview(runId),
+  runs: () => (isDemoMode() ? demoAi.runs() : liveApi.runs()),
+  paperAccounts: () => (isDemoMode() ? demoAi.paperAccounts() : liveApi.paperAccounts()),
+  portfolio: () => (isDemoMode() ? demoAi.portfolio() : liveApi.portfolio()),
+  alphas: (limit = 60) => (isDemoMode() ? demoAi.alphas(limit) : liveApi.alphas(limit)),
+  scheduled: () => (isDemoMode() ? demoAi.scheduled() : liveApi.scheduled()),
+  llm: () => (isDemoMode() ? demoAi.llm() : liveApi.llm()),
+  upload: (file: File) => (isDemoMode() ? demoAi.upload(file) : liveApi.upload(file)),
+  subscribeSession: (id: string, handlers: AgentStreamHandlers) =>
+    isDemoMode()
+      ? demoAi.subscribeSession(id, handlers)
+      : subscribeLiveSession(id, handlers),
+  configureProvider: (config: ProviderConfig) =>
+    liveApi.configureProvider(config),
 }

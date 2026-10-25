@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
 import { EmptyState, Skeleton } from '../../components/states'
 import { Screen } from '../../components/Screen'
 import { fmtDate } from '../../i18n/format'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import { useAiMode } from '../../store/aiMode'
 import { aiApi } from '../../api/ai'
 import type {
   AlphaSummary,
@@ -434,6 +435,12 @@ function ModelPanel({ s }: { s: S }) {
         ))}
       </dl>
       <p className="mt-3 text-[11px] leading-snug text-muted">{s('modelSavedNote')}</p>
+      <Link
+        to="/ai/provider"
+        className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+      >
+        {s('providerSettings')}
+      </Link>
     </>
   )
 }
@@ -581,6 +588,7 @@ export default function WorkspacePage() {
   const { lang, dir } = useI18n()
   const s = useStrings(strings)
   const navigate = useNavigate()
+  const mode = useAiMode()
   const [tab, setTab] = useState<Tab>('runs')
 
   // Keep the selected chip in view; six labels do not fit a phone's content box.
@@ -592,6 +600,15 @@ export default function WorkspacePage() {
   return (
     <Screen title={s('title')} leading={<BackButton fallback="/ai" />}>
       <p className="mt-3 text-[13px] leading-relaxed text-muted">{s('subtitle')}</p>
+
+      {mode === 'demo' && (
+        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-[12px] border border-line bg-surface px-3 py-2 text-[11px] leading-snug text-muted">
+          <span>{s('demoNotice')}</span>
+          <Link to="/ai/provider" className="text-fg underline decoration-line underline-offset-4">
+            {s('providerSettings')}
+          </Link>
+        </div>
+      )}
 
       <div
         role="tablist"

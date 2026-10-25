@@ -48,6 +48,9 @@ export type AiStrings = {
   connected: string
   offline: string
   connecting: string
+  demoStatus: string
+  connectProvider: string
+  providerSettings: string
   noAnswer: string
   errLoad: string
   errTimeout: string
@@ -129,6 +132,9 @@ export const strings = {
     connected: '本地 Agent 已连接',
     offline: '本地 Agent 未连接',
     connecting: '正在连接本地 Agent',
+    demoStatus: '演示模式 · 预录回复',
+    connectProvider: '连接模型',
+    providerSettings: '模型设置',
     noAnswer: '这次运行没有返回答案。',
     errLoad: '这次对话没能加载，请重试。',
     errTimeout: '两分钟内没有完成，请重试。',
@@ -208,6 +214,9 @@ export const strings = {
     connected: 'Local agent connected',
     offline: 'Local agent offline',
     connecting: 'Connecting to the local agent',
+    demoStatus: 'Demo mode · pre-recorded replies',
+    connectProvider: 'Connect a model',
+    providerSettings: 'Provider settings',
     noAnswer: 'This run ended without an answer.',
     errLoad: 'This conversation could not load. Try again.',
     errTimeout: 'The agent did not finish in two minutes. Try again.',
@@ -287,6 +296,9 @@ export const strings = {
     connected: 'الوكيل المحلي متصل',
     offline: 'الوكيل المحلي غير متصل',
     connecting: 'جارٍ الاتصال بالوكيل المحلي',
+    demoStatus: 'وضع العرض · ردود مسجلة',
+    connectProvider: 'اربط نموذجًا',
+    providerSettings: 'إعدادات المزود',
     noAnswer: 'انتهى التشغيل دون إجابة.',
     errLoad: 'تعذر تحميل المحادثة. حاول مجددًا.',
     errTimeout: 'لم ينتهِ الوكيل خلال دقيقتين. حاول مجددًا.',

@@ -79,6 +79,8 @@ export type WorkspaceStrings = {
   yes: string
   no: string
   modelSavedNote: string
+  demoNotice: string
+  providerSettings: string
   none: string
 }
 
@@ -161,6 +163,8 @@ const en: WorkspaceStrings = {
   yes: 'Yes',
   no: 'No',
   modelSavedNote: 'Saved settings. The running agent may use environment overrides; a run shows the model that actually answered.',
+  demoNotice: 'Sample workspace. No provider is connected, so these runs are not real.',
+  providerSettings: 'Configure AI provider',
   none: 'None',
 }
 
@@ -246,6 +250,8 @@ export const strings: Dict<WorkspaceStrings> = {
     yes: '是',
     no: '否',
     modelSavedNote: '这里是保存的设置；实际运行的 Agent 可能使用环境变量覆盖，单次运行会显示真正回答的模型。',
+    demoNotice: '演示工作台。当前没有连接提供方，这些运行结果不是真实的。',
+    providerSettings: '配置 AI 提供方',
     none: '无',
   },
   ar: {
@@ -328,6 +334,8 @@ export const strings: Dict<WorkspaceStrings> = {
     yes: 'نعم',
     no: 'لا',
     modelSavedNote: 'هذه الإعدادات المحفوظة. قد يستخدم الوكيل متغيرات البيئة؛ يعرض التشغيل النموذج الذي أجاب فعلاً.',
+    demoNotice: 'مساحة عرض. لا يوجد مزوّد متصل، لذا هذه النتائج ليست حقيقية.',
+    providerSettings: 'إعداد مزوّد AI',
     none: 'لا شيء',
   },
 }

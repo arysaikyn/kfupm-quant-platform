@@ -1,9 +1,11 @@
 # Quant Desk — web
 
 A plain-language screen that turns a sentence into rules, a test and a
-readable result. The AI tab is backed by the local **Vibe-Trading** agent via
-`../backend`; the market and news screens still use local demo data
-(`src/data/mock.ts`).
+readable result. The AI tab opens in **demo mode** with pre-recorded replies; it
+does not use a developer key or contact a provider. Add your own
+OpenAI-compatible base URL, model and key at `/ai/provider` to use the local
+**Vibe-Trading** agent through `../backend`. Market and news screens use local
+demo data (`src/data/mock.ts`).
 
 ## Run
 
@@ -47,5 +49,6 @@ search, sector, watchlists, settings, and a real 404.
 - Numbers are formatted through `src/i18n` (`fmtNum`, `fmtPct`), never hand-built.
 - Layout uses logical properties; Arabic switches direction without a reload.
 - The AI thread is local (`localStorage`, version 2) and its ids survive reloads.
+- Demo sessions are local too; switching demo ↔ live resets the thread, not the UI.
 - Offline shows a banner and keeps the last local state; it never fakes a refresh.
 - Demo data is labelled as demo wherever a real product would claim a run.

@@ -32,6 +32,15 @@ class PathAllowlistTest(unittest.TestCase):
             with self.assertRaises(HTTPException):
                 app.valid_id(value)
 
+    def test_proxy_accepts_put_for_provider_settings(self):
+        routes = [
+            route
+            for route in app.app.routes
+            if getattr(route, "path", None) == "/api/ai/{path:path}"
+        ]
+        self.assertEqual(len(routes), 1)
+        self.assertIn("PUT", routes[0].methods)
+
     def test_auth_header_is_server_side(self):
         original = app.UPSTREAM_KEY
         try:

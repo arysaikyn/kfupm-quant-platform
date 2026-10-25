@@ -6,6 +6,7 @@ const ROUTES = [
   '/news',
   '/news/n1',
   '/ai',
+  '/ai/provider',
   '/strategy',
   '/strategy/low-debt-value',
   '/report/low-debt-value',

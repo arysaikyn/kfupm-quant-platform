@@ -28,6 +28,12 @@ uv pip install --python ~/.venvs/vibe-trading/bin/python "vibe-trading-ai==0.1.1
 
 ## 2. Configure the model
 
+The web app defaults to demo mode and needs no key. If you start the stack with
+`./dev.sh` (without `AI_DEMO=0`), Vibe is started without a developer key; use
+the app's **AI provider** form to write a user key and base URL.
+
+For the developer/live path:
+
 Copy `backend/.env.upstream.example` to a local file and fill in a model your
 key can access. Example values are shown for the opencode endpoint; any OpenAI-compatible
 provider works. A model with reliable tool calling matters: an earlier

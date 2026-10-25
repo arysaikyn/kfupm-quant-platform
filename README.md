@@ -30,6 +30,12 @@ cd backend && cp .env.example .env && ./run.sh
 cd web && npm install && npm run dev
 ```
 
+Or start all three with one command after the first install:
+
+```bash
+./dev.sh          # starts Vibe-Trading, backend, web; Ctrl-C stops them
+```
+
 For a single-process production check, `npm run build` in `web/`, then the
 backend serves `web/dist` at `http://127.0.0.1:8000`. See `backend/README.md`
 for model keys, security and current limits.
@@ -49,8 +55,10 @@ cd ../backend && uv run python -m unittest discover -s tests
 
 Five tabs: markets, news, AI, strategies, profile. Chinese, English and Arabic,
 with right-to-left layout. Market/news data is mock (`web/src/data/mock.ts`);
-AI sessions, tools and backtests come from Vibe-Trading. The app is installable
-(manifest + offline shell) and keeps its local state on the device.
+AI sessions, tools and backtests come from Vibe-Trading. The AI tab also opens a
+Workspace with runs, paper accounts, portfolio status, alphas, scheduled jobs,
+model status and uploads. The app is installable (manifest + offline shell) and
+keeps its local state on the device.
 
 ## Loop
 

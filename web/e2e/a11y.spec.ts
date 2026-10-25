@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
-const ROUTES = ['/', '/news', '/ai', '/screener', '/m/2222', '/strategy/low-debt-value', '/me']
+const ROUTES = ['/', '/news', '/ai', '/screener', '/m/2222', '/strategy/low-debt-value', '/me', '/workspace']
 
 async function prime(page: Page, lang: 'en' | 'ar' | 'zh', theme: 'light' | 'dark') {
   await page.addInitScript(

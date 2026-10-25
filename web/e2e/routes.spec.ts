@@ -22,6 +22,7 @@ const ROUTES = [
   '/watchlists',
   '/settings',
   '/m/2222',
+  '/workspace',
 ]
 
 async function prime(page: Page, lang: 'en' | 'ar' | 'zh', theme: 'light' | 'dark') {

@@ -28,6 +28,65 @@ export type RunPreview = {
   report_worthy: boolean
 }
 
+export type RunListItem = {
+  run_id: string
+  status: string
+  created_at: string
+  prompt?: string
+  total_return?: number
+  sharpe?: number
+  codes?: string[]
+}
+
+export type PaperAccount = {
+  id: string
+  label: string
+  market: string
+  currency: string
+  start_on: string
+  last_date: string | null
+  revision: number
+  account_state: { cash: number; positions: unknown[] }
+}
+
+export type PortfolioSnapshot = {
+  snapshot_id: string
+  created_at: string
+  complete: boolean
+  display_currency?: string
+  totals: { usd: number; cny: number; display?: number }
+  positions: unknown[]
+  warnings: string[]
+}
+
+export type AlphaSummary = {
+  id: string
+  zoo: string
+  theme: string[]
+  universe: string[]
+  nickname?: string
+}
+
+export type ScheduledRun = {
+  id: string
+  title: string
+  prompt: string
+  schedule: string
+  status: string
+  next_run_at: number
+  last_error: string | null
+}
+
+export type LlmSettings = {
+  provider: string
+  model_name: string
+  base_url: string
+  api_key_configured: boolean
+  api_key_required: boolean
+}
+
+export type UploadResult = { status: string; file_path: string; filename: string }
+
 export class AiApiError extends Error {
   status: number
   constructor(message: string, status: number) {
@@ -106,6 +165,28 @@ export const aiApi = {
     ),
   runPreview: (runId: string) =>
     request<RunPreview>(`/api/ai/runs/${encodeURIComponent(runId)}/preview`),
+  runs: () => request<RunListItem[]>('/api/ai/runs'),
+  paperAccounts: () => request<PaperAccount[]>('/api/ai/api/paper-accounts'),
+  portfolio: () => request<{ status: string; snapshot: PortfolioSnapshot | null }>('/api/ai/api/portfolio'),
+  alphas: (limit = 60) => request<{ alphas: AlphaSummary[]; total: number }>(`/api/ai/alpha/list?limit=${limit}`),
+  scheduled: () => request<ScheduledRun[]>('/api/ai/scheduled-runs'),
+  llm: () => request<LlmSettings>('/api/ai/settings/llm'),
+  upload: async (file: File): Promise<UploadResult> => {
+    const form = new FormData()
+    form.append('file', file)
+    const response = await fetch(`${BASE}/api/ai/upload`, { method: 'POST', body: form })
+    if (!response.ok) {
+      let detail = response.statusText
+      try {
+        const body = (await response.json()) as { detail?: unknown }
+        if (typeof body.detail === 'string') detail = body.detail
+      } catch {
+        // Keep the status text.
+      }
+      throw new AiApiError(detail, response.status)
+    }
+    return (await response.json()) as UploadResult
+  },
 }
 
 export function eventsUrl(sessionId: string): string {

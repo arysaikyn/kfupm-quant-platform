@@ -13,6 +13,14 @@ class PathAllowlistTest(unittest.TestCase):
         self.assertEqual(app.upstream_path("sessions/abc123/cancel"), "/sessions/abc123/cancel")
         self.assertEqual(app.upstream_path("sessions/abc123/title/auto"), "/sessions/abc123/title/auto")
         self.assertEqual(app.upstream_path("runs/run_1/preview"), "/runs/run_1/preview")
+        self.assertEqual(app.upstream_path("settings/llm"), "/settings/llm")
+        self.assertEqual(app.upstream_path("upload"), "/upload")
+        self.assertEqual(app.upstream_path("runs"), "/runs")
+        self.assertEqual(app.upstream_path("runs/run_1"), "/runs/run_1")
+        self.assertEqual(app.upstream_path("api/paper-accounts"), "/api/paper-accounts")
+        self.assertEqual(app.upstream_path("api/portfolio"), "/api/portfolio")
+        self.assertEqual(app.upstream_path("alpha/list"), "/alpha/list")
+        self.assertEqual(app.upstream_path("scheduled-runs"), "/scheduled-runs")
 
     def test_rejects_everything_else(self):
         for path in ("portfolio", "sessions/../etc", "sessions/a/b/c", "runs/run_1/code", "live/status"):

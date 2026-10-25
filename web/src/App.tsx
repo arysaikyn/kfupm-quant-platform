@@ -42,6 +42,7 @@ const SectorPage = lazy(() => import('./routes/sector'))
 const ReportPage = lazy(() => import('./routes/report'))
 const WatchlistsPage = lazy(() => import('./routes/watchlists'))
 const SettingsPage = lazy(() => import('./routes/settings'))
+const WorkspacePage = lazy(() => import('./routes/workspace'))
 const NotFoundPage = lazy(() => import('./routes/not-found'))
 
 /** Every path names its screen; the map drives titles and the live announcer. */
@@ -66,6 +67,7 @@ function routeKey(pathname: string): GlobalKey {
   if (pathname.startsWith('/report/')) return 'route.report'
   if (pathname === '/watchlists') return 'route.watchlists'
   if (pathname === '/settings') return 'route.settings'
+  if (pathname === '/workspace') return 'route.workspace'
   return 'route.notFound'
 }
 
@@ -240,6 +242,7 @@ export default function App() {
         <Route path="/report/:id" element={<ReportPage />} />
         <Route path="/watchlists" element={<WatchlistsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/workspace" element={<WorkspacePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

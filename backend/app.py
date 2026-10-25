@@ -75,6 +75,22 @@ def upstream_path(path: str) -> str:
         return f"/sessions/{valid_id(parts[1])}/title/auto"
     if len(parts) == 3 and parts[0] == "runs" and parts[2] == "preview":
         return f"/runs/{valid_id(parts[1])}/preview"
+    if parts == ["settings", "llm"]:
+        return "/settings/llm"
+    if parts == ["upload"]:
+        return "/upload"
+    if parts == ["runs"]:
+        return "/runs"
+    if len(parts) == 2 and parts[0] == "runs":
+        return f"/runs/{valid_id(parts[1])}"
+    if parts == ["api", "paper-accounts"]:
+        return "/api/paper-accounts"
+    if parts == ["api", "portfolio"]:
+        return "/api/portfolio"
+    if parts == ["alpha", "list"]:
+        return "/alpha/list"
+    if parts == ["scheduled-runs"]:
+        return "/scheduled-runs"
     raise HTTPException(status_code=404, detail="Not found")
 
 

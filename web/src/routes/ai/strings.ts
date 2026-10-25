@@ -49,6 +49,7 @@ export type AiStrings = {
   offline: string
   noAnswer: string
   history: string
+  workspace: string
   metricReturn: string
   metricAnnual: string
   metricSharpe: string
@@ -123,6 +124,7 @@ export const strings = {
     offline: '本地 Agent 未连接',
     noAnswer: '这次运行没有返回答案。',
     history: '历史会话',
+    workspace: '工作台',
     metricReturn: '总收益',
     metricAnnual: '年化',
     metricSharpe: '夏普',
@@ -195,6 +197,7 @@ export const strings = {
     offline: 'Local agent offline',
     noAnswer: 'This run ended without an answer.',
     history: 'Session history',
+    workspace: 'Workspace',
     metricReturn: 'Total return',
     metricAnnual: 'Annual',
     metricSharpe: 'Sharpe',
@@ -267,6 +270,7 @@ export const strings = {
     offline: 'الوكيل المحلي غير متصل',
     noAnswer: 'انتهى التشغيل دون إجابة.',
     history: 'سجل الجلسات',
+    workspace: 'مساحة العمل',
     metricReturn: 'العائد الكلي',
     metricAnnual: 'السنوي',
     metricSharpe: 'شارب',

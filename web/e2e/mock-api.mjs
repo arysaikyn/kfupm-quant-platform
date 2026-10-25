@@ -82,6 +82,45 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`)
   const path = url.pathname
   if (path === '/api/ai/health') return send(res, 200, { ok: true, upstream: 'mock' })
+  if (path === '/api/ai/runs') {
+    return send(res, 200, [{
+      run_id: 'run_1', status: 'completed', created_at: '2026-10-25T10:00:00Z',
+      prompt: 'Backtest AAPL for 2024', total_return: 0.123, sharpe: 1.2, codes: ['AAPL.US'],
+    }])
+  }
+  if (path === '/api/ai/api/paper-accounts') {
+    return send(res, 200, [{
+      id: 'paper_1', label: 'Core paper', market: 'us', currency: 'USD',
+      start_on: '2024-01-01', last_date: '2024-12-31', revision: 3,
+      account_state: { cash: 12345.67, positions: [{ symbol: 'AAPL.US', qty: 10 }] },
+    }])
+  }
+  if (path === '/api/ai/api/portfolio') {
+    return send(res, 200, { status: 'ok', snapshot: {
+      snapshot_id: 'snap_1', created_at: '2026-10-25T10:00:00Z', complete: true,
+      totals: { usd: 54321.09, cny: 389999.5 }, positions: [{ symbol: 'AAPL.US' }], warnings: [],
+    } })
+  }
+  if (path === '/api/ai/alpha/list') {
+    return send(res, 200, { total: 1, alphas: [{
+      id: 'alpha101_001', zoo: 'alpha101', theme: ['momentum'], universe: ['us'],
+    }] })
+  }
+  if (path === '/api/ai/scheduled-runs') {
+    return send(res, 200, [{
+      id: 'job_1', title: 'Weekly US review', prompt: 'Review US tech',
+      schedule: '0 9 * * 1', status: 'active', next_run_at: 1793000000000, last_error: null,
+    }])
+  }
+  if (path === '/api/ai/settings/llm') {
+    return send(res, 200, {
+      provider: 'openai', model_name: 'test-model', base_url: 'https://example.invalid/v1',
+      api_key_configured: true, api_key_required: true,
+    })
+  }
+  if (path === '/api/ai/upload' && req.method === 'POST') {
+    return send(res, 200, { status: 'ok', file_path: '/tmp/mock.pdf', filename: 'mock.pdf' })
+  }
 
   if (path === '/api/ai/sessions' && req.method === 'GET') {
     return send(res, 200, [...sessions.values()].map((s) => ({

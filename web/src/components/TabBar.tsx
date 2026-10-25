@@ -125,6 +125,7 @@ export function TabBar() {
     '/learn': '/me',
     '/watchlists': '/',
     '/settings': '/me',
+    '/workspace': '/ai',
   }
   // Explicit entries first, then the tab whose own path prefixes this one.
   // Without the second step /strategy/:id had no entry and the bar fell back to

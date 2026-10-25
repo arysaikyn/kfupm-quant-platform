@@ -36,7 +36,7 @@ search, sector, watchlists, settings, and a real 404.
 - `src/components/` — shell primitives (`Screen`, `TabBar`, `Sheet`, …).
 - `src/i18n/` — typed zh/en/ar dictionaries, number/date/plural formatting.
 - `src/store/` — local-first state (`prefs`, `user`, `alerts`).
-- `src/api/ai.ts` — the session/SSE client for the local AI backend.
+- `src/api/ai.ts` — the session/SSE and workspace client for the local AI backend.
 - `src/data/` — mock universe for the non-AI screens.
 - `src/theme.tsx` — dark, light, or system; resolved before first paint by
   the inline script in `index.html`.

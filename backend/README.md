@@ -10,9 +10,12 @@ web (React)  ->  backend :8000  ->  vibe-trading :8899  ->  LLM + tools
 
 The AI tab is Vibe-Trading's agent: the same sessions, tool calls, streaming
 answers, backtests and run artifacts. There are no canned replies in the web
-app. The UI exposes chat, the tool timeline, run cards, stop and session
-history; upstream-only panels (uploads, goal mode, swarm, provider settings)
-are not duplicated here.
+app. The UI exposes chat, the tool timeline, run cards, stop, session history, and a
+Workspace with runs, paper accounts, portfolio status, alpha index, scheduled
+jobs, model status and file uploads. Deep research, swarm, options and
+correlation start as prefilled agent prompts, so they use the same upstream
+tools rather than a second UI. Live broker execution, IM channels and the
+pixel-office view are intentionally not exposed.
 
 ## 1. Install Vibe-Trading
 
@@ -85,7 +88,14 @@ same-origin backend.
 | POST | `/api/ai/sessions/{id}/cancel` | same |
 | GET | `/api/ai/sessions/{id}/events` | SSE passthrough |
 | POST | `/api/ai/sessions/{id}/title/auto` | same |
+| GET | `/api/ai/runs` | `/runs` |
 | GET | `/api/ai/runs/{id}/preview` | `/runs/{id}/preview` |
+| GET | `/api/ai/api/paper-accounts` | `/api/paper-accounts` |
+| GET | `/api/ai/api/portfolio` | `/api/portfolio` |
+| GET | `/api/ai/alpha/list` | `/alpha/list` |
+| GET | `/api/ai/scheduled-runs` | `/scheduled-runs` |
+| GET | `/api/ai/settings/llm` | `/settings/llm` |
+| POST | `/api/ai/upload` | `/upload` |
 
 Anything else is `404`; this is not an open proxy.
 

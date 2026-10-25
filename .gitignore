@@ -15,3 +15,5 @@ model/signals.json
 data/raw/
 
 .DS_Store
+
+.dev/

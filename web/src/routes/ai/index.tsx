@@ -565,6 +565,18 @@ export default function AiPage() {
             >
               {s('history')}
             </Link>
+            <Link
+              to="/workspace"
+              aria-label={s('workspace')}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+                <rect x="4" y="4" width="6" height="6" rx="1" />
+                <rect x="14" y="4" width="6" height="6" rx="1" />
+                <rect x="4" y="14" width="6" height="6" rx="1" />
+                <rect x="14" y="14" width="6" height="6" rx="1" />
+              </svg>
+            </Link>
             <button
               type="button"
               onClick={newChat}

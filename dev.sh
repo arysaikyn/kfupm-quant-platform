@@ -11,10 +11,6 @@ if [[ -f "$ROOT/backend/.env" ]]; then
   set -a; # shellcheck disable=SC1091
   source "$ROOT/backend/.env"; set +a
 fi
-if [[ -f "$ROOT/backend/.env.upstream" ]]; then
-  set -a; # shellcheck disable=SC1091
-  source "$ROOT/backend/.env.upstream"; set +a
-fi
 
 API_AUTH_KEY="${API_AUTH_KEY:-dev-key}"
 export API_AUTH_KEY
@@ -25,33 +21,6 @@ WEB_PORT="${WEB_PORT:-5177}"
 VIBE_BIN="${VIBE_BIN:-$HOME/.venvs/vibe-trading/bin/vibe-trading}"
 if [[ ! -x "$VIBE_BIN" && -x /tmp/vt-venv/bin/vibe-trading ]]; then
   VIBE_BIN=/tmp/vt-venv/bin/vibe-trading
-fi
-
-LANGCHAIN_PROVIDER="${LANGCHAIN_PROVIDER:-openai}"
-LANGCHAIN_MODEL_NAME="${LANGCHAIN_MODEL_NAME:-deepseek-v4.1-flash}"
-OPENAI_BASE_URL="${OPENAI_BASE_URL:-https://opencode.ai/zen/go/v1}"
-
-# Demo is the default. Do not export any developer key to Vibe; the app's
-# provider form writes a user key through PUT /settings/llm. Set AI_DEMO=0 to
-# use the developer key from .env.upstream or the Keychain.
-if [[ "${AI_DEMO:-1}" == "1" ]]; then
-  # Let Vibe use only the provider saved by the app's form. Developer env values
-  # must not override that saved config after a restart.
-  unset OPENAI_API_KEY OPENAI_API_BASE OPENAI_BASE_URL OPENCODE_API_KEY
-  unset GEMINI_API_KEY OPENROUTER_API_KEY NVIDIA_API_KEY GROQ_API_KEY DEEPSEEK_API_KEY ANTHROPIC_API_KEY
-  unset LANGCHAIN_PROVIDER LANGCHAIN_MODEL_NAME
-  echo "dev: AI demo mode (no developer key; configure a provider in the app)"
-else
-  if [[ -z "${OPENAI_API_KEY:-}" ]] && command -v security >/dev/null 2>&1; then
-    # Dev convenience only; the key is never printed or written to a file.
-    OPENAI_API_KEY="$(security find-generic-password -a "$USER" -s "${DEV_KEYCHAIN_ITEM:-OPENCODE_GO_API_KEY_2}" -w 2>/dev/null || true)"
-  fi
-  if [[ -z "${OPENAI_API_KEY:-}" ]]; then
-    echo "dev: AI_DEMO=0 needs OPENAI_API_KEY"
-    echo "  put it in backend/.env.upstream, export it, or set DEV_KEYCHAIN_ITEM"
-    exit 1
-  fi
-  export OPENAI_API_KEY LANGCHAIN_PROVIDER LANGCHAIN_MODEL_NAME OPENAI_BASE_URL
 fi
 
 vibe_pid=""
@@ -139,8 +108,7 @@ cat <<MSG
   dev ready
   web       http://localhost:$WEB_PORT
   ai api    $BACKEND_URL/api/ai/health
-  upstream  $VIBE_API_URL  (model: ${LANGCHAIN_MODEL_NAME:-saved in the app})
-  AI mode   $([[ "${AI_DEMO:-1}" == "1" ]] && echo 'demo (no developer key)' || echo 'live developer key')
+  upstream  $VIBE_API_URL  (provider configured in the app)
   logs      $LOG_DIR/{vibe,backend,web}.log
   stop      Ctrl-C
 

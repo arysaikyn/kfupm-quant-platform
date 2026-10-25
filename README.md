@@ -8,33 +8,18 @@ backtest ran when none did.
 
 ## Run
 
-Two processes plus the web app:
-
-```
-# 1. Vibe-Trading (Python 3.11+, isolated env)
+```bash
+# Vibe-Trading, once
 uv venv ~/.venvs/vibe-trading --python 3.12
 uv pip install --python ~/.venvs/vibe-trading/bin/python "vibe-trading-ai==0.1.18"
 
-# 2. start it with an OpenAI-compatible model and a local key
-API_AUTH_KEY=dev-key \
-LANGCHAIN_PROVIDER=openai \
-LANGCHAIN_MODEL_NAME=deepseek-v4.1-flash \
-OPENAI_BASE_URL=https://opencode.ai/zen/go/v1 \
-OPENAI_API_KEY="$OPENCODE_GO_API_KEY" \
-~/.venvs/vibe-trading/bin/vibe-trading serve --host 127.0.0.1 --port 8899
-
-# 3. the proxy (keeps the upstream key out of the browser)
-cd backend && cp .env.example .env && ./run.sh
-
-# 4. the web app
-cd web && npm install && npm run dev
+# backend + Vibe-Trading + web
+./dev.sh          # Ctrl-C stops the stack
 ```
 
-Or start all three with one command after the first install:
-
-```bash
-./dev.sh          # starts Vibe-Trading, backend, web; Ctrl-C stops them
-```
+No provider key is needed for the demo. To use a real model, open
+**AI → Connect API** after the app starts and enter the base API URL, model and
+key. The key goes to the local backend/Vibe settings, not browser storage.
 
 For a single-process production check, `npm run build` in `web/`, then the
 backend serves `web/dist` at `http://127.0.0.1:8000`. See `backend/README.md`
@@ -63,17 +48,13 @@ keeps its local state on the device.
 ### Demo by default
 
 The app opens in **demo mode**. It does not send a prompt to any provider and it
-does not use a developer key; the AI returns pre-recorded text, tool rows and
-workspace samples. A developer needs no API key to run the dashboard.
+does not use a developer key; the AI returns pre-recorded text and workspace
+samples. A developer needs no API key to run the dashboard.
 
-To use a real OpenAI-compatible provider, open **AI → Connect a model** (or
-**Profile → AI provider**), enter the base URL, model and your own key. The key
-is written to the local Vibe settings, never to browser storage. The chat then
-uses that provider and its tools.
-
-`./dev.sh` starts with `AI_DEMO=1` and deliberately passes no provider key to
-Vibe. Use `AI_DEMO=0 ./dev.sh` only when you want the old developer-key path
-from `backend/.env.upstream`.
+To use a real provider, open **AI → Connect API** (or **Profile → AI provider**),
+enter the base API URL, model and your own key. The key is written to the local
+Vibe settings, never to browser storage. The chat then uses that provider and
+its tools. `./dev.sh` starts Vibe without a provider key, so demo is the default.
 
 ## Loop
 

@@ -60,7 +60,7 @@ This is a **pre-recorded response**. No market data was fetched and no tool ran.
 | Valuation | illustrative only |
 | Backtest | not run |
 
-Connect a provider in **AI provider settings** to replace this with a real model and real tools.`,
+Connect an API in **API settings** to replace this with a real model and real tools.`,
 
   `## What this screen is showing
 
@@ -70,7 +70,7 @@ The app is in **demo mode**. The text, tool timeline and run cards are samples s
 - No backtest runs.
 - No position or price is read.
 
-Add your own OpenAI-compatible base URL and key in **AI provider settings** to switch to live mode.`,
+Add your own base API URL and key in **API settings** to switch to live mode.`,
 
   `## Demo walkthrough
 

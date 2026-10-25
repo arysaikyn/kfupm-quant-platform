@@ -61,7 +61,7 @@ test('the provider form saves and switches to live', async ({ page }) => {
     await route.continue()
   })
   await page.goto('/ai/provider')
-  await page.getByLabel('Base URL').fill('https://example.invalid/v1')
+  await page.getByLabel('Base API URL').fill('https://example.invalid/v1')
   await page.getByLabel('Model').fill('test-model')
   await page.getByLabel('API key').fill('test-key')
   await page.getByRole('button', { name: 'Save and go live' }).click()

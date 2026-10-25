@@ -11,7 +11,7 @@ export default function ProviderPage() {
   const mode = useAiMode()
   const meta = useProviderMeta()
   const s = useStrings(strings)
-  const [baseUrl, setBaseUrl] = useState(meta.baseUrl || 'https://api.openai.com/v1')
+  const [baseUrl, setBaseUrl] = useState(meta.baseUrl)
   const [model, setModel] = useState(meta.model)
   const [apiKey, setApiKey] = useState('')
   const [busy, setBusy] = useState(false)
@@ -77,7 +77,7 @@ export default function ProviderPage() {
               autoComplete="off"
               autoCapitalize="none"
               spellCheck={false}
-              placeholder="https://api.openai.com/v1"
+              placeholder="https://api.example.com/v1"
               className="mt-1.5 min-h-11 w-full rounded-[10px] border border-line bg-surface px-3 text-[14px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             />
             <span className="mt-1 block text-[11px] leading-snug text-muted">{s('baseHint')}</span>

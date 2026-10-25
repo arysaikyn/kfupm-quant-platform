@@ -3,7 +3,7 @@
 A plain-language screen that turns a sentence into rules, a test and a
 readable result. The AI tab opens in **demo mode** with pre-recorded replies; it
 does not use a developer key or contact a provider. Add your own
-OpenAI-compatible base URL, model and key at `/ai/provider` to use the local
+base API URL, model and key at `/ai/provider` to use the local
 **Vibe-Trading** agent through `../backend`. Market and news screens use local
 demo data (`src/data/mock.ts`).
 

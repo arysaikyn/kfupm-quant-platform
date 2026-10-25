@@ -15,6 +15,7 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { FatalError } from './components/FatalError'
 import { OfflineBanner } from './components/OfflineBanner'
 import { usePrefs } from './store/prefs'
+import { markRouteSeen } from './store/learn'
 import { useI18n } from './i18n'
 import type { GlobalKey } from './i18n'
 import { useOnline } from './lib/useOnline'
@@ -30,6 +31,7 @@ const AiPage = lazy(() => import('./routes/ai'))
 const AiProviderPage = lazy(() => import('./routes/ai/ProviderPage'))
 const StrategyPage = lazy(() => import('./routes/strategy'))
 const StrategyDetail = lazy(() => import('./routes/strategy/StrategyDetail'))
+const GraveyardPage = lazy(() => import('./routes/strategy/Graveyard'))
 const MePage = lazy(() => import('./routes/me'))
 const ScreenerPage = lazy(() => import('./routes/screener'))
 const AlertsPage = lazy(() => import('./routes/alerts'))
@@ -55,6 +57,7 @@ function routeKey(pathname: string): GlobalKey {
   if (pathname === '/ai/provider') return 'route.aiProvider'
   if (pathname === '/ai') return 'route.ai'
   if (pathname === '/strategy') return 'route.strategy'
+  if (pathname === '/strategy/graveyard') return 'route.strategy'
   if (pathname.startsWith('/strategy/')) return 'route.strategyDetail'
   if (pathname === '/me') return 'route.me'
   if (pathname === '/screener') return 'route.screener'
@@ -127,6 +130,11 @@ function Shell() {
       easing: 'cubic-bezier(0.241, 0.969, 0.635, 0.997)',
     })
     return () => anim.cancel()
+  }, [pathname])
+
+  // Glossary terms unlock only after the user has actually visited a screen.
+  useEffect(() => {
+    markRouteSeen(pathname)
   }, [pathname])
 
   // The title and the live region are the only way a screen reader learns that
@@ -231,6 +239,7 @@ export default function App() {
         <Route path="/ai" element={<AiPage />} />
         <Route path="/ai/provider" element={<AiProviderPage />} />
         <Route path="/strategy" element={<StrategyPage />} />
+        <Route path="/strategy/graveyard" element={<GraveyardPage />} />
         <Route path="/strategy/:id" element={<StrategyDetail />} />
         <Route path="/me" element={<MePage />} />
         <Route path="/screener" element={<ScreenerPage />} />

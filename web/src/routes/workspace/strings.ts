@@ -80,8 +80,65 @@ export type WorkspaceStrings = {
   no: string
   modelSavedNote: string
   demoNotice: string
+  rebalanceTitle: string
+  rebalancePreview: string
+  rebalanceHint: string
+  rebalanceEntering: string
+  rebalanceLeaving: string
+  rebalanceUnchanged: string
+  rebalanceEmpty: string
+  rebalanceClears: string
+  rebalanceNotTarget: string
+  rebalanceScope: string
   providerSettings: string
   none: string
+  snapshots: string
+  snapshotFreeze: string
+  snapshotName: string
+  snapshotNamePlaceholder: string
+  snapshotSave: string
+  snapshotCancel: string
+  snapshotEmpty: string
+  snapshotLocal: string
+  snapshotFrozen: string
+  snapshotDemo: string
+  snapshotCompare: string
+  snapshotRewind: string
+  snapshotAdded: string
+  snapshotDropped: string
+  snapshotCashDelta: string
+  snapshotNoChange: string
+  snapshotRestore: string
+  snapshotDrop: string
+  snapshotRewindNote: string
+  snapshotRemove: string
+  snapshotConfirmRemove: string
+  scheduledRuns: string
+  routeTitle: string
+  routeHint: string
+  routeRun: string
+  routeRunAgain: string
+  routeWalking: string
+  routeDone: string
+  routeDoneStop: string
+  routeNextStart: string
+  routeFinishes: string
+  routeSkipped: string
+  routeWaiting: string
+  routeNow: string
+  routeStops: string
+  routeKindScreen: string
+  routeKindWatchlist: string
+  routeKindStrategy: string
+  routeKindNews: string
+  routeRulesCount: string
+  routeSymbolsCount: string
+  routeStoriesCount: string
+  routeSkipNoScreens: string
+  routeSkipNoWatchlists: string
+  routeSkipNoStrategies: string
+  routeSkipNoNews: string
+  routeDemoNote: string
 }
 
 const en: WorkspaceStrings = {
@@ -164,8 +221,65 @@ const en: WorkspaceStrings = {
   no: 'No',
   modelSavedNote: 'Saved settings. The running agent may use environment overrides; a run shows the model that actually answered.',
   demoNotice: 'Sample workspace. No provider is connected, so these runs are not real.',
+  rebalanceTitle: 'Next rebalance',
+  rebalancePreview: 'Preview only',
+  rebalanceHint: 'Read-only preview against the current paper book',
+  rebalanceEntering: 'Entering',
+  rebalanceLeaving: 'Leaving',
+  rebalanceUnchanged: 'Unchanged',
+  rebalanceEmpty: 'No names would move.',
+  rebalanceClears: 'Clears {n} rules',
+  rebalanceNotTarget: 'Not in target',
+  rebalanceScope: 'Preview only. No order is staged or sent.',
   providerSettings: 'API settings',
   none: 'None',
+  snapshots: 'Snapshots',
+  snapshotFreeze: 'Freeze snapshot',
+  snapshotName: 'Snapshot name',
+  snapshotNamePlaceholder: 'e.g. Before rebalance',
+  snapshotSave: 'Save snapshot',
+  snapshotCancel: 'Cancel',
+  snapshotEmpty: 'No snapshots yet. Freeze the account to compare it later.',
+  snapshotLocal: 'Local demo snapshots, not a broker record.',
+  snapshotFrozen: 'Frozen',
+  snapshotDemo: 'Demo',
+  snapshotCompare: 'Compare',
+  snapshotRewind: 'Rewind preview',
+  snapshotAdded: 'Added',
+  snapshotDropped: 'Dropped',
+  snapshotCashDelta: 'Cash change',
+  snapshotNoChange: 'No change since this snapshot.',
+  snapshotRestore: 'Restore',
+  snapshotDrop: 'Remove',
+  snapshotRewindNote: 'Read-only preview. Nothing is rewound and no order is sent.',
+  snapshotRemove: 'Remove snapshot',
+  snapshotConfirmRemove: 'Confirm remove',
+  scheduledRuns: 'Scheduled runs',
+  routeTitle: 'Weekly route',
+  routeHint: 'One demo walk through saved screens, watchlists, strategy reruns and news.',
+  routeRun: 'Run weekly route',
+  routeRunAgain: 'Run again',
+  routeWalking: 'Walking the route…',
+  routeDone: 'Route finished. Nothing ran on a server.',
+  routeDoneStop: 'Done',
+  routeNextStart: 'Next start',
+  routeFinishes: 'Finishes',
+  routeSkipped: 'Skipped',
+  routeWaiting: 'Waiting',
+  routeNow: 'Now',
+  routeStops: 'stops',
+  routeKindScreen: 'Saved screen',
+  routeKindWatchlist: 'Watchlist',
+  routeKindStrategy: 'Strategy rerun',
+  routeKindNews: 'News',
+  routeRulesCount: '{n} rules',
+  routeSymbolsCount: '{n} symbols',
+  routeStoriesCount: '{n} stories',
+  routeSkipNoScreens: 'No saved screen in this browser.',
+  routeSkipNoWatchlists: 'No watchlist has symbols yet.',
+  routeSkipNoStrategies: 'No strategy to rerun.',
+  routeSkipNoNews: 'No news in this session.',
+  routeDemoNote: 'Demo only. No job is created, no screen runs and no order is placed.',
 }
 
 export const strings: Dict<WorkspaceStrings> = {
@@ -251,8 +365,65 @@ export const strings: Dict<WorkspaceStrings> = {
     no: '否',
     modelSavedNote: '这里是保存的设置；实际运行的 Agent 可能使用环境变量覆盖，单次运行会显示真正回答的模型。',
     demoNotice: '演示工作台。当前没有连接提供方，这些运行结果不是真实的。',
+    rebalanceTitle: '下次再平衡',
+    rebalancePreview: '仅预览',
+    rebalanceHint: '对当前模拟持仓的只读预览',
+    rebalanceEntering: '调入',
+    rebalanceLeaving: '调出',
+    rebalanceUnchanged: '不变',
+    rebalanceEmpty: '没有名字会变动。',
+    rebalanceClears: '通过 {n} 条规则',
+    rebalanceNotTarget: '不在目标里',
+    rebalanceScope: '仅预览，不生成订单，也不会发送。',
     providerSettings: 'API 设置',
     none: '无',
+    snapshots: '快照',
+    snapshotFreeze: '冻结快照',
+    snapshotName: '快照名称',
+    snapshotNamePlaceholder: '例如：调仓前',
+    snapshotSave: '保存快照',
+    snapshotCancel: '取消',
+    snapshotEmpty: '还没有快照。冻结当前账户，之后就能对比。',
+    snapshotLocal: '本地演示快照，不是券商记录。',
+    snapshotFrozen: '冻结于',
+    snapshotDemo: '演示',
+    snapshotCompare: '对比',
+    snapshotRewind: '回看预览',
+    snapshotAdded: '新增',
+    snapshotDropped: '移出',
+    snapshotCashDelta: '现金变化',
+    snapshotNoChange: '与这份快照相比没有变化。',
+    snapshotRestore: '恢复',
+    snapshotDrop: '移除',
+    snapshotRewindNote: '只读预览：不会回退，也不会发出任何委托。',
+    snapshotRemove: '删除快照',
+    snapshotConfirmRemove: '确认删除',
+    scheduledRuns: '定时任务',
+    routeTitle: '每周路线',
+    routeHint: '演示一条固定路线：已存筛选 → 自选 → 策略重跑 → 新闻。',
+    routeRun: '运行每周路线',
+    routeRunAgain: '再跑一次',
+    routeWalking: '正在走路线…',
+    routeDone: '路线已走完，服务端没有运行任何任务。',
+    routeDoneStop: '完成',
+    routeNextStart: '下次开始',
+    routeFinishes: '预计结束',
+    routeSkipped: '跳过',
+    routeWaiting: '等待',
+    routeNow: '当前',
+    routeStops: '站',
+    routeKindScreen: '已存筛选',
+    routeKindWatchlist: '自选',
+    routeKindStrategy: '策略重跑',
+    routeKindNews: '新闻',
+    routeRulesCount: '{n} 条规则',
+    routeSymbolsCount: '{n} 个标的',
+    routeStoriesCount: '{n} 条新闻',
+    routeSkipNoScreens: '浏览器里还没有已存筛选。',
+    routeSkipNoWatchlists: '还没有带标的的自选分组。',
+    routeSkipNoStrategies: '没有可重跑的策略。',
+    routeSkipNoNews: '本次会话没有新闻。',
+    routeDemoNote: '仅演示：不会创建任务、不会运行筛选，也不会发出任何委托。',
   },
   ar: {
     ...en,
@@ -335,7 +506,64 @@ export const strings: Dict<WorkspaceStrings> = {
     no: 'لا',
     modelSavedNote: 'هذه الإعدادات المحفوظة. قد يستخدم الوكيل متغيرات البيئة؛ يعرض التشغيل النموذج الذي أجاب فعلاً.',
     demoNotice: 'مساحة عرض. لا يوجد مزوّد متصل، لذا هذه النتائج ليست حقيقية.',
+    rebalanceTitle: 'إعادة التوازن التالية',
+    rebalancePreview: 'معاينة فقط',
+    rebalanceHint: 'معاينة للقراءة فقط مقابل المحفظة الورقية الحالية',
+    rebalanceEntering: 'داخل',
+    rebalanceLeaving: 'خارج',
+    rebalanceUnchanged: 'بلا تغيير',
+    rebalanceEmpty: 'لا أسماء ستتحرك.',
+    rebalanceClears: 'يجتاز {n} قواعد',
+    rebalanceNotTarget: 'ليس في الهدف',
+    rebalanceScope: 'معاينة فقط. لا يُنشأ أمر ولا يُرسل.',
     providerSettings: 'إعدادات API',
     none: 'لا شيء',
+    snapshots: 'اللقطات',
+    snapshotFreeze: 'تجميد لقطة',
+    snapshotName: 'اسم اللقطة',
+    snapshotNamePlaceholder: 'مثال: قبل إعادة التوازن',
+    snapshotSave: 'حفظ اللقطة',
+    snapshotCancel: 'إلغاء',
+    snapshotEmpty: 'لا لقطات بعد. جمّد الحساب للمقارنة لاحقًا.',
+    snapshotLocal: 'لقطات تجريبية محلية، وليست سجلاً لدى وسيط.',
+    snapshotFrozen: 'جُمّدت',
+    snapshotDemo: 'عرض',
+    snapshotCompare: 'قارن',
+    snapshotRewind: 'معاينة الرجوع',
+    snapshotAdded: 'أُضيف',
+    snapshotDropped: 'أُزيل',
+    snapshotCashDelta: 'تغيّر النقد',
+    snapshotNoChange: 'لا تغيير منذ هذه اللقطة.',
+    snapshotRestore: 'استعادة',
+    snapshotDrop: 'إزالة',
+    snapshotRewindNote: 'معاينة للقراءة فقط. لا رجوع فعلي ولا أمر يُرسل.',
+    snapshotRemove: 'حذف اللقطة',
+    snapshotConfirmRemove: 'تأكيد الحذف',
+    scheduledRuns: 'المهام المجدولة',
+    routeTitle: 'المسار الأسبوعي',
+    routeHint: 'مسار تجريبي ثابت: الشاشات المحفوظة، قوائم المتابعة، إعادة تشغيل الاستراتيجيات، ثم الأخبار.',
+    routeRun: 'شغّل المسار الأسبوعي',
+    routeRunAgain: 'شغّله مرة أخرى',
+    routeWalking: 'جارٍ السير في المسار…',
+    routeDone: 'انتهى المسار. لم يُشغّل أي شيء على الخادم.',
+    routeDoneStop: 'تم',
+    routeNextStart: 'البداية التالية',
+    routeFinishes: 'ينتهي',
+    routeSkipped: 'متجاوز',
+    routeWaiting: 'بالانتظار',
+    routeNow: 'الآن',
+    routeStops: 'محطات',
+    routeKindScreen: 'شاشة محفوظة',
+    routeKindWatchlist: 'قائمة متابعة',
+    routeKindStrategy: 'إعادة تشغيل استراتيجية',
+    routeKindNews: 'الأخبار',
+    routeRulesCount: '{n} قواعد',
+    routeSymbolsCount: '{n} رموز',
+    routeStoriesCount: '{n} أخبار',
+    routeSkipNoScreens: 'لا شاشة محفوظة في هذا المتصفح.',
+    routeSkipNoWatchlists: 'لا قائمة متابعة تحتوي رموزًا بعد.',
+    routeSkipNoStrategies: 'لا استراتيجية لإعادة تشغيلها.',
+    routeSkipNoNews: 'لا أخبار في هذه الجلسة.',
+    routeDemoNote: 'عرض فقط. لا تُنشأ مهمة ولا تُشغّل شاشة ولا يُرسل أي أمر.',
   },
 }

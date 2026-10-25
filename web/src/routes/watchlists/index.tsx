@@ -5,8 +5,20 @@ import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import type { Lang } from '../../i18n'
 import { quotes } from '../../data/mock'
 import { toggleWatch, useUser } from '../../store/user'
+import {
+  RETURN_AFTER_DAYS,
+  RETURN_REASONS,
+  clearReturn,
+  daysUntil,
+  isEligible,
+  partitionReturns,
+  recordReturn,
+  useReturns,
+} from '../../store/returns'
+import type { ReturnEntry, ReturnReason } from '../../store/returns'
 import { strings } from './strings'
 
 type Group = {
@@ -24,6 +36,15 @@ const CONFIRM_MS = 3000
 const QUOTE_BY_SYMBOL: Record<string, (typeof quotes)[number]> = Object.fromEntries(
   quotes.map((q) => [q.symbol, q] as const),
 )
+
+type S = (key: keyof (typeof strings)['en']) => string
+
+const REASON_KEYS: Record<ReturnReason, keyof (typeof strings)['en']> = {
+  valuation: 'reasonValuation',
+  risk: 'reasonRisk',
+  crowded: 'reasonCrowded',
+  other: 'reasonOther',
+}
 
 /** Accepts only symbols this build can render, and never twice in one group. */
 function cleanSymbols(value: unknown): string[] {
@@ -269,6 +290,91 @@ function HeadStat({ value, label, tracking }: { value: number; label: string; tr
   )
 }
 
+function ReturnsDock({
+  entries,
+  s,
+  lang,
+  onReadd,
+  onDismiss,
+}: {
+  entries: ReturnEntry[]
+  s: S
+  lang: Lang
+  onReadd: (entry: ReturnEntry) => void
+  onDismiss: (entry: ReturnEntry) => void
+}) {
+  const [now] = useState(() => Date.now())
+  const visible = entries.filter((entry) => Object.hasOwn(QUOTE_BY_SYMBOL, entry.symbol))
+  const { eligible, pending } = partitionReturns(visible, now)
+  if (visible.length === 0) return null
+  return (
+    <section className="mt-8 border-t border-line pt-4">
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className="t-section">{s('returnsTitle')}</h2>
+        <span className="num text-[11px] text-muted">{visible.length}</span>
+      </div>
+      <p className="mt-1 text-[11px] leading-snug text-muted">
+        {s('returnsHint').replace('{days}', String(RETURN_AFTER_DAYS))}
+      </p>
+      <ul className="mt-2">
+        {[...eligible, ...pending].map((entry) => {
+          const quote = QUOTE_BY_SYMBOL[entry.symbol]
+          if (!quote) return null
+          const ready = isEligible(entry, now)
+          return (
+            <li key={entry.id} className="border-t border-line py-3 first:border-t-0">
+              <div className="flex items-start justify-between gap-3">
+                <Link
+                  to={`/m/${entry.symbol}`}
+                  className="min-w-0 flex-1 py-1 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                >
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    <span className="num text-[13px] font-semibold">{entry.symbol}</span>
+                    {entry.example && (
+                      <span className="rounded-full border border-line px-1.5 py-0.5 text-[9px] leading-none text-muted">
+                        {s('returnsExample')}
+                      </span>
+                    )}
+                  </span>
+                  <span className="mt-1 block truncate text-[11px] leading-tight text-muted">
+                    {quote.name[lang]} · {s(REASON_KEYS[entry.reason])}
+                  </span>
+                </Link>
+                <div className="shrink-0 text-end">
+                  <p className="text-[10px] leading-snug text-muted">
+                    {ready
+                      ? s('returnsReady')
+                      : s('returnsInDays').replace('{days}', String(daysUntil(entry, now)))}
+                  </p>
+                  <div className="mt-1 flex items-center justify-end gap-1">
+                    {ready && (
+                      <button
+                        type="button"
+                        onClick={() => onReadd(entry)}
+                        className="min-h-11 rounded-full bg-solid px-3 text-[11px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
+                      >
+                        {s('readd')}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      aria-label={`${s('dismiss')}: ${entry.symbol}`}
+                      onClick={() => onDismiss(entry)}
+                      className="min-h-11 min-w-11 rounded-full px-2 text-[10px] text-muted transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                    >
+                      {s('dismiss')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+  )
+}
+
 export default function WatchlistsPage() {
   const { lang } = useI18n()
   const s = useStrings(strings)
@@ -292,6 +398,9 @@ export default function WatchlistsPage() {
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const [movingSymbol, setMovingSymbol] = useState<string | null>(null)
   const [moveTarget, setMoveTarget] = useState('')
+  const [removeAsk, setRemoveAsk] = useState<string | null>(null)
+  const [removeReason, setRemoveReason] = useState<ReturnReason>('valuation')
+  const returns = useReturns()
   const [pick, setPick] = useState(
     () => quotes.find((q) => !groups[0]?.symbols.includes(q.symbol))?.symbol ?? quotes[0].symbol,
   )
@@ -358,6 +467,7 @@ export default function WatchlistsPage() {
     setEditingId(null)
     setConfirmId(null)
     setMovingSymbol(null)
+    setRemoveAsk(null)
   }
 
   function startRename(group: Group) {
@@ -365,6 +475,7 @@ export default function WatchlistsPage() {
     setEditName(group.name)
     setConfirmId(null)
     setMovingSymbol(null)
+    setRemoveAsk(null)
   }
 
   function saveRename(e: FormEvent) {
@@ -386,6 +497,7 @@ export default function WatchlistsPage() {
     setEditingId((prev) => (prev === group.id ? null : prev))
     setConfirmId(null)
     setMovingSymbol(null)
+    setRemoveAsk(null)
   }
 
   // Moving is an inline picker rather than drag: a drag is invisible to anyone
@@ -397,6 +509,7 @@ export default function WatchlistsPage() {
     setMoveTarget(target.id)
     setConfirmId(null)
     setEditingId(null)
+    setRemoveAsk(null)
   }
 
   function commitMove(e: FormEvent, group: Group) {
@@ -420,6 +533,7 @@ export default function WatchlistsPage() {
       }),
     )
     setMovingSymbol(null)
+    clearReturnFor(symbol)
   }
 
   function addSymbol(e: FormEvent) {
@@ -427,8 +541,14 @@ export default function WatchlistsPage() {
     if (!active || active.symbols.includes(pick)) return
     if (active.id === DEFAULT_ID) setWatched(pick, true)
     patchGroup(active.id, (group) => ({ ...group, symbols: [pick, ...group.symbols] }))
+    clearReturnFor(pick)
     const next = quotes.find((q) => q.symbol !== pick && !active.symbols.includes(q.symbol))
     if (next) setPick(next.symbol)
+  }
+
+  function clearReturnFor(symbol: string) {
+    const entry = returns.find((item) => item.symbol === symbol)
+    if (entry) clearReturn(entry.id)
   }
 
   function removeSymbol(group: Group, symbol: string) {
@@ -436,9 +556,34 @@ export default function WatchlistsPage() {
     patchGroup(group.id, (g) => ({ ...g, symbols: g.symbols.filter((x) => x !== symbol) }))
   }
 
+  function readdSymbol(entry: ReturnEntry) {
+    const target =
+      groups.find((group) => group.id === entry.groupId) ??
+      groups.find((group) => group.id === DEFAULT_ID) ??
+      groups[0]
+    if (!target) {
+      // Every group was deleted while the row waited; the main list is the
+      // honest home for a symbol coming back.
+      setGroups([{ id: DEFAULT_ID, name: s('defaultGroup'), symbols: [entry.symbol] }])
+      setActiveId(DEFAULT_ID)
+      setWatched(entry.symbol, true)
+      clearReturn(entry.id)
+      return
+    }
+    if (target.id === DEFAULT_ID) setWatched(entry.symbol, true)
+    patchGroup(target.id, (group) =>
+      group.symbols.includes(entry.symbol)
+        ? group
+        : { ...group, symbols: [entry.symbol, ...group.symbols] },
+    )
+    setActiveId(target.id)
+    clearReturn(entry.id)
+  }
+
   function toggleStar(symbol: string) {
     const watched = watchlist.includes(symbol)
     toggleWatch(symbol)
+    if (!watched) clearReturnFor(symbol)
     // The seeded group mirrors the primary list, wherever the star is tapped.
     if (groups.some((g) => g.id === DEFAULT_ID)) {
       patchGroup(DEFAULT_ID, (g) => ({
@@ -489,6 +634,7 @@ export default function WatchlistsPage() {
                   setEditingId(null)
                   setConfirmId(null)
                   setMovingSymbol(null)
+                  setRemoveAsk(null)
                   const next = quotes.find((q) => !group.symbols.includes(q.symbol))
                   if (next) setPick(next.symbol)
                 }}
@@ -711,9 +857,22 @@ export default function WatchlistsPage() {
                     </button>
                     <button
                       type="button"
+                      aria-expanded={removeAsk === q.symbol}
+                      aria-controls={removeAsk === q.symbol ? `wl-remove-${q.symbol}` : undefined}
                       aria-label={`${s('removeFromGroup')}: ${q.symbol}`}
-                      onClick={() => removeSymbol(active, q.symbol)}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                      onClick={() => {
+                        if (removeAsk === q.symbol) {
+                          setRemoveAsk(null)
+                        } else {
+                          setRemoveAsk(q.symbol)
+                          setRemoveReason('valuation')
+                          setMovingSymbol(null)
+                        }
+                      }}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                      style={{
+                        color: removeAsk === q.symbol ? 'var(--color-fg)' : 'var(--color-muted)',
+                      }}
                     >
                       <MinusIcon />
                     </button>
@@ -776,6 +935,64 @@ export default function WatchlistsPage() {
                         </IconBtn>
                       </form>
                     )}
+                    {removeAsk === q.symbol && (
+                      <div
+                        id={`wl-remove-${q.symbol}`}
+                        className="w-full pb-3"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') setRemoveAsk(null)
+                        }}
+                      >
+                        <p className="t-kicker">{s('removeReasonTitle')}</p>
+                        <p className="mt-1 text-[11px] leading-snug text-muted">
+                          {s('removeReasonHint').replace('{days}', String(RETURN_AFTER_DAYS))}
+                        </p>
+                        <div
+                          role="group"
+                          aria-label={s('removeReasonTitle')}
+                          className="mt-2 flex flex-wrap gap-2"
+                        >
+                          {RETURN_REASONS.map((reason) => {
+                            const selected = removeReason === reason
+                            return (
+                              <button
+                                key={reason}
+                                type="button"
+                                aria-pressed={selected}
+                                onClick={() => setRemoveReason(reason)}
+                                className={`min-h-11 rounded-full px-3 text-[11px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg ${
+                                  selected
+                                    ? 'bg-fg text-bg'
+                                    : 'border border-line text-muted'
+                                }`}
+                              >
+                                {s(REASON_KEYS[reason])}
+                              </button>
+                            )
+                          })}
+                        </div>
+                        <div className="mt-2 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              removeSymbol(active, q.symbol)
+                              recordReturn(q.symbol, active.id, removeReason)
+                              setRemoveAsk(null)
+                            }}
+                            className="min-h-11 rounded-full bg-solid px-4 text-[12px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
+                          >
+                            {s('confirmRemove')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setRemoveAsk(null)}
+                            className="min-h-11 rounded-full px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                          >
+                            {s('cancel')}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </li>
                 )
               })}
@@ -783,6 +1000,16 @@ export default function WatchlistsPage() {
           )}
         </section>
       ) : null}
+
+      {returns.length > 0 && (
+        <ReturnsDock
+          entries={returns}
+          s={s}
+          lang={lang}
+          onReadd={readdSymbol}
+          onDismiss={(entry) => clearReturn(entry.id)}
+        />
+      )}
     </Screen>
   )
 }

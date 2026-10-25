@@ -5,6 +5,7 @@ import { Screen } from '../../components/Screen'
 import { Sheet } from '../../components/Sheet'
 import { Skeleton } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import { fill } from '../../i18n/format'
 import { news, quotes, sectors, strategies } from '../../data/mock'
 import { membersChange, membersOf } from '../../data/membership'
 import { useOnline } from '../../lib/useOnline'
@@ -15,6 +16,10 @@ import type { RunPreview } from '../../api/ai'
 import { AgentMarkdown } from './Markdown'
 import { ThinkingPanel } from './ThinkingPanel'
 import { RunCard } from './RunCard'
+import { ReceiptCard } from './ReceiptCard'
+import { metricRegistry, numeralProvenance } from './numerals'
+import { receiptFor } from './refusal'
+import type { MetricKey } from './metrics'
 import { mergeChips, sameChip, toneOf } from './chat'
 import type { CtxRef } from './chat'
 import { takeIntake } from './intake'
@@ -132,6 +137,7 @@ export default function AiPage() {
   const [failedPrompt, setFailedPrompt] = useState('')
   const [reloadTick, setReloadTick] = useState(0)
   const [now, setNow] = useState(() => Date.now())
+  const [pulse, setPulse] = useState<{ id: string; metric: MetricKey } | null>(null)
   const liveActive = live !== null
 
   const liveRef = useRef<LiveTurn | null>(null)
@@ -143,6 +149,7 @@ export default function AiPage() {
   const previousMessageCount = useRef(0)
   const stoppedAt = useRef(0)
   const stoppedAttempt = useRef<string | null>(null)
+  const pulseTimer = useRef<number | null>(null)
   const streamReady = useRef<{
     sid: string | null
     ready: boolean
@@ -150,6 +157,13 @@ export default function AiPage() {
   }>({ sid: null, ready: false, waiters: [] })
   const endRef = useRef<HTMLDivElement | null>(null)
   const composerRef = useRef<HTMLTextAreaElement | null>(null)
+
+  // The numeral highlight is a 1.2s flash, not selection state.
+  useEffect(() => {
+    return () => {
+      if (pulseTimer.current) window.clearTimeout(pulseTimer.current)
+    }
+  }, [])
 
   // Demo never contacts the backend. Live health is a hint, not a gate.
   useEffect(() => {
@@ -580,6 +594,13 @@ export default function AiPage() {
     void send(input)
   }
 
+  // A traced number points at its metric: flash the card field for 1.2s.
+  function showMetric(messageId: string, metric: MetricKey) {
+    setPulse({ id: messageId, metric })
+    if (pulseTimer.current) window.clearTimeout(pulseTimer.current)
+    pulseTimer.current = window.setTimeout(() => setPulse(null), 1200)
+  }
+
   function onComposerKey(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing) return
     event.preventDefault()
@@ -796,6 +817,22 @@ export default function AiPage() {
             const previous = messages[index - 1]
             const showDay =
               !previous || new Date(previous.at).toDateString() !== new Date(message.at).toDateString()
+            const answered = message.role === 'assistant' && message.status !== 'failed'
+            // A run that is still loading must not read as "0 traced"; wait for the card.
+            const canTrace = answered && (!message.runId || Boolean(message.run))
+            const provenance = canTrace ? numeralProvenance(message.text, message.run, lang) : null
+            const trace = provenance
+              ? {
+                  metrics: metricRegistry(message.run?.metrics, lang),
+                  tracedLabel: s('numeralTracedHint'),
+                  untracedLabel: s('numeralUntraced'),
+                  onTrace: (metric: MetricKey) => showMetric(message.id, metric),
+                }
+              : undefined
+            const receipt =
+              answered || message.role === 'user'
+                ? receiptFor(message.text, message.role, message.at)
+                : null
             return (
               <Fragment key={message.id}>
                 {showDay && (
@@ -808,18 +845,36 @@ export default function AiPage() {
                   </p>
                 )}
                 {message.role === 'user' ? (
-                  <div className="flex justify-end">
-                    <div className="max-w-[85%] rounded-2xl bg-surface px-4 py-2.5">
-                      <p dir="auto" className="text-start text-[14px] leading-relaxed break-words whitespace-pre-wrap">
-                        {message.text}
-                      </p>
+                  <>
+                    <div className="flex justify-end">
+                      <div className="max-w-[85%] rounded-2xl bg-surface px-4 py-2.5">
+                        <p dir="auto" className="text-start text-[14px] leading-relaxed break-words whitespace-pre-wrap">
+                          {message.text}
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                    {receipt && <ReceiptCard receipt={receipt} compact />}
+                  </>
                 ) : (
                   <div className="space-y-3">
                     <ThinkingPanel message={message} now={now} />
-                    {message.text && <AgentMarkdown text={message.text} />}
-                    {message.run && <RunCard run={message.run} />}
+                    {message.text && <AgentMarkdown text={message.text} trace={trace} />}
+                    {receipt && <ReceiptCard receipt={receipt} />}
+                    {provenance && provenance.total > 0 && (
+                      <p className="text-[10px] leading-relaxed text-muted">
+                        {fill(
+                          s(provenance.total === 1 ? 'numeralFooterOne' : 'numeralFooter'),
+                          { n: provenance.total, k: provenance.traced },
+                        )}
+                        {provenance.traced < provenance.total && <> · {s('numeralLegend')}</>}
+                      </p>
+                    )}
+                    {message.run && (
+                      <RunCard
+                        run={message.run}
+                        pulseMetric={pulse?.id === message.id ? pulse.metric : null}
+                      />
+                    )}
                     {message.status === 'cancelled' && !message.text && (
                       <p className="text-[12px] text-muted">{s('cancelled')}</p>
                     )}

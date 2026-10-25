@@ -41,6 +41,13 @@ export type RunsStrings = {
   srcPeers: string
   srcSector: string
   srcScreener: string
+  filterLabel: string
+  filterAll: string
+  filterDeclined: string
+  declinedEmpty: string
+  declinedCount: string
+  declinedHint: string
+  declinedFailed: string
 }
 
 export const strings = {
@@ -88,6 +95,13 @@ export const strings = {
     srcPeers: '同业估值',
     srcSector: '板块行情 · 能源',
     srcScreener: '筛选结果',
+    filterLabel: '筛选会话',
+    filterAll: '全部',
+    filterDeclined: '已拦下',
+    declinedEmpty: '这段历史里没有越过产品边界的提问。',
+    declinedCount: '{n} 条已拦下',
+    declinedHint: '只看要求建议、代下单或保证收益的提问。',
+    declinedFailed: '有会话没能检查，结果可能不完整。',
   },
   en: {
     title: 'Sessions',
@@ -133,6 +147,13 @@ export const strings = {
     srcPeers: 'Peer multiples',
     srcSector: 'Sector tape · Energy',
     srcScreener: 'Screener result',
+    filterLabel: 'Filter sessions',
+    filterAll: 'All',
+    filterDeclined: 'Declined',
+    declinedEmpty: 'No request in this history crossed the product boundary.',
+    declinedCount: '{n} declined',
+    declinedHint: 'Only requests for advice, an order, or a guaranteed return.',
+    declinedFailed: 'Some sessions could not be checked; results may be incomplete.',
   },
   ar: {
     title: 'سجل الجلسات',
@@ -178,5 +199,12 @@ export const strings = {
     srcPeers: 'مضاعفات الأقران',
     srcSector: 'مؤشر القطاع · الطاقة',
     srcScreener: 'نتيجة الفلتر',
+    filterLabel: 'تصفية الجلسات',
+    filterAll: 'الكل',
+    filterDeclined: 'مرفوضة',
+    declinedEmpty: 'لا يوجد في هذا السجل طلب تجاوز حدود المنتج.',
+    declinedCount: '{n} مرفوضة',
+    declinedHint: 'الطلبات التي تسأل عن نصيحة أو أمر أو عائد مضمون.',
+    declinedFailed: 'تعذّر فحص بعض الجلسات، وقد تكون النتائج ناقصة.',
   },
 } satisfies Dict<RunsStrings>

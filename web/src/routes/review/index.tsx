@@ -9,6 +9,7 @@ import type { Quote, Sector } from '../../data/mock'
 import { membersChange, membersOf } from '../../data/membership'
 import { useUser } from '../../store/user'
 import { strings } from './strings'
+import { ConfidenceBook } from './ConfidenceBook'
 
 /** Plot height in px; the h-[188px] class on the plot must match. */
 const PLOT_H = 188
@@ -672,7 +673,10 @@ export default function ReviewPage() {
         )}
       </section>
 
-      {/* 4 · takeaways */}
+      {/* 4 · confidence book */}
+      <ConfidenceBook />
+
+      {/* 5 · takeaways */}
       <section className="mt-6" aria-label={s('takeLabel')}>
         <p className="t-kicker" style={kicker}>
           {s('takeLabel')}

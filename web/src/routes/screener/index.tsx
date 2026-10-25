@@ -3,9 +3,9 @@ import type { FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
-import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
-import type { Lang } from '../../i18n'
+import { fill } from '../../i18n/format'
+import { isDataStale } from '../../lib/freshness'
 import { quotes } from '../../data/mock'
 import {
   MAX_RULES,
@@ -23,6 +23,11 @@ import {
   storeScreens,
 } from './rules'
 import type { Field, Op, PresetId, Rule, SavedScreen } from './rules'
+import { counterfactual, funnel, relaxations, shariaBuckets } from './audit'
+import type { Relaxation } from './audit'
+import { StaleNotice, ShariaAudit, ZeroAutopsy } from './AuditPanels'
+import { Counterfactual, Pipeline } from './Pipeline'
+import { FIELD_KEY, FIELD_ORDER, FIELD_STEP, FIELD_UNIT, OP_SYMBOL, ruleText } from './format'
 import { screenerStrings } from './strings'
 import type { ScreenerStrings } from './strings'
 
@@ -32,27 +37,10 @@ const PRESET_KEY: Record<PresetId, keyof ScreenerStrings> = {
   calm: 'presetCalm',
 }
 
-const FIELD_ORDER: readonly Field[] = ['change', 'price', 'turnover']
-
-const FIELD_KEY: Record<Field, keyof ScreenerStrings> = {
-  change: 'fieldChange',
-  price: 'fieldPrice',
-  turnover: 'fieldTurnover',
-}
-
 const OP_OPTIONS: readonly { value: Op; key: 'opLt' | 'opGt' }[] = [
   { value: 'lt', key: 'opLt' },
   { value: 'gt', key: 'opGt' },
 ]
-
-const OP_SYMBOL: Record<Op, string> = { lt: '<', gt: '>' }
-
-const FIELD_STEP: Record<Field, number> = { change: 0.1, price: 0.01, turnover: 0.5 }
-
-const FIELD_UNIT: Record<Field, string | null> = { change: '%', price: null, turnover: '%' }
-
-/** Input precision per field; chips and row reasons print the same digits. */
-const FIELD_DIGITS: Record<Field, number> = { change: 2, price: 2, turnover: 1 }
 
 type SortKey = 'change' | 'price' | 'name'
 type SortDir = 'desc' | 'asc'
@@ -65,30 +53,6 @@ const SORT_COLUMNS: readonly {
   { key: 'price', label: 'priceHeader' },
   { key: 'change', label: 'changeHeader' },
 ]
-
-const fillName = (template: string, name: string) => template.replace('{name}', name)
-
-/** Count sentence: `{n}` and `{total}` are already locale-formatted. */
-const fillCount = (template: string, n: string, total: string) =>
-  template.replace('{n}', n).replace('{total}', total)
-
-/**
- * One rule written out. Without `current` it reads as the chip ("涨跌 > 0%");
- * with it, as the reason a row cleared ("涨跌 0.60% > 0%").
- */
-function ruleText(
-  rule: Rule,
-  threshold: number,
-  label: string,
-  lang: Lang,
-  current?: number,
-) {
-  const unit = FIELD_UNIT[rule.field] ?? ''
-  const digits = FIELD_DIGITS[rule.field]
-  const limit = fmtNum(threshold, lang, digits, unit)
-  if (current === undefined) return `${label} ${OP_SYMBOL[rule.op]} ${limit}`
-  return `${label} ${fmtNum(current, lang, digits, unit)} ${OP_SYMBOL[rule.op]} ${limit}`
-}
 
 function IconChevron() {
   return (
@@ -173,6 +137,7 @@ export default function ScreenerPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [status, setStatus] = useState('')
   const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'change', dir: 'desc' })
+  const [snapshotOpen, setSnapshotOpen] = useState(false)
   const rowRefs = useRef<Record<string, HTMLLIElement | null>>({})
 
   // A handoff from the AI carries the preset in the URL. Apply it when the
@@ -201,15 +166,28 @@ export default function ScreenerPage() {
     [rules],
   )
 
+  const [now] = useState(() => Date.now())
+  const stale = isDataStale(now)
+  const snapshotVisible = !stale || snapshotOpen
+
+  const buckets = useMemo(() => shariaBuckets(quotes), [])
+  const ruleMatches = useMemo(() => applyRules(buckets.compliant, rules), [buckets, rules])
+
   const results = useMemo(() => {
-    const filtered = applyRules(quotes, rules)
     const dir = sort.dir === 'asc' ? 1 : -1
-    return [...filtered].sort((a, b) => {
+    return [...ruleMatches].sort((a, b) => {
       if (sort.key === 'name') return a.name[lang].localeCompare(b.name[lang]) * dir
       const delta = sort.key === 'price' ? a.price - b.price : a.change - b.change
       return delta === 0 ? a.symbol.localeCompare(b.symbol) : delta * dir
     })
-  }, [rules, sort, lang])
+  }, [ruleMatches, sort, lang])
+
+  const stages = useMemo(() => funnel(buckets.compliant, rules), [buckets, rules])
+  const candidates = useMemo(
+    () => (results.length === 0 ? relaxations(buckets.compliant, rules) : []),
+    [buckets, rules, results.length],
+  )
+  const whatIf = useMemo(() => counterfactual(buckets, rules), [buckets, rules])
 
   const kicker = {
     color: 'var(--color-muted)',
@@ -327,6 +305,11 @@ export default function ScreenerPage() {
     setActiveId(null)
   }
 
+  function applyRelaxation(candidate: Relaxation) {
+    setActiveId(null)
+    setRules(candidate.rules)
+  }
+
   const showsTurnoverHint = rules.some((rule) => rule.field === 'turnover')
 
   return (
@@ -413,7 +396,7 @@ export default function ScreenerPage() {
                   </button>
                   <button
                     type="button"
-                    aria-label={fillName(s('removeFilterAria'), text)}
+                    aria-label={fill(s('removeFilterAria'), { name: text })}
                     onClick={() => removeRule(rule.id)}
                     className="flex h-11 w-11 shrink-0 items-center justify-center rounded-e-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     style={{ color: 'var(--color-muted)' }}
@@ -548,46 +531,77 @@ export default function ScreenerPage() {
         )}
       </section>
 
-      <section className="mt-8" aria-label={s('resultsTitle')}>
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p
-              aria-live="polite"
-              aria-atomic="true"
-              className="text-[15px] leading-snug"
-              style={{ color: 'var(--color-fg)' }}
-            >
-              {fillCount(
-                s('resultsCount'),
-                fmtNum(results.length, lang, 0),
-                fmtNum(quotes.length, lang, 0),
-              )}
-            </p>
-          </div>
-          <span
-            className="shrink-0 text-[11px] leading-none"
-            style={{ color: 'var(--color-muted)' }}
-          >
-            {s('liveHint')}
-          </span>
-        </div>
+      {stale && (
+        <StaleNotice
+          s={s}
+          lang={lang}
+          now={now}
+          snapshotOpen={snapshotOpen}
+          onToggle={() => setSnapshotOpen((open) => !open)}
+        />
+      )}
 
-        {results.length === 0 ? (
-          <EmptyState
-            text={s('resultsEmpty')}
-            action={
-              <button
-                type="button"
-                onClick={relaxRules}
-                className="min-h-11 rounded-full px-4 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-                style={{ border: '1px solid var(--color-line)' }}
-              >
-                {s('relax')}
-              </button>
-            }
+      {snapshotVisible && (
+        <>
+          {stale && (
+            <p
+              role="note"
+              className="mt-3 text-[11px] leading-snug"
+              style={{ color: 'var(--color-muted)' }}
+            >
+              {s('snapshotNotice')}
+            </p>
+          )}
+
+          <Pipeline
+            s={s}
+            lang={lang}
+            stages={[
+              { key: 'pipelineSharia', kept: buckets.compliant.length, from: buckets.total },
+              {
+                key: 'pipelineRules',
+                kept: ruleMatches.length,
+                from: buckets.compliant.length,
+              },
+              { key: 'pipelineRank', kept: results.length, from: ruleMatches.length },
+            ]}
           />
-        ) : (
-          <div className="mt-5 border-t border-line">
+
+          <section className="mt-8" aria-label={s('resultsTitle')}>
+            <div className="flex items-center justify-between gap-3">
+              <p
+                aria-live="polite"
+                aria-atomic="true"
+                className="text-[15px] leading-snug"
+                style={{ color: 'var(--color-fg)' }}
+              >
+                {fill(s('resultsCount'), {
+                  n: fmtNum(results.length, lang, 0),
+                  total: fmtNum(quotes.length, lang, 0),
+                })}
+              </p>
+              {!stale && (
+                <span
+                  className="shrink-0 text-[11px] leading-none"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  {s('liveHint')}
+                </span>
+              )}
+            </div>
+
+            {results.length === 0 ? (
+              <ZeroAutopsy
+                s={s}
+                lang={lang}
+                buckets={buckets}
+                stages={stages}
+                candidates={candidates}
+                onApply={applyRelaxation}
+                onClear={relaxRules}
+              />
+            ) : (
+              <div className="mt-5 border-t border-line">
             <div className="grid min-h-11 grid-cols-[minmax(0,1fr)_78px_66px] items-center gap-x-2">
               {SORT_COLUMNS.map((column) => {
                 const active = sort.key === column.key
@@ -668,7 +682,12 @@ export default function ScreenerPage() {
             </ul>
           </div>
         )}
-      </section>
+          </section>
+
+          <ShariaAudit s={s} lang={lang} buckets={buckets} />
+          <Counterfactual s={s} lang={lang} entries={whatIf} />
+        </>
+      )}
 
       <section className="mt-8" aria-labelledby="screener-saved">
         <div className="flex items-baseline justify-between gap-3">
@@ -735,7 +754,7 @@ export default function ScreenerPage() {
                   <button
                     type="button"
                     onClick={() => openScreen(screen)}
-                    aria-label={fillName(s('loadAria'), screen.name)}
+                    aria-label={fill(s('loadAria'), { name: screen.name })}
                     className="flex h-11 min-w-0 items-center gap-1.5 rounded-s-full ps-3.5 pe-2 text-[12px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                   >
                     <span className="max-w-[180px] truncate">{screen.name}</span>
@@ -749,7 +768,7 @@ export default function ScreenerPage() {
                   <button
                     type="button"
                     onClick={() => duplicateScreen(screen.id)}
-                    aria-label={fillName(s('duplicateAria'), screen.name)}
+                    aria-label={fill(s('duplicateAria'), { name: screen.name })}
                     className="flex h-11 w-11 shrink-0 items-center justify-center transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     style={{ color: 'var(--color-muted)' }}
                   >
@@ -764,7 +783,7 @@ export default function ScreenerPage() {
                     aria-label={
                       confirmDelete === screen.id
                         ? s('confirmDelete')
-                        : fillName(s('deleteAria'), screen.name)
+                        : fill(s('deleteAria'), { name: screen.name })
                     }
                     className={`flex h-11 shrink-0 items-center justify-center rounded-e-full transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                       confirmDelete === screen.id ? 'min-w-0 px-2' : 'w-11'

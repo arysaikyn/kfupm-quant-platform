@@ -25,6 +25,20 @@ type Strings = {
   moveTo: string
   addToWatch: string
   removeFromWatch: string
+  removeReasonTitle: string
+  removeReasonHint: string
+  reasonValuation: string
+  reasonRisk: string
+  reasonCrowded: string
+  reasonOther: string
+  confirmRemove: string
+  returnsTitle: string
+  returnsHint: string
+  returnsReady: string
+  returnsInDays: string
+  returnsExample: string
+  readd: string
+  dismiss: string
 }
 
 export const strings = {
@@ -53,6 +67,20 @@ export const strings = {
     moveTo: '移动到',
     addToWatch: '加入主自选',
     removeFromWatch: '移出主自选',
+    removeReasonTitle: '为什么移出？',
+    removeReasonHint: '{days} 天后会回到这里，想加回随时可以。',
+    reasonValuation: '太贵了',
+    reasonRisk: '风险太高',
+    reasonCrowded: '太拥挤',
+    reasonOther: '其他',
+    confirmRemove: '移出',
+    returnsTitle: '移出回顾',
+    returnsHint: '移出的标的会在 {days} 天后回到这里。',
+    returnsReady: '可以加回',
+    returnsInDays: '{days} 天后回来',
+    returnsExample: '示例',
+    readd: '加回',
+    dismiss: '不再提醒',
   },
   en: {
     title: 'Watchlists',
@@ -79,6 +107,20 @@ export const strings = {
     moveTo: 'Move to',
     addToWatch: 'Add to main watchlist',
     removeFromWatch: 'Remove from main watchlist',
+    removeReasonTitle: 'Why remove it?',
+    removeReasonHint: 'It comes back here in {days} days if you still want it.',
+    reasonValuation: 'Too expensive',
+    reasonRisk: 'Too risky',
+    reasonCrowded: 'Too crowded',
+    reasonOther: 'Other',
+    confirmRemove: 'Remove',
+    returnsTitle: 'Returns',
+    returnsHint: 'Symbols you removed come back here after {days} days.',
+    returnsReady: 'Ready to re-add',
+    returnsInDays: 'Back in {days} days',
+    returnsExample: 'Example',
+    readd: 'Re-add',
+    dismiss: 'Dismiss',
   },
   ar: {
     title: 'قوائم المتابعة',
@@ -105,5 +147,19 @@ export const strings = {
     moveTo: 'نقل إلى',
     addToWatch: 'إضافة إلى قائمة المتابعة',
     removeFromWatch: 'إزالة من قائمة المتابعة',
+    removeReasonTitle: 'لماذا الإزالة؟',
+    removeReasonHint: 'يعود إلى هنا بعد {days} أيام إذا أردت ذلك.',
+    reasonValuation: 'مكلف جدًا',
+    reasonRisk: 'مخاطرة عالية',
+    reasonCrowded: 'مزدحم جدًا',
+    reasonOther: 'أخرى',
+    confirmRemove: 'إزالة',
+    returnsTitle: 'العودة',
+    returnsHint: 'تعود الرموز التي أزلتها إلى هنا بعد {days} أيام.',
+    returnsReady: 'جاهز للإعادة',
+    returnsInDays: 'يعود بعد {days} أيام',
+    returnsExample: 'مثال',
+    readd: 'أعد الإضافة',
+    dismiss: 'تجاهل',
   },
 } satisfies Dict<Strings>

@@ -1,12 +1,24 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
 import { EmptyState, Skeleton } from '../../components/states'
 import { Screen } from '../../components/Screen'
-import { fmtDate } from '../../i18n/format'
+import { fmtClock, fmtDate, fmtDateTime } from '../../i18n/format'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
+import { useReducedMotion } from '../../hooks/useReducedMotion'
 import { useAiMode } from '../../store/aiMode'
+import { RebalancePreview } from './RebalancePreview'
+import {
+  accountLedger,
+  diffLedgers,
+  freezePaperAccount,
+  removePaperSnapshot,
+  rewindPreview,
+  snapshotLedger,
+  usePaperSnapshots,
+} from '../../store/paper'
+import type { PaperDiff, PaperPosition, PaperSnapshot } from '../../store/paper'
 import { aiApi } from '../../api/ai'
 import type {
   AlphaSummary,
@@ -17,6 +29,8 @@ import type {
   ScheduledRun,
 } from '../../api/ai'
 import { setIntake } from '../ai/intake'
+import { buildRouteSheet, readRouteInput } from './routeSheet'
+import type { RouteSheet, RouteSkipReason, RouteStop, RouteStopKind } from './routeSheet'
 import { strings } from './strings'
 import type { WorkspaceStrings } from './strings'
 
@@ -230,6 +244,247 @@ function RunsPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
   )
 }
 
+function PositionSymbols({ positions, empty }: { positions: PaperPosition[]; empty: string }) {
+  if (positions.length === 0) return <span className="num text-muted">{empty}</span>
+  return <span className="num">{positions.map((position) => position.symbol).join(' · ')}</span>
+}
+
+function SnapshotDiff({ diff, currency, s, lang }: { diff: PaperDiff; currency: string; s: S; lang: 'zh' | 'en' | 'ar' }) {
+  const changed =
+    diff.added.length > 0 ||
+    diff.dropped.length > 0 ||
+    diff.cashDelta !== 0 ||
+    diff.positionCountDelta !== 0
+  if (!changed) {
+    return <p className="text-muted">{s('snapshotNoChange')}</p>
+  }
+  return (
+    <>
+      <p>
+        <span className="text-muted">{s('snapshotAdded')}: </span>
+        <PositionSymbols positions={diff.added} empty={s('none')} />
+      </p>
+      <p className="mt-1">
+        <span className="text-muted">{s('snapshotDropped')}: </span>
+        <PositionSymbols positions={diff.dropped} empty={s('none')} />
+      </p>
+      <p className="mt-1">
+        <span className="text-muted">{s('snapshotCashDelta')}: </span>
+        <span className="num">
+          {diff.cashDelta > 0 ? '+' : ''}
+          {fmtNum(diff.cashDelta, lang, 2)} {currency}
+        </span>
+      </p>
+    </>
+  )
+}
+
+function SnapshotItem({
+  snapshot,
+  account,
+  s,
+  lang,
+}: {
+  snapshot: PaperSnapshot
+  account: PaperAccount
+  s: S
+  lang: 'zh' | 'en' | 'ar'
+}) {
+  const [open, setOpen] = useState<'diff' | 'rewind' | null>(null)
+  const [confirmRemove, setConfirmRemove] = useState(false)
+  const current = accountLedger(account)
+  const compare = diffLedgers(snapshotLedger(snapshot), current)
+  const rewind = rewindPreview(snapshot, current)
+
+  return (
+    <li className="border-t border-line py-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <p className="truncate text-[12px] font-medium">{snapshot.label}</p>
+            <span className="shrink-0 rounded-full border border-line px-1.5 py-0.5 text-[9px] leading-none text-muted">
+              {s('snapshotDemo')}
+            </span>
+          </div>
+          <p className="mt-1 text-[10px] leading-snug text-muted">
+            {s('snapshotFrozen')} <span className="num">{fmtDate(snapshot.createdAt, lang)}</span>
+            {' · '}
+            {s('cash')} <span className="num">{fmtNum(snapshot.cash, lang, 2)}</span> {snapshot.currency}
+            {' · '}
+            {s('positions')} <span className="num">{snapshot.positionCount}</span>
+          </p>
+        </div>
+        {confirmRemove ? (
+          <button
+            type="button"
+            onClick={() => {
+              removePaperSnapshot(snapshot.id)
+              setConfirmRemove(false)
+            }}
+            className="flex min-h-11 shrink-0 items-center rounded-full px-2 text-[10px] font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+            style={{ color: 'var(--color-danger)' }}
+          >
+            {s('snapshotConfirmRemove')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label={`${s('snapshotRemove')}: ${snapshot.label}`}
+            onClick={() => setConfirmRemove(true)}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      <div className="mt-1.5 flex flex-wrap gap-2">
+        <button
+          type="button"
+          aria-expanded={open === 'diff'}
+          onClick={() => setOpen(open === 'diff' ? null : 'diff')}
+          className="min-h-11 rounded-full border border-line px-3 text-[11px] text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        >
+          {s('snapshotCompare')}
+        </button>
+        <button
+          type="button"
+          aria-expanded={open === 'rewind'}
+          onClick={() => setOpen(open === 'rewind' ? null : 'rewind')}
+          className="min-h-11 rounded-full border border-line px-3 text-[11px] text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        >
+          {s('snapshotRewind')}
+        </button>
+      </div>
+
+      {open === 'diff' && (
+        <div className="mt-2 rounded-lg bg-fg/5 p-2.5 text-[11px] leading-relaxed">
+          <SnapshotDiff diff={compare} currency={snapshot.currency} s={s} lang={lang} />
+        </div>
+      )}
+
+      {open === 'rewind' && (
+        <div className="mt-2 rounded-lg bg-fg/5 p-2.5 text-[11px] leading-relaxed">
+          <p>
+            <span className="text-muted">{s('snapshotRestore')}: </span>
+            <PositionSymbols positions={rewind.added} empty={s('none')} />
+          </p>
+          <p className="mt-1">
+            <span className="text-muted">{s('snapshotDrop')}: </span>
+            <PositionSymbols positions={rewind.dropped} empty={s('none')} />
+          </p>
+          <p className="mt-1">
+            <span className="text-muted">{s('snapshotCashDelta')}: </span>
+            <span className="num">
+              {rewind.cashDelta > 0 ? '+' : ''}
+              {fmtNum(rewind.cashDelta, lang, 2)} {snapshot.currency}
+            </span>
+          </p>
+          <p className="mt-1.5 text-[10px] leading-snug text-muted">{s('snapshotRewindNote')}</p>
+        </div>
+      )}
+    </li>
+  )
+}
+
+function AccountSnapshots({ account, s, lang }: { account: PaperAccount; s: S; lang: 'zh' | 'en' | 'ar' }) {
+  const snapshots = usePaperSnapshots()
+  const mine = snapshots.filter((snapshot) => snapshot.accountId === account.id)
+  const [freeze, setFreeze] = useState(false)
+  const [name, setName] = useState('')
+  const inputId = `cp-name-${account.id}`
+  const formId = `cp-form-${account.id}`
+
+  return (
+    <section className="mt-3 border-t border-line pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="t-kicker text-muted">
+          {s('snapshots')} <span className="num">{mine.length}</span>
+        </p>
+        <button
+          type="button"
+          aria-expanded={freeze}
+          aria-controls={freeze ? formId : undefined}
+          onClick={() => setFreeze((value) => !value)}
+          className="min-h-11 rounded-full border border-line px-3 text-[11px] text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        >
+          {s('snapshotFreeze')}
+        </button>
+      </div>
+
+      {freeze && (
+        <form
+          id={formId}
+          onSubmit={(event) => {
+            event.preventDefault()
+            if (freezePaperAccount(account, name)) {
+              setName('')
+              setFreeze(false)
+            }
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              setFreeze(false)
+              setName('')
+            }
+          }}
+          className="mt-2 flex flex-wrap items-center gap-2"
+        >
+          <label htmlFor={inputId} className="sr-only">
+            {s('snapshotName')}
+          </label>
+          <input
+            id={inputId}
+            autoFocus
+            value={name}
+            maxLength={40}
+            placeholder={s('snapshotNamePlaceholder')}
+            onChange={(event) => setName(event.target.value)}
+            className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
+          />
+          <button
+            type="submit"
+            disabled={!name.trim()}
+            className="min-h-11 shrink-0 rounded-full bg-solid px-3 text-[12px] font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          >
+            {s('snapshotSave')}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFreeze(false)
+              setName('')
+            }}
+            className="min-h-11 shrink-0 rounded-full px-2 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          >
+            {s('snapshotCancel')}
+          </button>
+        </form>
+      )}
+
+      {mine.length === 0 ? (
+        <p className="mt-2 text-[11px] leading-snug text-muted">{s('snapshotEmpty')}</p>
+      ) : (
+        <ul className="mt-1">
+          {mine.map((snapshot) => (
+            <SnapshotItem
+              key={snapshot.id}
+              snapshot={snapshot}
+              account={account}
+              s={s}
+              lang={lang}
+            />
+          ))}
+        </ul>
+      )}
+
+      <p className="mt-2 text-[10px] leading-snug text-muted">{s('snapshotLocal')}</p>
+    </section>
+  )
+}
+
 function PaperPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
   const navigate = useNavigate()
   const { data, error, loading, retry } = useRemote<PaperAccount[]>(
@@ -272,6 +527,8 @@ function PaperPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
               navigate('/ai')
             }}
           />
+          <AccountSnapshots account={account} s={s} lang={lang} />
+          <RebalancePreview account={account} s={s} />
         </Row>
       ))}
     </ul>
@@ -368,45 +625,230 @@ function AlphasPanel({ s }: { s: S }) {
   )
 }
 
+const ROUTE_KIND_KEYS: Record<RouteStopKind, keyof WorkspaceStrings> = {
+  screen: 'routeKindScreen',
+  watchlist: 'routeKindWatchlist',
+  strategy: 'routeKindStrategy',
+  news: 'routeKindNews',
+}
+
+const ROUTE_SKIP_KEYS: Record<RouteSkipReason, keyof WorkspaceStrings> = {
+  noScreens: 'routeSkipNoScreens',
+  noWatchlists: 'routeSkipNoWatchlists',
+  noStrategies: 'routeSkipNoStrategies',
+  noNews: 'routeSkipNoNews',
+}
+
+function RouteRow({
+  stop,
+  readyIndex,
+  walked,
+  activeCount,
+  s,
+  lang,
+}: {
+  stop: RouteStop
+  readyIndex: number | null
+  walked: number | null
+  activeCount: number
+  s: S
+  lang: 'zh' | 'en' | 'ar'
+}) {
+  const state =
+    readyIndex === null
+      ? 'skipped'
+      : walked === null
+        ? 'waiting'
+        : readyIndex < walked
+          ? 'done'
+          : readyIndex === walked && walked < activeCount
+            ? 'now'
+            : 'done'
+  const kindLabel = s(ROUTE_KIND_KEYS[stop.kind])
+  const name = stop.name ?? kindLabel
+  const detail =
+    stop.status === 'skipped' && stop.skipReason
+      ? s(ROUTE_SKIP_KEYS[stop.skipReason])
+      : stop.kind === 'watchlist'
+        ? s('routeSymbolsCount').replace('{n}', String(stop.count))
+        : stop.kind === 'news'
+          ? s('routeStoriesCount').replace('{n}', String(stop.count))
+          : s('routeRulesCount').replace('{n}', String(stop.count))
+  const stateLabel =
+    state === 'now'
+      ? s('routeNow')
+      : state === 'done'
+        ? s('routeDoneStop')
+        : state === 'skipped'
+          ? s('routeSkipped')
+          : s('routeWaiting')
+
+  return (
+    <li className="flex items-start gap-2.5 border-t border-line py-2.5 first:border-t-0">
+      <span className="num mt-0.5 w-4 shrink-0 text-[10px] text-muted" aria-hidden="true">
+        {readyIndex === null ? '·' : readyIndex + 1}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="min-w-0 truncate text-[12px] font-medium">{name}</span>
+          <span
+            className={`rounded-full px-1.5 py-0.5 text-[9px] leading-none ${
+              state === 'now'
+                ? 'bg-solid text-bg'
+                : state === 'skipped'
+                  ? 'text-muted opacity-60'
+                  : 'text-muted'
+            }`}
+          >
+            {stateLabel}
+          </span>
+        </div>
+        <p className="mt-1 text-[10px] leading-snug text-muted">
+          {name === kindLabel ? '' : `${kindLabel} · `}
+          {detail}
+        </p>
+      </div>
+      <span className="num mt-0.5 shrink-0 text-[10px] text-muted">
+        {stop.nextStart === null ? s('none') : fmtClock(stop.nextStart, lang)}
+      </span>
+    </li>
+  )
+}
+
+function RouteSheetPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
+  const input = useMemo(() => readRouteInput(lang), [lang])
+  const [now] = useState(() => Date.now())
+  const sheet: RouteSheet = useMemo(() => buildRouteSheet(input, now), [input, now])
+  const [walked, setWalked] = useState<number | null>(null)
+  const reduced = useReducedMotion()
+  const running = walked !== null && walked < sheet.activeCount
+  const finished = walked !== null && walked >= sheet.activeCount
+
+  useEffect(() => {
+    if (walked === null || walked >= sheet.activeCount) return
+    const timer = setTimeout(() => setWalked((value) => (value === null ? null : value + 1)), 650)
+    return () => clearTimeout(timer)
+  }, [walked, sheet.activeCount])
+
+  let readyIndex = 0
+  const rows = sheet.stops.map((stop) => {
+    const index = stop.status === 'ready' ? readyIndex++ : null
+    return { stop, readyIndex: index }
+  })
+
+  return (
+    <section className="panel mt-4 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="t-section">{s('routeTitle')}</h3>
+          <p className="mt-1 text-[11px] leading-snug text-muted">{s('routeHint')}</p>
+        </div>
+        <span className="num shrink-0 text-[11px] text-muted">
+          {sheet.activeCount}/{sheet.stops.length}
+        </span>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+        <span>
+          {s('routeNextStart')}{' '}
+          <b className="num font-medium text-fg">{fmtDateTime(sheet.nextStart, lang)}</b>
+        </span>
+        {sheet.finishAt !== null && (
+          <span>
+            {s('routeFinishes')} <span className="num">{fmtClock(sheet.finishAt, lang)}</span>
+          </span>
+        )}
+        <span className="num">
+          {sheet.activeCount} {s('routeStops')}
+        </span>
+        {sheet.skippedCount > 0 && (
+          <span className="num">
+            {sheet.skippedCount} {s('routeSkipped')}
+          </span>
+        )}
+      </div>
+
+      <div className="mt-3">
+        <button
+          type="button"
+          disabled={sheet.activeCount === 0 || running}
+          onClick={() => setWalked(reduced ? sheet.activeCount : 0)}
+          className="min-h-11 rounded-full bg-solid px-4 text-[12px] font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
+        >
+          {walked === null ? s('routeRun') : running ? s('routeWalking') : s('routeRunAgain')}
+        </button>
+      </div>
+
+      <p
+        role="status"
+        className={finished ? 'mt-2 text-[11px] leading-snug text-muted' : 'sr-only'}
+      >
+        {running ? s('routeWalking') : finished ? s('routeDone') : ''}
+      </p>
+
+      <ol className="mt-2 border-t border-line">
+        {rows.map(({ stop, readyIndex: index }) => (
+          <RouteRow
+            key={stop.id}
+            stop={stop}
+            readyIndex={index}
+            walked={walked}
+            activeCount={sheet.activeCount}
+            s={s}
+            lang={lang}
+          />
+        ))}
+      </ol>
+
+      <p className="mt-2 text-[10px] leading-snug text-muted">{s('routeDemoNote')}</p>
+    </section>
+  )
+}
+
 function ScheduledPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
   const navigate = useNavigate()
   const { data, error, loading, retry } = useRemote<ScheduledRun[]>(
     () => aiApi.scheduled(),
     'scheduled',
   )
-  if (loading) return <Loading />
-  if (error) return <Failure s={s} message={error} retry={retry} />
-  if (!data || data.length === 0) {
-    return (
-      <AskEmpty s={s} text={s('emptyScheduled')} prompt={s('startSchedule')} navigate={navigate} />
-    )
-  }
   return (
-    <ul className="mt-4">
-      {data.map((job) => (
-        <Row key={job.id}>
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate text-[13px] font-medium">{job.title || job.prompt}</p>
-              <p className="num mt-1 truncate text-[11px] text-muted">{job.schedule}</p>
-            </div>
-            <div className="shrink-0 text-end">
-              <StatusBadge s={s} status={job.status} />
-              <p className="num mt-1 text-[11px]">
-                {job.next_run_at ? fmtDate(job.next_run_at, lang) : s('none')}
-              </p>
-            </div>
-          </div>
-          <AskAction
-            s={s}
-            onClick={() => {
-              setIntake(s('scheduledPrompt').replace('{id}', job.title || job.id), [])
-              navigate('/ai')
-            }}
-          />
-        </Row>
-      ))}
-    </ul>
+    <>
+      <RouteSheetPanel s={s} lang={lang} />
+      <h3 className="t-section mt-8">{s('scheduledRuns')}</h3>
+      {loading ? (
+        <Loading />
+      ) : error ? (
+        <Failure s={s} message={error} retry={retry} />
+      ) : !data || data.length === 0 ? (
+        <AskEmpty s={s} text={s('emptyScheduled')} prompt={s('startSchedule')} navigate={navigate} />
+      ) : (
+        <ul className="mt-2">
+          {data.map((job) => (
+            <Row key={job.id}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-medium">{job.title || job.prompt}</p>
+                  <p className="num mt-1 truncate text-[11px] text-muted">{job.schedule}</p>
+                </div>
+                <div className="shrink-0 text-end">
+                  <StatusBadge s={s} status={job.status} />
+                  <p className="num mt-1 text-[11px]">
+                    {job.next_run_at ? fmtDate(job.next_run_at, lang) : s('none')}
+                  </p>
+                </div>
+              </div>
+              <AskAction
+                s={s}
+                onClick={() => {
+                  setIntake(s('scheduledPrompt').replace('{id}', job.title || job.id), [])
+                  navigate('/ai')
+                }}
+              />
+            </Row>
+          ))}
+        </ul>
+      )}
+    </>
   )
 }
 

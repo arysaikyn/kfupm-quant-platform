@@ -24,6 +24,10 @@ const RESET_KEYS = [
   'watchlists.v1',
   'search.recent',
   'news.saved.v1',
+  'confidence.v1',
+  'learn.seen.v1',
+  'paper.checkpoints.v1',
+  'watchlists.returns.v1',
 ]
 
 const SESSION_KEYS = ['app.ai.intake']

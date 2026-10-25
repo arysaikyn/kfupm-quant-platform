@@ -97,7 +97,7 @@ export function newRule(): Rule {
 
 /** A first row makes the builder legible before anything is typed. */
 export function defaultRules(): Rule[] {
-  return [{ id: createId('r'), field: 'change', op: 'gt', value: '0' }]
+  return [{ id: createId('r'), field: 'price', op: 'gt', value: '0' }]
 }
 
 export function cloneRules(rules: readonly Rule[]): Rule[] {

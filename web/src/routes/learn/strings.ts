@@ -1,4 +1,4 @@
-import type { Dict, Lang } from '../../i18n'
+import type { Dict, GlobalKey, Lang } from '../../i18n'
 
 type Strings = {
   title: string
@@ -8,8 +8,11 @@ type Strings = {
   why: string
   countAll: string
   countHit: string
+  lockedBadge: string
   indexAria: string
   groupCount: string
+  unlockHint: string
+  lockedA11y: string
   empty: string
   emptyAction: string
 }
@@ -25,10 +28,13 @@ export const strings = {
     search: '搜索词条或解释',
     clear: '清除',
     why: '为什么重要',
-    countAll: '共 {n} 个词条',
+    countAll: '共 {n} 个词条 · 已解锁 {unlocked} 个',
     countHit: '找到 {n} 个词条',
+    lockedBadge: '{n} 个待解锁',
     indexAria: '按首字跳转',
     groupCount: '{n} 个词条',
+    unlockHint: '访问{place}后解锁',
+    lockedA11y: '未解锁',
     empty: '没有匹配的词条，换个说法试试。',
     emptyAction: '清除搜索',
   },
@@ -38,10 +44,13 @@ export const strings = {
     search: 'Search a term or explanation',
     clear: 'Clear',
     why: 'Why it matters',
-    countAll: '{n} terms',
+    countAll: '{n} terms · {unlocked} unlocked',
     countHit: '{n} matches',
+    lockedBadge: '{n} locked',
     indexAria: 'Jump to a letter',
     groupCount: '{n} terms',
+    unlockHint: 'Unlocks after you visit {place}',
+    lockedA11y: 'Locked',
     empty: 'Nothing matched. Try another word.',
     emptyAction: 'Clear search',
   },
@@ -51,16 +60,63 @@ export const strings = {
     search: 'ابحث عن مصطلح أو شرح',
     clear: 'مسح',
     why: 'لماذا يهم',
-    countAll: '{n} مصطلحات',
+    countAll: '{n} مصطلحات · {unlocked} مفتوحة',
     countHit: '{n} نتيجة',
+    lockedBadge: '{n} مقفلة',
     indexAria: 'انتقل إلى حرف',
     groupCount: '{n} مصطلحات',
+    unlockHint: 'يُفتح بعد زيارة {place}',
+    lockedA11y: 'مقفل',
     empty: 'لا نتائج مطابقة. جرّب كلمة أخرى.',
     emptyAction: 'امسح البحث',
   },
 } satisfies Dict<Strings>
 
+export type TermId =
+  | 'pe'
+  | 'debt'
+  | 'yield'
+  | 'drawdown'
+  | 'volatility'
+  | 'sharpe'
+  | 'turnover'
+  | 'pb'
+  | 'screening'
+  | 'benchmark'
+
+/** The screens a term can be earned on. Only real routes are listed. */
+export type UnlockPath = '/market' | '/strategy' | '/screener' | '/report' | '/compare'
+
+/** Screen names come from the global route labels, so they never fork here. */
+export const unlockLabels: Record<UnlockPath, GlobalKey> = {
+  '/market': 'route.market',
+  '/strategy': 'route.strategy',
+  '/screener': 'route.screener',
+  '/report': 'route.report',
+  '/compare': 'route.compare',
+}
+
+/**
+ * One unlock rule per term, shared by all three languages so a translation
+ * cannot earn a term on a different screen. An empty list means the term is
+ * basic: it reads without any exploring.
+ */
+export const termRoutes: Record<TermId, readonly UnlockPath[]> = {
+  pe: [],
+  yield: [],
+  debt: ['/market'],
+  pb: ['/screener'],
+  turnover: ['/screener'],
+  screening: ['/strategy'],
+  sharpe: ['/strategy'],
+  drawdown: ['/report'],
+  benchmark: ['/report'],
+  volatility: ['/compare'],
+}
+
 export type Term = {
+  /** Stable across languages; carries the unlock rule and keys the row. */
+  id: TermId
   /** The headword itself, in this language. */
   term: string
   /** One sentence of plain speech. No undefined jargon inside it. */
@@ -72,51 +128,61 @@ export type Term = {
 export const terms: Record<Lang, Term[]> = {
   zh: [
     {
+      id: 'pe',
       term: '市盈率',
       plain: '按今天的价格买下这家公司，靠它每年赚的钱，要多少年才收回本钱。',
       why: '数字越高，价格里装的期待越多；一旦增长没兑现，回落也更快。',
     },
     {
+      id: 'debt',
       term: '负债率',
       plain: '公司用的每一百块钱里，有多少是借来的，而不是自己赚来的。',
       why: '借钱能把赚的放大，也能把亏的放大；生意变差时，欠得多的公司最先扛不住。',
     },
     {
+      id: 'yield',
       term: '股息率',
       plain: '公司每年从利润里分给你的现金，占你买入价格的多少。',
       why: '这笔钱是实打实到账的，不用等别人出更高价接盘；股价下跌时，它也能垫一层。',
     },
     {
+      id: 'drawdown',
       term: '回撤',
       plain: '从最高点跌到最低点，账户最多缩水了多少。',
       why: '亏掉一半，要涨回一倍才回本；先知道最坏能跌多少，再决定放多少钱进去。',
     },
     {
+      id: 'volatility',
       term: '波动率',
       plain: '价格平时上上下下晃得有多厉害。',
       why: '晃得越厉害，短期越难猜；多数人不是看错方向，而是在晃动里被甩下车。',
     },
     {
+      id: 'sharpe',
       term: '夏普比率',
       plain: '价格多晃动一分，你能多拿多少回报。数字越高，说明这份收益不是靠大起大落硬撑出来的。',
       why: '只看收益，赌得最凶的那只最好看；它把晃动也算进去，比较才公平。',
     },
     {
+      id: 'turnover',
       term: '换手率',
       plain: '一段时间里，同一批股票被买卖了几轮。',
       why: '买卖拥挤时，价格容易一下冲高又一下砸下来，想走的时候还可能堵在门口。',
     },
     {
+      id: 'pb',
       term: '市净率',
       plain: '你付的价格，是公司把资产全卖掉、欠款全还清后剩下价值的多少倍。',
       why: '低于一倍，说明市场觉得公司还不如账面上值钱；看银行、工厂这类靠资产吃饭的生意，它比利润更说明问题。',
     },
     {
+      id: 'screening',
       term: '教法筛选',
       plain: '把条件一条条写下来，比如市盈率低于 15、股息率高于 3%，再让系统照着挑。',
       why: '写下来的条件能重复用、能回头核对，你也会慢慢看懂它为什么挑中这一只。',
     },
     {
+      id: 'benchmark',
       term: '基准',
       plain: '拿来对照的尺子，比如整个市场，或者一批同类基金的平均成绩。',
       why: '赚了 8% 不算本事，如果同期市场涨了 15%，你其实落后了。',
@@ -124,51 +190,61 @@ export const terms: Record<Lang, Term[]> = {
   ],
   en: [
     {
+      id: 'pe',
       term: 'P/E ratio',
       plain: 'How many years of the company’s current profit it would take to earn back the price you pay today.',
       why: 'A high number means the price already carries a lot of hope; when growth disappoints, the fall is faster.',
     },
     {
+      id: 'debt',
       term: 'Debt ratio',
       plain: 'Out of every hundred the company spends, how much was borrowed rather than earned.',
       why: 'Borrowing magnifies both gains and losses; when trade slows, the most indebted firms go first.',
     },
     {
+      id: 'yield',
       term: 'Dividend yield',
       plain: 'The cash a company hands you each year, as a share of what you paid for the stock.',
       why: 'It arrives without needing a buyer to pay more later, and it softens the blow when the price falls.',
     },
     {
+      id: 'drawdown',
       term: 'Drawdown',
       plain: 'How far a holding fell from its peak to its lowest point.',
       why: 'A loss of half needs a double to recover; knowing the worst fall tells you how much you can put in.',
     },
     {
+      id: 'volatility',
       term: 'Volatility',
       plain: 'How hard the price swings from day to day.',
       why: 'The wilder it swings, the less anyone can guess next month; most people are shaken out, not proven wrong.',
     },
     {
+      id: 'sharpe',
       term: 'Sharpe ratio',
       plain: 'How much extra return you got for the amount the price bounced around.',
       why: 'Return alone crowns the wildest bet; this weighs the result against the swings it took.',
     },
     {
+      id: 'turnover',
       term: 'Turnover rate',
       plain: 'How many times the same shares change hands over a period.',
       why: 'Crowds make prices jump both ways, and a crowded exit can jam when you want out.',
     },
     {
+      id: 'pb',
       term: 'Price-to-book ratio',
       plain: 'What you pay compared with what would be left if the company sold everything and cleared every debt.',
       why: 'Below one, the market values the firm under its own books; for banks and factories that matters more than profit.',
     },
     {
+      id: 'screening',
       term: 'Rule-based screening',
       plain: 'A list of conditions you write down: price below one number, dividend above another. The app then runs them over the market.',
       why: 'Written rules can be rerun and checked, and each pick comes with a reason you can read.',
     },
     {
+      id: 'benchmark',
       term: 'Benchmark',
       plain: 'The yardstick you compare against, such as the whole market or a group of similar funds.',
       why: 'Up 8% is not skill if the market gained 15%; a number alone tells you nothing.',
@@ -176,51 +252,61 @@ export const terms: Record<Lang, Term[]> = {
   ],
   ar: [
     {
+      id: 'pe',
       term: 'مضاعف الربحية',
       plain: 'كم سنة من أرباح الشركة الحالية تحتاج كي تستعيد الثمن الذي تدفعه اليوم.',
       why: 'الرقم المرتفع يعني أن السعر يحمل آمالًا كبيرة، وحين يخيب النمو يكون الهبوط أسرع.',
     },
     {
+      id: 'debt',
       term: 'نسبة المديونية',
       plain: 'من كل مئة تنفقها الشركة، كم منها جاء بالاقتراض لا من كسبها.',
       why: 'الاقتراض يكبّر الربح والخسارة معًا، وحين تتباطأ الأعمال تتعثر أولًا الشركات الأكثر مديونية.',
     },
     {
+      id: 'yield',
       term: 'عائد التوزيعات',
       plain: 'النقد الذي تدفعه لك الشركة كل سنة كنسبة من سعر السهم الذي اشتريته.',
       why: 'يصل إليك دون انتظار مشترٍ يدفع أكثر لاحقًا، ويخفف الأثر عندما يهبط السعر.',
     },
     {
+      id: 'drawdown',
       term: 'أقصى تراجع',
       plain: 'أقصى هبوط من قمة السعر إلى أدنى نقطة بعده.',
       why: 'خسارة النصف تحتاج مضاعفة للعودة، ومعرفة أسوأ هبوط تحدد ما يمكنك تحمّله.',
     },
     {
+      id: 'volatility',
       term: 'التقلب',
       plain: 'مدى حدّة تأرجح السعر يومًا بعد يوم.',
       why: 'كلما اشتد التأرجح صعب توقع الشهر القادم، وكثيرون يخرجون بالاهتزاز لا بالخطأ في الاتجاه.',
     },
     {
+      id: 'sharpe',
       term: 'نسبة شارب',
       plain: 'مقدار العائد الإضافي مقابل مقدار تأرجح السعر.',
       why: 'العائد وحده يجعل أعنف الرهانات تبدو الأفضل، وهذه النسبة تضع التقلب في الحساب.',
     },
     {
+      id: 'turnover',
       term: 'معدل الدوران',
       plain: 'عدد مرات تداول الأسهم نفسها خلال فترة.',
       why: 'الازدحام يرفع السعر ويهبط به سريعًا، وقد يزدحم باب الخروج حين تريد الخروج.',
     },
     {
+      id: 'pb',
       term: 'مضاعف الدفترية',
       plain: 'ما تدفعه مقارنة بما يتبقى لو باعت الشركة أصولها وسددت كل ديونها.',
       why: 'أقل من واحد يعني أن السوق يقيّم الشركة بأقل من دفاترها، وهذا يهم البنوك والمصانع أكثر من الأرباح.',
     },
     {
+      id: 'screening',
       term: 'الفرز وفق قواعد',
       plain: 'شروط تكتبها سطرًا سطرًا، مثل سعر تحت رقم أو توزيع فوق نسبة، ثم يمر بها التطبيق على السوق.',
       why: 'الشروط المكتوبة يمكن تكرارها ومراجعتها، وكل اختيار يأتي بسبب تستطيع قراءته.',
     },
     {
+      id: 'benchmark',
       term: 'المؤشر المرجعي',
       plain: 'المسطرة التي تقارن بها، مثل السوق كله أو مجموعة صناديق مشابهة.',
       why: 'ربح 8 بالمئة ليس مهارة إذا ربح السوق 15 بالمئة، والرقم وحده لا يقول شيئًا.',

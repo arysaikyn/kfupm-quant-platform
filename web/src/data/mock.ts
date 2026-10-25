@@ -331,6 +331,38 @@ export const strategies: Strategy[] = [
   ),
   withCurves(
     {
+      id: 'sharia-income',
+      name: { zh: '教法股息', en: 'Sharia income', ar: 'دخل متوافق' },
+      description: {
+        zh: '先过教法筛选，再找股息率高于 3%、负债率低于 30% 的名字。',
+        en: 'Sharia screen first, then yield above 3% with debt below 30%.',
+        ar: 'الفحص الشرعي أولًا، ثم عائد فوق 3% ودين أقل من 30%.',
+      },
+      rules: [
+        {
+          id: 'sharia',
+          label: { zh: '教法筛选', en: 'Sharia screen', ar: 'الفحص الشرعي' },
+          value: '✓',
+        },
+        {
+          id: 'yield',
+          label: { zh: '股息率', en: 'Dividend yield', ar: 'عائد التوزيعات' },
+          value: '> 3%',
+        },
+        {
+          id: 'debt',
+          label: { zh: '负债率', en: 'Debt to assets', ar: 'الدين إلى الأصول' },
+          value: '< 30%',
+        },
+      ],
+      lastReturn: 0.126,
+      updated: '2026-10-22',
+      tags: ['income', 'sharia'],
+    },
+    13,
+  ),
+  withCurves(
+    {
       id: 'momentum-quality',
       name: { zh: '趋势质量', en: 'Momentum quality', ar: 'جودة الزخم' },
       description: {

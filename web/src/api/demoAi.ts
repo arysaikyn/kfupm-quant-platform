@@ -64,7 +64,7 @@ Connect an API in **API settings** to replace this with a real model and real to
 
   `## What this screen is showing
 
-The app is in **demo mode**. The text, tool timeline and run cards are samples so the interface can be tested without a developer API key.
+The app is in **demo mode**. The text and workspace samples are pre-recorded so the interface can be tested without a developer API key.
 
 - Nothing is sent to an LLM.
 - No backtest runs.

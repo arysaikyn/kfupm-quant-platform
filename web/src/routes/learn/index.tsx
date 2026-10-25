@@ -1,10 +1,12 @@
 import { useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
-import { strings, terms } from './strings'
+import { isUnlocked, nextUnlock, useSeenRoutes } from '../../store/learn'
+import { strings, termRoutes, terms, unlockLabels } from './strings'
 import type { Term } from './strings'
 
 /**
@@ -41,17 +43,24 @@ function groupKey(term: string, lang: Lang): string {
 
 const COLLATOR: Record<Lang, string> = { zh: 'zh', en: 'en', ar: 'ar' }
 
-type Group = { key: string; items: Term[] }
+type Entry = Term & { locked: boolean }
 
-function buildGroups(lang: Lang, query: string): Group[] {
+type Group = { key: string; items: Entry[] }
+
+function buildGroups(lang: Lang, entries: Entry[], query: string): Group[] {
   const needle = fold(query.trim())
-  const list = terms[lang].filter(
-    (t) => !needle || fold(t.term).includes(needle) || fold(t.plain).includes(needle),
+  // A locked entry still answers its headword, because that is how a reader
+  // discovers what to unlock; its explanation stays hidden until earned.
+  const list = entries.filter(
+    (t) =>
+      !needle ||
+      fold(t.term).includes(needle) ||
+      (!t.locked && fold(t.plain).includes(needle)),
   )
 
   // Insertion order is the curated order, so a plain record plus the key
   // roster keeps the groups in the order they were first met.
-  const buckets: Record<string, Term[]> = {}
+  const buckets: Record<string, Entry[]> = {}
   const order: string[] = []
   for (const item of list) {
     const key = groupKey(item.term, lang)
@@ -113,13 +122,66 @@ function ClearIcon() {
   )
 }
 
+function LockIcon() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="shrink-0"
+      aria-hidden="true"
+    >
+      <rect x="5" y="10.5" width="14" height="9.5" rx="2.5" />
+      <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
+    </svg>
+  )
+}
+
+function GoIcon() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="shrink-0 rtl:[transform:scaleX(-1)]"
+      aria-hidden="true"
+    >
+      <path d="M9 5l7 7-7 7" />
+    </svg>
+  )
+}
+
 export default function LearnPage() {
-  const { lang } = useI18n()
+  const { lang, t } = useI18n()
   const s = useStrings(strings)
   const [query, setQuery] = useState('')
+  const seen = useSeenRoutes()
 
-  const groups = useMemo(() => buildGroups(lang, query), [lang, query])
+  // Lock state is derived per render from the visited screens, so it never
+  // goes stale and a term cannot stay locked after its screen was opened.
+  const entries = useMemo(
+    () =>
+      terms[lang].map((term) => ({
+        ...term,
+        locked: !isUnlocked(termRoutes[term.id], seen),
+      })),
+    [lang, seen],
+  )
+
+  const groups = useMemo(() => buildGroups(lang, entries, query), [lang, entries, query])
   const shown = groups.reduce((n, g) => n + g.items.length, 0)
+  const locked = entries.filter((entry) => entry.locked).length
+  const unlocked = entries.length - locked
   const searching = query.trim().length > 0
 
   // One heading per group, keyed by the group label. The index strip is a
@@ -134,10 +196,9 @@ export default function LearnPage() {
     heading.focus({ preventScroll: true })
   }
 
-  const count = (searching ? s('countHit') : s('countAll')).replace(
-    '{n}',
-    fmtNum(shown, lang, 0),
-  )
+  const count = (searching ? s('countHit') : s('countAll'))
+    .replace('{n}', fmtNum(shown, lang, 0))
+    .replace('{unlocked}', fmtNum(unlocked, lang, 0))
 
   return (
     <Screen title={s('title')} leading={<BackButton fallback="/me" />}>
@@ -176,9 +237,16 @@ export default function LearnPage() {
           </button>
         </div>
 
-        <p className="num mt-2.5 text-[12px] text-muted" aria-live="polite">
-          {count}
-        </p>
+        <div className="mt-2.5 flex flex-wrap items-center gap-2">
+          <p className="num text-[12px] text-muted" aria-live="polite">
+            {count}
+          </p>
+          {locked > 0 && (
+            <span className="num rounded-full bg-fg/5 px-2 py-0.5 text-[10px] leading-[1.6] text-muted">
+              {s('lockedBadge').replace('{n}', fmtNum(locked, lang, 0))}
+            </span>
+          )}
+        </div>
 
         {/* A first-letter strip, horizontal so twenty buckets still fit one
             line on a phone. It follows the filter: a letter with no hit under
@@ -228,20 +296,46 @@ export default function LearnPage() {
             </h2>
 
             <ul className="divide-y divide-line border-t border-line">
-              {group.items.map((item) => (
-                <li key={item.term} className="px-3 py-4">
-                  <h3 className="t-title text-[15px] leading-[1.35] font-semibold text-fg">
-                    {item.term}
-                  </h3>
-                  <p className="mt-1.5 text-[14px] leading-[1.55] text-fg/85">{item.plain}</p>
-                  <div className="mt-3 border-s-2 border-line ps-3">
-                    <p className="text-[11px] leading-[1.4] font-semibold text-muted">
-                      {s('why')}
-                    </p>
-                    <p className="mt-1 text-[12px] leading-[1.5] text-muted">{item.why}</p>
-                  </div>
-                </li>
-              ))}
+              {group.items.map((item) => {
+                const target = item.locked ? nextUnlock(termRoutes[item.id], seen) : null
+                return (
+                  <li
+                    key={item.id}
+                    className={`px-3 py-4 ${item.locked ? 'opacity-60' : ''}`}
+                  >
+                    <h3 className="t-title flex items-center gap-1.5 text-[15px] leading-[1.35] font-semibold text-fg">
+                      {item.locked && <LockIcon />}
+                      {item.term}
+                      {item.locked && (
+                        <span className="sr-only"> · {s('lockedA11y')}</span>
+                      )}
+                    </h3>
+                    {item.locked && target ? (
+                      <Link
+                        to={target}
+                        className="mt-1 inline-flex min-h-11 items-center gap-1 rounded-full text-[12px] text-fg underline decoration-line underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                      >
+                        {s('unlockHint').replace('{place}', t(unlockLabels[target]))}
+                        <GoIcon />
+                      </Link>
+                    ) : (
+                      <>
+                        <p className="mt-1.5 text-[14px] leading-[1.55] text-fg/85">
+                          {item.plain}
+                        </p>
+                        <div className="mt-3 border-s-2 border-line ps-3">
+                          <p className="text-[11px] leading-[1.4] font-semibold text-muted">
+                            {s('why')}
+                          </p>
+                          <p className="mt-1 text-[12px] leading-[1.5] text-muted">
+                            {item.why}
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           </section>
         )

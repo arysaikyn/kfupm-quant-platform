@@ -8,7 +8,7 @@ import type { Lang } from '../../i18n'
 import { bench, strategies } from '../../data/mock'
 import { fmtDate } from './format'
 import { countRules } from '../../i18n/format'
-import { listStrings, TAG_KEY } from './strings'
+import { featureStrings, listStrings, TAG_KEY } from './strings'
 
 type Sort = 'recent' | 'return'
 
@@ -31,6 +31,7 @@ const fill = (tpl: string, vars: Record<string, string>) =>
 export default function StrategyPage() {
   const { lang } = useI18n()
   const s = useStrings(listStrings)
+  const f = useStrings(featureStrings)
   const [sort, setSort] = useState<Sort>('recent')
   /** null is the "All" chip. */
   const [tag, setTag] = useState<string | null>(null)
@@ -190,6 +191,28 @@ export default function StrategyPage() {
           </ul>
         )}
       </div>
+
+      {/* Dead strategies are evidence, not a hidden drawer. */}
+      <Link
+        to="/strategy/graveyard"
+        className="mt-6 flex min-h-14 items-center justify-between gap-3 border-t border-line text-[13px] transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+      >
+        <span>{f('graveListLink')}</span>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          className="rtl:[transform:scaleX(-1)]"
+          style={{ color: 'var(--color-muted)' }}
+          aria-hidden="true"
+        >
+          <path d="M9 6l6 6-6 6" />
+        </svg>
+      </Link>
     </Screen>
   )
 }

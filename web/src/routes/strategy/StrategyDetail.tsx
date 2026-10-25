@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
@@ -5,9 +6,18 @@ import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { bench, strategies } from '../../data/mock'
+import { fill } from '../../i18n/format'
 import { fmtDate } from './format'
 import { EquityChart } from './EquityChart'
-import { detailStrings, listStrings, TAG_KEY } from './strings'
+import { CrossMarket } from './CrossMarket'
+import { DropLedger } from './DropLedger'
+import { PickList } from './PickList'
+import { RiyalJar } from './RiyalJar'
+import { StrategyReceipt } from './StrategyReceipt'
+import { crossMarket, runLedger } from './ledger'
+import { plainSummaryOf } from './plain'
+import type { ReceiptCosts } from './receipt'
+import { detailStrings, featureStrings, listStrings, TAG_KEY } from './strings'
 
 /** No turnover field in the mock contract; a fixed figure keeps the row honest. */
 const TURNOVER = 0.78
@@ -19,6 +29,14 @@ const VARIANTS_PER_RULE = 3
 const INITIAL_CAPITAL = 10000
 const FEE_RATE = 0.0015
 const SLIP_RATE = 0.005
+
+/** The same four constants the receipt pins, so the claim and the row cannot drift. */
+const RECEIPT_COSTS: ReceiptCosts = {
+  capital: INITIAL_CAPITAL,
+  feeBps: Math.round(FEE_RATE * 10_000),
+  slipBps: Math.round(SLIP_RATE * 10_000),
+  turnoverPct: Math.round(TURNOVER * 100),
+}
 
 /** Same year as the chart's first axis label; kept whole because word order differs. */
 const SINCE: Record<Lang, string> = { zh: '2019 年以来', en: 'Since 2019', ar: 'منذ 2019' }
@@ -196,10 +214,15 @@ export default function StrategyDetail() {
   const { id } = useParams()
   const { lang } = useI18n()
   const s = useStrings(detailStrings)
+  const f = useStrings(featureStrings)
   const tagLabel = useStrings(listStrings)
   const navigate = useNavigate()
 
   const st = strategies.find((x) => x.id === id)
+
+  const [plain, setPlain] = useState(false)
+  const ledger = useMemo(() => (st ? runLedger(st) : null), [st])
+  const cross = useMemo(() => (st ? crossMarket(st) : null), [st])
 
   const back = <BackButton fallback="/strategy" />
 
@@ -305,7 +328,7 @@ export default function StrategyDetail() {
             {oosText}
           </p>
           <p className="mt-3 text-[14px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-            {st.description[lang]}
+            {plain ? plainSummaryOf(st, lang, f('plainSummaryFallback')) : st.description[lang]}
           </p>
           <div
             className="mt-2 flex flex-wrap items-center gap-x-2 text-[11px] leading-none"
@@ -321,6 +344,32 @@ export default function StrategyDetail() {
               )
             })}
           </div>
+
+          {/* One switch, prose only: every figure below reads the same variables. */}
+          <label className="relative mt-3 flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-xl border border-line px-3 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-fg">
+            <span className="min-w-0">
+              <span className="block text-[13px] leading-snug">{f('plainLabel')}</span>
+              <span className="mt-0.5 block text-[11px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+                {f('plainNote')}
+              </span>
+            </span>
+            <span className="flex h-6 w-10 shrink-0 items-center rounded-full px-1 transition-colors" style={{ background: plain ? 'var(--color-accent)' : 'var(--color-line)', justifyContent: plain ? 'flex-end' : 'flex-start' }}>
+              <span className="block h-4 w-4 rounded-full" style={{ background: 'var(--color-bg)' }} />
+            </span>
+            <input
+              type="checkbox"
+              role="switch"
+              checked={plain}
+              onChange={(event) => setPlain(event.target.checked)}
+              aria-label={f('plainLabel')}
+              className="absolute end-0 top-1/2 h-11 w-11 -translate-y-1/2 cursor-pointer opacity-0"
+            />
+          </label>
+          {plain && (
+            <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+              {f('plainUnchanged')}
+            </p>
+          )}
         </section>
 
         {/* The curve answers "did it hold?" before any table does, and it draws
@@ -379,7 +428,12 @@ export default function StrategyDetail() {
               </li>
             ))}
           </ul>
+
         </section>
+
+        <StrategyReceipt strategy={st} costs={RECEIPT_COSTS} />
+        {ledger && <DropLedger strategy={st} ledger={ledger} />}
+        {cross && <CrossMarket cross={cross} />}
 
         {/* The same return as cash: what a rerun pays in fees and slippage. */}
         <section className="border-t border-line pt-5">
@@ -419,7 +473,13 @@ export default function StrategyDetail() {
             </div>
           </div>
           <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-            {s('costNote')}
+            {plain
+              ? fill(f('plainCost'), {
+                  fees: fmtNum(feesCost, lang, 2),
+                  slip: fmtNum(slippageCost, lang, 2),
+                  pct: fmtNum((FEE_RATE + SLIP_RATE) * 100, lang, 2, '%'),
+                })
+              : s('costNote')}
           </p>
         </section>
 
@@ -454,7 +514,9 @@ export default function StrategyDetail() {
             </span>
           </div>
           <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-            {lab.sigNote}
+            {plain
+              ? fill(f('plainLuck'), { pct: fmtNum(sig.dsr * 100, lang, 0, '%') })
+              : lab.sigNote}
           </p>
         </section>
 
@@ -507,6 +569,9 @@ export default function StrategyDetail() {
             </span>
           </div>
         </section>
+
+        {ledger && <PickList strategy={st} ledger={ledger} />}
+        {ledger && <RiyalJar strategy={st} ledger={ledger} />}
 
         {/* The next screen, not a panel: one hairline row. */}
         <Link

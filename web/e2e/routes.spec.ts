@@ -9,6 +9,8 @@ const ROUTES = [
   '/ai/provider',
   '/strategy',
   '/strategy/low-debt-value',
+  '/strategy/sharia-income',
+  '/strategy/graveyard',
   '/report/low-debt-value',
   '/me',
   '/screener',
@@ -43,7 +45,7 @@ type Issue = { route: string; kind: string; detail: string }
 for (const lang of ['en', 'ar', 'zh'] as const) {
   for (const theme of ['light', 'dark'] as const) {
     test(`route matrix ${lang} ${theme}`, async ({ page }) => {
-      test.setTimeout(180_000)
+      test.setTimeout(300_000)
       await prime(page, lang, theme)
       const issues: Issue[] = []
 

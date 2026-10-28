@@ -1,12 +1,16 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
+import { GridCheck } from '../../components/GridCheck'
 import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { bench, strategies } from '../../data/mock'
 import { fill } from '../../i18n/format'
+import { gridCheck, returnsOf } from '../../lib/gridcheck'
+import type { FactorFamily } from '../../lib/gridcheck'
+import { expectedMaxZ, mean, normCdf, sd } from '../../lib/stats'
 import { fmtDate } from './format'
 import { EquityChart } from './EquityChart'
 import { CrossMarket } from './CrossMarket'
@@ -24,6 +28,22 @@ const TURNOVER = 0.78
 
 /** Each rule was tried at three variants before it was fixed; the deflation pays for that search. */
 const VARIANTS_PER_RULE = 3
+
+/**
+ * Which block each rule id reads. A rule the map does not know is treated as
+ * fundamental data, because a screen built on filings is what this product sells.
+ */
+const RULE_FAMILY: Record<string, FactorFamily> = {
+  pe: 'fundamental',
+  debt: 'fundamental',
+  yield: 'fundamental',
+  growth: 'fundamental',
+  payout: 'fundamental',
+  roe: 'fundamental',
+  margin: 'fundamental',
+  sectors: 'fundamental',
+  sharia: 'sharia',
+}
 
 /** Cost row: one unit of starting capital, plus the two charges a rerun would pay. */
 const INITIAL_CAPITAL = 10000
@@ -118,67 +138,20 @@ const LAB: Record<Lang, LabCopy> = {
   },
 }
 
-const EULER = 0.5772156649015329
-
-/** Standard normal CDF (Abramowitz & Stegun 26.2.17). */
-function normCdf(z: number) {
-  const t = 1 / (1 + 0.2316419 * Math.abs(z))
-  const tail =
-    0.3989422804014327 *
-    Math.exp((-z * z) / 2) *
-    t *
-    (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))))
-  return z >= 0 ? 1 - tail : tail
-}
-
-/** Inverse standard normal (Acklam) for the deflation term. */
-function normInv(p: number) {
-  const a = [
-    -3.969683028665376e1, 2.209460984245205e2, -2.759285104469687e2, 1.38357751867269e2,
-    -3.066479806614716e1, 2.506628277459239,
-  ]
-  const b = [
-    -5.447609879822406e1, 1.615858368580409e2, -1.556989798598866e2, 6.680131188771972e1,
-    -1.328068155288572e1,
-  ]
-  const c = [
-    -7.784894002430293e-3, -3.223964580411365e-1, -2.400758277161838, -2.549732539343734,
-    4.374664141464968, 2.938163982698783,
-  ]
-  const d = [7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996, 3.754408661907416]
-  const low = 0.02425
-  if (p <= 0) return -Infinity
-  if (p >= 1) return Infinity
-  if (p < low || p > 1 - low) {
-    const q = Math.sqrt(-2 * Math.log(p < low ? p : 1 - p))
-    const num = ((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]
-    const den = (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
-    return p < low ? num / den : -(num / den)
-  }
-  const q = p - 0.5
-  const r = q * q
-  const num = (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q
-  const den = (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
-  return num / den
-}
-
 /** One-pass stats from the curve already on the page; trials is the research grid behind it. */
-function significanceOf(series: number[], trials: number) {
-  const rets = series.slice(1).map((v, i) => (series[i] ? v / series[i] - 1 : 0))
+function significanceOf(series: readonly number[], trials: number) {
+  const rets = returnsOf(series)
   const n = rets.length
   if (n < 8) return { dsr: 0, p: 1 }
-  const mean = rets.reduce((sum, v) => sum + v, 0) / n
-  const variance = rets.reduce((sum, v) => sum + (v - mean) ** 2, 0) / (n - 1)
-  const sd = Math.sqrt(variance)
-  if (sd === 0) return { dsr: 0, p: 1 }
-  const sr = mean / sd
+  const m = mean(rets)
+  const spread = sd(rets)
+  if (spread === 0) return { dsr: 0, p: 1 }
+  const sr = m / spread
   const p = Math.min(1, Math.max(0, 1 - normCdf(sr * Math.sqrt(n))))
-  const skew = rets.reduce((sum, v) => sum + ((v - mean) / sd) ** 3, 0) / n
-  const kurt = rets.reduce((sum, v) => sum + ((v - mean) / sd) ** 4, 0) / n
+  const skew = rets.reduce((sum, v) => sum + ((v - m) / spread) ** 3, 0) / n
+  const kurt = rets.reduce((sum, v) => sum + ((v - m) / spread) ** 4, 0) / n
   // Deflated Sharpe: the expected best Sharpe after this many tries.
-  const sr0 =
-    Math.sqrt(1 / (n - 1)) *
-    ((1 - EULER) * normInv(1 - 1 / trials) + EULER * normInv(1 - 1 / (trials * Math.E)))
+  const sr0 = Math.sqrt(1 / (n - 1)) * expectedMaxZ(trials)
   const denom = Math.sqrt(Math.max(0.05, 1 - skew * sr + ((kurt - 1) / 4) * sr * sr))
   const dsr = normCdf(((sr - sr0) * Math.sqrt(n - 1)) / denom)
   return { dsr: Math.min(1, Math.max(0, dsr)), p }
@@ -223,6 +196,19 @@ export default function StrategyDetail() {
   const [plain, setPlain] = useState(false)
   const ledger = useMemo(() => (st ? runLedger(st) : null), [st])
   const cross = useMemo(() => (st ? crossMarket(st) : null), [st])
+  const grid = useMemo(
+    () =>
+      st
+        ? gridCheck({
+            families: st.rules.map((rule) => RULE_FAMILY[rule.id] ?? 'fundamental'),
+            rankExit: true,
+            curve: st.curve,
+            bench,
+            turnover: TURNOVER,
+          })
+        : null,
+    [st],
+  )
 
   const back = <BackButton fallback="/strategy" />
 
@@ -519,6 +505,8 @@ export default function StrategyDetail() {
               : lab.sigNote}
           </p>
         </section>
+
+        {grid && <GridCheck report={grid} />}
 
         <section className="border-t border-line pt-5">
           <div className="flex flex-wrap items-center justify-between gap-2">

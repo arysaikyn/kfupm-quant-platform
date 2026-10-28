@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/arysaikyn/kfupm-quant-platform/model/signals.schema.json",
   "title": "Signals file",
-  "description": "The single data contract between model/ and web/. Generated per run and not committed. Decimals are fractions: 0.12 means 12%. Dates use ISO 8601. max_drawdown is zero or negative.",
+  "description": "The single data contract between model/ and web/. Generated per run and not committed. Decimals are fractions: 0.12 means 12%. Dates use ISO 8601. max_drawdown is zero or negative. 1.1 adds the optional audit block; a 1.0 producer may omit it.",
   "type": "object",
   "required": [
     "schema_version",
@@ -17,7 +17,7 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": "1.0"
+      "enum": ["1.0", "1.1"]
     },
     "run_id": {
       "type": "string",
@@ -139,6 +139,71 @@
               "value": {
                 "type": "number",
                 "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "description": "Checks that do not depend on the ranking. A strategy whose return loads on the size of a move instead of its direction is running a grid, whatever the rules say. Optional so a 1.0 producer stays valid.",
+      "additionalProperties": false,
+      "properties": {
+        "grid": {
+          "type": "object",
+          "required": ["score", "verdict", "families"],
+          "additionalProperties": false,
+          "properties": {
+            "score": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Grid likeness. 0 is a cross-sectional rule set; 100 is an order sheet a grid bot would write."
+            },
+            "verdict": {
+              "enum": ["crossSection", "thin", "gridlike"]
+            },
+            "families": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "price",
+                  "volume",
+                  "momentum",
+                  "reversal",
+                  "volatility",
+                  "fundamental",
+                  "sharia",
+                  "event"
+                ]
+              },
+              "description": "Factor families the rules read. A set, so order is not meaningful."
+            },
+            "path_exposure": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Share of the run's return that needs |market move| rather than the signed move. Null when there is no equity curve."
+            },
+            "persistence": {
+              "type": ["number", "null"],
+              "minimum": -1,
+              "maximum": 1,
+              "description": "Lag-one autocorrelation of the run's returns at the backtest frequency. Null when there is no equity curve."
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "noExitPolicy",
+                  "priceOnly",
+                  "shortDecay",
+                  "volHarvest",
+                  "stopHurts",
+                  "highTurnover",
+                  "concentrated"
+                ]
               }
             }
           }

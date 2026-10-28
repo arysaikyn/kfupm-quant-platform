@@ -21,6 +21,21 @@ test('screener shows the Sharia audit and the zero-result autopsy', async ({ pag
   await expect(page.getByText('What if ranked first?')).toBeVisible()
 })
 
+test('the grid check reads the rule families and names the exit gap', async ({ page }) => {
+  await prime(page)
+  await page.goto('/screener')
+  const panel = page.locator('section[aria-labelledby="grid-check"]')
+
+  // The default rule is `price > 0`: one family, one block, no exit stated.
+  await expect(panel.getByText('Grid-like')).toBeVisible()
+  await expect(panel.getByText('Every rule reads the price block')).toBeVisible()
+
+  // The value preset reads fundamentals, so only the missing exit counts.
+  await page.getByRole('button', { name: 'Cheap' }).click()
+  await expect(panel.getByText('Needs work')).toBeVisible()
+  await expect(panel.getByText('Fundamentals, annual data, 252 sessions of decay')).toBeVisible()
+})
+
 test('strategy receipt, drop ledger, pick list and jar share one demo result', async ({ page }) => {
   await prime(page)
   await page.goto('/strategy/sharia-income')

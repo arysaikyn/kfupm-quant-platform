@@ -2,12 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
+import { GridCheck } from '../../components/GridCheck'
 import { Screen } from '../../components/Screen'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import { fill } from '../../i18n/format'
 import { isDataStale } from '../../lib/freshness'
+import { gridCheck } from '../../lib/gridcheck'
 import { quotes } from '../../data/mock'
 import {
+  FIELD_FAMILY,
   MAX_RULES,
   PRESET_IDS,
   applyRules,
@@ -188,6 +191,18 @@ export default function ScreenerPage() {
     [buckets, rules, results.length],
   )
   const whatIf = useMemo(() => counterfactual(buckets, rules), [buckets, rules])
+  // A screen selects at one instant, so it never states an exit; the check says
+  // what that costs, and what the rules actually read.
+  const grid = useMemo(
+    () =>
+      gridCheck({
+        families: rules
+          .filter((rule) => ruleValue(rule) !== null)
+          .map((rule) => FIELD_FAMILY[rule.field]),
+        rankExit: false,
+      }),
+    [rules],
+  )
 
   const kicker = {
     color: 'var(--color-muted)',
@@ -529,6 +544,10 @@ export default function ScreenerPage() {
             {s('turnoverHint')}
           </p>
         )}
+
+        <div className="mt-5">
+          <GridCheck report={grid} compact />
+        </div>
       </section>
 
       {stale && (

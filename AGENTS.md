@@ -11,6 +11,7 @@ Decision support only. No execution, broker, or stock advice.
 - The Sharia screen is a filter before ranking. `unknown` is not compliant.
 - One engine; market differences live in config.
 - `model/signals.json` is the only data contract for `web/`. Schema: `model/signals.schema.json`. Example: `model/signals.example.json`.
+- No strategy may carry a stop-loss, take-profit, or entry-price field. Exits happen by rank. `web/src/lib/gridcheck.ts` scores every rule set and every saved strategy for grid likeness (`priceOnly`, `noExitPolicy`, `volHarvest`, `stopHurts`), and a `gridlike` verdict must be shown before the result — never presented as a strategy.
 - No secrets, raw vendor data, or generated output in git. The Vibe-Trading key stays in `backend/`, never in `web/`.
 
 ## Layout

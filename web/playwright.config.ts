@@ -25,7 +25,9 @@ export default defineConfig({
       timeout: 30_000,
     },
     {
-      command: `npm run dev -- --port ${PORT} --strictPort`,
+      // Bind IPv4 explicitly: `localhost` resolves to ::1 here, and the
+      // readiness probe and baseURL both use 127.0.0.1.
+      command: `npm run dev -- --port ${PORT} --strictPort --host 127.0.0.1`,
       url: baseURL,
       reuseExistingServer: true,
       timeout: 60_000,

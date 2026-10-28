@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "run_id": "example-2026-10-21-001",
   "generated_at": "2026-10-21T09:30:00Z",
   "as_of": "2026-10-20",
@@ -45,6 +45,16 @@
       "max_drawdown": -0.184,
       "sharpe": 0.91,
       "turnover": 0.35
+    }
+  },
+  "audit": {
+    "grid": {
+      "score": 0,
+      "verdict": "crossSection",
+      "families": ["fundamental", "sharia"],
+      "path_exposure": 0.12,
+      "persistence": 0.34,
+      "findings": []
     }
   },
   "warnings": [

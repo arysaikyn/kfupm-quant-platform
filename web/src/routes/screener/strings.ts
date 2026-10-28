@@ -15,6 +15,9 @@ export type ScreenerStrings = {
   fieldLabel: string
   operatorLabel: string
   valueLabel: string
+  fieldPe: string
+  fieldDebt: string
+  fieldYield: string
   fieldChange: string
   fieldPrice: string
   fieldTurnover: string
@@ -118,6 +121,9 @@ export const screenerStrings = {
     fieldLabel: '字段',
     operatorLabel: '比较',
     valueLabel: '数值',
+    fieldPe: '市盈率',
+    fieldDebt: '负债率',
+    fieldYield: '股息率',
     fieldChange: '涨跌',
     fieldPrice: '价格',
     fieldTurnover: '换手',
@@ -205,6 +211,9 @@ export const screenerStrings = {
     fieldLabel: 'Field',
     operatorLabel: 'Comparison',
     valueLabel: 'Value',
+    fieldPe: 'P/E',
+    fieldDebt: 'Debt ratio',
+    fieldYield: 'Dividend yield',
     fieldChange: 'Change',
     fieldPrice: 'Price',
     fieldTurnover: 'Turnover',
@@ -292,6 +301,9 @@ export const screenerStrings = {
     fieldLabel: 'الحقل',
     operatorLabel: 'المقارنة',
     valueLabel: 'القيمة',
+    fieldPe: 'مكرر الربحية',
+    fieldDebt: 'نسبة الدين',
+    fieldYield: 'عائد التوزيعات',
     fieldChange: 'التغير',
     fieldPrice: 'السعر',
     fieldTurnover: 'الدوران',

@@ -3,9 +3,12 @@ import { fmtNum } from '../../i18n'
 import type { Field, Op, Rule } from './rules'
 import type { ScreenerStrings } from './strings'
 
-export const FIELD_ORDER: readonly Field[] = ['change', 'price', 'turnover']
+export const FIELD_ORDER: readonly Field[] = ['pe', 'debt', 'yield', 'change', 'price', 'turnover']
 
 export const FIELD_KEY: Record<Field, keyof ScreenerStrings> = {
+  pe: 'fieldPe',
+  debt: 'fieldDebt',
+  yield: 'fieldYield',
   change: 'fieldChange',
   price: 'fieldPrice',
   turnover: 'fieldTurnover',
@@ -14,11 +17,32 @@ export const FIELD_KEY: Record<Field, keyof ScreenerStrings> = {
 export const OP_SYMBOL: Record<Op, string> = { lt: '<', gt: '>' }
 
 /** Input precision per field; chips and row reasons print the same digits. */
-const FIELD_DIGITS: Record<Field, number> = { change: 2, price: 2, turnover: 1 }
+const FIELD_DIGITS: Record<Field, number> = {
+  pe: 1,
+  debt: 1,
+  yield: 2,
+  change: 2,
+  price: 2,
+  turnover: 1,
+}
 
-export const FIELD_STEP: Record<Field, number> = { change: 0.1, price: 0.01, turnover: 0.5 }
+export const FIELD_STEP: Record<Field, number> = {
+  pe: 1,
+  debt: 2,
+  yield: 0.1,
+  change: 0.1,
+  price: 0.01,
+  turnover: 0.5,
+}
 
-export const FIELD_UNIT: Record<Field, string | null> = { change: '%', price: null, turnover: '%' }
+export const FIELD_UNIT: Record<Field, string | null> = {
+  pe: '×',
+  debt: '%',
+  yield: '%',
+  change: '%',
+  price: null,
+  turnover: '%',
+}
 
 /**
  * One rule written out. Without `current` it reads as the chip ("涨跌 > 0%");

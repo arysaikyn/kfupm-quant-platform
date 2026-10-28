@@ -24,6 +24,39 @@ The loop is the product. A list of names is not.
 2. Two markets, one engine: China and Saudi Arabia.
 3. Sharia rules are part of the engine, not a badge.
 
+## Why this is not a grid bot
+
+The failure this product must avoid: an agent reads news, candles and MACD/RSI, then
+an AI picks a stop and a target. The only free variable left is distance from a
+reference price, so it earns the size of each move rather than its direction — a
+grid with a model story. Remove the AI's stop and target and it is plain quant.
+
+The structural answer, copied from what already works:
+
+1. **No price-level fields, anywhere.** No stop-loss, take-profit or entry price in the
+   contract. `ai-hedge-fund` clamps the model to a `Signal` in [-1, 1] and states that
+   the LLM never touches the trade; Microsoft RD-Agent + Qlib run `TopkDropoutStrategy`
+   (top-k with a fixed `n_drop` churn) and have no per-name exit rule in the pipeline.
+   Exits are a consequence of the ranking, not a decision.
+2. **Rank other names, not a price.** A rank is invariant to a common shift of the
+   cross-section; a stop rule is a function of one asset's realised path, so its trade
+   count scales with volatility squared and its expected value is negative under a
+   random walk (Kaminski & Lo, JFM 2014: a stop adds return only when persistence beats
+   the Sharpe ratio at the holding horizon).
+3. **Score the inputs by family.** Alpha101, GTJA-191 and Qlib's Alpha158 are price and
+   volume only, and their survival out of sample is poor; the fundamental block rebalances
+   annually and is where the durable names sit. Every spec names its families, and a
+   price-only spec is flagged instead of silently accepted.
+4. **Measure the path.** The return is regressed on the benchmark's signed move and on
+   its absolute move. A return that loads on the absolute move is volatility harvesting —
+   the grid signature — whatever the rules say.
+
+Point 1 is enforced by the contract: the field does not exist, and `AGENTS.md` forbids
+adding one. `web/src/lib/gridcheck.ts` implements the checks behind points 2 to 4, and
+`gridcheck.test.ts` pins them; `web/src/components/GridCheck.tsx` shows the score on a
+saved run and inside the screener. The score is a gate, not a badge: cheap, deterministic
+and testable, and it makes the degeneracy visible in one number.
+
 ## Non-goals
 
 Cross-sectional only. No execution, broker, custody, advice, price prediction, or intraday.

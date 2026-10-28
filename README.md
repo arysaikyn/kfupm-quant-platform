@@ -74,9 +74,11 @@ Demo mode remains available with **Use demo mode**.
 - **Workspace** — runs, paper accounts, portfolio, alphas, schedules, model
   status, uploads, checkpoints and a weekly route sheet.
 - **Screener** — presets, saved screens, five-rule builder, Sharia tri-state,
-  zero-result autopsy, stale-data refusal and a fixed pipeline.
+  zero-result autopsy, stale-data refusal, a fixed pipeline and a grid check
+  that names the factor family every rule reads.
 - **Strategies** — factor rules, equity curve, cost/significance analysis,
-  receipts, drop ledger, cross-market lens, pick list, jar and graveyard.
+  grid check (path exposure and persistence), receipts, drop ledger,
+  cross-market lens, pick list, jar and graveyard.
 - **Review / Learn** — daily review, confidence book with Brier score, and a
   glossary that unlocks after you have actually visited the screens.
 
@@ -98,6 +100,8 @@ small set of paths the UI needs.
 - A number without an engine field is labelled; it is not silently trusted.
 - Demo data is labelled as demo.
 - No execution, broker, custody, price prediction, or investment advice.
+- No stop-loss, take-profit or entry-price field anywhere: exits come from the
+  ranking, which is what stops a rule set from collapsing into a grid bot.
 - Every screen works in English, Chinese and Arabic, including RTL.
 
 ## Develop

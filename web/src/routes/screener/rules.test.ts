@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { quotes } from '../../data/mock'
-import { applyRules, presetRules, ruleValue } from './rules'
+import { applyRules, metric, presetRules, ruleValue } from './rules'
 import type { Rule } from './rules'
 
 function rule(field: Rule['field'], op: Rule['op'], value: string): Rule {
@@ -29,7 +29,9 @@ describe('screener rules', () => {
     expect(both.every((q) => q.price < 80 && q.change > 0)).toBe(true)
   })
 
-  it('produces the value preset from the URL handoff', () => {
-    expect(applyRules(quotes, presetRules('value')).length).toBe(3)
+  it('builds the value preset from fundamentals, not from the price', () => {
+    const value = applyRules(quotes, presetRules('value'))
+    expect(value.length).toBeGreaterThan(0)
+    expect(value.every((q) => metric(q, 'pe') < 30 && metric(q, 'debt') < 45)).toBe(true)
   })
 })

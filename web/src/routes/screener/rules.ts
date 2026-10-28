@@ -1,6 +1,22 @@
+import { fundamentalsFor } from '../../data/fundamentals'
 import type { Quote } from '../../data/mock'
+import type { FactorFamily } from '../../lib/gridcheck'
 
-export type Field = 'change' | 'price' | 'turnover'
+/**
+ * Price, volume and the three fundamentals the tape actually carries. The split
+ * matters: a screen built only on the first three reads the measured-dead factor
+ * block, which is why `lib/gridcheck` exists.
+ */
+export type Field = 'pe' | 'debt' | 'yield' | 'change' | 'price' | 'turnover'
+
+export const FIELD_FAMILY: Record<Field, FactorFamily> = {
+  pe: 'fundamental',
+  debt: 'fundamental',
+  yield: 'fundamental',
+  change: 'momentum',
+  price: 'price',
+  turnover: 'volume',
+}
 export type Op = 'lt' | 'gt'
 
 export type Rule = {
@@ -23,17 +39,21 @@ export const MAX_RULES = 5
 
 const STORAGE_KEY = 'screener.screens'
 
-const FIELDS: readonly Field[] = ['change', 'price', 'turnover']
+const FIELDS: readonly Field[] = ['pe', 'debt', 'yield', 'change', 'price', 'turnover']
 const OPS: readonly Op[] = ['lt', 'gt']
 
 export const PRESET_IDS: readonly PresetId[] = ['value', 'momentum', 'calm']
 
 /**
- * Price is the only valuation handle the mock tape carries; turnover below
- * ~21% of the window's starting level is the quiet half of this sample.
+ * Value reads the two fundamentals the Sharia screen also needs, so the default
+ * preset cannot be a price-only screen; turnover below ~21% of the window's
+ * starting level is the quiet half of this sample.
  */
 const PRESETS: Record<PresetId, readonly Omit<Rule, 'id'>[]> = {
-  value: [{ field: 'price', op: 'lt', value: '80' }],
+  value: [
+    { field: 'pe', op: 'lt', value: '30' },
+    { field: 'debt', op: 'lt', value: '45' },
+  ],
   momentum: [{ field: 'change', op: 'gt', value: '1' }],
   calm: [{ field: 'turnover', op: 'lt', value: '21' }],
 }
@@ -60,6 +80,12 @@ export function turnover(q: Quote): number {
 /** The number a rule compares against, in the unit shown in the input. */
 export function metric(q: Quote, field: Field): number {
   switch (field) {
+    case 'pe':
+      return fundamentalsFor(q.symbol, q.price).pe
+    case 'debt':
+      return fundamentalsFor(q.symbol, q.price).debtRatio * 100
+    case 'yield':
+      return fundamentalsFor(q.symbol, q.price).dividendYield * 100
     case 'change':
       return q.change * 100
     case 'price':

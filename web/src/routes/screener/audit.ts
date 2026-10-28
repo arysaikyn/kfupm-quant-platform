@@ -5,7 +5,14 @@ import { applyRules, ruleValue } from './rules'
 import type { Field, Rule } from './rules'
 
 /** One extra step outward, in the unit each rule is typed in. */
-const RELAX_STEP: Record<Field, number> = { change: 0.5, price: 5, turnover: 5 }
+const RELAX_STEP: Record<Field, number> = {
+  pe: 2,
+  debt: 5,
+  yield: 1,
+  change: 0.5,
+  price: 5,
+  turnover: 5,
+}
 
 const SHARIA_FIELDS = Object.keys(SHARIA_LIMITS) as ShariaField[]
 

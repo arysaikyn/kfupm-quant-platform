@@ -94,16 +94,16 @@ function Loading() {
 function Failure({ s, message, retry }: { s: S; message: string; retry: () => void }) {
   return (
     <div role="alert" className="panel mt-4 border-danger/40 p-3">
-      <p className="text-[12px] font-medium" style={{ color: 'var(--color-danger)' }}>
+      <p className="text-xs font-medium" style={{ color: 'var(--color-danger)' }}>
         {s('error')}
       </p>
       {message && message !== s('error') && (
-        <p className="mt-1 break-words text-[11px] leading-snug text-muted">{message}</p>
+        <p className="mt-1 break-words text-2xs leading-snug text-muted">{message}</p>
       )}
       <button
         type="button"
         onClick={retry}
-        className="mt-2 min-h-11 rounded-full border border-line px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        className="mt-2 min-h-11 rounded-full border border-line px-3 text-xs text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
       >
         {s('retry')}
       </button>
@@ -120,7 +120,7 @@ function AskAction({ s, onClick }: { s: S; onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="mt-2 min-h-11 rounded-full border border-line px-3 text-[11px] text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+      className="mt-2 min-h-11 rounded-full border border-line px-3 text-2xs text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
     >
       {s('askAi')}
     </button>
@@ -148,7 +148,7 @@ function AskEmpty({
             setIntake(prompt, [])
             navigate('/ai')
           }}
-          className="flex min-h-11 items-center rounded-full bg-solid px-4 text-[12px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
+          className="flex min-h-11 items-center rounded-full bg-solid px-4 text-xs font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
         >
           {s('askAi')}
         </button>
@@ -173,7 +173,7 @@ function statusText(s: S, status: string) {
 
 function StatusBadge({ s, status }: { s: S; status: string }) {
   return (
-    <span className={`inline-flex items-center rounded-full bg-surface px-2 py-0.5 text-[10px] leading-none ${status.toLowerCase() === 'failed' ? 'text-danger' : 'text-muted'}`}>
+    <span className={`inline-flex items-center rounded-full bg-surface px-2 py-0.5 text-2xs leading-none ${status.toLowerCase() === 'failed' ? 'text-danger' : 'text-muted'}`}>
       {statusText(s, status)}
     </span>
   )
@@ -198,17 +198,17 @@ function RunsPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
     <ul className="mt-4">
       {data.slice(0, 40).map((run) => (
         <Row key={run.run_id}>
-          <p className="line-clamp-2 text-[13px] leading-snug font-medium">
+          <p className="line-clamp-2 text-sm leading-snug font-medium">
             {run.prompt || run.codes?.join(' · ') || s('none')}
           </p>
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted">
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-2xs text-muted">
             <span className="t-sym max-w-full truncate">{run.run_id}</span>
             <span aria-hidden>·</span>
             <span className="num">{fmtDate(run.created_at, lang)}</span>
             <StatusBadge s={s} status={run.status} />
           </div>
           {(run.total_return != null || run.sharpe != null) && (
-            <div className="mt-2 flex gap-4 text-[11px]">
+            <div className="mt-2 flex gap-4 text-2xs">
               {run.total_return != null && (
                 <span>
                   {s('totalReturn')}{' '}
@@ -302,12 +302,12 @@ function SnapshotItem({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-1.5">
-            <p className="truncate text-[12px] font-medium">{snapshot.label}</p>
-            <span className="shrink-0 rounded-full border border-line px-1.5 py-0.5 text-[9px] leading-none text-muted">
+            <p className="truncate text-xs font-medium">{snapshot.label}</p>
+            <span className="shrink-0 rounded-full border border-line px-1.5 py-0.5 text-2xs leading-none text-muted">
               {s('snapshotDemo')}
             </span>
           </div>
-          <p className="mt-1 text-[10px] leading-snug text-muted">
+          <p className="mt-1 text-2xs leading-snug text-muted">
             {s('snapshotFrozen')} <span className="num">{fmtDate(snapshot.createdAt, lang)}</span>
             {' · '}
             {s('cash')} <span className="num">{fmtNum(snapshot.cash, lang, 2)}</span> {snapshot.currency}
@@ -322,7 +322,7 @@ function SnapshotItem({
               removePaperSnapshot(snapshot.id)
               setConfirmRemove(false)
             }}
-            className="flex min-h-11 shrink-0 items-center rounded-full px-2 text-[10px] font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+            className="flex min-h-11 shrink-0 items-center rounded-full px-2 text-2xs font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
             style={{ color: 'var(--color-danger)' }}
           >
             {s('snapshotConfirmRemove')}
@@ -346,7 +346,7 @@ function SnapshotItem({
           type="button"
           aria-expanded={open === 'diff'}
           onClick={() => setOpen(open === 'diff' ? null : 'diff')}
-          className="min-h-11 rounded-full border border-line px-3 text-[11px] text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="min-h-11 rounded-full border border-line px-3 text-2xs text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {s('snapshotCompare')}
         </button>
@@ -354,20 +354,20 @@ function SnapshotItem({
           type="button"
           aria-expanded={open === 'rewind'}
           onClick={() => setOpen(open === 'rewind' ? null : 'rewind')}
-          className="min-h-11 rounded-full border border-line px-3 text-[11px] text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="min-h-11 rounded-full border border-line px-3 text-2xs text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {s('snapshotRewind')}
         </button>
       </div>
 
       {open === 'diff' && (
-        <div className="mt-2 rounded-lg bg-fg/5 p-2.5 text-[11px] leading-relaxed">
+        <div className="mt-2 rounded-lg bg-fg/5 p-2.5 text-2xs leading-relaxed">
           <SnapshotDiff diff={compare} currency={snapshot.currency} s={s} lang={lang} />
         </div>
       )}
 
       {open === 'rewind' && (
-        <div className="mt-2 rounded-lg bg-fg/5 p-2.5 text-[11px] leading-relaxed">
+        <div className="mt-2 rounded-lg bg-fg/5 p-2.5 text-2xs leading-relaxed">
           <p>
             <span className="text-muted">{s('snapshotRestore')}: </span>
             <PositionSymbols positions={rewind.added} empty={s('none')} />
@@ -383,7 +383,7 @@ function SnapshotItem({
               {fmtNum(rewind.cashDelta, lang, 2)} {snapshot.currency}
             </span>
           </p>
-          <p className="mt-1.5 text-[10px] leading-snug text-muted">{s('snapshotRewindNote')}</p>
+          <p className="mt-1.5 text-2xs leading-snug text-muted">{s('snapshotRewindNote')}</p>
         </div>
       )}
     </li>
@@ -409,7 +409,7 @@ function AccountSnapshots({ account, s, lang }: { account: PaperAccount; s: S; l
           aria-expanded={freeze}
           aria-controls={freeze ? formId : undefined}
           onClick={() => setFreeze((value) => !value)}
-          className="min-h-11 rounded-full border border-line px-3 text-[11px] text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="min-h-11 rounded-full border border-line px-3 text-2xs text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {s('snapshotFreeze')}
         </button>
@@ -443,12 +443,12 @@ function AccountSnapshots({ account, s, lang }: { account: PaperAccount; s: S; l
             maxLength={40}
             placeholder={s('snapshotNamePlaceholder')}
             onChange={(event) => setName(event.target.value)}
-            className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
+            className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-sm text-fg focus-visible:outline-2 focus-visible:outline-fg"
           />
           <button
             type="submit"
             disabled={!name.trim()}
-            className="min-h-11 shrink-0 rounded-full bg-solid px-3 text-[12px] font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="min-h-11 shrink-0 rounded-full bg-solid px-3 text-xs font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {s('snapshotSave')}
           </button>
@@ -458,7 +458,7 @@ function AccountSnapshots({ account, s, lang }: { account: PaperAccount; s: S; l
               setFreeze(false)
               setName('')
             }}
-            className="min-h-11 shrink-0 rounded-full px-2 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="min-h-11 shrink-0 rounded-full px-2 text-xs text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {s('snapshotCancel')}
           </button>
@@ -466,7 +466,7 @@ function AccountSnapshots({ account, s, lang }: { account: PaperAccount; s: S; l
       )}
 
       {mine.length === 0 ? (
-        <p className="mt-2 text-[11px] leading-snug text-muted">{s('snapshotEmpty')}</p>
+        <p className="mt-2 text-2xs leading-snug text-muted">{s('snapshotEmpty')}</p>
       ) : (
         <ul className="mt-1">
           {mine.map((snapshot) => (
@@ -481,7 +481,7 @@ function AccountSnapshots({ account, s, lang }: { account: PaperAccount; s: S; l
         </ul>
       )}
 
-      <p className="mt-2 text-[10px] leading-snug text-muted">{s('snapshotLocal')}</p>
+      <p className="mt-2 text-2xs leading-snug text-muted">{s('snapshotLocal')}</p>
     </section>
   )
 }
@@ -505,18 +505,18 @@ function PaperPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
         <Row key={account.id}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate text-[14px] font-medium">{account.label}</p>
-              <p className="mt-1 text-[11px] text-muted">
+              <p className="truncate text-md font-medium">{account.label}</p>
+              <p className="mt-1 text-2xs text-muted">
                 {s('market')} {account.market.toUpperCase()} · {account.currency} ·{' '}
                 <span className="num">{fmtDate(account.last_date || account.start_on, lang)}</span>
               </p>
             </div>
             <div className="shrink-0 text-end">
-              <p className="num text-[13px]">
+              <p className="num text-sm">
                 {fmtNum(account.account_state.cash, lang, 2)}{' '}
-                <span className="text-[10px] text-muted">{account.currency}</span>
+                <span className="text-2xs text-muted">{account.currency}</span>
               </p>
-              <p className="mt-1 text-[11px] text-muted">
+              <p className="mt-1 text-2xs text-muted">
                 {s('positions')} {fmtNum(account.account_state.positions.length, lang, 0)}
               </p>
             </div>
@@ -564,20 +564,20 @@ function PortfolioPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
   return (
     <div className="mt-4">
       <div className="panel p-4">
-        <p className="text-[11px] text-muted">
+        <p className="text-2xs text-muted">
           {s('total')} · {display}
         </p>
-        <p className="num mt-1 text-[26px] leading-none font-semibold">
+        <p className="num mt-1 text-2xl leading-none font-semibold">
           {fmtNum(primary, lang, 2)}
         </p>
-        <p className="num mt-2 text-[11px] text-muted">{secondary}</p>
+        <p className="num mt-2 text-2xs text-muted">{secondary}</p>
       </div>
-      <p className="mt-2 text-[11px] text-muted">
+      <p className="mt-2 text-2xs text-muted">
         {snapshot.complete ? s('complete') : s('incomplete')} · {s('positions')}{' '}
         {fmtNum(snapshot.positions.length, lang, 0)} · {fmtDate(snapshot.created_at, lang)}
       </p>
       {snapshot.warnings.length > 0 && (
-        <ul className="mt-3 space-y-1 text-[11px] text-muted">
+        <ul className="mt-3 space-y-1 text-2xs text-muted">
           {snapshot.warnings.map((warning) => (
             <li key={warning}>{warning}</li>
           ))}
@@ -610,7 +610,7 @@ function AlphasPanel({ s }: { s: S }) {
         const title = alpha.nickname || alpha.theme.join(' · ') || alpha.id
         return (
           <Row key={alpha.id}>
-            <p className="text-[13px] font-medium">{title}</p>
+            <p className="text-sm font-medium">{title}</p>
             <p className="t-sym mt-1 text-muted">{alpha.id}</p>
             <AskAction
               s={s}
@@ -686,14 +686,14 @@ function RouteRow({
 
   return (
     <li className="flex items-start gap-2.5 border-t border-line py-2.5 first:border-t-0">
-      <span className="num mt-0.5 w-4 shrink-0 text-[10px] text-muted" aria-hidden="true">
+      <span className="num mt-0.5 w-4 shrink-0 text-2xs text-muted" aria-hidden="true">
         {readyIndex === null ? '·' : readyIndex + 1}
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="min-w-0 truncate text-[12px] font-medium">{name}</span>
+          <span className="min-w-0 truncate text-xs font-medium">{name}</span>
           <span
-            className={`rounded-full px-1.5 py-0.5 text-[9px] leading-none ${
+            className={`rounded-full px-1.5 py-0.5 text-2xs leading-none ${
               state === 'now'
                 ? 'bg-solid text-bg'
                 : state === 'skipped'
@@ -704,12 +704,12 @@ function RouteRow({
             {stateLabel}
           </span>
         </div>
-        <p className="mt-1 text-[10px] leading-snug text-muted">
+        <p className="mt-1 text-2xs leading-snug text-muted">
           {name === kindLabel ? '' : `${kindLabel} · `}
           {detail}
         </p>
       </div>
-      <span className="num mt-0.5 shrink-0 text-[10px] text-muted">
+      <span className="num mt-0.5 shrink-0 text-2xs text-muted">
         {stop.nextStart === null ? s('none') : fmtClock(stop.nextStart, lang)}
       </span>
     </li>
@@ -742,14 +742,14 @@ function RouteSheetPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="t-section">{s('routeTitle')}</h3>
-          <p className="mt-1 text-[11px] leading-snug text-muted">{s('routeHint')}</p>
+          <p className="mt-1 text-2xs leading-snug text-muted">{s('routeHint')}</p>
         </div>
-        <span className="num shrink-0 text-[11px] text-muted">
+        <span className="num shrink-0 text-2xs text-muted">
           {sheet.activeCount}/{sheet.stops.length}
         </span>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-2xs text-muted">
         <span>
           {s('routeNextStart')}{' '}
           <b className="num font-medium text-fg">{fmtDateTime(sheet.nextStart, lang)}</b>
@@ -774,7 +774,7 @@ function RouteSheetPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
           type="button"
           disabled={sheet.activeCount === 0 || running}
           onClick={() => setWalked(reduced ? sheet.activeCount : 0)}
-          className="min-h-11 rounded-full bg-solid px-4 text-[12px] font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
+          className="min-h-11 rounded-full bg-solid px-4 text-xs font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
         >
           {walked === null ? s('routeRun') : running ? s('routeWalking') : s('routeRunAgain')}
         </button>
@@ -782,7 +782,7 @@ function RouteSheetPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
 
       <p
         role="status"
-        className={finished ? 'mt-2 text-[11px] leading-snug text-muted' : 'sr-only'}
+        className={finished ? 'mt-2 text-2xs leading-snug text-muted' : 'sr-only'}
       >
         {running ? s('routeWalking') : finished ? s('routeDone') : ''}
       </p>
@@ -801,7 +801,7 @@ function RouteSheetPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
         ))}
       </ol>
 
-      <p className="mt-2 text-[10px] leading-snug text-muted">{s('routeDemoNote')}</p>
+      <p className="mt-2 text-2xs leading-snug text-muted">{s('routeDemoNote')}</p>
     </section>
   )
 }
@@ -828,12 +828,12 @@ function ScheduledPanel({ s, lang }: { s: S; lang: 'zh' | 'en' | 'ar' }) {
             <Row key={job.id}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-[13px] font-medium">{job.title || job.prompt}</p>
-                  <p className="num mt-1 truncate text-[11px] text-muted">{job.schedule}</p>
+                  <p className="truncate text-sm font-medium">{job.title || job.prompt}</p>
+                  <p className="num mt-1 truncate text-2xs text-muted">{job.schedule}</p>
                 </div>
                 <div className="shrink-0 text-end">
                   <StatusBadge s={s} status={job.status} />
-                  <p className="num mt-1 text-[11px]">
+                  <p className="num mt-1 text-2xs">
                     {job.next_run_at ? fmtDate(job.next_run_at, lang) : s('none')}
                   </p>
                 </div>
@@ -872,15 +872,15 @@ function ModelPanel({ s }: { s: S }) {
             key={label}
             className="flex items-start justify-between gap-4 border-b border-line py-3"
           >
-            <dt className="text-[11px] text-muted">{label}</dt>
-            <dd className="num min-w-0 break-all text-end text-[12px]">{value}</dd>
+            <dt className="text-2xs text-muted">{label}</dt>
+            <dd className="num min-w-0 break-all text-end text-xs">{value}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-3 text-[11px] leading-snug text-muted">{s('modelSavedNote')}</p>
+      <p className="mt-3 text-2xs leading-snug text-muted">{s('modelSavedNote')}</p>
       <Link
         to="/ai/provider"
-        className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-3 text-xs text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
       >
         {s('providerSettings')}
       </Link>
@@ -957,24 +957,24 @@ function Tools({ s, navigate }: { s: S; navigate: (path: string) => void }) {
               type="button"
               disabled={uploading}
               onClick={() => inputRef.current?.click()}
-              className="flex min-h-11 items-center text-start text-[13px] font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-50"
+              className="flex min-h-11 items-center text-start text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-50"
             >
               {uploading ? s('uploading') : s('upload')}
             </button>
-            <p className="mt-1 text-[11px] leading-snug text-muted">
+            <p className="mt-1 text-2xs leading-snug text-muted">
               {uploading && file ? file.name : s('uploadDrag')}
             </p>
           </div>
         </div>
-        <p className="mt-2 text-[11px] leading-snug text-muted">{s('uploadHint')}</p>
+        <p className="mt-2 text-2xs leading-snug text-muted">{s('uploadHint')}</p>
       </div>
       {uploadError && (
-        <p role="alert" className="mt-2 text-[11px]" style={{ color: 'var(--color-danger)' }}>
+        <p role="alert" className="mt-2 text-2xs" style={{ color: 'var(--color-danger)' }}>
           {uploadError}
         </p>
       )}
       {uploaded && !uploading && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-2xs">
           <span className="min-w-0 text-muted">
             {s('uploaded')}: <span className="num break-all">{uploaded.filename}</span>
           </span>
@@ -1017,7 +1017,7 @@ function Tools({ s, navigate }: { s: S; navigate: (path: string) => void }) {
             key={label}
             type="button"
             onClick={() => prefill(s(prompt as keyof WorkspaceStrings))}
-            className="min-h-11 rounded-full border border-line px-3 text-[12px] text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="min-h-11 rounded-full border border-line px-3 text-xs text-muted transition-colors hover:border-fg/30 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {s(label as keyof WorkspaceStrings)}
           </button>
@@ -1042,10 +1042,10 @@ export default function WorkspacePage() {
 
   return (
     <Screen title={s('title')} leading={<BackButton fallback="/ai" />}>
-      <p className="mt-3 text-[13px] leading-relaxed text-muted">{s('subtitle')}</p>
+      <p className="mt-3 text-sm leading-relaxed text-muted">{s('subtitle')}</p>
 
       {mode === 'demo' && (
-        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-[12px] border border-line bg-surface px-3 py-2 text-[11px] leading-snug text-muted">
+        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-[12px] border border-line bg-surface px-3 py-2 text-2xs leading-snug text-muted">
           <span>{s('demoNotice')}</span>
           <Link to="/ai/provider" className="text-fg underline decoration-line underline-offset-4">
             {s('providerSettings')}
@@ -1082,7 +1082,7 @@ export default function WorkspacePage() {
               data-ws-tab={item.id}
               tabIndex={active ? 0 : -1}
               onClick={() => setTab(item.id)}
-              className="min-h-11 min-w-11 shrink-0 rounded-full px-3 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="min-h-11 min-w-11 shrink-0 rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               style={
                 active
                   ? { background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }

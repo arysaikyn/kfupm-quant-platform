@@ -105,11 +105,11 @@ export default function RunsPage() {
   return (
     <Screen title={s('title')} leading={<BackButton fallback="/ai" />}>
       <div className="pt-4">
-        <p className="text-[14px] leading-relaxed text-muted">{s('lead')}</p>
+        <p className="text-md leading-relaxed text-muted">{s('lead')}</p>
 
         {error && (
           <div role="alert" className="panel mt-4 border-danger/40 p-3">
-            <p className="text-[12px]" style={{ color: 'var(--color-danger)' }}>
+            <p className="text-xs" style={{ color: 'var(--color-danger)' }}>
               {error}
             </p>
             <button
@@ -125,7 +125,7 @@ export default function RunsPage() {
                   )
                   .finally(() => setLoading(false))
               }}
-              className="mt-2 min-h-11 rounded-full border border-line px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="mt-2 min-h-11 rounded-full border border-line px-3 text-xs text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('retry')}
             </button>
@@ -147,7 +147,7 @@ export default function RunsPage() {
                 setScanFailed(false)
                 setFilter(key)
               }}
-              className={`min-h-11 rounded-full px-4 text-[12px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg ${
+              className={`min-h-11 rounded-full px-4 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg ${
                 filter === key
                   ? 'bg-solid text-bg'
                   : 'border border-line text-muted hover:text-fg'
@@ -159,7 +159,7 @@ export default function RunsPage() {
         </div>
 
         {filter === 'declined' && (
-          <p className="mt-2 text-[11px] leading-relaxed text-muted">
+          <p className="mt-2 text-2xs leading-relaxed text-muted">
             {s('declinedHint')}
             {declinedCount > 0 && (
               <>
@@ -172,7 +172,7 @@ export default function RunsPage() {
 
         {filter === 'declined' && scanFailed && (
           <div role="alert" className="panel mt-3 border-danger/40 p-3">
-            <p className="text-[12px]" style={{ color: 'var(--color-danger)' }}>
+            <p className="text-xs" style={{ color: 'var(--color-danger)' }}>
               {s('declinedFailed')}
             </p>
             <button
@@ -182,7 +182,7 @@ export default function RunsPage() {
                 setScanFailed(false)
                 setScanTick((n) => n + 1)
               }}
-              className="mt-2 min-h-11 rounded-full border border-line px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="mt-2 min-h-11 rounded-full border border-line px-3 text-xs text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('retry')}
             </button>
@@ -202,10 +202,10 @@ export default function RunsPage() {
         ) : (
           <>
             <div className="mt-5 flex items-baseline gap-2">
-              <span className="t-display num text-[40px] leading-none">
+              <span className="t-display num text-4xl leading-none">
                 {fmtNum(visible.length, lang, 0)}
               </span>
-              <span className="text-[12px] text-muted">
+              <span className="text-xs text-muted">
                 {plural(lang, visible.length, {
                   other:
                     lang === 'zh' ? '个会话' : lang === 'ar' ? 'جلسة' : 'sessions',
@@ -231,10 +231,10 @@ export default function RunsPage() {
                         onClick={() => navigate(`/ai?session=${encodeURIComponent(session.session_id)}`)}
                         className="min-h-14 min-w-0 flex-1 py-3 pe-3 text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                       >
-                        <span className="block truncate text-[14px] font-medium">
+                        <span className="block truncate text-md font-medium">
                           {session.title || s('untitled')}
                         </span>
-                        <span className="mt-1 flex flex-wrap items-center gap-x-2 text-[11px] text-muted">
+                        <span className="mt-1 flex flex-wrap items-center gap-x-2 text-2xs text-muted">
                           <time dateTime={session.updated_at}>
                             {relTime(minutes, lang)}
                           </time>
@@ -264,7 +264,7 @@ export default function RunsPage() {
                         }
                       >
                         {confirmId === session.session_id ? (
-                          <span className="whitespace-nowrap text-[11px]">{s('confirmDelete')}</span>
+                          <span className="whitespace-nowrap text-2xs">{s('confirmDelete')}</span>
                         ) : (
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13" />
@@ -292,7 +292,7 @@ export default function RunsPage() {
 
         <Link
           to="/ai?new=1"
-          className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
+          className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-md font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
         >
           {sessions.length === 0 ? s('askFirst') : s('newQuestion')}
         </Link>

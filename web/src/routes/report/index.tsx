@@ -140,7 +140,7 @@ export default function ReportPage() {
         <div className="flex justify-center pb-8">
           <Link
             to="/strategy"
-            className="flex min-h-11 items-center justify-center rounded-full border border-line px-5 text-[13px] font-medium transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="flex min-h-11 items-center justify-center rounded-full border border-line px-5 text-sm font-medium transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {s('notFoundAction')}
           </Link>
@@ -207,16 +207,16 @@ export default function ReportPage() {
         </div>
 
         <div className="mt-8">
-          <p className="text-[11px] leading-none text-muted">
+          <p className="text-2xs leading-none text-muted">
             <span dir="ltr">{st.id}</span>
           </p>
-          <h1 className="t-title mt-2 text-[18px] leading-snug font-semibold">
+          <h1 className="t-title mt-2 text-xl leading-snug font-semibold">
             {st.name[lang]}
           </h1>
-          <p className="mt-3 max-w-[62ch] text-[14px] leading-relaxed text-muted">
+          <p className="mt-3 max-w-[62ch] text-md leading-relaxed text-muted">
             {st.description[lang]}
           </p>
-          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-muted">
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-2xs text-muted">
             <span>
               {s('metaUpdated')} {fmtDate(st.updated, lang)}
             </span>
@@ -226,7 +226,7 @@ export default function ReportPage() {
             </span>
           </div>
           {st.tags.length > 0 && (
-            <ul className="mt-3 flex flex-wrap items-center gap-x-2 text-[11px] text-muted">
+            <ul className="mt-3 flex flex-wrap items-center gap-x-2 text-2xs text-muted">
               {st.tags.map((tag, index) => {
                 const key = TAG_KEYS[tag]
                 if (!key) return null
@@ -254,14 +254,14 @@ export default function ReportPage() {
               // Clipboard permission is optional.
             }
           }}
-          className="flex min-h-11 items-center rounded-full border border-line px-4 text-[12px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="flex min-h-11 items-center rounded-full border border-line px-4 text-xs text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {copied ? t('common.copied') : s('share')}
         </button>
         <button
           type="button"
           onClick={() => window.print()}
-          className="flex min-h-11 items-center rounded-full border border-line px-4 text-[12px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="flex min-h-11 items-center rounded-full border border-line px-4 text-xs text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {s('print')}
         </button>
@@ -284,7 +284,7 @@ export default function ReportPage() {
               href={`#${sectionId}`}
               onClick={() => setActive(sectionId)}
               aria-current={on ? 'location' : undefined}
-              className={`flex h-11 min-h-11 shrink-0 items-center rounded-full border px-3 text-[12px] leading-none whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
+              className={`flex h-11 min-h-11 shrink-0 items-center rounded-full border px-3 text-xs leading-none whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
                 on ? 'border-fg font-medium text-fg' : 'border-line text-muted'
               }`}
             >
@@ -306,13 +306,13 @@ export default function ReportPage() {
                       href={`#${sectionId}`}
                       onClick={() => setActive(sectionId)}
                       aria-current={on ? 'location' : undefined}
-                      className={`flex min-h-11 items-center gap-2.5 border-s-2 ps-3 text-[12px] leading-snug transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
+                      className={`flex min-h-11 items-center gap-2.5 border-s-2 ps-3 text-xs leading-snug transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                         on
                           ? 'border-fg font-medium text-fg'
                           : 'border-transparent text-muted hover:text-fg'
                       }`}
                     >
-                      <span className={`num text-[11px] ${on ? 'text-fg font-semibold' : 'text-muted'}`}>
+                      <span className={`num text-2xs ${on ? 'text-fg font-semibold' : 'text-muted'}`}>
                         {String(index + 1).padStart(2, '0')}
                       </span>
                       <span>{s(NAV_KEYS[sectionId])}</span>
@@ -328,7 +328,7 @@ export default function ReportPage() {
           <div className="panel overflow-hidden">
             <section id="conclusion" className="scroll-mt-20 p-5 sm:scroll-mt-6">
               <h2 className="t-section">{s('conclusionLabel')}</h2>
-              <p className="mt-4 max-w-[52ch] text-[22px] leading-[1.4] font-semibold tracking-[-0.01em]">
+              <p className="mt-4 max-w-[52ch] text-xl leading-[1.4] font-semibold tracking-[-0.01em]">
                 {conclusion}
               </p>
             </section>
@@ -338,7 +338,7 @@ export default function ReportPage() {
               className="scroll-mt-20 border-t border-line p-5 sm:scroll-mt-6"
             >
               <h2 className="t-section">{s('basisLabel')}</h2>
-              <p className="mt-2 max-w-[62ch] text-[14px] leading-relaxed text-muted">
+              <p className="mt-2 max-w-[62ch] text-md leading-relaxed text-muted">
                 {s('basisIntro')}
               </p>
               <ol className="mt-3 divide-y divide-line">
@@ -346,20 +346,20 @@ export default function ReportPage() {
                   <li key={row.label} className="py-4">
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="flex min-w-0 items-baseline gap-2.5">
-                        <span className="num shrink-0 text-[11px] text-muted">
+                        <span className="num shrink-0 text-2xs text-muted">
                           {String(index + 1).padStart(2, '0')}
                         </span>
-                        <p className="min-w-0 text-[14px] leading-snug font-medium">{row.label}</p>
+                        <p className="min-w-0 text-md leading-snug font-medium">{row.label}</p>
                       </div>
                       <span
-                        className={`num shrink-0 text-[15px] leading-snug font-semibold ${
+                        className={`num shrink-0 text-md leading-snug font-semibold ${
                           row.tone ?? 'text-fg'
                         }`}
                       >
                         {row.value}
                       </span>
                     </div>
-                    <p className="mt-1.5 ps-6 text-[14px] leading-relaxed text-muted">
+                    <p className="mt-1.5 ps-6 text-md leading-relaxed text-muted">
                       {row.note}
                     </p>
                   </li>
@@ -373,12 +373,12 @@ export default function ReportPage() {
                 {risks.map((row) => (
                   <li key={row.title} className="py-4">
                     <div className="flex items-baseline justify-between gap-3">
-                      <p className="min-w-0 text-[14px] font-medium">{row.title}</p>
-                      <span className="num shrink-0 text-[15px] font-semibold text-fg">
+                      <p className="min-w-0 text-md font-medium">{row.title}</p>
+                      <span className="num shrink-0 text-md font-semibold text-fg">
                         {row.value}
                       </span>
                     </div>
-                    <p className="mt-1.5 text-[14px] leading-relaxed text-muted">{row.body}</p>
+                    <p className="mt-1.5 text-md leading-relaxed text-muted">{row.body}</p>
                   </li>
                 ))}
               </ul>
@@ -386,7 +386,7 @@ export default function ReportPage() {
 
             <section id="wrong" className="scroll-mt-20 border-t border-line p-5 sm:scroll-mt-6">
               <h2 className="t-section">{s('wrongLabel')}</h2>
-              <p className="mt-4 max-w-[62ch] border-s border-line ps-4 text-[14px] leading-[1.75]">
+              <p className="mt-4 max-w-[62ch] border-s border-line ps-4 text-md leading-[1.75]">
                 {s('wrongWithEquity')}
               </p>
             </section>
@@ -399,8 +399,8 @@ export default function ReportPage() {
                   className="-mx-2 flex min-h-14 items-center gap-3 rounded-[10px] px-2 py-4 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-medium">{s('nextStrategyTitle')}</p>
-                    <p className="mt-1 text-[14px] leading-relaxed text-muted">
+                    <p className="text-md font-medium">{s('nextStrategyTitle')}</p>
+                    <p className="mt-1 text-md leading-relaxed text-muted">
                       {s('nextStrategyBody')}
                     </p>
                   </div>
@@ -417,8 +417,8 @@ export default function ReportPage() {
                   className="-mx-2 flex min-h-14 items-center gap-3 rounded-[10px] px-2 py-4 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-medium">{s('nextAiTitle')}</p>
-                    <p className="mt-1 text-[14px] leading-relaxed text-muted">
+                    <p className="text-md font-medium">{s('nextAiTitle')}</p>
+                    <p className="mt-1 text-md leading-relaxed text-muted">
                       {s('nextAiBody')}
                     </p>
                   </div>
@@ -432,7 +432,7 @@ export default function ReportPage() {
             <p className="t-kicker text-muted">
               {fill(s('footerGenerated'), { time: fmtDateTime(generatedAt, lang) })}
             </p>
-            <p className="mt-2 text-[11px] leading-relaxed text-muted">{s('disclaimer')}</p>
+            <p className="mt-2 text-2xs leading-relaxed text-muted">{s('disclaimer')}</p>
           </footer>
         </article>
       </div>

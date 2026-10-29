@@ -48,9 +48,9 @@ const REASON_KEYS: Record<ReturnReason, keyof (typeof strings)['en']> = {
 function HeadStat({ value, label, tracking }: { value: number; label: string; tracking: number | undefined }) {
   return (
     <div className="text-end">
-      <p className="num text-[18px] leading-none font-semibold">{value}</p>
+      <p className="num text-xl leading-none font-semibold">{value}</p>
       <p
-        className="mt-1.5 max-w-[86px] truncate text-[11px] leading-tight text-muted"
+        className="mt-1.5 max-w-[86px] truncate text-2xs leading-tight text-muted"
         style={{ letterSpacing: tracking }}
       >
         {label}
@@ -80,9 +80,9 @@ function ReturnsDock({
     <section className="mt-8 border-t border-line pt-4">
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="t-section">{s('returnsTitle')}</h2>
-        <span className="num text-[11px] text-muted">{visible.length}</span>
+        <span className="num text-2xs text-muted">{visible.length}</span>
       </div>
-      <p className="mt-1 text-[11px] leading-snug text-muted">
+      <p className="mt-1 text-2xs leading-snug text-muted">
         {s('returnsHint').replace('{days}', String(RETURN_AFTER_DAYS))}
       </p>
       <ul className="mt-2">
@@ -98,19 +98,19 @@ function ReturnsDock({
                   className="min-w-0 flex-1 py-1 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                 >
                   <span className="flex flex-wrap items-center gap-1.5">
-                    <span className="num text-[13px] font-semibold">{entry.symbol}</span>
+                    <span className="num text-sm font-semibold">{entry.symbol}</span>
                     {entry.example && (
-                      <span className="rounded-full border border-line px-1.5 py-0.5 text-[9px] leading-none text-muted">
+                      <span className="rounded-full border border-line px-1.5 py-0.5 text-2xs leading-none text-muted">
                         {s('returnsExample')}
                       </span>
                     )}
                   </span>
-                  <span className="mt-1 block truncate text-[11px] leading-tight text-muted">
+                  <span className="mt-1 block truncate text-2xs leading-tight text-muted">
                     {quote.name[lang]} · {s(REASON_KEYS[entry.reason])}
                   </span>
                 </Link>
                 <div className="shrink-0 text-end">
-                  <p className="text-[10px] leading-snug text-muted">
+                  <p className="text-2xs leading-snug text-muted">
                     {ready
                       ? s('returnsReady')
                       : s('returnsInDays').replace('{days}', String(daysUntil(entry, now)))}
@@ -120,7 +120,7 @@ function ReturnsDock({
                       <button
                         type="button"
                         onClick={() => onReadd(entry)}
-                        className="min-h-11 rounded-full bg-solid px-3 text-[11px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
+                        className="min-h-11 rounded-full bg-solid px-3 text-2xs font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
                       >
                         {s('readd')}
                       </button>
@@ -129,7 +129,7 @@ function ReturnsDock({
                       type="button"
                       aria-label={`${s('dismiss')}: ${entry.symbol}`}
                       onClick={() => onDismiss(entry)}
-                      className="min-h-11 min-w-11 rounded-full px-2 text-[10px] text-muted transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                      className="min-h-11 min-w-11 rounded-full px-2 text-2xs text-muted transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                     >
                       {s('dismiss')}
                     </button>
@@ -408,12 +408,12 @@ export default function WatchlistsPage() {
                   if (next) setPick(next.symbol)
                 }}
                 title={group.name}
-                className={`flex min-h-11 max-w-[220px] shrink-0 items-center gap-1.5 overflow-hidden rounded-full px-3.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
+                className={`flex min-h-11 max-w-[220px] shrink-0 items-center gap-1.5 overflow-hidden rounded-full px-3.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                   selected ? 'bg-fg text-bg' : 'border border-line text-muted'
                 }`}
               >
                 <span className="min-w-0 truncate">{group.name}</span>
-                <span aria-hidden="true" className="num text-[10px] opacity-60">
+                <span aria-hidden="true" className="num text-2xs opacity-60">
                   {group.symbols.length}
                 </span>
               </button>
@@ -456,12 +456,12 @@ export default function WatchlistsPage() {
               placeholder={s('groupNamePlaceholder')}
               aria-label={s('groupName')}
               onChange={(e) => setNewName(e.target.value)}
-              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-3 text-[14px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
+              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-3 text-md text-fg focus-visible:outline-2 focus-visible:outline-fg"
             />
             <button
               type="submit"
               disabled={!newName.trim()}
-              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-sm font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('create')}
             </button>
@@ -476,7 +476,7 @@ export default function WatchlistsPage() {
             </IconBtn>
           </div>
           <div className="mt-1.5 flex items-baseline justify-between gap-2">
-            <span className="num text-[10px] text-muted">
+            <span className="num text-2xs text-muted">
               {newName.length}/{MAX_NAME}
             </span>
           </div>
@@ -491,7 +491,7 @@ export default function WatchlistsPage() {
               <button
                 type="button"
                 onClick={() => setNewOpen(true)}
-                className="min-h-11 rounded-full bg-solid px-4 text-[13px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                className="min-h-11 rounded-full bg-solid px-4 text-sm font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               >
                 {s('newGroup')}
               </button>
@@ -516,7 +516,7 @@ export default function WatchlistsPage() {
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') setEditingId(null)
                   }}
-                  className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[14px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
+                  className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-md text-fg focus-visible:outline-2 focus-visible:outline-fg"
                 />
                 <IconBtn label={s('save')} type="submit" disabled={!editName.trim()}>
                   <CheckIcon />
@@ -528,7 +528,7 @@ export default function WatchlistsPage() {
             ) : (
               <>
                 <h2 className="t-section min-w-0 flex-1 truncate">{active.name}</h2>
-                <span className="num shrink-0 text-[11px] text-muted">
+                <span className="num shrink-0 text-2xs text-muted">
                   {rows.length}
                 </span>
                 <IconBtn label={`${s('rename')} ${active.name}`} onClick={() => startRename(active)}>
@@ -539,7 +539,7 @@ export default function WatchlistsPage() {
                     type="button"
                     onClick={() => tapDelete(active)}
                     aria-label={`${s('confirmDelete')} ${active.name}`}
-                    className="flex min-h-11 shrink-0 items-center rounded-full px-3 text-[11px] font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                    className="flex min-h-11 shrink-0 items-center rounded-full px-3 text-2xs font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     style={{ color: 'var(--color-danger)' }}
                   >
                     {s('confirmDelete')}
@@ -564,7 +564,7 @@ export default function WatchlistsPage() {
               id="wl-add-symbol"
               value={pick}
               onChange={(e) => setPick(e.target.value)}
-              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
+              className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-sm text-fg focus-visible:outline-2 focus-visible:outline-fg"
             >
               {quotes.map((q) => (
                 <option key={q.symbol} value={q.symbol}>
@@ -575,14 +575,14 @@ export default function WatchlistsPage() {
             <button
               type="submit"
               disabled={!canAdd}
-              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-sm font-medium text-bg disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('add')}
             </button>
           </form>
 
           {rows.length === 0 ? (
-            <p className="border-t border-line py-6 text-[12px] text-muted">{s('emptyGroup')}</p>
+            <p className="border-t border-line py-6 text-xs text-muted">{s('emptyGroup')}</p>
           ) : (
             <ul className="divide-y divide-line border-t border-line">
               {rows.map((q) => {
@@ -600,16 +600,16 @@ export default function WatchlistsPage() {
                       className="flex min-h-11 min-w-0 flex-1 items-center gap-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     >
                       <span className="min-w-0 flex-1">
-                        <span className="num block text-[14px] leading-tight font-semibold">{q.symbol}</span>
-                        <span className="mt-1 block truncate text-[11px] leading-tight text-muted">
+                        <span className="num block text-md leading-tight font-semibold">{q.symbol}</span>
+                        <span className="mt-1 block truncate text-2xs leading-tight text-muted">
                           {q.name[lang]}
                         </span>
                       </span>
                       <span className="shrink-0 text-end">
-                        <span className="num block text-[14px] leading-tight font-medium">
+                        <span className="num block text-md leading-tight font-medium">
                           {fmtNum(q.price, lang, 2)}
                         </span>
-                        <span className="num mt-1 block text-[11px] leading-tight" style={{ color: tone }}>
+                        <span className="num mt-1 block text-2xs leading-tight" style={{ color: tone }}>
                           {fmtPct(q.change, lang)}
                         </span>
                       </span>
@@ -683,7 +683,7 @@ export default function WatchlistsPage() {
                           autoFocus
                           value={moveTarget}
                           onChange={(e) => setMoveTarget(e.target.value)}
-                          className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-fg"
+                          className="min-h-11 min-w-0 flex-1 rounded-lg bg-fg/5 px-2.5 text-sm text-fg focus-visible:outline-2 focus-visible:outline-fg"
                         >
                           {groups
                             .filter((g) => g.id !== active.id)
@@ -695,7 +695,7 @@ export default function WatchlistsPage() {
                         </select>
                         <button
                           type="submit"
-                          className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-[13px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                          className="min-h-11 shrink-0 rounded-full bg-solid px-4 text-sm font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                         >
                           {s('move')}
                         </button>
@@ -713,7 +713,7 @@ export default function WatchlistsPage() {
                         }}
                       >
                         <p className="t-kicker">{s('removeReasonTitle')}</p>
-                        <p className="mt-1 text-[11px] leading-snug text-muted">
+                        <p className="mt-1 text-2xs leading-snug text-muted">
                           {s('removeReasonHint').replace('{days}', String(RETURN_AFTER_DAYS))}
                         </p>
                         <div
@@ -729,7 +729,7 @@ export default function WatchlistsPage() {
                                 type="button"
                                 aria-pressed={selected}
                                 onClick={() => setRemoveReason(reason)}
-                                className={`min-h-11 rounded-full px-3 text-[11px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg ${
+                                className={`min-h-11 rounded-full px-3 text-2xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg ${
                                   selected
                                     ? 'bg-fg text-bg'
                                     : 'border border-line text-muted'
@@ -748,14 +748,14 @@ export default function WatchlistsPage() {
                               recordReturn(q.symbol, active.id, removeReason)
                               setRemoveAsk(null)
                             }}
-                            className="min-h-11 rounded-full bg-solid px-4 text-[12px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
+                            className="min-h-11 rounded-full bg-solid px-4 text-xs font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
                           >
                             {s('confirmRemove')}
                           </button>
                           <button
                             type="button"
                             onClick={() => setRemoveAsk(null)}
-                            className="min-h-11 rounded-full px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                            className="min-h-11 rounded-full px-3 text-xs text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                           >
                             {s('cancel')}
                           </button>

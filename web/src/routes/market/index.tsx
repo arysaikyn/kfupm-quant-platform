@@ -269,7 +269,7 @@ export default function MarketPage() {
             {fired > 0 && (
               <span
                 aria-hidden="true"
-                className="num absolute -end-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none"
+                className="num absolute -end-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-2xs font-semibold leading-none"
                 style={{ background: 'var(--color-down)', color: 'var(--color-bg)' }}
               >
                 {fired > 9 ? '9+' : fired}
@@ -310,7 +310,7 @@ export default function MarketPage() {
               type="button"
               aria-pressed={active}
               onClick={() => setMarket(m.id)}
-              className="min-h-11 flex-1 rounded-full px-2 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+              className="min-h-11 flex-1 rounded-full px-2 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               style={
                 active
                   ? { background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }
@@ -327,15 +327,15 @@ export default function MarketPage() {
       <div className="mt-4">
         {heroIndex && (
           <div>
-            <p className="text-[11px] font-medium" style={{ color: 'var(--color-muted)' }}>
+            <p className="text-2xs font-medium" style={{ color: 'var(--color-muted)' }}>
               {heroIndex.name[lang]}
             </p>
             <div className="mt-1 flex items-baseline gap-2.5">
-              <p className="t-display num text-[54px] leading-[0.95]">
+              <p className="t-display num text-5xl leading-[0.95]">
                 <AnimatedNumber value={heroIndex.value} format={(n) => fmtNum(n, lang, 2)} />
               </p>
               <p
-                className="num pb-1 text-[14px] font-medium"
+                className="num pb-1 text-md font-medium"
                 style={{ color: heroIndex.change >= 0 ? 'var(--color-up)' : 'var(--color-down)' }}
               >
                 {fmtPct(heroIndex.change, lang)}
@@ -347,17 +347,21 @@ export default function MarketPage() {
           {restIndices.map((ix) => {
             const up = ix.change >= 0
             return (
-              <div key={ix.symbol} className="flex min-w-0 flex-1 items-baseline gap-1.5">
-                <span className="truncate text-[11px]" style={{ color: 'var(--color-muted)' }}>
+              <div key={ix.symbol} className="flex min-w-0 flex-1 flex-col gap-0.5">
+                {/* Name on its own line: on a 320px screen the inline row gave it
+                    45px and cut "SSE Composite" mid-word. */}
+                <span className="truncate text-2xs" style={{ color: 'var(--color-muted)' }}>
                   {ix.name[lang]}
                 </span>
-                <span className="num shrink-0 text-[12px]">
+                <span className="flex items-baseline gap-1.5">
+                <span className="num shrink-0 text-xs">
                   <AnimatedNumber value={ix.value} format={(n) => fmtNum(n, lang, 0)} />
                 </span>
                 <span
-                  className={`num shrink-0 text-[11px] ${up ? 'text-up' : 'text-down'}`}
+                  className={`num shrink-0 text-2xs ${up ? 'text-up' : 'text-down'}`}
                 >
                   {fmtPct(ix.change, lang, 1)}
+                </span>
                 </span>
               </div>
             )
@@ -379,16 +383,16 @@ export default function MarketPage() {
                 role="listitem"
                 onClick={() => setSector(row.id)}
                 aria-label={`${row.label} ${fmtPct(row.change, lang)}`}
-                className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-2 text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                className="cell-query flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-2 text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                 style={{
                   flexGrow: row.weight,
                   background: `color-mix(in srgb, ${tone} ${8 + Math.min(Math.abs(row.change) / 0.02, 1) * 12}%, var(--color-surface))`,
                 }}
               >
-                <span className="truncate text-[10px] leading-none" style={{ color: 'var(--color-fg)' }}>
+                <span className="cell-label line-clamp-2 text-2xs leading-tight" style={{ color: 'var(--color-fg)' }}>
                   {row.label}
                 </span>
-                <span className="num truncate text-[10.5px] leading-none" style={{ color: 'var(--color-fg)', opacity: 0.75 }}>
+                <span className="cell-label num truncate text-2xs leading-none" style={{ color: 'var(--color-fg)', opacity: 0.75 }}>
                   {fmtPct(row.change, lang, 1)}
                 </span>
               </button>
@@ -417,7 +421,7 @@ export default function MarketPage() {
               role="tab"
               aria-selected={active}
               onClick={() => setView(key)}
-              className={`relative -mb-px min-h-11 min-w-11 pb-2 text-[13px] transition-colors ${
+              className={`relative -mb-px min-h-11 min-w-11 pb-2 text-sm transition-colors ${
                 active ? 'font-semibold' : 'text-muted hover:text-fg'
               }`}
               style={
@@ -453,7 +457,7 @@ export default function MarketPage() {
                 className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <span
-                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
+                  className="rounded-lg px-3 py-1.5 text-2xs font-medium"
                   style={
                     on
                       ? { background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }
@@ -467,7 +471,7 @@ export default function MarketPage() {
           })}
         </div>
 
-        <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-muted">
+        <div className="mt-1 flex items-center justify-end gap-1 text-2xs text-muted">
           <span>{s('legendLoss')}</span>
           <span className="h-1.5 w-8 rounded-full" style={{ background: 'var(--color-down)' }} />
           <span className="h-1.5 w-8 rounded-full" style={{ background: 'var(--color-up)' }} />
@@ -496,7 +500,7 @@ export default function MarketPage() {
 
         {frame !== '1d' && (
           <p
-            className="mt-1.5 text-[10px] leading-snug"
+            className="mt-1.5 text-2xs leading-snug"
             style={{ color: 'var(--color-muted)' }}
           >
             {s('heatDerived')}
@@ -508,9 +512,9 @@ export default function MarketPage() {
         {pickedQuote && (
           <div className="panel mt-2 flex min-h-[56px] items-center justify-between gap-3 px-3 py-2">
             <div className="min-w-0">
-              <p className="truncate text-[13px] font-medium">{pickedQuote.name[lang]}</p>
+              <p className="truncate text-sm font-medium">{pickedQuote.name[lang]}</p>
               <p
-                className="num mt-0.5 truncate text-[11px]"
+                className="num mt-0.5 truncate text-2xs"
                 style={{ color: 'var(--color-muted)' }}
               >
                 {pickedQuote.symbol} · {fmtNum(pickedQuote.price, lang, 2)}
@@ -518,7 +522,7 @@ export default function MarketPage() {
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <span
-                className={`num text-[13px] font-semibold ${
+                className={`num text-sm font-semibold ${
                   frameChange(pickedQuote, frame) >= 0 ? 'text-up' : 'text-down'
                 }`}
               >
@@ -526,7 +530,7 @@ export default function MarketPage() {
               </span>
               <Link
                 to={`/m/${pickedQuote.symbol}`}
-                className="flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-fg transition-colors hover:bg-fg/5"
+                className="flex min-h-11 items-center rounded-full border border-line px-3 text-xs text-fg transition-colors hover:bg-fg/5"
               >
                 {s('openQuote')}
               </Link>
@@ -537,7 +541,7 @@ export default function MarketPage() {
         {/* Drill into whichever sector is in focus */}
         <Link
           to={`/sector/${sector ?? sectors[0]?.id ?? 'energy'}`}
-          className="panel mt-2 flex min-h-[44px] items-center justify-between gap-3 px-3 text-[12px] transition-colors active:bg-fg/10"
+          className="panel mt-2 flex min-h-[44px] items-center justify-between gap-3 px-3 text-xs transition-colors active:bg-fg/10"
         >
           <span>{s('sectorDetail')}</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true" className="rtl:[transform:scaleX(-1)]" style={{ color: 'var(--color-muted)' }}>
@@ -557,7 +561,7 @@ export default function MarketPage() {
               <button
                 type="button"
                 onClick={() => setSector(null)}
-                className="min-h-11 rounded-full px-4 text-[13px] font-medium"
+                className="min-h-11 rounded-full px-4 text-sm font-medium"
                 style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
               >
                 {s('rankPick')}
@@ -569,7 +573,7 @@ export default function MarketPage() {
             {/* One meta row: the shape of the board, plus the two controls */}
             <div className="mt-5 flex items-center justify-between gap-3">
               {/* A count, not a signal: the rows below already carry the colour. */}
-              <p className="text-[12px] leading-none" style={{ color: 'var(--color-muted)' }}>
+              <p className="text-xs leading-none" style={{ color: 'var(--color-muted)' }}>
                 {s('breadthUp')} <span className="num" style={{ color: 'var(--color-fg)' }}>{breadth.up}</span>
                 <span className="mx-1.5">·</span>
                 {s('breadthDown')} <span className="num" style={{ color: 'var(--color-fg)' }}>{breadth.down}</span>
@@ -589,7 +593,7 @@ export default function MarketPage() {
                   <button
                     type="button"
                     onClick={() => setSector(null)}
-                    className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-[12px] transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                    className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-xs transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                     style={{ color: 'var(--color-accent)' }}
                   >
                     {s('heatClear')}
@@ -616,13 +620,13 @@ export default function MarketPage() {
                   in a line instead of drifting with each name length. The panel's
                   divider draws the line under it; the rail draws nothing. */}
               <div aria-hidden="true" className={`${ROW_GRID} ps-3 pe-11 py-2`}>
-                <span className="text-center text-[11px] text-muted">#</span>
-                <span className="text-[11px] text-muted">{s('colName')}</span>
-                <span className={`text-center text-[11px] text-muted ${SPARK_CELL}`}>
+                <span className="text-center text-2xs text-muted">#</span>
+                <span className="text-2xs text-muted">{s('colName')}</span>
+                <span className={`text-center text-2xs text-muted ${SPARK_CELL}`}>
                   {s('col1m')}
                 </span>
-                <span className="text-end text-[11px] text-muted">{s('colLast')}</span>
-                <span className="text-end text-[11px] text-muted">{s('colChg')}</span>
+                <span className="text-end text-2xs text-muted">{s('colLast')}</span>
+                <span className="text-end text-2xs text-muted">{s('colChg')}</span>
               </div>
   
               <ul className="divide-y divide-line">
@@ -640,18 +644,18 @@ export default function MarketPage() {
                         {/* Rank is positional, so it is not read out as part of the name. */}
                         <span
                           aria-hidden="true"
-                          className="num text-center text-[11px] leading-none"
+                          className="num text-center text-2xs leading-none"
                           style={{ color: 'var(--color-muted)' }}
                         >
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         <span className="min-w-0">
-                          <span className="block truncate text-[14px] leading-tight font-medium">
+                          <span className="block truncate text-md leading-tight font-medium">
                             {q.name[lang]}
                           </span>
                           <span className="mt-0.5 flex items-center gap-1">
                             <span
-                              className="num truncate text-[11px] leading-none"
+                              className="num truncate text-2xs leading-none"
                               style={{ color: 'var(--color-muted)' }}
                             >
                               {q.symbol}
@@ -676,11 +680,11 @@ export default function MarketPage() {
                         >
                           <BarStrip data={q.spark} up={up} compact />
                         </span>
-                        <span className="num text-end text-[12px] leading-none max-[380px]:hidden">
+                        <span className="num text-end text-xs leading-none max-[380px]:hidden">
                           <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
                         </span>
                         <span
-                          className={`num flex items-center justify-end gap-1 text-[15px] leading-none font-semibold ${up ? 'text-up' : 'text-down'}`}
+                          className={`num flex items-center justify-end gap-1 text-md leading-none font-semibold ${up ? 'text-up' : 'text-down'}`}
                         >
                           <TrendArrow up={up} />
                           <span>{fmtPct(q.change, lang)}</span>
@@ -707,15 +711,15 @@ export default function MarketPage() {
         <div className="mt-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-baseline gap-2">
-              <span className="num rounded-full bg-surface px-2 py-0.5 text-[11px] text-muted">
+              <span className="num rounded-full bg-surface px-2 py-0.5 text-2xs text-muted">
                 {watched.length}
               </span>
-              <span className="text-[12px] text-muted">{s('viewWatch')}</span>
+              <span className="text-xs text-muted">{s('viewWatch')}</span>
             </div>
             {/* Groups live next to the list they group, not inside Profile. */}
             <Link
               to="/watchlists"
-              className="-me-2 flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line px-2.5 text-[12px] text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="-me-2 flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line px-2.5 text-xs text-fg transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('watchGroups')}
             </Link>
@@ -727,7 +731,7 @@ export default function MarketPage() {
                 <button
                   type="button"
                   onClick={() => setView('rank')}
-                  className="min-h-11 rounded-full px-4 text-[13px] font-medium"
+                  className="min-h-11 rounded-full px-4 text-sm font-medium"
                   style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
                 >
                   {s('watchCta')}
@@ -747,21 +751,21 @@ export default function MarketPage() {
                       className="grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 ps-3 pe-11 py-2 transition-colors hover:bg-fg/5 active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     >
                       <span className="min-w-0">
-                        <span className="block truncate text-[14px] leading-tight font-medium">
+                        <span className="block truncate text-md leading-tight font-medium">
                           {q.name[lang]}
                         </span>
                         <span
-                          className="num mt-0.5 block truncate text-[11px] leading-none"
+                          className="num mt-0.5 block truncate text-2xs leading-none"
                           style={{ color: 'var(--color-muted)' }}
                         >
                           {q.symbol}
                         </span>
                       </span>
-                      <span className="num text-end text-[12px] leading-none">
+                      <span className="num text-end text-xs leading-none">
                         <AnimatedNumber value={q.price} format={(n) => fmtNum(n, lang, 2)} />
                       </span>
                       <span
-                        className={`num flex items-center justify-end gap-1 text-[14px] leading-none font-semibold ${up ? 'text-up' : 'text-down'}`}
+                        className={`num flex items-center justify-end gap-1 text-md leading-none font-semibold ${up ? 'text-up' : 'text-down'}`}
                       >
                         <TrendArrow up={up} />
                         <span>{fmtPct(q.change, lang)}</span>

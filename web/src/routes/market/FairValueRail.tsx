@@ -42,7 +42,7 @@ export function FairValueRail({ price, fairValue, labels, format, percent = (n) 
         <p className="t-kicker" style={{ color: 'var(--color-muted)' }}>
           {labels.title}
         </p>
-        <p className="num text-[12px]" style={{ color: verdict.tone }}>
+        <p className="num text-xs" style={{ color: verdict.tone }}>
           {verdict.text}
         </p>
       </div>
@@ -70,7 +70,7 @@ export function FairValueRail({ price, fairValue, labels, format, percent = (n) 
         />
       </div>
 
-      <div className="mt-2 flex items-baseline justify-between text-[12px]">
+      <div className="mt-2 flex items-baseline justify-between text-xs">
         <span style={{ color: 'var(--color-muted)' }}>
           {labels.price} <span className="num" style={{ color: 'var(--color-fg)' }}>{format(price)}</span>
         </span>

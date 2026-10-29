@@ -93,29 +93,29 @@ export function ReceiptCard({
     <figure className={`panel mt-2 border-dashed ${compact ? 'p-2.5' : 'p-3'}`} role="note">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[10px] text-muted">
+          <p className="text-2xs text-muted">
             {receipt.role === 'user' ? s.asked : s.answered}
           </p>
-          <p className={`${compact ? 'text-[12px]' : 'text-[13px]'} font-medium`}>{s.title}</p>
+          <p className={`${compact ? 'text-xs' : 'text-sm'} font-medium`}>{s.title}</p>
         </div>
-        <span className="shrink-0 -rotate-3 rounded border border-line px-2 py-0.5 text-[10px] font-semibold text-muted">
+        <span className="shrink-0 -rotate-3 rounded border border-line px-2 py-0.5 text-2xs font-semibold text-muted">
           {s.stamp}
         </span>
       </div>
       <dl className="mt-2 space-y-2">
         <div>
-          <dt className="text-[10px] text-muted">{s.trigger}</dt>
-          <dd dir="auto" className="mt-0.5 text-[12px] leading-snug">
+          <dt className="text-2xs text-muted">{s.trigger}</dt>
+          <dd dir="auto" className="mt-0.5 text-xs leading-snug">
             “{receipt.trigger}”
           </dd>
         </div>
         <div>
-          <dt className="text-[10px] text-muted">{s.rule}</dt>
-          <dd className="text-[12px]">{s.ruleOf[receipt.rule]}</dd>
+          <dt className="text-2xs text-muted">{s.rule}</dt>
+          <dd className="text-xs">{s.ruleOf[receipt.rule]}</dd>
         </div>
         <div>
-          <dt className="text-[10px] text-muted">{s.rewrite}</dt>
-          <dd className="mt-0.5 text-[12px] leading-relaxed text-muted">
+          <dt className="text-2xs text-muted">{s.rewrite}</dt>
+          <dd className="mt-0.5 text-xs leading-relaxed text-muted">
             {s.rewriteOf[receipt.rule]}
           </dd>
         </div>

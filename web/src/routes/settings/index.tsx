@@ -93,22 +93,22 @@ export default function SettingsPage() {
         </h2>
         <div className="border-t border-line">
           <div className="row justify-between">
-            <span className="text-[12px] text-muted">{s('appLabel')}</span>
-            <span className="truncate text-[14px] leading-tight font-medium">{s('appName')}</span>
+            <span className="text-xs text-muted">{s('appLabel')}</span>
+            <span className="truncate text-md leading-tight font-medium">{s('appName')}</span>
           </div>
           <div className="row justify-between">
-            <span className="text-[12px] text-muted">{s('versionLabel')}</span>
-            <span className="num text-[12px] leading-tight">{APP_VERSION}</span>
+            <span className="text-xs text-muted">{s('versionLabel')}</span>
+            <span className="num text-xs leading-tight">{APP_VERSION}</span>
           </div>
           <Link
             to="/learn"
             className="row transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
           >
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[14px] leading-tight font-medium">
+              <span className="block truncate text-md leading-tight font-medium">
                 {s('learn')}
               </span>
-              <span className="mt-1 block truncate text-[11px] leading-tight text-muted">
+              <span className="mt-1 block truncate text-2xs leading-tight text-muted">
                 {s('learnHint')}
               </span>
             </span>
@@ -135,7 +135,7 @@ export default function SettingsPage() {
         <h2 id="settings-sources" className="t-section pb-2">
           {s('sourcesTitle')}
         </h2>
-        <p className="pb-2 text-[11px] leading-snug text-muted">{s('sourcesHint')}</p>
+        <p className="pb-2 text-2xs leading-snug text-muted">{s('sourcesHint')}</p>
         <ul className="border-t border-line">
           {(
             [
@@ -152,10 +152,10 @@ export default function SettingsPage() {
                 style={{ background: 'var(--color-muted)' }}
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[14px] leading-tight font-medium">{s(name)}</p>
-                <p className="mt-1 truncate text-[11px] leading-tight text-muted">{s(market)}</p>
+                <p className="truncate text-md leading-tight font-medium">{s(name)}</p>
+                <p className="mt-1 truncate text-2xs leading-tight text-muted">{s(market)}</p>
               </div>
-              <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-[11px] leading-tight font-semibold text-muted">
+              <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-2xs leading-tight font-semibold text-muted">
                 {s('chipDemo')}
               </span>
             </li>
@@ -168,14 +168,14 @@ export default function SettingsPage() {
           {s('resetTitle')}
         </h2>
         <div className="border-t border-line pt-3">
-          <p id="settings-reset-copy" className="text-[12px] leading-relaxed text-muted">
+          <p id="settings-reset-copy" className="text-xs leading-relaxed text-muted">
             {s('resetHint')}
           </p>
           <button
             type="button"
             onClick={reset}
             aria-describedby="settings-reset-copy"
-            className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full border border-line px-4 text-[14px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full border border-line px-4 text-md font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             style={
               armed
                 ? { background: danger, color: dangerContrast }
@@ -188,14 +188,14 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => setArmed(false)}
-              className="mt-1 flex min-h-11 w-full items-center justify-center rounded-full text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+              className="mt-1 flex min-h-11 w-full items-center justify-center rounded-full text-xs text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
             >
               {s('resetCancel')}
             </button>
           )}
           <p
             aria-live="polite"
-            className="mt-1 min-h-[1.2em] text-center text-[11px] leading-snug"
+            className="mt-1 min-h-[1.2em] text-center text-2xs leading-snug"
             style={{ color: resetFailed ? danger : 'var(--color-muted)' }}
           >
             {resetFailed ? s('resetError') : armed ? s('resetArmedHint') : ''}

@@ -95,7 +95,7 @@ export default function SymbolPage() {
         <div className="flex justify-center">
           <Link
             to="/"
-            className="flex min-h-11 items-center rounded-full px-4 text-[13px] font-medium"
+            className="flex min-h-11 items-center rounded-full px-4 text-sm font-medium"
             style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
           >
             {t('tab.market')}
@@ -210,7 +210,7 @@ export default function SymbolPage() {
           </button>
           <Link
             to={`/compare?a=${quote.symbol}`}
-            className="flex min-h-11 shrink-0 items-center rounded-full bg-surface px-3.5 text-[12px] text-muted"
+            className="flex min-h-11 shrink-0 items-center rounded-full bg-surface px-3.5 text-xs text-muted"
           >
             {s('goCompare')}
           </Link>
@@ -223,11 +223,11 @@ export default function SymbolPage() {
           {quote.symbol} · {quote.currency}
         </p>
         <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-          <span className="t-display num text-[56px] leading-[0.95]">
+          <span className="t-display num text-5xl leading-[0.95]">
             <AnimatedNumber value={quote.price} format={(n) => fmtNum(n, lang, 2)} />
           </span>
           <span
-            className="num flex items-center gap-1 pb-1 text-[14px] font-medium"
+            className="num flex items-center gap-1 pb-1 text-md font-medium"
             style={{ color: token }}
           >
             <svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true">
@@ -235,7 +235,7 @@ export default function SymbolPage() {
             </svg>
             {fmtPct(quote.change, lang)}
           </span>
-          <span className="pb-1 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+          <span className="pb-1 text-xs" style={{ color: 'var(--color-muted)' }}>
             {s('today')}
           </span>
         </div>
@@ -246,7 +246,7 @@ export default function SymbolPage() {
               setIntake(`${s('askAbout')} ${quote.name[lang]}`, [{ kind: 'quote', symbol: quote.symbol }])
               navigate('/ai')
             }}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-3 text-[12px] text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-3 text-xs text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 4l1.7 4.6L18 10l-4.3 1.4L12 16l-1.7-4.6L6 10l4.3-1.4z" />
@@ -255,7 +255,7 @@ export default function SymbolPage() {
           </button>
           <Link
             to={`/alerts?symbol=${quote.symbol}`}
-            className="inline-flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="inline-flex min-h-11 items-center rounded-full border border-line px-3 text-xs text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {s('setAlert')}
           </Link>
@@ -300,7 +300,7 @@ export default function SymbolPage() {
                 className="flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <span
-                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium"
+                  className="rounded-lg px-3 py-1.5 text-2xs font-medium"
                   style={
                     on
                       ? { background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }
@@ -316,21 +316,21 @@ export default function SymbolPage() {
       </div>
 
       {/* Rules: a hairline list, not a card */}
-      <h2 className="mt-8 text-[15px] font-semibold">{s('rulesTitle')}</h2>
+      <h2 className="mt-8 text-md font-semibold">{s('rulesTitle')}</h2>
       <ul className="mt-2">
         {rules.map((r) => (
           <li
             key={r.title}
             className="flex min-h-[56px] items-center justify-between gap-3 border-t border-line"
           >
-            <p className="min-w-0 truncate text-[14px]">{r.title}</p>
-            <p className="num shrink-0 text-end text-[12px] text-muted">{r.sub}</p>
+            <p className="min-w-0 truncate text-md">{r.title}</p>
+            <p className="num shrink-0 text-end text-xs text-muted">{r.sub}</p>
           </li>
         ))}
       </ul>
 
       {/* Five-axis score: the polygon is the summary, the rows are the audit */}
-      <h2 className="mt-8 text-[15px] font-semibold">{c('factorsTitle')}</h2>
+      <h2 className="mt-8 text-md font-semibold">{c('factorsTitle')}</h2>
       <div className="mt-3">
         <div className="flex items-center gap-4">
           <Snowflake
@@ -350,8 +350,8 @@ export default function SymbolPage() {
                     : 'var(--color-muted)'
               return (
                 <li key={a.axis} className="flex items-baseline justify-between gap-2">
-                  <span className="truncate text-[14px]">{axisLabel[a.axis]}</span>
-                  <span className="num shrink-0 text-[14px] font-semibold" style={{ color: tone }}>
+                  <span className="truncate text-md">{axisLabel[a.axis]}</span>
+                  <span className="num shrink-0 text-md font-semibold" style={{ color: tone }}>
                     {a.score}/{a.total}
                   </span>
                 </li>
@@ -359,29 +359,29 @@ export default function SymbolPage() {
             })}
           </ul>
         </div>
-        <p className="mt-4 text-[12px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-4 text-xs leading-snug" style={{ color: 'var(--color-muted)' }}>
           {c('factorsHint')}
         </p>
       </div>
 
       {/* Strengths and risks: one list, two group labels. The same checks the
           axes count, read out in words. */}
-      <h2 className="mt-8 text-[15px] font-semibold">{c('checksTitle')}</h2>
+      <h2 className="mt-8 text-md font-semibold">{c('checksTitle')}</h2>
       <div className="mt-2">
-        <p className="text-[12px] font-medium" style={{ color: 'var(--color-muted)' }}>
+        <p className="text-xs font-medium" style={{ color: 'var(--color-muted)' }}>
           {c('rewardsTitle')}
         </p>
         <ul className="mt-1 divide-y divide-line border-t border-line">
           {rewards.map((k) => (
             <li key={k.id} className="flex min-h-[44px] items-start gap-2.5 py-2.5">
-              <span className="mt-0.5 shrink-0 text-[12px]" style={{ color: 'var(--color-up)' }}>✓</span>
-              <span className="min-w-0 flex-1 text-[14px] leading-snug">{k.label[lang]}</span>
-              <span className="num shrink-0 text-[12px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
+              <span className="mt-0.5 shrink-0 text-xs" style={{ color: 'var(--color-up)' }}>✓</span>
+              <span className="min-w-0 flex-1 text-md leading-snug">{k.label[lang]}</span>
+              <span className="num shrink-0 text-xs" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
             </li>
           ))}
         </ul>
 
-        <p className="mt-5 text-[12px] font-medium" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-5 text-xs font-medium" style={{ color: 'var(--color-muted)' }}>
           {c('risksTitle')}
         </p>
         <ul className="mt-1 divide-y divide-line border-t border-line">
@@ -394,20 +394,20 @@ export default function SymbolPage() {
                   <path d="M12 17.2v.2" />
                 </svg>
               </span>
-              <span className="min-w-0 flex-1 text-[14px] leading-snug">{k.label[lang]}</span>
-              <span className="num shrink-0 text-[12px]" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
+              <span className="min-w-0 flex-1 text-md leading-snug">{k.label[lang]}</span>
+              <span className="num shrink-0 text-xs" style={{ color: 'var(--color-muted)' }}>{k.value}</span>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Peers: a hairline list with a column rail, the same shape as the board */}
-      <h2 className="mt-8 text-[15px] font-semibold">{c('peersTitle')}</h2>
+      <h2 className="mt-8 text-md font-semibold">{c('peersTitle')}</h2>
       <div className="mt-2 border-t border-line">
         <div aria-hidden="true" className={`${PEER_GRID} border-b border-line py-2`}>
-          <span className="text-[12px] text-muted">{c('colName')}</span>
-          <span className="text-end text-[12px] text-muted">{c('colPrice')}</span>
-          <span className="text-end text-[12px] text-muted">{c('colChg')}</span>
+          <span className="text-xs text-muted">{c('colName')}</span>
+          <span className="text-end text-xs text-muted">{c('colPrice')}</span>
+          <span className="text-end text-xs text-muted">{c('colChg')}</span>
         </div>
         <ul className="divide-y divide-line">
           {peers.map((p) => {
@@ -419,21 +419,21 @@ export default function SymbolPage() {
                   className={`${PEER_GRID} min-h-[56px] py-2 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/10`}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-[14px] leading-tight font-medium">
+                    <span className="block truncate text-md leading-tight font-medium">
                       {p.name[lang]}
                     </span>
                     <span
-                      className="num mt-0.5 block truncate text-[12px] leading-none"
+                      className="num mt-0.5 block truncate text-xs leading-none"
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {p.symbol} · {p.currency}
                     </span>
                   </span>
-                  <span className="num text-end text-[14px]">
+                  <span className="num text-end text-md">
                     <AnimatedNumber value={p.price} format={(n) => fmtNum(n, lang, 2)} />
                   </span>
                   <span
-                    className="num text-end text-[14px]"
+                    className="num text-end text-md"
                     style={{ color: pUp ? 'var(--color-up)' : 'var(--color-down)' }}
                   >
                     {fmtPct(p.change, lang)}
@@ -446,7 +446,7 @@ export default function SymbolPage() {
       </div>
 
       {/* Why it moved */}
-      <h2 className="mt-8 text-[15px] font-semibold">{c('whyTitle')}</h2>
+      <h2 className="mt-8 text-md font-semibold">{c('whyTitle')}</h2>
       <ul className="mt-3 space-y-2.5">
         {why.map((w) => (
           <li key={w.attr} className="flex items-start gap-2">
@@ -455,8 +455,8 @@ export default function SymbolPage() {
               className="mt-[8px] h-1.5 w-1.5 shrink-0 rounded-full"
               style={{ background: w.tone }}
             />
-            <p className="min-w-0 text-[14px] leading-relaxed">
-              <span className="text-[12px]" style={{ color: 'var(--color-muted)' }}>
+            <p className="min-w-0 text-md leading-relaxed">
+              <span className="text-xs" style={{ color: 'var(--color-muted)' }}>
                 {w.attr} ·{' '}
               </span>
               {w.text}
@@ -467,9 +467,9 @@ export default function SymbolPage() {
 
       {/* Related news: the last thing on the page, because it is context for
           the figures above, not a headline of its own. */}
-      <h2 className="mt-8 text-[15px] font-semibold">{s('newsTitle')}</h2>
+      <h2 className="mt-8 text-md font-semibold">{s('newsTitle')}</h2>
       {related.length === 0 ? (
-        <p className="mt-2 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-2 text-xs" style={{ color: 'var(--color-muted)' }}>
           {s('newsEmpty')}
         </p>
       ) : (
@@ -480,8 +480,8 @@ export default function SymbolPage() {
                 to={`/news/${n.id}`}
                 className="block min-h-[56px] py-3 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/10"
               >
-                <p className="line-clamp-2 text-[14px] leading-snug">{n.title[lang]}</p>
-                <p className="num mt-1.5 text-[12px] text-muted">
+                <p className="line-clamp-2 text-md leading-snug">{n.title[lang]}</p>
+                <p className="num mt-1.5 text-xs text-muted">
                   {n.source} · {s('timePrefix')} {fmtNum(n.minutesAgo, lang, 0)} {s('timeSuffix')}
                 </p>
               </Link>

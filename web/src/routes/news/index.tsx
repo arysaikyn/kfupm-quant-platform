@@ -92,17 +92,17 @@ function NewsRow({
     >
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
-          <h3 className="line-clamp-2 text-[17px] leading-[1.3] rtl:leading-[1.6] font-semibold tracking-[-0.011em] text-fg">
+          <h3 className="line-clamp-2 text-lg leading-[1.3] rtl:leading-[1.6] font-semibold tracking-[-0.011em] text-fg">
             {item.title[lang]}
           </h3>
           {deck && (
-            <p className="mt-1.5 line-clamp-1 text-[13px] leading-[1.45] text-muted">{deck}</p>
+            <p className="mt-1.5 line-clamp-1 text-sm leading-[1.45] text-muted">{deck}</p>
           )}
-          {why && <p className="mt-1.5 text-[12px] leading-[1.45] text-muted">{why}</p>}
+          {why && <p className="mt-1.5 text-xs leading-[1.45] text-muted">{why}</p>}
         </div>
         <StoryArt item={item} />
       </div>
-      <div className="mt-3 flex items-center gap-2 text-[11px] leading-[1.4] text-muted">
+      <div className="mt-3 flex items-center gap-2 text-2xs leading-[1.4] text-muted">
         {watched && (
           <span className="flex shrink-0 items-center gap-1 text-fg">
             <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full" style={{ background: 'var(--color-accent)' }} />
@@ -119,7 +119,7 @@ function NewsRow({
           return (
             <span
               key={sym}
-              className="flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 text-[11px]"
+              className="flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 text-2xs"
             >
               <span className="num text-fg">{sym}</span>
               {quote && <span className="text-muted">{quote.name[lang]}</span>}
@@ -188,7 +188,7 @@ export default function NewsPage() {
                 type="button"
                 onClick={() => selectSource(name)}
                 aria-pressed={active}
-                className={`min-h-11 min-w-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
+                className={`min-h-11 min-w-11 shrink-0 rounded-full px-3 text-sm whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                   active ? 'bg-surface font-medium text-fg' : 'text-muted'
                 }`}
               >
@@ -206,7 +206,7 @@ export default function NewsPage() {
           {groups.map((group) => (
             <section key={group.stamp}>
               <header className="mb-1.5">
-                <h2 className="text-[12px] font-medium text-muted">
+                <h2 className="text-xs font-medium text-muted">
                   {group.stamp === todayStamp
                     ? s('today')
                     : group.stamp === yesterdayStamp

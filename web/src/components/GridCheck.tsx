@@ -153,7 +153,7 @@ export function GridCheck({ report, compact = false }: { report: GridReport; com
           {t.title}
         </h2>
         <span
-          className="shrink-0 rounded-full px-2.5 py-1 text-[11px] leading-none font-medium"
+          className="shrink-0 rounded-full px-2.5 py-1 text-2xs leading-none font-medium"
           style={style}
         >
           {t.verdict[report.verdict]}
@@ -161,7 +161,7 @@ export function GridCheck({ report, compact = false }: { report: GridReport; com
       </div>
 
       {!compact && (
-        <p className="mt-1.5 text-[12px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-1.5 text-xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
           {t.lead}
         </p>
       )}
@@ -172,12 +172,12 @@ export function GridCheck({ report, compact = false }: { report: GridReport; com
             <li key={finding.id} className="flex min-h-11 items-center gap-3 py-2">
               <span
                 aria-hidden="true"
-                className="num shrink-0 text-[11px]"
+                className="num shrink-0 text-2xs"
                 style={{ color: 'var(--color-muted)' }}
               >
                 +{fmtNum(finding.points, lang, 0)}
               </span>
-              <span className="text-[13px] leading-snug">{t.finding[finding.id]}</span>
+              <span className="text-sm leading-snug">{t.finding[finding.id]}</span>
             </li>
           ))}
         </ul>
@@ -185,8 +185,8 @@ export function GridCheck({ report, compact = false }: { report: GridReport; com
 
       {block !== 'none' && (
         <div className="mt-3 flex items-baseline justify-between gap-3">
-          <span className="shrink-0 text-[13px] leading-tight">{t.inputLabel}</span>
-          <span className="text-end text-[12px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+          <span className="shrink-0 text-sm leading-tight">{t.inputLabel}</span>
+          <span className="text-end text-xs leading-snug" style={{ color: 'var(--color-muted)' }}>
             {t.inputFamily[block]}
           </span>
         </div>
@@ -195,17 +195,17 @@ export function GridCheck({ report, compact = false }: { report: GridReport; com
       {report.exposure ? (
         <div className="mt-3 flex items-baseline justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-[13px] leading-tight">{t.exposureLabel}</div>
-            <div className="mt-0.5 text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+            <div className="text-sm leading-tight">{t.exposureLabel}</div>
+            <div className="mt-0.5 text-2xs leading-tight" style={{ color: 'var(--color-muted)' }}>
               {t.exposureHint}
             </div>
           </div>
-          <span dir="ltr" className="num shrink-0 text-[15px] leading-none font-semibold">
+          <span dir="ltr" className="num shrink-0 text-md leading-none font-semibold">
             {fmtNum(report.exposure.volShare * 100, lang, 0, '%')}
           </span>
         </div>
       ) : (
-        <p className="mt-3 text-[11px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-3 text-2xs leading-snug" style={{ color: 'var(--color-muted)' }}>
           {t.exposureMissing}
         </p>
       )}
@@ -213,18 +213,18 @@ export function GridCheck({ report, compact = false }: { report: GridReport; com
       {report.persistence && (
         <div className="mt-3 flex items-baseline justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-[13px] leading-tight">{t.persistenceLabel}</div>
-            <div className="mt-0.5 text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+            <div className="text-sm leading-tight">{t.persistenceLabel}</div>
+            <div className="mt-0.5 text-2xs leading-tight" style={{ color: 'var(--color-muted)' }}>
               {t.stop[report.persistence.stop]}
             </div>
           </div>
-          <span dir="ltr" className="num shrink-0 text-[15px] leading-none font-semibold">
+          <span dir="ltr" className="num shrink-0 text-md leading-none font-semibold">
             {fmtNum(report.persistence.gamma1, lang, 2)}
           </span>
         </div>
       )}
 
-      <p className="mt-3 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-3 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {t.fix}
       </p>
     </section>

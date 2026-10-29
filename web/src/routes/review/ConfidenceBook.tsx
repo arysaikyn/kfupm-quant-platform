@@ -82,7 +82,7 @@ export function ConfidenceBook() {
       <p className="t-kicker" style={kicker}>
         {s('confTitle')}
       </p>
-      <p className="mt-1 text-[11px] leading-[1.55]" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-1 text-2xs leading-[1.55]" style={{ color: 'var(--color-muted)' }}>
         {s('confIntro')}
       </p>
 
@@ -92,21 +92,21 @@ export function ConfidenceBook() {
           {s('confScore')}
         </p>
         {score === null ? (
-          <p className="mt-1.5 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-1.5 text-xs" style={{ color: 'var(--color-muted)' }}>
             {s('confEmptyScore')}
           </p>
         ) : (
           <>
             <p className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-              <span className="num t-display text-[30px] leading-none font-bold">
+              <span className="num t-display text-3xl leading-none font-bold">
                 {fmtNum(score.value, lang, 2)}
               </span>
-              <span className="num text-[10px]" style={{ color: 'var(--color-muted)' }}>
+              <span className="num text-2xs" style={{ color: 'var(--color-muted)' }}>
                 {s('confVsCoin')}
               </span>
             </p>
-            <p className="mt-1.5 text-[11px] font-semibold text-fg">{s(score.verdict)}</p>
-            <p className="num mt-0.5 text-[10px]" style={{ color: 'var(--color-muted)' }}>
+            <p className="mt-1.5 text-2xs font-semibold text-fg">{s(score.verdict)}</p>
+            <p className="num mt-0.5 text-2xs" style={{ color: 'var(--color-muted)' }}>
               {s('confSample').replace(
                 '{n}',
                 fmtNum(resolved.length, lang, 0),
@@ -124,11 +124,11 @@ export function ConfidenceBook() {
               {buckets.map((bucket) => (
                 <div key={bucket.key}>
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+                    <span className="text-2xs" style={{ color: 'var(--color-muted)' }}>
                       {s(BUCKET_LABEL[bucket.key])}
                     </span>
                     <span
-                      className="num text-[10px]"
+                      className="num text-2xs"
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {s('confCalls').replace('{n}', fmtNum(bucket.calls, lang, 0))}
@@ -150,7 +150,7 @@ export function ConfidenceBook() {
                       />
                     </span>
                     <span
-                      className="num shrink-0 text-[10px]"
+                      className="num shrink-0 text-2xs"
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {s('confSaid')} {fmtNum(bucket.stated * 100, lang, 0, '%')} ·{' '}
@@ -160,7 +160,7 @@ export function ConfidenceBook() {
                 </div>
               ))}
             </div>
-            <p className="mt-1.5 text-[10px]" style={{ color: 'var(--color-muted)' }}>
+            <p className="mt-1.5 text-2xs" style={{ color: 'var(--color-muted)' }}>
               {s('confBarLegend')}
             </p>
           </div>
@@ -180,7 +180,7 @@ export function ConfidenceBook() {
         <div className="mt-2">
           <label
             htmlFor="conf-symbol"
-            className="text-[11px] leading-none"
+            className="text-2xs leading-none"
             style={{ color: 'var(--color-muted)' }}
           >
             {s('confSymbol')}
@@ -193,7 +193,7 @@ export function ConfidenceBook() {
                 setSymbol(event.target.value)
                 setLogged(false)
               }}
-              className="min-h-11 w-full appearance-none rounded-[10px] border border-line bg-bg ps-2.5 pe-9 text-[13px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="min-h-11 w-full appearance-none rounded-[10px] border border-line bg-bg ps-2.5 pe-9 text-sm text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {quotes.map((quote) => (
                 <option key={quote.symbol} value={quote.symbol}>
@@ -222,7 +222,7 @@ export function ConfidenceBook() {
         <div className="mt-2.5">
           <span
             id="conf-dir"
-            className="text-[11px] leading-none"
+            className="text-2xs leading-none"
             style={{ color: 'var(--color-muted)' }}
           >
             {s('confDir')}
@@ -243,7 +243,7 @@ export function ConfidenceBook() {
                     setDir(key)
                     setLogged(false)
                   }}
-                  className="min-h-11 rounded-[9px] text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-fg"
+                  className="min-h-11 rounded-[9px] text-sm transition-colors focus-visible:outline-2 focus-visible:outline-fg"
                   style={{
                     background: active ? 'var(--color-fg)' : 'transparent',
                     color: active ? 'var(--color-bg)' : 'var(--color-muted)',
@@ -259,7 +259,7 @@ export function ConfidenceBook() {
         <div className="mt-2.5">
           <span
             id="conf-level"
-            className="text-[11px] leading-none"
+            className="text-2xs leading-none"
             style={{ color: 'var(--color-muted)' }}
           >
             {s('confConfidence')}
@@ -286,7 +286,7 @@ export function ConfidenceBook() {
                     setConfidence(level)
                     setLogged(false)
                   }}
-                  className="num min-h-11 rounded-[9px] text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-fg"
+                  className="num min-h-11 rounded-[9px] text-sm transition-colors focus-visible:outline-2 focus-visible:outline-fg"
                   style={{
                     background: active ? 'var(--color-fg)' : 'transparent',
                     color: active ? 'var(--color-bg)' : 'var(--color-muted)',
@@ -297,26 +297,26 @@ export function ConfidenceBook() {
               )
             })}
           </div>
-          <p className="mt-1 text-[10px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-1 text-2xs" style={{ color: 'var(--color-muted)' }}>
             {s('confScale')}
           </p>
         </div>
 
         <button
           type="submit"
-          className="mt-3 min-h-11 w-full rounded-full bg-solid px-4 text-[13px] font-medium text-bg transition-opacity active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="mt-3 min-h-11 w-full rounded-full bg-solid px-4 text-sm font-medium text-bg transition-opacity active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {s('confSubmit')}
         </button>
         <p
-          className="mt-2 text-[10px] leading-[1.5]"
+          className="mt-2 text-2xs leading-[1.5]"
           style={{ color: 'var(--color-muted)' }}
         >
           {s('confSampleNote')}
         </p>
         <p
           role="status"
-          className="mt-1 text-[11px]"
+          className="mt-1 text-2xs"
           style={{ color: 'var(--color-muted)' }}
         >
           {logged ? s('confLogged') : ''}
@@ -330,7 +330,7 @@ export function ConfidenceBook() {
         </p>
 
         {calls.length === 0 && (
-          <p className="mt-1.5 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-1.5 text-xs" style={{ color: 'var(--color-muted)' }}>
             {s('confEmptyScore')}
           </p>
         )}
@@ -346,27 +346,27 @@ export function ConfidenceBook() {
                 style={{ borderColor: 'var(--color-line)' }}
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <p className="min-w-0 truncate text-[13px]">
+                  <p className="min-w-0 truncate text-sm">
                     {quote.name[lang]}{' '}
-                    <span className="num text-[10px]" style={{ color: 'var(--color-muted)' }}>
+                    <span className="num text-2xs" style={{ color: 'var(--color-muted)' }}>
                       {call.symbol}
                     </span>
                   </p>
                   <span
-                    className="shrink-0 rounded-lg bg-fg/10 px-1.5 py-0.5 text-[10px] leading-[1.6] whitespace-nowrap"
+                    className="shrink-0 rounded-lg bg-fg/10 px-1.5 py-0.5 text-2xs leading-[1.6] whitespace-nowrap"
                     style={{ color: 'var(--color-muted)' }}
                   >
                     {s('confOpen')}
                   </span>
                 </div>
-                <p className="mt-1 text-[10px]" style={{ color: 'var(--color-muted)' }}>
+                <p className="mt-1 text-2xs" style={{ color: 'var(--color-muted)' }}>
                   {s('confSaid')} {s(DIR_LABEL[call.dir])} ·{' '}
                   <span className="num">{call.confidence}/5</span>
                 </p>
                 <button
                   type="button"
                   onClick={() => resolveCall(call.id)}
-                  className="mt-2 min-h-11 w-full rounded-full border border-line text-[12px] text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                  className="mt-2 min-h-11 w-full rounded-full border border-line text-xs text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
                   {s('confResolve')}
                 </button>
@@ -383,17 +383,17 @@ export function ConfidenceBook() {
               return (
                 <li key={row.id} className="flex min-h-12 items-center gap-2 py-2.5">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] leading-tight">
+                    <p className="truncate text-sm leading-tight">
                       {quote.name[lang]}{' '}
                       <span
-                        className="num text-[10px]"
+                        className="num text-2xs"
                         style={{ color: 'var(--color-muted)' }}
                       >
                         {row.symbol}
                       </span>
                     </p>
                     <p
-                      className="mt-0.5 text-[10px] leading-snug"
+                      className="mt-0.5 text-2xs leading-snug"
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {s('confSaid')} {s(DIR_LABEL[row.dir])} ·{' '}
@@ -421,7 +421,7 @@ export function ConfidenceBook() {
                     </p>
                   </div>
                   <span
-                    className={`shrink-0 rounded-full px-2 py-1 text-[10px] leading-none ${
+                    className={`shrink-0 rounded-full px-2 py-1 text-2xs leading-none ${
                       row.hit ? 'bg-fg/10 text-fg' : 'border border-line text-muted'
                     }`}
                   >

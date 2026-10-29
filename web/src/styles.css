@@ -37,15 +37,19 @@
 
 /* Dark is the default: near-black canvas, colour comes from ambient light. */
 @theme {
-  /* Type scale. One ramp, no 4xl and up: display sizes are set by hand. */
+  /* Type scale: ten steps, and every size in the app is one of them.
+     Before this ramp was enforced, 22 distinct pixel sizes were in use, 78 of
+     them below 11px — which is why dense screens read as cramped rather than
+     composed. The steps follow iOS's caption/body/title rhythm, with three
+     display steps instead of hand-set one-offs.
+     11 caption · 12 meta · 13 label · 15 body · 17 lead ·
+     20 metric · 24 title · 32 stat · 40 hero-2 · 56 hero */
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1.35;
   --text-xs: 0.75rem;
   --text-xs--line-height: 1.4;
   --text-sm: 0.8125rem;
   --text-sm--line-height: 1.45;
-  --text-base: 0.875rem;
-  --text-base--line-height: 1.5;
   --text-md: 0.9375rem;
   --text-md--line-height: 1.45;
   --text-lg: 1.0625rem;
@@ -54,6 +58,12 @@
   --text-xl--line-height: 1.25;
   --text-2xl: 1.5rem;
   --text-2xl--line-height: 1.2;
+  --text-3xl: 2rem;
+  --text-3xl--line-height: 1.1;
+  --text-4xl: 2.5rem;
+  --text-4xl--line-height: 1.02;
+  --text-5xl: 3.5rem;
+  --text-5xl--line-height: 0.96;
 
   --color-bg: #0a0a0c;
   --color-surface: #141417;
@@ -313,6 +323,30 @@ html[dir="rtl"] body {
   }
 }
 
+/* Arabic needs more size and more line than Latin at the same role: its
+   counters are smaller at equal point size and its ascenders/descenders taller.
+   Published guidance from Arabic type practitioners puts body text 10-20%
+   larger, line-height 1.6-1.8, and nothing below 14px for body copy. Overriding
+   the ramp here rather than per component means every screen inherits it.
+   Quote rows stay tight on purpose: a 1.7 line-height in a 44px row is the
+   difference between a table and a list of paragraphs. */
+[lang="ar"] {
+  --text-2xs: 0.8125rem;
+  --text-2xs--line-height: 1.5;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.55;
+  --text-md: 0.9375rem;
+  --text-md--line-height: 1.6;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.55;
+}
+[lang="ar"] .t-title,
+[lang="ar"] .t-section {
+  letter-spacing: normal;
+}
+
 /* Editorial tracking: negative at display sizes, looser as type shrinks.
    Values from Inter's Dynamic Metrics (12px 0em, 22px -0.018em, 46px -0.022em). */
 .t-display {
@@ -355,6 +389,23 @@ p {
   letter-spacing: -0.005em;
   line-height: 1.3;
   text-transform: none;
+}
+
+/* A weighted strip sizes each cell by its share, so on a 320px screen an 8%
+   cell is ~25px and cannot hold a word. Printing "Mat…" is worse than printing
+   nothing: the label appears only when the cell is wide enough, and colour plus
+   the accessible name carry the reading. Container queries, not a resize
+   listener, because the cell owns its own width. */
+.cell-query {
+  container-type: inline-size;
+}
+.cell-query .cell-label {
+  display: none;
+}
+@container (min-width: 64px) {
+  .cell-query .cell-label {
+    display: block;
+  }
 }
 
 /* Quote strip: swipe it, never auto-scroll. A marquee cut the first number in

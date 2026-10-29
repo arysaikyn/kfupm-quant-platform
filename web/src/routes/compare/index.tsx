@@ -164,7 +164,7 @@ function OverlayChart({
             x={PAD_L - 6}
             y={py(v) + 3}
             textAnchor="end"
-            fontSize="9"
+            fontSize="10"
             fill="var(--color-muted)"
           >
             {fmtNum(v, lang, 1)}
@@ -199,13 +199,13 @@ function OverlayChart({
         />
       ))}
 
-      <text x={PAD_L} y={CHART_H - 3} fontSize="9" fill="var(--color-muted)" textAnchor="start">
+      <text x={PAD_L} y={CHART_H - 3} fontSize="10" fill="var(--color-muted)" textAnchor="start">
         {from}
       </text>
       <text
         x={CHART_W - PAD_R}
         y={CHART_H - 3}
-        fontSize="9"
+        fontSize="10"
         fill="var(--color-muted)"
         textAnchor="end"
       >
@@ -370,7 +370,7 @@ export default function ComparePage() {
                 // Clipboard permission is optional.
               }
             }}
-            className="inline-flex min-h-11 shrink-0 items-center rounded-full px-3 text-[11px] text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="inline-flex min-h-11 shrink-0 items-center rounded-full px-3 text-2xs text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {copied ? t('common.copied') : s('copyLink')}
           </button>
@@ -380,7 +380,7 @@ export default function ComparePage() {
           {picks.map((value, i) => (
             <div key={i} className="min-w-0">
               <label htmlFor={`cmp-slot-${i}`} className="block">
-                <span className="text-[11px] font-medium text-muted">
+                <span className="text-2xs font-medium text-muted">
                   {s(SLOT_KEYS[i])}
                 </span>
 
@@ -392,7 +392,7 @@ export default function ComparePage() {
                     onChange={(e) =>
                       setSlot(i, e.target.value === '' ? null : Number(e.target.value))
                     }
-                    className={`num min-h-11 w-full appearance-none rounded-lg bg-fg/5 px-2.5 pe-6 text-[12px] font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg ${
+                    className={`num min-h-11 w-full appearance-none rounded-lg bg-fg/5 px-2.5 pe-6 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg ${
                       value === null ? 'text-muted' : 'text-fg'
                     }`}
                   >
@@ -431,7 +431,7 @@ export default function ComparePage() {
       <section className="mt-8">
         <div className="flex items-baseline justify-between gap-2 pb-2">
           <h2 className="t-section">{s('tableTitle')}</h2>
-          <span className="num shrink-0 text-[10px] text-muted">{s('tableTag')}</span>
+          <span className="num shrink-0 text-2xs text-muted">{s('tableTag')}</span>
         </div>
 
         <p id="cmp-table-desc" className="sr-only">
@@ -454,14 +454,14 @@ export default function ComparePage() {
             {stats.map((st, i) =>
               st === null ? (
                 <div key={`slot-${i}`} role="columnheader" className="px-0.5 text-center">
-                  <span className="mt-0.5 block text-[10px] leading-none text-muted">
+                  <span className="mt-0.5 block text-2xs leading-none text-muted">
                     {s('slotEmpty')}
                   </span>
                 </div>
               ) : (
                 <div key={st.q.symbol} role="columnheader" className="px-0.5 text-center">
-                  <span className="num block text-[12px] font-semibold">{st.q.symbol}</span>
-                  <span className="mt-0.5 block text-[10px] leading-none text-muted">
+                  <span className="num block text-xs font-semibold">{st.q.symbol}</span>
+                  <span className="mt-0.5 block text-2xs leading-none text-muted">
                     {st.q.currency}
                   </span>
                 </div>
@@ -476,8 +476,8 @@ export default function ComparePage() {
               className="grid min-h-14 grid-cols-[84px_repeat(3,minmax(0,1fr))] items-center border-t border-line px-3"
             >
               <div role="rowheader" className="py-2 pe-1">
-                <span className="block text-[11px] leading-tight font-medium">{row.label}</span>
-                <span className="mt-0.5 block text-[10px] leading-tight text-muted">
+                <span className="block text-2xs leading-tight font-medium">{row.label}</span>
+                <span className="mt-0.5 block text-2xs leading-tight text-muted">
                   {row.hint}
                 </span>
               </div>
@@ -488,7 +488,7 @@ export default function ComparePage() {
                     className={`rounded-lg px-1 py-1 text-center ${row.best[i] ? 'bg-fg/10' : ''}`}
                   >
                     <span
-                      className={`num block text-[12px] leading-tight ${row.best[i] ? 'font-semibold' : 'font-medium'}`}
+                      className={`num block text-xs leading-tight ${row.best[i] ? 'font-semibold' : 'font-medium'}`}
                       style={{ color: cell.tone ?? 'var(--color-fg)' }}
                     >
                       {cell.text}
@@ -519,17 +519,17 @@ export default function ComparePage() {
           ))}
         </div>
 
-        <p className="pt-2 text-[10px] leading-snug text-muted">{s('bestHint')}</p>
+        <p className="pt-2 text-2xs leading-snug text-muted">{s('bestHint')}</p>
       </section>
 
       <section className="mt-8">
         <div className="flex items-baseline justify-between gap-2">
           <h2 className="t-section">{s('chartTitle')}</h2>
-          <span className="num shrink-0 text-[10px] text-muted">{s('chartTag')}</span>
+          <span className="num shrink-0 text-2xs text-muted">{s('chartTag')}</span>
         </div>
 
         {drawn.length === 0 ? (
-          <p className="mt-2.5 text-[12px] text-muted">{s('chartEmpty')}</p>
+          <p className="mt-2.5 text-xs text-muted">{s('chartEmpty')}</p>
         ) : (
           <>
             <ul
@@ -543,8 +543,8 @@ export default function ComparePage() {
                     className="h-2 w-2 shrink-0 rounded-full"
                     style={{ background: line.color }}
                   />
-                  <span className="num text-[11px] font-semibold">{line.symbol}</span>
-                  <span className="whitespace-nowrap text-[11px] text-muted">{line.name}</span>
+                  <span className="num text-2xs font-semibold">{line.symbol}</span>
+                  <span className="whitespace-nowrap text-2xs text-muted">{line.name}</span>
                 </li>
               ))}
             </ul>
@@ -564,7 +564,7 @@ export default function ComparePage() {
       </section>
 
       <p
-        className="mt-6 flex items-start gap-2 text-[12px] leading-relaxed"
+        className="mt-6 flex items-start gap-2 text-xs leading-relaxed"
         aria-live="polite"
       >
         <span

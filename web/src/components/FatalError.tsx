@@ -18,13 +18,13 @@ export function FatalError({
         compact ? 'py-16' : 'min-h-screen'
       }`}
     >
-      <p className="text-[18px] font-semibold">{t('common.boundaryTitle')}</p>
-      <p className="max-w-[34ch] text-[13px] leading-relaxed text-muted">{t('common.boundaryBody')}</p>
+      <p className="text-xl font-semibold">{t('common.boundaryTitle')}</p>
+      <p className="max-w-[34ch] text-sm leading-relaxed text-muted">{t('common.boundaryBody')}</p>
       <div className="flex flex-wrap items-center justify-center gap-2">
         <button
           type="button"
           onClick={onRetry}
-          className="min-h-11 rounded-full px-5 text-[14px] font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="min-h-11 rounded-full px-5 text-md font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
         >
           {t('common.retry')}
@@ -33,7 +33,7 @@ export function FatalError({
           <button
             type="button"
             onClick={onHome}
-            className="min-h-11 rounded-full border border-line px-5 text-[14px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="min-h-11 rounded-full border border-line px-5 text-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {t('common.goHome')}
           </button>

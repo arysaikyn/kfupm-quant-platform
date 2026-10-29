@@ -32,7 +32,7 @@ export function RunCard({
 
   return (
     <div className="panel mt-3 p-3">
-      <p className="text-[11px] font-medium text-muted">{s('runTitle')}</p>
+      <p className="text-2xs font-medium text-muted">{s('runTitle')}</p>
       {shown.length > 0 && (
         <div className="mt-2 grid grid-cols-3 gap-2">
           {shown.map((key) => (
@@ -44,8 +44,8 @@ export function RunCard({
                 pulseMetric === key ? 'rounded bg-fg/10 motion-safe:animate-pulse' : undefined
               }
             >
-              <p className="text-[10px] leading-tight text-muted">{s(METRIC_LABEL[key])}</p>
-              <p className="num mt-0.5 text-[13px] font-semibold">
+              <p className="text-2xs leading-tight text-muted">{s(METRIC_LABEL[key])}</p>
+              <p className="num mt-0.5 text-sm font-semibold">
                 {metricDisplay(key, metrics[key], lang)}
               </p>
             </div>

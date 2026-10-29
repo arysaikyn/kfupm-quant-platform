@@ -253,7 +253,7 @@ function RotationChart({
               <span
                 key={`label-${p.sector.id}`}
                 aria-hidden="true"
-                className="pointer-events-none absolute z-[5] whitespace-nowrap text-[10px] leading-none"
+                className="pointer-events-none absolute z-[5] whitespace-nowrap text-2xs leading-none"
                 style={{
                   left: `${p.x}%`,
                   top: `${p.y}%`,
@@ -305,7 +305,7 @@ function RotationChart({
               <span
                 key={v}
                 aria-hidden="true"
-                className="num absolute top-0 -translate-x-1/2 text-[10px] leading-none"
+                className="num absolute top-0 -translate-x-1/2 text-2xs leading-none"
                 style={{
                   left: `${((v + span) / (2 * span)) * 100}%`,
                   color: 'var(--color-muted)',
@@ -322,7 +322,7 @@ function RotationChart({
             <span
               key={v}
               aria-hidden="true"
-              className="num absolute right-1 -translate-y-1/2 text-[10px] leading-none"
+              className="num absolute right-1 -translate-y-1/2 text-2xs leading-none"
               style={{ top: `${(1 - v / top) * 100}%`, color: 'var(--color-muted)' }}
             >
               {fmtNum(v, lang, 0, '%')}
@@ -343,24 +343,24 @@ function RotationChart({
                 className="h-2 w-2 shrink-0 rounded-full"
                 style={{ background: toneOf(picked.change) }}
               />
-              <span className="truncate text-[13px] font-medium">
+              <span className="truncate text-sm font-medium">
                 {picked.sector.name[lang]}
               </span>
             </span>
             <span className="flex shrink-0 items-baseline gap-2">
               <span
-                className="num text-[13px] font-semibold"
+                className="num text-sm font-semibold"
                 style={{ color: toneOf(picked.change) }}
               >
                 {fmtPct(picked.change, lang)}
               </span>
-              <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
+              <span className="num text-2xs" style={{ color: 'var(--color-muted)' }}>
                 {s('weightLabel')} {fmtNum(picked.sector.weight, lang, 0, '%')}
               </span>
             </span>
           </>
         ) : (
-          <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <span className="text-2xs" style={{ color: 'var(--color-muted)' }}>
             {s('tapHint')}
           </span>
         )}
@@ -479,7 +479,7 @@ export default function ReviewPage() {
               // Clipboard permission is optional.
             }
           }}
-          className="flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="flex min-h-11 items-center rounded-full border border-line px-3 text-xs text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {shared ? t('common.copied') : s('share')}
         </button>
@@ -494,42 +494,42 @@ export default function ReviewPage() {
       <section className="panel mt-2 p-4" aria-label={s('breadthLabel')}>
         <div className="mt-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
           <span
-            className="num t-display text-[38px] leading-none font-bold"
+            className="num t-display text-3xl leading-none font-bold"
             style={{ color: 'var(--color-up)' }}
           >
             {fmtNum(up.length, lang, 0)}
           </span>
-          <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <span className="text-2xs" style={{ color: 'var(--color-muted)' }}>
             {s('namesUp')}
           </span>
           <span
-            className="mx-1 text-[11px]"
+            className="mx-1 text-2xs"
             style={{ color: 'var(--color-muted)', opacity: 0.5 }}
           >
             ·
           </span>
           <span
-            className="num t-display text-[38px] leading-none font-bold"
+            className="num t-display text-3xl leading-none font-bold"
             style={{ color: 'var(--color-down)' }}
           >
             {fmtNum(down.length, lang, 0)}
           </span>
-          <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <span className="text-2xs" style={{ color: 'var(--color-muted)' }}>
             {s('namesDown')}
           </span>
           <span
-            className="mx-1 text-[11px]"
+            className="mx-1 text-2xs"
             style={{ color: 'var(--color-muted)', opacity: 0.5 }}
           >
             ·
           </span>
           <span
-            className="num t-display text-[38px] leading-none font-bold"
+            className="num t-display text-3xl leading-none font-bold"
             style={{ color: 'var(--color-muted)' }}
           >
             {fmtNum(flat.length, lang, 0)}
           </span>
-          <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <span className="text-2xs" style={{ color: 'var(--color-muted)' }}>
             {s('namesFlat')}
           </span>
         </div>
@@ -561,7 +561,7 @@ export default function ReviewPage() {
         {(best || worst) && (
           <div className="mt-3 space-y-1.5">
             {best && (
-              <div className="flex items-center gap-2 text-[12px]">
+              <div className="flex items-center gap-2 text-xs">
                 <span className="t-kicker w-9 shrink-0" style={kicker}>
                   {s('bestLabel')}
                 </span>
@@ -575,7 +575,7 @@ export default function ReviewPage() {
               </div>
             )}
             {worst && worst !== best && (
-              <div className="flex items-center gap-2 text-[12px]">
+              <div className="flex items-center gap-2 text-xs">
                 <span className="t-kicker w-9 shrink-0" style={kicker}>
                   {s('worstLabel')}
                 </span>
@@ -600,7 +600,7 @@ export default function ReviewPage() {
             style={{ background: 'var(--color-accent-fill)' }}
             aria-hidden="true"
           />
-          <p className="text-[12px] leading-[1.55]" style={{ color: 'var(--color-muted)' }}>
+          <p className="text-xs leading-[1.55]" style={{ color: 'var(--color-muted)' }}>
             {verdict}
           </p>
         </div>
@@ -611,7 +611,7 @@ export default function ReviewPage() {
         <p className="t-kicker" style={kicker}>
           {s('rotationLabel')}
         </p>
-        <p className="mt-1 text-[10px]" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-1 text-2xs" style={{ color: 'var(--color-muted)' }}>
           {s('axisX')} · {s('axisY')}
         </p>
         <RotationChart selected={selected} onSelect={setSelected} />
@@ -639,20 +639,20 @@ export default function ReviewPage() {
                   }
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] leading-tight">{q.name[lang]}</p>
+                    <p className="truncate text-sm leading-tight">{q.name[lang]}</p>
                     <p
-                      className="num mt-0.5 text-[10px] leading-none"
+                      className="num mt-0.5 text-2xs leading-none"
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {q.symbol}
                     </p>
                   </div>
                   <div className="shrink-0 text-end">
-                    <p className="num text-[13px] leading-tight font-semibold">
+                    <p className="num text-sm leading-tight font-semibold">
                       <span dir="ltr">
                         {fmtNum(q.price, lang, 2)}{' '}
                         <span
-                          className="text-[10px] font-normal"
+                          className="text-2xs font-normal"
                           style={{ color: 'var(--color-muted)' }}
                         >
                           {q.currency}
@@ -660,7 +660,7 @@ export default function ReviewPage() {
                       </span>
                     </p>
                     <p
-                      className="num mt-0.5 text-[11px] leading-none"
+                      className="num mt-0.5 text-2xs leading-none"
                       style={{ color: tone }}
                     >
                       {fmtPct(q.change, lang)}
@@ -685,7 +685,7 @@ export default function ReviewPage() {
           {takeaways.map((t) => (
             <li
               key={t.id}
-              className="flex gap-2.5 text-[12px] leading-[1.55]"
+              className="flex gap-2.5 text-xs leading-[1.55]"
               style={{ color: 'var(--color-muted)' }}
             >
               <span

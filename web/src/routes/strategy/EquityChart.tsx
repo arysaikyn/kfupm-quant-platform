@@ -90,7 +90,7 @@ export function EquityChart({
               y={t.y + 3}
               textAnchor="end"
               className="num"
-              fontSize="9"
+              fontSize="10"
               fill="var(--color-muted)"
             >
               {pct(t.value)}
@@ -112,13 +112,13 @@ export function EquityChart({
           />
         ))}
 
-        <text x={PAD.start} y={H - 4} fontSize="9" fill="var(--color-muted)">
+        <text x={PAD.start} y={H - 4} fontSize="10" fill="var(--color-muted)">
           {equityYears.first}
         </text>
         <text
           x={W - PAD.right}
           y={H - 4}
-          fontSize="9"
+          fontSize="10"
           textAnchor="end"
           fill="var(--color-muted)"
         >
@@ -128,7 +128,7 @@ export function EquityChart({
 
       <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
         {series.map((x) => (
-          <li key={x.key} className="flex items-center gap-1.5 text-[10px]">
+          <li key={x.key} className="flex items-center gap-1.5 text-2xs">
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: x.tone }} />
             <span style={{ color: 'var(--color-muted)' }}>{x.key}</span>
             <span className="num" style={{ color: 'var(--color-fg)' }}>
@@ -138,7 +138,7 @@ export function EquityChart({
         ))}
       </ul>
 
-      <p className="mt-1 text-[10px] text-muted" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <p className="mt-1 text-2xs text-muted" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         {s('axisNote')}
       </p>
       <span className="sr-only">

@@ -45,7 +45,7 @@ function SectionTitle({
   return (
     <div className="mt-8 flex items-center justify-between gap-3">
       <div className="min-w-0">
-        <h2 className="text-[15px] font-semibold">{title}</h2>
+        <h2 className="text-md font-semibold">{title}</h2>
       </div>
       {trailing}
     </div>
@@ -90,7 +90,7 @@ export default function SectorPage() {
         <div className="flex justify-center">
           <Link
             to="/"
-            className="flex min-h-11 items-center rounded-full border border-line px-4 text-[13px]"
+            className="flex min-h-11 items-center rounded-full border border-line px-4 text-sm"
           >
             {s('marketsLink')}
           </Link>
@@ -139,25 +139,25 @@ export default function SectorPage() {
     <Screen title={sector.name[lang]} leading={back}>
       {/* The move owns the screen: one number under the name, no card */}
       <div className="mt-1">
-        <p className="text-[12px] leading-none text-muted" style={kicker}>
+        <p className="text-xs leading-none text-muted" style={kicker}>
           {s('today')}
         </p>
         {change === null ? (
-          <p className="mt-2 text-[15px] font-medium" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-2 text-md font-medium" style={{ color: 'var(--color-muted)' }}>
             {s('noMembers')}
           </p>
         ) : (
           <p
-            className="num t-display mt-1 text-[44px] leading-[0.95]"
+            className="num t-display mt-1 text-4xl leading-[0.95]"
             style={{ color: tone }}
           >
             {fmtPct(change, lang)}
           </p>
         )}
-        <p className="mt-3 text-[14px] leading-snug">
+        <p className="mt-3 text-md leading-snug">
           {change === null ? s('constituentsEmpty') : s(verdictKey(change))}
         </p>
-        <p className="mt-3 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-3 text-xs" style={{ color: 'var(--color-muted)' }}>
           <span className="num" style={{ color: 'var(--color-fg)' }}>
             {fmtNum(sector.weight, lang, 0, '%')}
           </span>{' '}
@@ -179,21 +179,21 @@ export default function SectorPage() {
                   className="flex min-h-[56px] w-full items-center gap-1.5 py-2 pe-12 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/10"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-medium">
+                    <span className="block truncate text-md font-medium">
                       {quote.name[lang]}
                     </span>
-                    <span className="num mt-0.5 block truncate text-[12px] text-muted">
+                    <span className="num mt-0.5 block truncate text-xs text-muted">
                       {quote.symbol} · {quote.currency}
                     </span>
                   </span>
                   <span className="flex max-[400px]:hidden">
                     <BarStrip dense data={quote.spark} up={quote.change >= 0} />
                   </span>
-                  <span className="num w-[68px] shrink-0 text-end text-[14px]">
+                  <span className="num w-[68px] shrink-0 text-end text-md">
                     {fmtNum(quote.price, lang, 2)}
                   </span>
                   <span
-                    className="num w-[58px] shrink-0 text-end text-[14px] font-medium"
+                    className="num w-[58px] shrink-0 text-end text-md font-medium"
                     style={{ color: toneOf(quote.change) }}
                   >
                     {fmtPct(quote.change, lang)}
@@ -219,7 +219,7 @@ export default function SectorPage() {
       <SectionTitle
         title={s('comparisonTitle')}
         trailing={
-          <span dir="ltr" className="num shrink-0 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+          <span dir="ltr" className="num shrink-0 text-xs" style={{ color: 'var(--color-muted)' }}>
             {rankText}
           </span>
         }
@@ -263,7 +263,7 @@ export default function SectorPage() {
                 }}
               >
                 <span
-                  className={`truncate text-[12px] ${current ? 'font-semibold' : ''}`}
+                  className={`truncate text-xs ${current ? 'font-semibold' : ''}`}
                   style={{
                     color: current ? 'var(--color-accent)' : 'var(--color-muted)',
                   }}
@@ -291,7 +291,7 @@ export default function SectorPage() {
                   />
                 </span>
                 <span
-                  className="num text-end text-[12px]"
+                  className="num text-end text-xs"
                   style={{
                     color: move === null ? 'var(--color-muted)' : toneOf(move),
                     opacity: current ? 1 : 0.72,
@@ -311,13 +311,13 @@ export default function SectorPage() {
       >
         <Link
           to="/"
-          className="flex min-h-11 items-center text-[14px] font-medium transition-colors hover:text-muted"
+          className="flex min-h-11 items-center text-md font-medium transition-colors hover:text-muted"
         >
           {s('marketsLink')}
         </Link>
         <Link
           to="/screener"
-          className="flex min-h-11 items-center text-[14px] font-medium transition-colors hover:text-muted"
+          className="flex min-h-11 items-center text-md font-medium transition-colors hover:text-muted"
         >
           {s('screenerLink')}
         </Link>

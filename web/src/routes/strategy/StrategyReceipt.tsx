@@ -98,65 +98,65 @@ export function StrategyReceipt({ strategy, costs }: { strategy: Strategy; costs
     <section className="border-t border-line pt-5">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="t-section">{s('receiptTitle')}</h2>
-        <span dir="ltr" className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
+        <span dir="ltr" className="num text-2xs" style={{ color: 'var(--color-muted)' }}>
           {s('receiptHash')} {hash}
         </span>
       </div>
-      <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-1 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('receiptHint')}
       </p>
 
       {/* What the receipt pins, one cell per field. */}
       <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-4">
         <div className="min-w-0">
-          <dt className="text-[10px] leading-none" style={{ color: 'var(--color-muted)' }}>
+          <dt className="text-2xs leading-none" style={{ color: 'var(--color-muted)' }}>
             {s('receiptAsOf')}
           </dt>
-          <dd dir="ltr" className="num mt-1 text-[12px] leading-none">
+          <dd dir="ltr" className="num mt-1 text-xs leading-none">
             {fmtDate(current.asOf, lang)}
           </dd>
         </div>
         <div className="min-w-0">
-          <dt className="text-[10px] leading-none" style={{ color: 'var(--color-muted)' }}>
+          <dt className="text-2xs leading-none" style={{ color: 'var(--color-muted)' }}>
             {s('receiptRules')}
           </dt>
-          <dd dir="ltr" className="num mt-1 text-[12px] leading-none">
+          <dd dir="ltr" className="num mt-1 text-xs leading-none">
             {fmtNum(current.rules.length, lang, 0)}
           </dd>
         </div>
         <div className="min-w-0">
-          <dt className="text-[10px] leading-none" style={{ color: 'var(--color-muted)' }}>
+          <dt className="text-2xs leading-none" style={{ color: 'var(--color-muted)' }}>
             {s('receiptUniverse')}
           </dt>
-          <dd dir="ltr" className="num mt-1 text-[12px] leading-none">
+          <dd dir="ltr" className="num mt-1 text-xs leading-none">
             {fmtNum(current.universe.length, lang, 0)}
           </dd>
         </div>
         <div className="min-w-0">
-          <dt className="text-[10px] leading-none" style={{ color: 'var(--color-muted)' }}>
+          <dt className="text-2xs leading-none" style={{ color: 'var(--color-muted)' }}>
             {s('receiptCosts')}
           </dt>
-          <dd dir="ltr" className="num mt-1 text-[12px] leading-none">
+          <dd dir="ltr" className="num mt-1 text-xs leading-none">
             {fmtNum(costs.feeBps, lang, 0)} + {fmtNum(costs.slipBps, lang, 0)} bp
           </dd>
         </div>
       </dl>
 
       {foreign && claimed ? (
-        <p className="mt-2.5 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-2.5 text-xs" style={{ color: 'var(--color-muted)' }}>
           {fill(s('receiptOtherStrategy'), { id: claimed.id })}
         </p>
       ) : verdict ? (
         <div className="mt-2.5">
           <span
-            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] leading-none"
+            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-2xs leading-none"
             style={verdict.ok ? OK_CHIP : BAD_CHIP}
           >
             <span aria-hidden="true">{verdict.ok ? '✓' : '!'}</span>
             {verdict.ok ? s('receiptOk') : s('receiptMismatch')}
           </span>
           {verdict.changes.length > 0 && (
-            <ul className="mt-1.5 space-y-0.5 text-[11px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+            <ul className="mt-1.5 space-y-0.5 text-2xs leading-snug" style={{ color: 'var(--color-muted)' }}>
               {verdict.changes.map((change, index) => (
                 <li key={`${change.field}-${index}`}>· {changeText(change)}</li>
               ))}
@@ -164,7 +164,7 @@ export function StrategyReceipt({ strategy, costs }: { strategy: Strategy; costs
           )}
         </div>
       ) : token ? (
-        <p className="mt-2.5 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-2.5 text-xs" style={{ color: 'var(--color-muted)' }}>
           {s('receiptBadLink')}
         </p>
       ) : null}
@@ -173,7 +173,7 @@ export function StrategyReceipt({ strategy, costs }: { strategy: Strategy; costs
         <button
           type="button"
           onClick={copy}
-          className="flex min-h-11 items-center rounded-full border border-line px-4 text-[12px] transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="flex min-h-11 items-center rounded-full border border-line px-4 text-xs transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {copied ? s('receiptCopied') : s('receiptCopy')}
         </button>
@@ -182,7 +182,7 @@ export function StrategyReceipt({ strategy, costs }: { strategy: Strategy; costs
         </span>
       </div>
 
-      <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-2 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('receiptScope')}
       </p>
     </section>

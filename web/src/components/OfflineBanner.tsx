@@ -6,7 +6,7 @@ export function OfflineBanner() {
   return (
     <div
       role="status"
-      className="sticky top-0 z-30 flex min-h-9 items-center justify-center border-b border-line bg-surface px-4 text-center text-[11px] leading-snug text-muted"
+      className="sticky top-0 z-30 flex min-h-9 items-center justify-center border-b border-line bg-surface px-4 text-center text-2xs leading-snug text-muted"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
       {t('common.offline')}

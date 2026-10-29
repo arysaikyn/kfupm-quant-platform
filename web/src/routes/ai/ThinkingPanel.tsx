@@ -68,7 +68,7 @@ export function ThinkingPanel({
 
   return (
     <details open={busy} className="group border-t border-line pt-2">
-      <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-[11px] text-muted [&::-webkit-details-marker]:hidden">
+      <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-2xs text-muted [&::-webkit-details-marker]:hidden">
         <span className="inline-block transition-transform group-open:rotate-90" aria-hidden>
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M9 6l6 6-6 6" />
@@ -85,8 +85,8 @@ export function ThinkingPanel({
 
       {reasoning && (
         <div className="mt-2 rounded-lg bg-surface p-2.5">
-          <p className="text-[11px] font-medium text-muted">{s('reasoning')}</p>
-          <pre className="mt-1 max-h-40 overflow-y-auto whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-muted">
+          <p className="text-2xs font-medium text-muted">{s('reasoning')}</p>
+          <pre className="mt-1 max-h-40 overflow-y-auto whitespace-pre-wrap break-words font-mono text-2xs leading-relaxed text-muted">
             {reasoning}
           </pre>
         </div>
@@ -98,17 +98,17 @@ export function ThinkingPanel({
             <li key={tool.id} className="rounded-lg border border-line px-2.5 py-2">
               <div className="flex items-center gap-2">
                 <StatusDot status={tool.status} />
-                <span className="min-w-0 flex-1 truncate text-[12px] font-medium">
+                <span className="min-w-0 flex-1 truncate text-xs font-medium">
                   {toolLabel(tool.tool)}
                 </span>
                 {tool.elapsedMs != null && tool.elapsedMs > 0 && (
-                  <span className="num shrink-0 text-[10px] text-muted">
+                  <span className="num shrink-0 text-2xs text-muted">
                     {fmtNum(tool.elapsedMs / 1000, lang, 1)}s
                   </span>
                 )}
               </div>
               {tool.preview && (
-                <pre className="mt-1 line-clamp-2 whitespace-pre-wrap break-words font-mono text-[10px] leading-snug text-muted">
+                <pre className="mt-1 line-clamp-2 whitespace-pre-wrap break-words font-mono text-2xs leading-snug text-muted">
                   {tool.preview}
                 </pre>
               )}

@@ -53,7 +53,7 @@ export function RiyalJar({ strategy, ledger }: { strategy: Strategy; ledger: Led
   return (
     <section className="border-t border-line pt-5">
       <h2 className="t-section">{s('jarTitle')}</h2>
-      <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-1 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('jarHint')}
       </p>
 
@@ -124,8 +124,8 @@ export function RiyalJar({ strategy, ledger }: { strategy: Strategy; ledger: Led
 
       {picks.length === 0 ? (
         <>
-          <p className="mt-1 text-center text-[13px] leading-snug">{s('jarEmpty')}</p>
-          <p className="mt-1 text-center text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-1 text-center text-sm leading-snug">{s('jarEmpty')}</p>
+          <p className="mt-1 text-center text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {fill(s('jarEmptyHint'), {
               rule: topRule?.label[lang] ?? topId,
               n: fmtNum(topCount, lang, 0),
@@ -136,10 +136,10 @@ export function RiyalJar({ strategy, ledger }: { strategy: Strategy; ledger: Led
         <ul className="mt-1 divide-y divide-line">
           {jar.stacks.map((stack) => (
             <li key={stack.symbol} className="flex items-baseline justify-between gap-3 py-2">
-              <span className="truncate text-[12px]">
+              <span className="truncate text-xs">
                 {quoteBySymbol[stack.symbol]?.name[lang] ?? stack.symbol}
               </span>
-              <span dir="ltr" className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+              <span dir="ltr" className="num shrink-0 text-2xs" style={{ color: 'var(--color-muted)' }}>
                 {fmtNum(stack.weight * 100, lang, 1, '%')}
                 {' · '}
                 {fill(s('jarShares'), { n: fmtNum(stack.coins, lang, 0) })}
@@ -151,7 +151,7 @@ export function RiyalJar({ strategy, ledger }: { strategy: Strategy; ledger: Led
         </ul>
       )}
 
-      <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+      <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-2xs" style={{ color: 'var(--color-muted)' }}>
         <span>
           {s('jarDeposit')} <span dir="ltr" className="num">{fmtNum(jar.grown, lang, 2)}</span>
         </span>
@@ -164,7 +164,7 @@ export function RiyalJar({ strategy, ledger }: { strategy: Strategy; ledger: Led
       </div>
 
       <div className="mt-3 space-y-2">
-        <label className="block text-[11px]" style={{ color: 'var(--color-muted)' }}>
+        <label className="block text-2xs" style={{ color: 'var(--color-muted)' }}>
           <span className="flex items-center justify-between gap-3">
             <span>{s('jarYear')}</span>
             <span dir="ltr" className="num">{fmtNum(jar.year, lang, 0)}</span>
@@ -181,7 +181,7 @@ export function RiyalJar({ strategy, ledger }: { strategy: Strategy; ledger: Led
             className="mt-1 h-11 w-full accent-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           />
         </label>
-        <label className="block text-[11px]" style={{ color: 'var(--color-muted)' }}>
+        <label className="block text-2xs" style={{ color: 'var(--color-muted)' }}>
           <span className="flex items-center justify-between gap-3">
             <span>{s('jarWhatIf')}</span>
             <span dir="ltr" className="num">{fmtNum(jar.priceFactor, lang, 1, '×')}</span>
@@ -201,11 +201,11 @@ export function RiyalJar({ strategy, ledger }: { strategy: Strategy; ledger: Led
       </div>
 
       {jar.idle && (
-        <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-2 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
           {s('jarIdle')}
         </p>
       )}
-      <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-1 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('jarDemo')}
       </p>
     </section>

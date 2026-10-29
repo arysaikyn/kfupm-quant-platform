@@ -95,8 +95,8 @@ function FailMark() {
 function RuleRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex min-h-11 items-center gap-3 border-t border-line px-4">
-      <span className="min-w-0 flex-1 truncate text-[12px] text-muted">{label}</span>
-      <span dir="ltr" className="num shrink-0 text-[13px] font-medium">
+      <span className="min-w-0 flex-1 truncate text-xs text-muted">{label}</span>
+      <span dir="ltr" className="num shrink-0 text-sm font-medium">
         {value}
       </span>
     </div>
@@ -106,11 +106,11 @@ function RuleRow({ label, value }: { label: string; value: string }) {
 function EvidenceRow({ label, value, tag }: { label: string; value: string; tag: string }) {
   return (
     <div className="flex min-h-12 items-center gap-2.5 border-t border-line px-4 first:border-t-0">
-      <span className="min-w-0 flex-1 truncate text-[12px] text-muted">{label}</span>
-      <span dir="ltr" className="num text-[14px] font-medium">
+      <span className="min-w-0 flex-1 truncate text-xs text-muted">{label}</span>
+      <span dir="ltr" className="num text-md font-medium">
         {value}
       </span>
-      <span className="shrink-0 rounded-full bg-fg/10 px-2 py-1 text-[11px] leading-none font-medium text-fg">
+      <span className="shrink-0 rounded-full bg-fg/10 px-2 py-1 text-2xs leading-none font-medium text-fg">
         {tag}
       </span>
     </div>
@@ -138,13 +138,13 @@ function ShariaRow({
         {ok ? <PassMark /> : <FailMark />}
       </span>
       <span
-        className={`min-w-0 flex-1 truncate text-[12px] ${ok ? 'text-fg' : 'text-muted'}`}
+        className={`min-w-0 flex-1 truncate text-xs ${ok ? 'text-fg' : 'text-muted'}`}
       >
         {label}
       </span>
       <span
         dir={ltr ? 'ltr' : undefined}
-        className={`shrink-0 text-[11px] ${ltr ? 'num' : ''} ${
+        className={`shrink-0 text-2xs ${ltr ? 'num' : ''} ${
           ok ? 'text-muted' : 'text-muted line-through'
         }`}
       >
@@ -157,16 +157,16 @@ function ShariaRow({
 function ValueCard({ s }: { s: S }) {
   return (
     <div className="panel overflow-hidden">
-      <p className="px-4 pt-4 pb-3.5 text-[13px] leading-[1.5]">“{s('valueQuery')}”</p>
-      <p className="border-t border-line px-4 py-2.5 text-[11px] text-muted">
+      <p className="px-4 pt-4 pb-3.5 text-sm leading-[1.5]">“{s('valueQuery')}”</p>
+      <p className="border-t border-line px-4 py-2.5 text-2xs text-muted">
         {s('valueParsed')}
       </p>
       <RuleRow label={s('valueRule1')} value={s('valueRule1Value')} />
       <RuleRow label={s('valueRule2')} value={s('valueRule2Value')} />
       <RuleRow label={s('valueRule3')} value={s('valueRule3Value')} />
       <div className="flex items-baseline justify-between gap-3 border-t border-line px-4 py-3">
-        <span className="text-[11px] text-muted">{s('valueFootLabel')}</span>
-        <span dir="ltr" className="num shrink-0 text-[13px] font-semibold text-fg">
+        <span className="text-2xs text-muted">{s('valueFootLabel')}</span>
+        <span dir="ltr" className="num shrink-0 text-sm font-semibold text-fg">
           {s('valueFootValue')}
         </span>
       </div>
@@ -189,7 +189,7 @@ function EvidenceCard({ s }: { s: S }) {
         <EvidenceRow label={s('evPe')} value={s('evPeValue')} tag={s('evEngineTag')} />
         <EvidenceRow label={s('evYield')} value={s('evYieldValue')} tag={s('evEngineTag')} />
       </div>
-      <p className="border-t border-line px-4 py-2.5 text-[10.5px] leading-snug text-muted">
+      <p className="border-t border-line px-4 py-2.5 text-2xs leading-snug text-muted">
         {s('evidenceFoot')}
       </p>
     </div>
@@ -204,7 +204,7 @@ function ShariaCard({ s }: { s: S }) {
         <span className="t-kicker text-muted" style={{ letterSpacing: lang === 'ar' ? 0 : undefined }}>
           {s('shariaHead')}
         </span>
-        <span dir="ltr" className="num rounded-full bg-fg/10 px-2 py-1 text-[10.5px] leading-none font-medium text-fg">
+        <span dir="ltr" className="num rounded-full bg-fg/10 px-2 py-1 text-2xs leading-none font-medium text-fg">
           {s('shariaCount')}
         </span>
       </div>
@@ -214,7 +214,7 @@ function ShariaCard({ s }: { s: S }) {
       <ShariaRow label={s('shReceivable')} value={s('shReceivableValue')} ok />
       <ShariaRow label={s('shCore')} value={s('shCoreValue')} ok ltr={false} />
       <ShariaRow label={s('shSub')} value={s('shSubValue')} ok={false} ltr={false} />
-      <p className="border-t border-line px-4 py-2.5 text-[10.5px] leading-snug text-muted">
+      <p className="border-t border-line px-4 py-2.5 text-2xs leading-snug text-muted">
         {s('shariaFoot')}
       </p>
     </div>
@@ -338,7 +338,7 @@ export default function OnboardingPage() {
               type="button"
               aria-pressed={active}
               onClick={() => setLang(code)}
-              className="min-h-11 min-w-11 rounded-full px-2 text-[12px] font-medium text-muted transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="min-h-11 min-w-11 rounded-full px-2 text-xs font-medium text-muted transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               style={active ? { background: 'var(--color-surface)', color: 'var(--color-fg)' } : undefined}
             >
               {s(code === 'zh' ? 'langZh' : code === 'en' ? 'langEn' : 'langAr')}
@@ -371,12 +371,12 @@ export default function OnboardingPage() {
           </button>
         )}
         <span className="flex-1" />
-        <p className="num ps-2 text-[11px] text-muted">{s('stepOf').replace('{n}', String(step))}</p>
+        <p className="num ps-2 text-2xs text-muted">{s('stepOf').replace('{n}', String(step))}</p>
         {step <= 3 && (
           <button
             type="button"
             onClick={() => go(4)}
-            className={`tap -me-2 rounded-full px-2 text-[12px] font-medium text-muted active:bg-fg/10 ${RING}`}
+            className={`tap -me-2 rounded-full px-2 text-xs font-medium text-muted active:bg-fg/10 ${RING}`}
           >
             {s('skip')}
           </button>
@@ -394,11 +394,11 @@ export default function OnboardingPage() {
               id="onb-step-heading"
               ref={headingRef}
               tabIndex={-1}
-              className="t-title rounded-sm text-[26px] leading-[1.2] font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fg max-[380px]:text-[24px]"
+              className="t-title rounded-sm text-2xl leading-[1.2] font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fg max-[380px]:text-2xl"
             >
               {s(TITLES[step - 1])}
             </h1>
-            <p className="mt-3 max-w-[42ch] text-[13px] leading-[1.6] text-muted">{s(BODIES[step - 1])}</p>
+            <p className="mt-3 max-w-[42ch] text-sm leading-[1.6] text-muted">{s(BODIES[step - 1])}</p>
 
             <div className="mt-7">
               {step === 1 && <ValueCard s={s} />}
@@ -433,17 +433,17 @@ export default function OnboardingPage() {
                         >
                           <span
                             aria-hidden="true"
-                            className={`num grid h-9 w-9 shrink-0 place-items-center rounded-full border text-[11px] font-semibold ${
+                            className={`num grid h-9 w-9 shrink-0 place-items-center rounded-full border text-2xs font-semibold ${
                               selected ? 'border-fg/40 text-fg' : 'border-line text-muted'
                             }`}
                           >
                             {copy.code}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[15px] leading-tight font-medium">
+                            <span className="block truncate text-md leading-tight font-medium">
                               {s(copy.name)}
                             </span>
-                            <span className="mt-1 block truncate text-[11px] leading-none text-muted">
+                            <span className="mt-1 block truncate text-2xs leading-none text-muted">
                               {s(copy.sub)}
                             </span>
                           </span>
@@ -460,7 +460,7 @@ export default function OnboardingPage() {
                     })}
                   </div>
                   {!market && (
-                    <p id="onb-market-hint" className="mt-3 px-1 text-[12px] text-muted">
+                    <p id="onb-market-hint" className="mt-3 px-1 text-xs text-muted">
                       {s('marketHint')}
                     </p>
                   )}
@@ -478,15 +478,15 @@ export default function OnboardingPage() {
                   <div className="mt-2.5 flex items-center gap-3">
                     <span
                       aria-hidden="true"
-                      className="num grid h-9 w-9 shrink-0 place-items-center rounded-full bg-fg/15 text-[11px] font-semibold text-fg"
+                      className="num grid h-9 w-9 shrink-0 place-items-center rounded-full bg-fg/15 text-2xs font-semibold text-fg"
                     >
                       {MARKET_COPY[market].code}
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-[15px] leading-tight font-medium">
+                      <p className="truncate text-md leading-tight font-medium">
                         {s(MARKET_COPY[market].name)}
                       </p>
-                      <p className="mt-1 truncate text-[11px] leading-none text-muted">
+                      <p className="mt-1 truncate text-2xs leading-none text-muted">
                         {s(MARKET_COPY[market].sub)}
                       </p>
                     </div>
@@ -505,7 +505,7 @@ export default function OnboardingPage() {
             onClick={next}
             disabled={step === 4 && !market}
             aria-describedby={step === 4 && !market ? 'onb-market-hint' : undefined}
-            className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-semibold text-bg transition-opacity active:opacity-80 disabled:opacity-40 ${RING}`}
+            className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-md font-semibold text-bg transition-opacity active:opacity-80 disabled:opacity-40 ${RING}`}
           >
             {s('continue')}
           </button>
@@ -514,14 +514,14 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={finish}
-              className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-semibold text-bg transition-opacity active:opacity-80 ${RING}`}
+              className={`flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-md font-semibold text-bg transition-opacity active:opacity-80 ${RING}`}
             >
               {s('doneOpen')}
             </button>
             <button
               type="button"
               onClick={finish}
-              className={`flex min-h-12 w-full items-center justify-center rounded-full border border-line px-5 text-[15px] font-medium text-fg transition-colors active:bg-fg/10 ${RING}`}
+              className={`flex min-h-12 w-full items-center justify-center rounded-full border border-line px-5 text-md font-medium text-fg transition-colors active:bg-fg/10 ${RING}`}
             >
               {s('doneBrowse')}
             </button>

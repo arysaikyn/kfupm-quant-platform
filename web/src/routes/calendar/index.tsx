@@ -162,18 +162,18 @@ export default function Calendar() {
   return (
     <Screen title={s('title')} leading={<BackButton fallback="/news" />}>
       <section aria-labelledby="week-summary" className="mt-4">
-        <h2 id="week-summary" className="text-[11px] font-medium text-muted">
+        <h2 id="week-summary" className="text-2xs font-medium text-muted">
           {s('eventsLabel')}
         </h2>
         <p className="mt-1 flex items-baseline gap-2">
-          <span className="t-display num text-[40px] leading-none">
+          <span className="t-display num text-4xl leading-none">
             {fmtNum(total, lang, 0)}
           </span>
-          <span className="text-[12px] text-muted">
+          <span className="text-xs text-muted">
             {total === 1 ? s('eventOne') : s('eventMany')}
           </span>
         </p>
-        <p className="mt-2 flex flex-wrap items-baseline gap-x-2 text-[12px] text-muted">
+        <p className="mt-2 flex flex-wrap items-baseline gap-x-2 text-xs text-muted">
           <span>
             <span className="num text-fg">{fmtNum(watched, lang, 0)}</span>{' '}
             {s('watchLabel')}
@@ -210,7 +210,7 @@ export default function Calendar() {
           <span
             aria-live="polite"
             aria-atomic="true"
-            className="num min-w-0 flex-1 text-center text-[12px] text-muted"
+            className="num min-w-0 flex-1 text-center text-xs text-muted"
           >
             {range}
           </span>
@@ -241,7 +241,7 @@ export default function Calendar() {
             type="button"
             onClick={() => setWeek(0)}
             disabled={isCurrentWeek}
-            className="min-h-11 shrink-0 rounded-full border border-line px-3 text-[12px] text-fg transition-colors active:bg-fg/10 disabled:border-transparent disabled:text-muted disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+            className="min-h-11 shrink-0 rounded-full border border-line px-3 text-xs text-fg transition-colors active:bg-fg/10 disabled:border-transparent disabled:text-muted disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
           >
             {s('today')}
           </button>
@@ -254,18 +254,18 @@ export default function Calendar() {
             <h2 id={`calendar-day-${day}`} className="t-section text-fg">
               {fmt.weekday.format(group.date)}
             </h2>
-            <time dateTime={group.iso} className="num text-[12px] text-muted">
+            <time dateTime={group.iso} className="num text-xs text-muted">
               {fmt.date.format(group.date)}
             </time>
             {group.iso === todayIso && (
-              <span className="rounded-lg bg-fg/10 px-1.5 py-0.5 text-[10px] leading-none whitespace-nowrap text-fg">
+              <span className="rounded-lg bg-fg/10 px-1.5 py-0.5 text-2xs leading-none whitespace-nowrap text-fg">
                 {s('today')}
               </span>
             )}
           </div>
 
           {group.events.length === 0 ? (
-            <p className="text-[12px] text-muted">{s('noEvents')}</p>
+            <p className="text-xs text-muted">{s('noEvents')}</p>
           ) : (
             <ul className="divide-y divide-line border-t border-line">
               {group.events.map((event) => {
@@ -292,7 +292,7 @@ export default function Calendar() {
                     <time
                       dir="ltr"
                       dateTime={`${group.iso}T${hhmm}`}
-                      className="num text-[12px] text-muted"
+                      className="num text-xs text-muted"
                     >
                       {fmt.time.format(at)}
                     </time>
@@ -301,7 +301,7 @@ export default function Calendar() {
                       <div className="flex items-center gap-1.5">
                         <span
                           dir="ltr"
-                          className="num truncate text-[14px] leading-[1.4] font-medium text-fg"
+                          className="num truncate text-md leading-[1.4] font-medium text-fg"
                         >
                           {event.symbol}
                         </span>
@@ -315,10 +315,10 @@ export default function Calendar() {
                           </>
                         )}
                       </div>
-                      <p className="truncate text-[12px] leading-[1.4] text-muted">{name}</p>
+                      <p className="truncate text-xs leading-[1.4] text-muted">{name}</p>
                     </div>
 
-                    <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-[10px] leading-[1.6] whitespace-nowrap text-muted">
+                    <span className="shrink-0 rounded-lg bg-fg/10 px-2 py-0.5 text-2xs leading-[1.6] whitespace-nowrap text-muted">
                       {chip}
                     </span>
                   </li>

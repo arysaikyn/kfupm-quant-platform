@@ -44,10 +44,10 @@ export default function NewsDetail() {
     <Screen leading={back}>
       <article className="pt-1 pb-2">
         {/* The headline is the hero: largest type on the page, on the canvas. */}
-        <h1 className="t-title text-[26px] leading-[1.25] font-semibold text-fg rtl:leading-[1.55]">
+        <h1 className="t-title text-2xl leading-[1.25] font-semibold text-fg rtl:leading-[1.55]">
           {item.title[lang]}
         </h1>
-        <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted">
+        <div className="mt-2 flex items-center gap-1.5 text-2xs text-muted">
           <Link
             to={`/news?source=${encodeURIComponent(item.source)}`}
             className="inline-flex min-h-11 min-w-0 items-center truncate underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
@@ -79,20 +79,20 @@ export default function NewsDetail() {
                 // Clipboard permission is optional.
               }
             }}
-            className="inline-flex min-h-11 items-center rounded-full px-2 text-[11px] text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="inline-flex min-h-11 items-center rounded-full px-2 text-2xs text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {copied ? t('common.copied') : s('share')}
           </button>
         </div>
 
-        <div className="mt-6 max-w-[68ch] space-y-4 text-[15px] leading-[1.75] text-fg/85 rtl:leading-[1.95]">
+        <div className="mt-6 max-w-[68ch] space-y-4 text-md leading-[1.75] text-fg/85 rtl:leading-[1.95]">
           {item.body.map((paragraph, i) => (
             <p key={i}>{paragraph[lang]}</p>
           ))}
         </div>
 
         <section className="mt-9">
-          <h2 className="text-[12px] font-medium text-muted">{s('related')}</h2>
+          <h2 className="text-xs font-medium text-muted">{s('related')}</h2>
           <ul className="mt-2 border-t border-line divide-y divide-line">
             {item.symbols.map((sym) => {
               const quote = quoteBySymbol[sym]
@@ -104,17 +104,17 @@ export default function NewsDetail() {
                     className="flex min-h-14 min-w-0 flex-1 flex-col justify-center py-2.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:opacity-80"
                   >
                     <span className="flex min-w-0 items-baseline gap-2">
-                      <span className="num shrink-0 text-[13px] font-medium text-fg">{sym}</span>
+                      <span className="num shrink-0 text-sm font-medium text-fg">{sym}</span>
                       {quote && (
-                        <span className="truncate text-[12px] text-muted">{quote.name[lang]}</span>
+                        <span className="truncate text-xs text-muted">{quote.name[lang]}</span>
                       )}
                     </span>
                     {quote && (
                       <span className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                        <span className="num text-[15px] text-fg">{fmtNum(quote.price, lang)}</span>
-                        <span className="text-[11px] text-muted">{quote.currency}</span>
+                        <span className="num text-md text-fg">{fmtNum(quote.price, lang)}</span>
+                        <span className="text-2xs text-muted">{quote.currency}</span>
                         <span
-                          className={`num text-[12px] ${quote.change >= 0 ? 'text-up' : 'text-down'}`}
+                          className={`num text-xs ${quote.change >= 0 ? 'text-up' : 'text-down'}`}
                         >
                           {fmtPct(quote.change, lang)}
                         </span>
@@ -154,7 +154,7 @@ export default function NewsDetail() {
             setIntake(`${s('askAi')} — ${item.title[lang]}`, [{ kind: 'news', id: item.id }])
             navigate('/ai')
           }}
-          className="mt-8 flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-[15px] font-medium text-bg transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
+          className="mt-8 flex min-h-12 w-full items-center justify-center rounded-full bg-solid px-5 text-md font-medium text-bg transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:opacity-80"
         >
           {s('askAi')}
         </button>

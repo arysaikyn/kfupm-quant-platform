@@ -105,21 +105,21 @@ function QuoteRow({
         className="flex min-h-11 min-w-0 flex-1 items-center gap-3 py-2 transition-colors hover:bg-fg/5 active:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
       >
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[14px] leading-tight font-medium">
+          <span className="block truncate text-md leading-tight font-medium">
             {quote.name[lang]}
           </span>
-          <span className="num mt-1 flex items-center gap-1.5 text-[11px] leading-tight text-muted">
+          <span className="num mt-1 flex items-center gap-1.5 text-2xs leading-tight text-muted">
             <span>{quote.symbol}</span>
             <span aria-hidden="true">·</span>
             <span>{quote.currency}</span>
           </span>
         </span>
         <span className="shrink-0 text-end">
-          <span className="num block text-[14px] leading-tight font-semibold">
+          <span className="num block text-md leading-tight font-semibold">
             {fmtNum(quote.price, lang)}
           </span>
           <span
-            className={`num mt-1 block text-[11px] leading-tight ${up ? 'text-up' : 'text-down'}`}
+            className={`num mt-1 block text-2xs leading-tight ${up ? 'text-up' : 'text-down'}`}
           >
             {fmtPct(quote.change, lang)}
           </span>
@@ -314,7 +314,7 @@ export default function SearchPage() {
                 ? optionId(results[activeIndex].symbol)
                 : undefined
             }
-            className="h-11 min-w-0 flex-1 appearance-none bg-transparent text-[15px] text-fg placeholder:text-muted focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:appearance-none"
+            className="h-11 min-w-0 flex-1 appearance-none bg-transparent text-md text-fg placeholder:text-muted focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:appearance-none"
           />
           {query !== '' && (
             <button
@@ -347,8 +347,8 @@ export default function SearchPage() {
           </svg>
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[14px] leading-tight">{s('screenerEntry')}</span>
-          <span className="mt-0.5 block truncate text-[11px] leading-tight text-muted">
+          <span className="block truncate text-md leading-tight">{s('screenerEntry')}</span>
+          <span className="mt-0.5 block truncate text-2xs leading-tight text-muted">
             {s('screenerHint')}
           </span>
         </span>
@@ -368,7 +368,7 @@ export default function SearchPage() {
                 <button
                   type="button"
                   onClick={() => setRecent([])}
-                  className="min-h-11 shrink-0 rounded-full px-2 text-[12px] text-fg underline decoration-line underline-offset-4 transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                  className="min-h-11 shrink-0 rounded-full px-2 text-xs text-fg underline decoration-line underline-offset-4 transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
                   {s('clearRecent')}
                 </button>
@@ -397,7 +397,7 @@ export default function SearchPage() {
                       <path d="M4.6 9.5A8 8 0 1 1 4 12" />
                       <path d="M12 8v4.5l3 1.8" />
                     </svg>
-                    <span className="min-w-0 flex-1 truncate text-[14px]">{term}</span>
+                    <span className="min-w-0 flex-1 truncate text-md">{term}</span>
                   </button>
                 ))}
               </div>
@@ -410,7 +410,7 @@ export default function SearchPage() {
                 <h2 id="search-popular" className="t-section">
                   {s('popular')}
                 </h2>
-                <span className="num text-[11px] text-muted">{popularQuotes.length}</span>
+                <span className="num text-2xs text-muted">{popularQuotes.length}</span>
               </div>
               <ul className="panel mt-2 overflow-hidden">
                 {popularQuotes.map((quote) => (
@@ -435,7 +435,7 @@ export default function SearchPage() {
                 <h2 id="search-watchlist" className="t-section ">
                   {s('watchlist')}
                 </h2>
-                <span className="num text-[11px] text-muted">{watchedQuotes.length}</span>
+                <span className="num text-2xs text-muted">{watchedQuotes.length}</span>
               </div>
               <ul className="panel mt-2 overflow-hidden">
                 {watchedQuotes.map((quote) => (
@@ -459,7 +459,7 @@ export default function SearchPage() {
             <button
               type="button"
               onClick={clearQuery}
-              className="min-h-11 rounded-full border border-line px-4 text-[13px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="min-h-11 rounded-full border border-line px-4 text-sm transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('clearQuery')}
             </button>
@@ -471,7 +471,7 @@ export default function SearchPage() {
             <h2 id="search-results-heading" className="t-section ">
               {s('results')}
             </h2>
-            <span className="num text-[11px] text-muted">{results.length}</span>
+            <span className="num text-2xs text-muted">{results.length}</span>
           </div>
           <ul
             id="search-results"

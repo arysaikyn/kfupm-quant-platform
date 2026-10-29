@@ -196,11 +196,11 @@ export default function AlertsPage() {
         <h2 className="t-section" style={kicker}>
           {s(editingId ? 'editTitle' : 'formTitle')}
         </h2>
-        {editingId && <p className="mt-1 text-[11px] leading-snug text-muted">{s('editHint')}</p>}
+        {editingId && <p className="mt-1 text-2xs leading-snug text-muted">{s('editHint')}</p>}
 
         <form className="mt-3 space-y-3" onSubmit={submit} noValidate>
           <div>
-            <label htmlFor="alert-symbol" className="text-[11px] leading-none text-muted">
+            <label htmlFor="alert-symbol" className="text-2xs leading-none text-muted">
               {s('symbol')}
             </label>
             <div className="relative mt-1.5">
@@ -209,7 +209,7 @@ export default function AlertsPage() {
                 value={symbol}
                 disabled={editingId !== null}
                 onChange={(e) => pickSymbol(e.target.value)}
-                className="min-h-11 w-full appearance-none rounded-[10px] border border-line bg-bg ps-2.5 pe-9 text-[13px] text-fg disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                className="min-h-11 w-full appearance-none rounded-[10px] border border-line bg-bg ps-2.5 pe-9 text-sm text-fg disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               >
                 {quotes.map((q) => (
                   <option key={q.symbol} value={q.symbol}>
@@ -236,7 +236,7 @@ export default function AlertsPage() {
           </div>
 
           <div>
-            <span id="alert-dir-label" className="text-[11px] leading-none text-muted">
+            <span id="alert-dir-label" className="text-2xs leading-none text-muted">
               {s('direction')}
             </span>
             <div
@@ -255,7 +255,7 @@ export default function AlertsPage() {
                       setDir(k)
                       setError(null)
                     }}
-                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[9px] text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-fg"
+                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[9px] text-sm transition-colors focus-visible:outline-2 focus-visible:outline-fg"
                     style={{
                       background: active ? 'var(--color-fg)' : 'transparent',
                       color: active ? 'var(--color-bg)' : 'var(--color-muted)',
@@ -273,11 +273,11 @@ export default function AlertsPage() {
             <div className="flex items-baseline justify-between gap-2">
               <label
                 htmlFor="alert-threshold"
-                className="text-[11px] leading-none text-muted"
+                className="text-2xs leading-none text-muted"
               >
                 {s('threshold')}
               </label>
-              <span className="num text-[11px] text-muted">
+              <span className="num text-2xs text-muted">
                 {s('current')} {fmtNum(quote.price, lang, 2)} {quote.currency}
               </span>
             </div>
@@ -296,13 +296,13 @@ export default function AlertsPage() {
                   setThreshold(e.target.value)
                   if (error) setError(null)
                 }}
-                className={`num min-h-11 w-full rounded-[10px] border bg-bg ps-3 pe-14 text-[14px] text-fg [appearance:textfield] focus-visible:outline-2 focus-visible:outline-fg [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
+                className={`num min-h-11 w-full rounded-[10px] border bg-bg ps-3 pe-14 text-md text-fg [appearance:textfield] focus-visible:outline-2 focus-visible:outline-fg [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
                   error ? 'border-fg' : 'border-line'
                 }`}
               />
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-[10px] text-muted"
+                className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-2xs text-muted"
               >
                 {quote.currency}
               </span>
@@ -310,7 +310,7 @@ export default function AlertsPage() {
           </div>
 
           {error && (
-            <p id="alert-error" role="alert" className="text-[12px] leading-snug" style={{ color: 'var(--color-danger)' }}>
+            <p id="alert-error" role="alert" className="text-xs leading-snug" style={{ color: 'var(--color-danger)' }}>
               {errorText}
             </p>
           )}
@@ -320,14 +320,14 @@ export default function AlertsPage() {
               <button
                 type="button"
                 onClick={cancelEdit}
-                className="min-h-11 shrink-0 rounded-full border border-line px-4 text-[13px] text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                className="min-h-11 shrink-0 rounded-full border border-line px-4 text-sm text-muted transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               >
                 {s('cancel')}
               </button>
             )}
             <button
               type="submit"
-              className="min-h-11 flex-1 rounded-full bg-solid text-[13px] font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="min-h-11 flex-1 rounded-full bg-solid text-sm font-medium text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s(editingId ? 'save' : 'create')}
             </button>
@@ -345,7 +345,7 @@ export default function AlertsPage() {
             <section key={group.key} className="mt-8">
               <h2 className="t-section flex items-baseline justify-between gap-3 pb-3">
                 {s(group.key === 'fired' ? 'triggered' : 'waiting')}
-                <span className="num text-[12px] font-normal text-muted">
+                <span className="num text-xs font-normal text-muted">
                   {group.rows.length}
                 </span>
               </h2>
@@ -357,21 +357,21 @@ export default function AlertsPage() {
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline gap-2">
-                        <span className="num text-[14px] font-semibold">{r.symbol}</span>
-                        <span className="truncate text-[12px] text-muted">
+                        <span className="num text-md font-semibold">{r.symbol}</span>
+                        <span className="truncate text-xs text-muted">
                           {r.quote.name[lang]}
                         </span>
                       </div>
-                      <div className="mt-1.5 text-[12px] text-muted">{s(r.dir)}</div>
+                      <div className="mt-1.5 text-xs text-muted">{s(r.dir)}</div>
                     </div>
 
                     {/* Two prices, two lines, labelled: an unlabelled pair of
                         numbers a row apart is a guessing game. */}
                     <div className="shrink-0 text-end">
-                      <span className="num block text-[14px] leading-none">
+                      <span className="num block text-md leading-none">
                         {fmtNum(r.threshold, lang, 2)}
                       </span>
-                      <span className="mt-1.5 block text-[11px] leading-none text-muted">
+                      <span className="mt-1.5 block text-2xs leading-none text-muted">
                         {s('current')}{' '}
                         <span className="num" style={{ color: 'var(--color-fg)' }}>
                           {fmtNum(r.quote.price, lang, 2)}
@@ -401,7 +401,7 @@ export default function AlertsPage() {
                         type="button"
                         onClick={() => tapDelete(r)}
                         aria-label={`${s('confirmDelete')} ${r.symbol}`}
-                        className="flex min-h-11 shrink-0 items-center rounded-full px-3 text-[11px] font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                        className="flex min-h-11 shrink-0 items-center rounded-full px-3 text-2xs font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                         style={{ color: 'var(--color-danger)' }}
                       >
                         {s('confirmDelete')}

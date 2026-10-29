@@ -27,7 +27,7 @@ export function EmptyState({ text, action }: { text?: string; action?: React.Rea
           <path d="M8.5 12h7" opacity=".7" />
         </svg>
       </div>
-      <p className="text-[13px]" style={{ color: 'var(--color-muted)' }}>
+      <p className="text-sm" style={{ color: 'var(--color-muted)' }}>
         {text ?? t('common.empty')}
       </p>
       {action}
@@ -39,13 +39,13 @@ export function ErrorState({ onRetry, message }: { onRetry?: () => void; message
   const { t } = useI18n()
   return (
     <div className="flex flex-col items-center gap-3 py-16 text-center">
-      <p className="text-[13px]" style={{ color: 'var(--color-muted)' }}>
+      <p className="text-sm" style={{ color: 'var(--color-muted)' }}>
         {message ?? ''}
       </p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="rounded-full px-4 py-2 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="rounded-full px-4 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           style={{ border: '1px solid var(--color-line)' }}
         >
           {t('common.retry')}

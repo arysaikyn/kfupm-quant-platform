@@ -77,13 +77,13 @@ export function Treemap({
         const head = (
           <>
             <span
-              className="block max-w-full truncate text-[11px] leading-tight font-medium"
+              className="block max-w-full truncate text-2xs leading-tight font-medium"
               style={focused ? { color: 'var(--color-accent)' } : undefined}
             >
               {group.label}
             </span>
             <span
-              className="num block max-w-full truncate text-[10px] leading-tight"
+              className="num block max-w-full truncate text-2xs leading-tight"
               style={{ color: groupTone }}
             >
               {formatChange(group.change)}
@@ -129,10 +129,10 @@ export function Treemap({
                       boxShadow: picked ? 'inset 0 0 0 2px var(--color-accent)' : undefined,
                     }}
                   >
-                    <span className="block max-w-full truncate text-[11px] leading-tight font-medium">
+                    <span className="block max-w-full truncate text-2xs leading-tight font-medium">
                       {tile.label}
                     </span>
-                    <span className="num block max-w-full truncate text-[10px] leading-none">
+                    <span className="num block max-w-full truncate text-2xs leading-none">
                       {formatChange(tile.change)}
                     </span>
                   </button>

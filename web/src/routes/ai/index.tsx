@@ -646,7 +646,7 @@ export default function AiPage() {
           <div className="flex items-center gap-2">
             <Link
               to="/runs"
-              className="flex min-h-11 items-center rounded-full border border-line px-3 text-[12px] text-fg transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="flex min-h-11 items-center rounded-full border border-line px-3 text-xs text-fg transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               {s('history')}
             </Link>
@@ -675,7 +675,7 @@ export default function AiPage() {
           </div>
         }
       >
-        <div className="-mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
+        <div className="-mt-2 flex flex-wrap items-center gap-1.5 text-2xs text-muted">
           <span
             className={`h-1.5 w-1.5 rounded-full ${
               connected === 'online' ? 'bg-up' : connected === 'offline' ? 'bg-down' : 'bg-muted'
@@ -694,7 +694,7 @@ export default function AiPage() {
           {!online && <span>· {t('common.offline')}</span>}
           <Link
             to="/ai/provider"
-            className="ms-auto inline-flex min-h-11 items-center rounded-full px-2 text-[11px] text-fg underline decoration-line underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="ms-auto inline-flex min-h-11 items-center rounded-full px-2 text-2xs text-fg underline decoration-line underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {demo ? s('connectProvider') : s('providerSettings')}
           </Link>
@@ -708,8 +708,8 @@ export default function AiPage() {
                 key={`${ref.kind}:${'symbol' in ref ? ref.symbol : ref.id}`}
                 className="inline-flex h-11 items-center rounded-full bg-surface ps-3 pe-0.5"
               >
-                <span className="max-w-[180px] truncate text-[12px]">{view.label}</span>
-                <span className={`num ms-2 text-[11px] ${view.change === null ? 'text-muted' : toneOf(view.change)}`}>
+                <span className="max-w-[180px] truncate text-xs">{view.label}</span>
+                <span className={`num ms-2 text-2xs ${view.change === null ? 'text-muted' : toneOf(view.change)}`}>
                   {view.change === null ? '—' : fmtPct(view.change, lang)}
                 </span>
                 <button
@@ -730,7 +730,7 @@ export default function AiPage() {
               type="button"
               onClick={() => setSheet(true)}
               aria-haspopup="dialog"
-              className="inline-flex h-11 items-center gap-1 rounded-full px-3 text-[12px] text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+              className="inline-flex h-11 items-center gap-1 rounded-full px-3 text-xs text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <path d="M12 5v14M5 12h14" />
@@ -742,7 +742,7 @@ export default function AiPage() {
 
         {error && (
           <div role="alert" className="panel mt-4 border-danger/40 p-3">
-            <p className="text-[12px]" style={{ color: 'var(--color-danger)' }}>
+            <p className="text-xs" style={{ color: 'var(--color-danger)' }}>
               {error}
             </p>
             <div className="mt-1 flex items-center gap-1">
@@ -759,14 +759,14 @@ export default function AiPage() {
                     setReloadTick((n) => n + 1)
                   }
                 }}
-                className="min-h-11 rounded-full border border-line px-3 text-[11px] text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                className="min-h-11 rounded-full border border-line px-3 text-2xs text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               >
                 {t('common.retry')}
               </button>
               <button
                 type="button"
                 onClick={() => setError(null)}
-                className="min-h-11 px-2 text-[11px] text-muted underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                className="min-h-11 px-2 text-2xs text-muted underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               >
                 {t('common.close')}
               </button>
@@ -779,7 +779,7 @@ export default function AiPage() {
 
           {!loading && messages.length === 0 && !live && (
             <div className="pt-1">
-              <p className="text-[15px] leading-relaxed text-muted">{s('promise')}</p>
+              <p className="text-md leading-relaxed text-muted">{s('promise')}</p>
               <p className="t-kicker mt-8 text-muted">{s('capTitle')}</p>
               <ul className="mt-2 grid grid-cols-2 border-t border-line">
                 {CAPS.map((cap, i) => (
@@ -794,14 +794,14 @@ export default function AiPage() {
                         {CAP_ICONS[i]}
                       </span>
                       <span className="min-w-0">
-                        <span className="block text-[14px] font-medium leading-tight">{s(cap.t)}</span>
-                        <span className="mt-1 block text-[11px] leading-snug text-muted">{s(cap.h)}</span>
+                        <span className="block text-md font-medium leading-tight">{s(cap.t)}</span>
+                        <span className="mt-1 block text-2xs leading-snug text-muted">{s(cap.h)}</span>
                       </span>
                     </button>
                   </li>
                 ))}
               </ul>
-              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px]">
+              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                 <Link
                   to="/review"
                   className="inline-flex min-h-11 items-center text-muted underline decoration-line underline-offset-4 transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
@@ -809,7 +809,7 @@ export default function AiPage() {
                   {s('reviewLink')}
                 </Link>
               </div>
-              <p className="mt-3 text-[11px] text-muted">{s('disclaimer')}</p>
+              <p className="mt-3 text-2xs text-muted">{s('disclaimer')}</p>
             </div>
           )}
 
@@ -836,7 +836,7 @@ export default function AiPage() {
             return (
               <Fragment key={message.id}>
                 {showDay && (
-                  <p className="text-center text-[11px] leading-none text-muted">
+                  <p className="text-center text-2xs leading-none text-muted">
                     {new Intl.DateTimeFormat(lang === 'ar' ? 'ar-u-nu-latn' : lang, {
                       weekday: 'short',
                       month: 'short',
@@ -848,7 +848,7 @@ export default function AiPage() {
                   <>
                     <div className="flex justify-end">
                       <div className="max-w-[85%] rounded-2xl bg-surface px-4 py-2.5">
-                        <p dir="auto" className="text-start text-[14px] leading-relaxed break-words whitespace-pre-wrap">
+                        <p dir="auto" className="text-start text-md leading-relaxed break-words whitespace-pre-wrap">
                           {message.text}
                         </p>
                       </div>
@@ -861,7 +861,7 @@ export default function AiPage() {
                     {message.text && <AgentMarkdown text={message.text} trace={trace} />}
                     {receipt && <ReceiptCard receipt={receipt} />}
                     {provenance && provenance.total > 0 && (
-                      <p className="text-[10px] leading-relaxed text-muted">
+                      <p className="text-2xs leading-relaxed text-muted">
                         {fill(
                           s(provenance.total === 1 ? 'numeralFooterOne' : 'numeralFooter'),
                           { n: provenance.total, k: provenance.traced },
@@ -876,14 +876,14 @@ export default function AiPage() {
                       />
                     )}
                     {message.status === 'cancelled' && !message.text && (
-                      <p className="text-[12px] text-muted">{s('cancelled')}</p>
+                      <p className="text-xs text-muted">{s('cancelled')}</p>
                     )}
                     {message.status === 'failed' && (
-                      <p className="text-[12px]" style={{ color: 'var(--color-danger)' }}>
+                      <p className="text-xs" style={{ color: 'var(--color-danger)' }}>
                         {message.error ?? s('failed')}
                       </p>
                     )}
-                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted">
+                    <div className="flex flex-wrap items-center gap-2 text-2xs text-muted">
                       {message.model && <span>{message.model}</span>}
                       {message.elapsedMs != null && (
                         <span className="num">{fmtNum(message.elapsedMs / 1000, lang, 1)}s</span>
@@ -892,7 +892,7 @@ export default function AiPage() {
                         <button
                           type="button"
                           onClick={() => void copy(message.text, message.id)}
-                          className="min-h-11 rounded-full px-2 text-[11px] text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                          className="min-h-11 rounded-full px-2 text-2xs text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                         >
                           {copiedId === message.id ? t('common.copied') : t('common.copy')}
                         </button>
@@ -905,7 +905,7 @@ export default function AiPage() {
           })}
 
           {busy && !live && (
-            <p className="text-[13px] text-muted" role="status">
+            <p className="text-sm text-muted" role="status">
               {s('thinking')}
             </p>
           )}
@@ -919,7 +919,7 @@ export default function AiPage() {
                   <span aria-hidden className="ms-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-fg align-baseline motion-reduce:animate-none" />
                 </div>
               ) : (
-                <p className="text-[13px] text-muted" role="status">
+                <p className="text-sm text-muted" role="status">
                   {statusText(live, s)}
                 </p>
               )}
@@ -951,7 +951,7 @@ export default function AiPage() {
             aria-label={s('placeholder')}
             enterKeyHint="send"
             autoComplete="off"
-            className="min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 text-[16px] leading-[1.45] outline-none placeholder:text-muted"
+            className="min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 text-lg leading-[1.45] outline-none placeholder:text-muted"
             style={{ maxHeight: COMPOSER_MAX }}
           />
           {busy ? (
@@ -994,8 +994,8 @@ export default function AiPage() {
         }}
       >
         <div className="flex items-center justify-between gap-2 ps-4 pe-1 pt-2 pb-1">
-          <p className="min-w-0 flex-1 truncate text-[13px] font-medium">{s('sheetTitle')}</p>
-          <span className="shrink-0 text-[11px] text-muted">{s('sheetLimit')}</span>
+          <p className="min-w-0 flex-1 truncate text-sm font-medium">{s('sheetTitle')}</p>
+          <span className="shrink-0 text-2xs text-muted">{s('sheetLimit')}</span>
           <button
             type="button"
             onClick={() => setSheet(false)}
@@ -1009,7 +1009,7 @@ export default function AiPage() {
         </div>
         <ul className="px-2 pb-2">
           {chipOptions.length === 0 && (
-            <li className="px-2 py-4 text-[12px] text-muted">{s('noMore')}</li>
+            <li className="px-2 py-4 text-xs text-muted">{s('noMore')}</li>
           )}
           {chipOptions.map((option) => (
             <li key={option.key}>
@@ -1022,10 +1022,10 @@ export default function AiPage() {
                 className="flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-start focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px]">{option.view.label}</span>
-                  <span className="block truncate text-[11px] text-muted">{option.view.sub}</span>
+                  <span className="block truncate text-sm">{option.view.label}</span>
+                  <span className="block truncate text-2xs text-muted">{option.view.sub}</span>
                 </span>
-                <span className={`num shrink-0 text-[12px] ${option.view.change === null ? 'text-muted' : toneOf(option.view.change)}`}>
+                <span className={`num shrink-0 text-xs ${option.view.change === null ? 'text-muted' : toneOf(option.view.change)}`}>
                   {option.view.change === null ? '—' : fmtPct(option.view.change, lang)}
                 </span>
               </button>

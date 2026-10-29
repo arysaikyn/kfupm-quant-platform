@@ -75,7 +75,7 @@ export default function StrategyPage() {
                   type="button"
                   onClick={() => setTag(t)}
                   aria-pressed={active}
-                  className={`min-h-11 min-w-11 shrink-0 rounded-full px-3 text-[13px] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
+                  className={`min-h-11 min-w-11 shrink-0 rounded-full px-3 text-sm whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg ${
                     active ? 'font-medium' : 'text-muted'
                   }`}
                   style={
@@ -98,7 +98,7 @@ export default function StrategyPage() {
           type="button"
           onClick={() => setSort(sort === 'recent' ? 'return' : 'recent')}
           aria-label={s('sortLabel')}
-          className="flex min-h-11 shrink-0 items-center gap-1.5 text-[12px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="flex min-h-11 shrink-0 items-center gap-1.5 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           style={{ color: 'var(--color-muted)' }}
         >
           {s(sort === 'recent' ? 'sortRecent' : 'sortReturn')}
@@ -115,7 +115,7 @@ export default function StrategyPage() {
             action={
               <Link
                 to="/ai"
-                className="flex min-h-11 items-center rounded-full px-4 text-[13px]"
+                className="flex min-h-11 items-center rounded-full px-4 text-sm"
                 style={{ border: '1px solid var(--color-line)' }}
               >
                 {s('emptyCta')}
@@ -138,17 +138,17 @@ export default function StrategyPage() {
                     className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 py-4 transition-colors hover:bg-fg/[0.03] active:bg-fg/[0.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                   >
                     <div className="min-w-0">
-                      <h2 className="truncate text-[16px] leading-snug font-semibold">
+                      <h2 className="truncate text-lg leading-snug font-semibold">
                         {st.name[lang]}
                       </h2>
                       <p
-                        className="mt-1 line-clamp-2 text-[12px] leading-snug"
+                        className="mt-1 line-clamp-2 text-xs leading-snug"
                         style={{ color: 'var(--color-muted)' }}
                       >
                         {st.description[lang]}
                       </p>
                       <div
-                        className="mt-2 flex flex-wrap items-center gap-x-2 text-[11px] leading-none"
+                        className="mt-2 flex flex-wrap items-center gap-x-2 text-2xs leading-none"
                         style={{ color: 'var(--color-muted)' }}
                       >
                         {st.tags.map((t) => {
@@ -172,13 +172,13 @@ export default function StrategyPage() {
                     <div className="shrink-0 text-end">
                       <span
                         dir="ltr"
-                        className={`num t-display block text-[22px] leading-none ${tone}`}
+                        className={`num t-display block text-xl leading-none ${tone}`}
                       >
                         {fmtPct(ret, lang, 1)}
                       </span>
                       <span
                         dir="ltr"
-                        className="num mt-1.5 block text-[11px] leading-none"
+                        className="num mt-1.5 block text-2xs leading-none"
                         style={{ color: 'var(--color-muted)' }}
                       >
                         {fill(s('vsBench'), { pct: fmtPct(vsBench, lang, 1) })}
@@ -195,7 +195,7 @@ export default function StrategyPage() {
       {/* Dead strategies are evidence, not a hidden drawer. */}
       <Link
         to="/strategy/graveyard"
-        className="mt-6 flex min-h-14 items-center justify-between gap-3 border-t border-line text-[13px] transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        className="mt-6 flex min-h-14 items-center justify-between gap-3 border-t border-line text-sm transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
       >
         <span>{f('graveListLink')}</span>
         <svg

@@ -32,37 +32,37 @@ export function RebalancePreview({ account, s }: { account: PaperAccount; s: S }
     <section className="mt-3 border-t border-line pt-3">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="t-section">{s('rebalanceTitle')}</h3>
-        <span className="rounded-full border border-line px-2 py-0.5 text-[10px] text-muted">
+        <span className="rounded-full border border-line px-2 py-0.5 text-2xs text-muted">
           {s('rebalancePreview')}
         </span>
       </div>
-      <p className="mt-1 text-[11px] leading-snug text-muted">
+      <p className="mt-1 text-2xs leading-snug text-muted">
         {s('rebalanceHint')} · {target.name[lang]} · {fmtDate(account.last_date || account.start_on, lang)}
       </p>
-      <dl className="mt-2 grid grid-cols-3 gap-2 text-[11px]">
+      <dl className="mt-2 grid grid-cols-3 gap-2 text-2xs">
         <div>
           <dt className="text-muted">{s('rebalanceEntering')}</dt>
-          <dd className="num mt-0.5 text-[16px] font-semibold">{fmtNum(entering.length, lang, 0)}</dd>
+          <dd className="num mt-0.5 text-lg font-semibold">{fmtNum(entering.length, lang, 0)}</dd>
         </div>
         <div>
           <dt className="text-muted">{s('rebalanceLeaving')}</dt>
-          <dd className="num mt-0.5 text-[16px] font-semibold">{fmtNum(leaving.length, lang, 0)}</dd>
+          <dd className="num mt-0.5 text-lg font-semibold">{fmtNum(leaving.length, lang, 0)}</dd>
         </div>
         <div>
           <dt className="text-muted">{s('rebalanceUnchanged')}</dt>
-          <dd className="num mt-0.5 text-[16px] font-semibold">{fmtNum(unchanged.length, lang, 0)}</dd>
+          <dd className="num mt-0.5 text-lg font-semibold">{fmtNum(unchanged.length, lang, 0)}</dd>
         </div>
       </dl>
       {entering.length === 0 && leaving.length === 0 ? (
-        <p className="mt-2 text-[11px] text-muted">{s('rebalanceEmpty')}</p>
+        <p className="mt-2 text-2xs text-muted">{s('rebalanceEmpty')}</p>
       ) : (
-        <ul className="mt-2 space-y-1 text-[12px]">
+        <ul className="mt-2 space-y-1 text-xs">
           {entering.map((symbol) => (
             <li key={`in-${symbol}`} className="flex items-center justify-between gap-2">
               <span>
                 <span className="text-muted">+</span> {symbol}
               </span>
-              <span className="text-[11px] text-muted">
+              <span className="text-2xs text-muted">
                 {s('rebalanceClears').replace('{n}', fmtNum(target.rules.length, lang, 0))}
               </span>
             </li>
@@ -72,12 +72,12 @@ export function RebalancePreview({ account, s }: { account: PaperAccount; s: S }
               <span>
                 <span className="text-muted">−</span> {symbol}
               </span>
-              <span className="text-[11px] text-muted">{s('rebalanceNotTarget')}</span>
+              <span className="text-2xs text-muted">{s('rebalanceNotTarget')}</span>
             </li>
           ))}
         </ul>
       )}
-      <p className="mt-2 text-[11px] leading-snug text-muted">{s('rebalanceScope')}</p>
+      <p className="mt-2 text-2xs leading-snug text-muted">{s('rebalanceScope')}</p>
     </section>
   )
 }

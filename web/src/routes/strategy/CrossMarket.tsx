@@ -30,7 +30,7 @@ export function CrossMarket({ cross }: { cross: CrossRun }) {
   return (
     <section className="border-t border-line pt-5">
       <h2 className="t-section">{s('marketTitle')}</h2>
-      <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-1 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('marketHint')}
       </p>
 
@@ -38,8 +38,8 @@ export function CrossMarket({ cross }: { cross: CrossRun }) {
         {cross.rows.map((row) => (
           <li key={row.market} className="py-2.5">
             <div className="flex items-baseline justify-between gap-3">
-              <span className="text-[13px]">{s(MARKET_LABEL[row.market])}</span>
-              <span className="text-[11px] leading-none" style={{ color: 'var(--color-muted)' }}>
+              <span className="text-sm">{s(MARKET_LABEL[row.market])}</span>
+              <span className="text-2xs leading-none" style={{ color: 'var(--color-muted)' }}>
                 {row.evaluated === 0 ? (
                   s('marketNoNames')
                 ) : (
@@ -56,7 +56,7 @@ export function CrossMarket({ cross }: { cross: CrossRun }) {
                 {row.reasons.map((reason) => (
                   <span
                     key={reason}
-                    className="rounded-md px-1.5 py-0.5 text-[10px] leading-none"
+                    className="rounded-md px-1.5 py-0.5 text-2xs leading-none"
                     style={{ background: 'var(--color-surface)', color: 'var(--color-muted)' }}
                   >
                     {s(REASON_LABEL[reason])}
@@ -69,7 +69,7 @@ export function CrossMarket({ cross }: { cross: CrossRun }) {
       </ul>
 
       {cross.gaps.length > 0 && (
-        <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-2 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
           {s('marketGapNote')}
         </p>
       )}

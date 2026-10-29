@@ -27,7 +27,7 @@ export function Pipeline({
       <h2 id="screener-pipeline" className="t-section">
         {s('pipelineTitle')}
       </h2>
-      <p className="mt-1 text-[12px] leading-snug" style={muted}>
+      <p className="mt-1 text-xs leading-snug" style={muted}>
         {s('pipelineLocked')}
       </p>
       <ol className="mt-2 divide-y divide-line border-y border-line">
@@ -35,13 +35,13 @@ export function Pipeline({
           <li key={stage.key} className="flex min-h-11 items-center gap-3 py-2">
             <span
               aria-hidden="true"
-              className="num flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px]"
+              className="num flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-2xs"
               style={{ background: 'var(--color-surface)', color: 'var(--color-muted)' }}
             >
               {fmtNum(index + 1, lang, 0)}
             </span>
-            <span className="text-[13px]">{s(stage.key)}</span>
-            <span className="num ms-auto shrink-0 text-[11px]" style={muted}>
+            <span className="text-sm">{s(stage.key)}</span>
+            <span className="num ms-auto shrink-0 text-2xs" style={muted}>
               {fill(s('pipelineCount'), {
                 kept: fmtNum(stage.kept, lang, 0),
                 from: fmtNum(stage.from, lang, 0),
@@ -70,28 +70,28 @@ export function Counterfactual({
   return (
     <section className="mt-8" aria-label={s('counterfactualTitle')}>
       <details className="border-t border-line pt-1">
-        <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 text-[13px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg">
+        <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg">
           <span>{s('counterfactualTitle')}</span>
-          <span className="num text-[11px] font-normal" style={muted}>
+          <span className="num text-2xs font-normal" style={muted}>
             {fmtNum(entries.length, lang, 0)}
           </span>
         </summary>
-        <p className="mt-1 text-[12px] leading-snug" style={muted}>
+        <p className="mt-1 text-xs leading-snug" style={muted}>
           {s('counterfactualBody')}
         </p>
         {entries.length === 0 ? (
-          <p className="mt-2 text-[12px] leading-snug" style={muted}>
+          <p className="mt-2 text-xs leading-snug" style={muted}>
             {s('counterfactualNone')}
           </p>
         ) : (
           <ul className="mt-2 divide-y divide-line border-t border-line">
             {entries.map(({ quote, status }) => (
               <li key={quote.symbol} className="flex min-h-11 items-center gap-2 py-2">
-                <span className="min-w-0 truncate text-[13px]">{quote.name[lang]}</span>
-                <span className="num shrink-0 text-[11px]" style={muted}>
+                <span className="min-w-0 truncate text-sm">{quote.name[lang]}</span>
+                <span className="num shrink-0 text-2xs" style={muted}>
                   {quote.symbol}
                 </span>
-                <span className="ms-auto shrink-0 text-[11px]" style={muted}>
+                <span className="ms-auto shrink-0 text-2xs" style={muted}>
                   {status === 'non-compliant'
                     ? s('statusNonCompliant')
                     : s('statusUnclassified')}

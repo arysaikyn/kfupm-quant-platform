@@ -21,10 +21,10 @@ export default function GraveyardPage() {
 
   return (
     <Screen title={s('graveTitle')} leading={<BackButton fallback="/strategy" />}>
-      <p className="text-[12px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="text-xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('graveLead')}
       </p>
-      <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-1 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('graveDemoNote')}{' '}
         {fill(s('graveListCount'), { n: fmtNum(retired.length, lang, 0) })}
       </p>
@@ -39,38 +39,38 @@ export default function GraveyardPage() {
             <li key={entry.id} className="border-b border-line py-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <h2 className="text-[16px] leading-snug font-semibold">{entry.name[lang]}</h2>
-                  <p className="mt-1 text-[12px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+                  <h2 className="text-lg leading-snug font-semibold">{entry.name[lang]}</h2>
+                  <p className="mt-1 text-xs leading-snug" style={{ color: 'var(--color-muted)' }}>
                     {entry.description[lang]}
                   </p>
                 </div>
                 <div className="shrink-0 text-end">
                   <span
                     dir="ltr"
-                    className={`num block text-[18px] leading-none ${entry.lastReturn < 0 ? 'text-down' : 'text-up'}`}
+                    className={`num block text-xl leading-none ${entry.lastReturn < 0 ? 'text-down' : 'text-up'}`}
                   >
                     {fmtPct(entry.lastReturn, lang, 1)}
                   </span>
-                  <span className="mt-1 block text-[10px] leading-none" style={{ color: 'var(--color-muted)' }}>
+                  <span className="mt-1 block text-2xs leading-none" style={{ color: 'var(--color-muted)' }}>
                     {s('graveLastReturn')}
                   </span>
                 </div>
               </div>
 
-              <p className="mt-2 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+              <p className="mt-2 text-2xs" style={{ color: 'var(--color-muted)' }}>
                 {fill(s('graveRetiredOn'), { date: fmtDate(entry.retiredOn, lang) })}
                 {' · '}
                 {fill(s('graveBrokeOn'), { date: fmtDate(entry.brokeOn, lang) })}
               </p>
 
               <div className="mt-3 rounded-xl p-3" style={{ background: 'var(--color-surface)' }}>
-                <p className="text-[12px] leading-snug font-medium">
+                <p className="text-xs leading-snug font-medium">
                   {fill(s('graveBrokeRule'), {
                     n: String(pm.ruleIndex + 1),
                     rule: rule?.label[lang] ?? pm.ruleId,
                   })}
                 </p>
-                <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+                <p className="mt-1 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
                   {pm.failing.length > 0 && pm.worst
                     ? fill(s('graveNames'), {
                         n: fmtNum(pm.failing.length, lang, 0),
@@ -87,7 +87,7 @@ export default function GraveyardPage() {
                     {pm.failing.map((item) => (
                       <li
                         key={item.symbol}
-                        className="rounded-md px-1.5 py-0.5 text-[10px] leading-none"
+                        className="rounded-md px-1.5 py-0.5 text-2xs leading-none"
                         style={{ background: 'var(--color-bg)', color: 'var(--color-muted)' }}
                       >
                         <span dir="ltr" className="num">
@@ -98,7 +98,7 @@ export default function GraveyardPage() {
                     ))}
                   </ul>
                 )}
-                <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+                <p className="mt-2 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
                   {entry.note[lang]}
                 </p>
               </div>
@@ -107,22 +107,22 @@ export default function GraveyardPage() {
                 type="button"
                 onClick={() => setOpen(expanded ? null : entry.id)}
                 aria-expanded={expanded}
-                className="mt-3 flex min-h-11 items-center rounded-full border border-line px-4 text-[12px] transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                className="mt-3 flex min-h-11 items-center rounded-full border border-line px-4 text-xs transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
               >
                 {expanded ? s('graveCancel') : s('graveRevive')}
               </button>
 
               {expanded && (
                 <div className="mt-2 border-t border-line pt-3">
-                  <p className="text-[12px] font-medium">{s('graveDiffTitle')}</p>
-                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+                  <p className="text-xs font-medium">{s('graveDiffTitle')}</p>
+                  <p className="mt-0.5 text-2xs" style={{ color: 'var(--color-muted)' }}>
                     {s('graveDiffHint')}
                   </p>
                   <ul className="mt-2 space-y-1">
                     {diff.map((row) => (
-                      <li key={`${row.kind}-${row.id}`} className="text-[11px] leading-snug">
+                      <li key={`${row.kind}-${row.id}`} className="text-2xs leading-snug">
                         <span
-                          className="me-1.5 rounded px-1 py-0.5 text-[10px] leading-none"
+                          className="me-1.5 rounded px-1 py-0.5 text-2xs leading-none"
                           style={{ background: 'var(--color-surface)', color: 'var(--color-muted)' }}
                         >
                           {row.kind === 'changed'
@@ -146,11 +146,11 @@ export default function GraveyardPage() {
                   <button
                     type="button"
                     disabled
-                    className="mt-3 min-h-11 w-full rounded-xl border border-line px-4 text-[13px] font-medium"
+                    className="mt-3 min-h-11 w-full rounded-xl border border-line px-4 text-sm font-medium"
                   >
                     {s('graveConfirm')}
                   </button>
-                  <p className="mt-1.5 text-center text-[11px]" style={{ color: 'var(--color-muted)' }}>
+                  <p className="mt-1.5 text-center text-2xs" style={{ color: 'var(--color-muted)' }}>
                     {s('graveConfirmNote')}
                   </p>
                 </div>

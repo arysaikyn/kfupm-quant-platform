@@ -27,20 +27,20 @@ export function StaleNotice({
       style={{ ...surface, border: '1px solid var(--color-line)' }}
       aria-labelledby="screener-stale"
     >
-      <p id="screener-stale" className="text-[14px] font-semibold">
+      <p id="screener-stale" className="text-md font-semibold">
         {s('staleTitle')}
       </p>
-      <p className="mt-1 text-[12px] leading-snug">
+      <p className="mt-1 text-xs leading-snug">
         {fill(s('staleBody'), { age: relTime(dataAgeDays(now) * 24 * 60, lang) })}
       </p>
-      <p className="num mt-1 text-[11px]" style={muted}>
+      <p className="num mt-1 text-2xs" style={muted}>
         {fill(s('staleAsOf'), { date: fmtDateTime(DATA_AS_OF, lang) })}
       </p>
       <button
         type="button"
         aria-pressed={snapshotOpen}
         onClick={onToggle}
-        className="mt-3 min-h-11 rounded-full px-4 text-[12px] transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+        className="mt-3 min-h-11 rounded-full px-4 text-xs transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         style={{ border: '1px solid var(--color-line)' }}
       >
         {snapshotOpen ? s('snapshotHide') : s('snapshotShow')}
@@ -66,11 +66,11 @@ export function ZeroAutopsy({
 }) {
   return (
     <div className="py-6">
-      <h3 className="text-[15px] font-semibold">{s('emptyTitle')}</h3>
-      <p className="mt-1 text-[12px] leading-snug" style={muted}>
+      <h3 className="text-md font-semibold">{s('emptyTitle')}</h3>
+      <p className="mt-1 text-xs leading-snug" style={muted}>
         {s('emptyBody')}
       </p>
-      <p className="num mt-4 text-[12px]">
+      <p className="num mt-4 text-xs">
         {fill(s('funnelStart'), {
           n: fmtNum(buckets.compliant.length, lang, 0),
           total: fmtNum(buckets.total, lang, 0),
@@ -78,7 +78,7 @@ export function ZeroAutopsy({
       </p>
 
       {buckets.compliant.length === 0 ? (
-        <p className="mt-2 text-[13px] leading-snug">{s('emptyAtSharia')}</p>
+        <p className="mt-2 text-sm leading-snug">{s('emptyAtSharia')}</p>
       ) : (
         <>
           <ol className="mt-2 divide-y divide-line border-y border-line">
@@ -87,19 +87,19 @@ export function ZeroAutopsy({
                 key={stage.rule.id}
                 className="flex min-h-11 items-center justify-between gap-3 py-2"
               >
-                <span className="num min-w-0 truncate text-[12px]">
+                <span className="num min-w-0 truncate text-xs">
                   {ruleText(stage.rule, stage.threshold, s(FIELD_KEY[stage.rule.field]), lang)}
                 </span>
-                <span className="num shrink-0 text-[11px]" style={muted}>
+                <span className="num shrink-0 text-2xs" style={muted}>
                   {fill(s('funnelRemaining'), { n: fmtNum(stage.kept, lang, 0) })}
                 </span>
               </li>
             ))}
           </ol>
 
-          <h4 className="mt-5 text-[12px] font-semibold">{s('relaxTitle')}</h4>
+          <h4 className="mt-5 text-xs font-semibold">{s('relaxTitle')}</h4>
           {candidates.length === 0 ? (
-            <p className="mt-1 text-[12px] leading-snug" style={muted}>
+            <p className="mt-1 text-xs leading-snug" style={muted}>
               {s('relaxNone')}
             </p>
           ) : (
@@ -124,11 +124,11 @@ export function ZeroAutopsy({
                       className="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-start transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                       style={surface}
                     >
-                      <span className="text-[12px] leading-snug">
+                      <span className="text-xs leading-snug">
                         {fill(s(template), { rule })}
                       </span>
                       <span
-                        className="num shrink-0 text-[11px]"
+                        className="num shrink-0 text-2xs"
                         style={{ color: 'var(--color-accent)' }}
                       >
                         {fill(s('relaxGain'), {
@@ -148,7 +148,7 @@ export function ZeroAutopsy({
           <button
             type="button"
             onClick={onClear}
-            className="mt-3 min-h-11 text-[12px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="mt-3 min-h-11 text-xs transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
             style={muted}
           >
             {s('relax')}
@@ -174,8 +174,8 @@ function Group({
   return (
     <li>
       <div className="flex items-baseline justify-between gap-3 pb-1 pt-3">
-        <span className="text-[12px] font-medium">{heading}</span>
-        <span className="num shrink-0 text-[11px]" style={muted}>
+        <span className="text-xs font-medium">{heading}</span>
+        <span className="num shrink-0 text-2xs" style={muted}>
           {fmtNum(group.entries.length, lang, 0)}
         </span>
       </div>
@@ -198,16 +198,16 @@ function Group({
                 onClick={() => onToggle(key)}
                 className="flex min-h-11 w-full items-center gap-2 py-1 text-start transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
-                <span className="min-w-0 truncate text-[13px]">{quote.name[lang]}</span>
-                <span className="num shrink-0 text-[11px]" style={muted}>
+                <span className="min-w-0 truncate text-sm">{quote.name[lang]}</span>
+                <span className="num shrink-0 text-2xs" style={muted}>
                   {quote.symbol}
                 </span>
-                <span aria-hidden="true" className="ms-auto text-[13px]" style={muted}>
+                <span aria-hidden="true" className="ms-auto text-sm" style={muted}>
                   {expanded ? '−' : '+'}
                 </span>
               </button>
               {expanded && (
-                <p className="num pb-2 text-[11px] leading-snug" style={muted}>
+                <p className="num pb-2 text-2xs leading-snug" style={muted}>
                   {note}
                 </p>
               )}
@@ -232,28 +232,28 @@ export function ShariaAudit({ s, lang, buckets }: Common & { buckets: ShariaBuck
         <h2 id="screener-audit" className="t-section">
           {s('auditTitle')}
         </h2>
-        <span className="num text-[11px]" style={muted}>
+        <span className="num text-2xs" style={muted}>
           {fmtNum(excluded, lang, 0)}
         </span>
       </div>
-      <p className="mt-1 text-[12px] leading-snug" style={muted}>
+      <p className="mt-1 text-xs leading-snug" style={muted}>
         {s('auditBody')}
       </p>
-      <p className="mt-1 text-[11px] leading-snug" style={muted}>
+      <p className="mt-1 text-2xs leading-snug" style={muted}>
         {s('binOrder')}
       </p>
 
       {excluded === 0 && (
-        <p className="mt-3 text-[12px]" style={muted}>
+        <p className="mt-3 text-xs" style={muted}>
           {s('auditEmpty')}
         </p>
       )}
 
       {buckets.nonCompliant.length > 0 && (
         <div className="mt-4">
-          <h3 className="flex items-baseline justify-between gap-3 text-[12px] font-semibold">
+          <h3 className="flex items-baseline justify-between gap-3 text-xs font-semibold">
             <span>{s('nonCompliantTitle')}</span>
-            <span className="num text-[11px]" style={muted}>
+            <span className="num text-2xs" style={muted}>
               {fmtNum(buckets.nonCompliant.length, lang, 0)}
             </span>
           </h3>
@@ -274,13 +274,13 @@ export function ShariaAudit({ s, lang, buckets }: Common & { buckets: ShariaBuck
 
       {buckets.unclassified.length > 0 && (
         <div className="mt-5">
-          <h3 className="flex items-baseline justify-between gap-3 text-[12px] font-semibold">
+          <h3 className="flex items-baseline justify-between gap-3 text-xs font-semibold">
             <span>{s('unclassifiedTitle')}</span>
-            <span className="num text-[11px]" style={muted}>
+            <span className="num text-2xs" style={muted}>
               {fmtNum(buckets.unclassified.length, lang, 0)}
             </span>
           </h3>
-          <p className="mt-1 text-[11px] leading-snug" style={muted}>
+          <p className="mt-1 text-2xs leading-snug" style={muted}>
             {s('unclassifiedBody')}
           </p>
           <ul className="mt-1">

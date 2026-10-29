@@ -23,9 +23,9 @@ export function TickerTape({ quotes, price, change, label }: Props) {
           <span className="t-sym" style={{ color: 'var(--color-muted)' }}>
             {q.symbol}
           </span>
-          <span className="num text-[12px]">{price(q)}</span>
+          <span className="num text-xs">{price(q)}</span>
           <span
-            className="num text-[11px]"
+            className="num text-2xs"
             style={{ color: q.change >= 0 ? 'var(--color-up)' : 'var(--color-down)' }}
           >
             {change(q)}

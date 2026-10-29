@@ -56,7 +56,7 @@ export function Screen({ title, leading, action, children, padded = true }: Prop
                   ref={headingRef}
                   tabIndex={-1}
                   title={title}
-                  className="t-title line-clamp-2 text-[26px] leading-[1.2] font-semibold break-words"
+                  className="t-title line-clamp-2 text-2xl leading-[1.2] font-semibold break-words"
                 >
                   {title}
                 </h1>

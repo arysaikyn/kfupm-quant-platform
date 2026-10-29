@@ -165,11 +165,11 @@ function Metric({
 }) {
   return (
     <div className={divided ? 'min-w-0 border-s border-line ps-3' : 'min-w-0'}>
-      <div dir="ltr" className={`num text-[17px] leading-tight font-semibold ${tone ?? ''}`}>
+      <div dir="ltr" className={`num text-lg leading-tight font-semibold ${tone ?? ''}`}>
         {value}
       </div>
-      <div className="mt-1 text-[12px] leading-tight">{name}</div>
-      <div className="mt-0.5 text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+      <div className="mt-1 text-xs leading-tight">{name}</div>
+      <div className="mt-0.5 text-2xs leading-tight" style={{ color: 'var(--color-muted)' }}>
         {hint}
       </div>
     </div>
@@ -285,12 +285,12 @@ export default function StrategyDetail() {
           </p>
           <div
             dir="ltr"
-            className={`num t-display mt-2 text-[56px] leading-[0.95] ${tone}`}
+            className={`num t-display mt-2 text-5xl leading-[0.95] ${tone}`}
           >
             {fmtPct(total, lang, 1)}
           </div>
           <p
-            className="mt-2.5 flex items-baseline gap-1.5 text-[12px] leading-none"
+            className="mt-2.5 flex items-baseline gap-1.5 text-xs leading-none"
             style={{ color: 'var(--color-muted)' }}
           >
             {lab.vsBench}
@@ -303,14 +303,14 @@ export default function StrategyDetail() {
               {fmtPct(excess, lang, 1)}
             </span>
           </p>
-          <p className="mt-3 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-3 text-2xs" style={{ color: 'var(--color-muted)' }}>
             {oosText}
           </p>
-          <p className="mt-3 text-[14px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-3 text-md leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {plain ? plainSummaryOf(st, lang, f('plainSummaryFallback')) : st.description[lang]}
           </p>
           <div
-            className="mt-2 flex flex-wrap items-center gap-x-2 text-[11px] leading-none"
+            className="mt-2 flex flex-wrap items-center gap-x-2 text-2xs leading-none"
             style={{ color: 'var(--color-muted)' }}
           >
             {st.tags.map((tag, index) => {
@@ -327,8 +327,8 @@ export default function StrategyDetail() {
           {/* One switch, prose only: every figure below reads the same variables. */}
           <label className="relative mt-3 flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-xl border border-line px-3 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-fg">
             <span className="min-w-0">
-              <span className="block text-[13px] leading-snug">{f('plainLabel')}</span>
-              <span className="mt-0.5 block text-[11px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+              <span className="block text-sm leading-snug">{f('plainLabel')}</span>
+              <span className="mt-0.5 block text-2xs leading-snug" style={{ color: 'var(--color-muted)' }}>
                 {f('plainNote')}
               </span>
             </span>
@@ -345,7 +345,7 @@ export default function StrategyDetail() {
             />
           </label>
           {plain && (
-            <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+            <p className="mt-2 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
               {f('plainUnchanged')}
             </p>
           )}
@@ -387,21 +387,21 @@ export default function StrategyDetail() {
         {/* The rules are this strategy's own data; no screen-side copy of them exists. */}
         <section className="border-t border-line pt-5">
           <h2 className="t-section">{s('rulesTitle')}</h2>
-          <p className="mt-1 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-1 text-2xs" style={{ color: 'var(--color-muted)' }}>
             {s('rulesHint')}
           </p>
           <ul className="mt-2 divide-y divide-line">
             {st.rules.map((rule, index) => (
               <li key={rule.id} className="flex items-baseline gap-3 py-3">
                 <span
-                  className="num shrink-0 text-[11px]"
+                  className="num shrink-0 text-2xs"
                   style={{ color: 'var(--color-muted)' }}
                   aria-hidden="true"
                 >
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <p className="min-w-0 flex-1 text-[14px] leading-snug">{rule.label[lang]}</p>
-                <span dir="ltr" className="num shrink-0 text-[12px] leading-none">
+                <p className="min-w-0 flex-1 text-md leading-snug">{rule.label[lang]}</p>
+                <span dir="ltr" className="num shrink-0 text-xs leading-none">
                   {rule.value}
                 </span>
               </li>
@@ -419,39 +419,39 @@ export default function StrategyDetail() {
           <h2 className="t-section">{s('costTitle')}</h2>
           <div className="mt-3 grid grid-cols-2">
             <div className="min-w-0 pe-3 pb-3">
-              <div dir="ltr" className="num text-[17px] leading-tight font-semibold">
+              <div dir="ltr" className="num text-lg leading-tight font-semibold">
                 {fmtNum(DEMO_COSTS.capital, lang, 0)}
               </div>
-              <div className="mt-1 text-[12px] leading-tight">{s('costStart')}</div>
+              <div className="mt-1 text-xs leading-tight">{s('costStart')}</div>
             </div>
             <div className="min-w-0 border-s border-line ps-3 pb-3">
-              <div dir="ltr" className="num text-[17px] leading-tight font-semibold">
+              <div dir="ltr" className="num text-lg leading-tight font-semibold">
                 {fmtNum(finalValue, lang, 2)}
               </div>
-              <div className="mt-1 text-[12px] leading-tight">{s('costFinal')}</div>
+              <div className="mt-1 text-xs leading-tight">{s('costFinal')}</div>
             </div>
             <div className="min-w-0 border-t border-line pe-3 pt-3">
-              <div dir="ltr" className="num text-[17px] leading-tight font-semibold text-down">
+              <div dir="ltr" className="num text-lg leading-tight font-semibold text-down">
                 {'−'}
                 {fmtNum(feesCost, lang, 2)}
               </div>
-              <div className="mt-1 text-[12px] leading-tight">{s('costFees')}</div>
-              <div className="mt-0.5 text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+              <div className="mt-1 text-xs leading-tight">{s('costFees')}</div>
+              <div className="mt-0.5 text-2xs leading-tight" style={{ color: 'var(--color-muted)' }}>
                 {s('costFeesHint')}
               </div>
             </div>
             <div className="min-w-0 border-s border-t border-line ps-3 pt-3">
-              <div dir="ltr" className="num text-[17px] leading-tight font-semibold text-down">
+              <div dir="ltr" className="num text-lg leading-tight font-semibold text-down">
                 {'−'}
                 {fmtNum(slippageCost, lang, 2)}
               </div>
-              <div className="mt-1 text-[12px] leading-tight">{s('costSlippage')}</div>
-              <div className="mt-0.5 text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+              <div className="mt-1 text-xs leading-tight">{s('costSlippage')}</div>
+              <div className="mt-0.5 text-2xs leading-tight" style={{ color: 'var(--color-muted)' }}>
                 {s('costSlippageHint')}
               </div>
             </div>
           </div>
-          <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-2 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {plain
               ? fill(f('plainCost'), {
                   fees: fmtNum(feesCost, lang, 2),
@@ -466,33 +466,33 @@ export default function StrategyDetail() {
           <h2 className="t-section">{lab.sigTitle}</h2>
           <div className="mt-2 grid grid-cols-2 gap-3">
             <div className="min-w-0">
-              <div dir="ltr" className="num text-[19px] leading-none font-semibold">
+              <div dir="ltr" className="num text-xl leading-none font-semibold">
                 {fmtNum(sig.dsr * 100, lang, 0, '%')}
               </div>
-              <div className="mt-1 text-[12px] leading-tight">{lab.deflated}</div>
+              <div className="mt-1 text-xs leading-tight">{lab.deflated}</div>
             </div>
             <div className="min-w-0 border-s border-line ps-3">
-              <div dir="ltr" className="num text-[19px] leading-none font-semibold">
+              <div dir="ltr" className="num text-xl leading-none font-semibold">
                 {pText}
               </div>
-              <div className="mt-1 text-[12px] leading-tight">{lab.pValue}</div>
+              <div className="mt-1 text-xs leading-tight">{lab.pValue}</div>
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-[12px]" style={{ color: 'var(--color-muted)' }}>
+            <span className="text-xs" style={{ color: 'var(--color-muted)' }}>
               {lab.tries}{' '}
               <span dir="ltr" className="num">
                 {st.rules.length * VARIANTS_PER_RULE}
               </span>
             </span>
             <span
-              className="shrink-0 rounded-lg px-2.5 py-1 text-[11px] leading-none"
+              className="shrink-0 rounded-lg px-2.5 py-1 text-2xs leading-none"
               style={verdictChip}
             >
               {verdict}
             </span>
           </div>
-          <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-2 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {plain
               ? fill(f('plainLuck'), { pct: fmtNum(sig.dsr * 100, lang, 0, '%') })
               : lab.sigNote}
@@ -504,11 +504,11 @@ export default function StrategyDetail() {
         <section className="border-t border-line pt-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="t-section">{lab.attrTitle}</h2>
-            <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+            <span className="text-2xs" style={{ color: 'var(--color-muted)' }}>
               {lab.simulated}
             </span>
           </div>
-          <p className="mt-0.5 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-0.5 text-2xs" style={{ color: 'var(--color-muted)' }}>
             {lab.attrHint}
           </p>
           <div className="mt-3 space-y-2.5">
@@ -519,7 +519,7 @@ export default function StrategyDetail() {
                   : Math.min(100, Math.max(2, (Math.abs(part.value) / maxBar) * 100))
               return (
                 <div key={part.key}>
-                  <div className="flex items-center justify-between gap-3 text-[12px] leading-none">
+                  <div className="flex items-center justify-between gap-3 text-xs leading-none">
                     <span>{part.label}</span>
                     <span
                       dir="ltr"
@@ -543,7 +543,7 @@ export default function StrategyDetail() {
               )
             })}
           </div>
-          <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-2 text-[14px]">
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-2 text-md">
             <span>{s('mTotal')}</span>
             <span dir="ltr" className={`num font-semibold ${tone}`}>
               {fmtPct(total, lang, 1)}
@@ -557,7 +557,7 @@ export default function StrategyDetail() {
         {/* The next screen, not a panel: one hairline row. */}
         <Link
           to={`/report/${st.id}`}
-          className="flex min-h-14 items-center justify-between gap-3 border-t border-line text-[14px] transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="flex min-h-14 items-center justify-between gap-3 border-t border-line text-md transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           <span>{s('fullReport')}</span>
           <svg
@@ -580,11 +580,11 @@ export default function StrategyDetail() {
           <button
             type="button"
             disabled
-            className="min-h-12 w-full rounded-xl border border-line px-4 text-[15px] font-medium text-muted"
+            className="min-h-12 w-full rounded-xl border border-line px-4 text-md font-medium text-muted"
           >
             {s('rerun')}
           </button>
-          <p className="mt-2 text-center text-[11px] leading-relaxed text-muted">
+          <p className="mt-2 text-center text-2xs leading-relaxed text-muted">
             {s('rerunOffline')}
           </p>
         </section>

@@ -343,7 +343,7 @@ export default function ScreenerPage() {
               key={id}
               type="button"
               onClick={() => applyPreset(id)}
-              className="flex min-h-11 items-center justify-center rounded-full bg-surface px-2 py-2 text-[13px] leading-tight font-medium text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
+              className="flex min-h-11 items-center justify-center rounded-full bg-surface px-2 py-2 text-sm leading-tight font-medium text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
             >
               {s(PRESET_KEY[id])}
             </button>
@@ -356,12 +356,12 @@ export default function ScreenerPage() {
           <h2 id="screener-rules" className="t-section">
             {s('rulesTitle')}
           </h2>
-          <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <span className="num text-2xs" style={{ color: 'var(--color-muted)' }}>
             {rules.length}/{MAX_RULES}
           </span>
         </div>
 
-        <p className="mt-1 text-[12px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+        <p className="mt-1 text-xs leading-snug" style={{ color: 'var(--color-muted)' }}>
           {s('rulesHelper')}
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -380,11 +380,11 @@ export default function ScreenerPage() {
                 // Clipboard permission is optional.
               }
             }}
-            className="min-h-11 rounded-full border border-line px-3 text-[12px] text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="min-h-11 rounded-full border border-line px-3 text-xs text-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {s('shareLink')}
           </button>
-          <span role="status" aria-live="polite" className="text-[11px] text-muted">
+          <span role="status" aria-live="polite" className="text-2xs text-muted">
             {shareCopied ? s('linkCopied') : ''}
           </span>
         </div>
@@ -404,7 +404,7 @@ export default function ScreenerPage() {
                   <button
                     type="button"
                     onClick={() => focusRule(rule.id)}
-                    className="flex h-11 items-center whitespace-nowrap rounded-s-full ps-3.5 pe-2 text-[11px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                    className="flex h-11 items-center whitespace-nowrap rounded-s-full ps-3.5 pe-2 text-2xs transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                     style={{ color: 'var(--color-fg)' }}
                   >
                     {text}
@@ -426,7 +426,7 @@ export default function ScreenerPage() {
 
         <ul className="mt-3 divide-y divide-line border-t border-line">
           {rules.length === 0 && (
-            <li className="py-3 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+            <li className="py-3 text-xs" style={{ color: 'var(--color-muted)' }}>
               {s('noRules')}
             </li>
           )}
@@ -447,7 +447,7 @@ export default function ScreenerPage() {
                     onChange={(event) =>
                       updateRule(rule.id, { field: event.target.value as Field })
                     }
-                    className="h-11 min-h-11 w-full appearance-none rounded-lg bg-fg/5 ps-3 pe-9 text-[14px] text-fg transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
+                    className="h-11 min-h-11 w-full appearance-none rounded-lg bg-fg/5 ps-3 pe-9 text-md text-fg transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
                   >
                     {FIELD_ORDER.map((field) => (
                       <option key={field} value={field}>
@@ -473,7 +473,7 @@ export default function ScreenerPage() {
                           aria-pressed={selected}
                           aria-label={s(option.key)}
                           onClick={() => updateRule(rule.id, { op: option.value })}
-                          className="flex h-11 w-11 items-center justify-center rounded-lg text-[15px] font-semibold transition-colors active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
+                          className="flex h-11 w-11 items-center justify-center rounded-lg text-md font-semibold transition-colors active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
                           style={
                             selected
                               ? {
@@ -499,13 +499,13 @@ export default function ScreenerPage() {
                       onChange={(event) => updateRule(rule.id, { value: event.target.value })}
                       step={FIELD_STEP[rule.field]}
                       min={rule.field === 'change' ? undefined : 0}
-                      className="num h-11 min-h-11 w-full min-w-0 rounded-lg bg-fg/5 ps-3 text-[15px] text-fg transition-colors [appearance:textfield] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="num h-11 min-h-11 w-full min-w-0 rounded-lg bg-fg/5 ps-3 text-md text-fg transition-colors [appearance:textfield] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       style={{ paddingInlineEnd: unit ? 24 : 10 }}
                     />
                     {unit && (
                       <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute end-2.5 top-1/2 -translate-y-1/2 text-[11px]"
+                        className="pointer-events-none absolute end-2.5 top-1/2 -translate-y-1/2 text-2xs"
                         style={{ color: 'var(--color-muted)' }}
                       >
                         {unit}
@@ -531,7 +531,7 @@ export default function ScreenerPage() {
               type="button"
               onClick={addRule}
               disabled={rules.length >= MAX_RULES}
-              className="flex min-h-11 w-full items-center gap-1.5 py-1 text-[13px] font-medium transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg disabled:opacity-40"
+              className="flex min-h-11 w-full items-center gap-1.5 py-1 text-sm font-medium transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg disabled:opacity-40"
             >
               {rules.length < MAX_RULES && <IconPlus />}
               {rules.length >= MAX_RULES ? s('ruleLimit') : s('addRule')}
@@ -540,7 +540,7 @@ export default function ScreenerPage() {
         </ul>
 
         {showsTurnoverHint && (
-          <p className="mt-2 text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-2 text-2xs" style={{ color: 'var(--color-muted)' }}>
             {s('turnoverHint')}
           </p>
         )}
@@ -565,7 +565,7 @@ export default function ScreenerPage() {
           {stale && (
             <p
               role="note"
-              className="mt-3 text-[11px] leading-snug"
+              className="mt-3 text-2xs leading-snug"
               style={{ color: 'var(--color-muted)' }}
             >
               {s('snapshotNotice')}
@@ -591,7 +591,7 @@ export default function ScreenerPage() {
               <p
                 aria-live="polite"
                 aria-atomic="true"
-                className="text-[15px] leading-snug"
+                className="text-md leading-snug"
                 style={{ color: 'var(--color-fg)' }}
               >
                 {fill(s('resultsCount'), {
@@ -601,7 +601,7 @@ export default function ScreenerPage() {
               </p>
               {!stale && (
                 <span
-                  className="shrink-0 text-[11px] leading-none"
+                  className="shrink-0 text-2xs leading-none"
                   style={{ color: 'var(--color-muted)' }}
                 >
                   {s('liveHint')}
@@ -630,7 +630,7 @@ export default function ScreenerPage() {
                     type="button"
                     onClick={() => toggleSort(column.key)}
                     aria-pressed={active}
-                    className={`flex min-h-11 items-center gap-1 text-[11px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
+                    className={`flex min-h-11 items-center gap-1 text-2xs transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg ${
                       column.key === 'name' ? 'justify-start text-start' : 'justify-end text-end'
                     }`}
                     style={kicker}
@@ -638,7 +638,7 @@ export default function ScreenerPage() {
                     {s(column.label)}
                     <span
                       aria-hidden="true"
-                      className="text-[8px] leading-none"
+                      className="text-2xs leading-none"
                       style={{ opacity: active ? 1 : 0 }}
                     >
                       {sort.dir === 'desc' ? '▼' : '▲'}
@@ -667,19 +667,19 @@ export default function ScreenerPage() {
                     >
                       <span className="grid grid-cols-[minmax(0,1fr)_78px_66px] items-center gap-x-2">
                         <span className="min-w-0">
-                          <span className="block truncate text-[14px]">{quote.name[lang]}</span>
+                          <span className="block truncate text-md">{quote.name[lang]}</span>
                           <span
-                            className="num mt-0.5 block text-[11px] leading-[1.4]"
+                            className="num mt-0.5 block text-2xs leading-[1.4]"
                             style={{ color: 'var(--color-muted)' }}
                           >
                             {quote.symbol}
                           </span>
                         </span>
-                        <span className="num text-end text-[12px] whitespace-nowrap">
+                        <span className="num text-end text-xs whitespace-nowrap">
                           {fmtNum(quote.price, lang, 2)}
                         </span>
                         <span
-                          className={`num text-end text-[15px] font-semibold whitespace-nowrap ${
+                          className={`num text-end text-md font-semibold whitespace-nowrap ${
                             up ? 'text-up' : 'text-down'
                           }`}
                         >
@@ -688,7 +688,7 @@ export default function ScreenerPage() {
                       </span>
                       {reason !== '' && (
                         <span
-                          className="num mt-1 block truncate text-[11px] leading-[1.4]"
+                          className="num mt-1 block truncate text-2xs leading-[1.4]"
                           style={{ color: 'var(--color-muted)' }}
                         >
                           {reason}
@@ -713,7 +713,7 @@ export default function ScreenerPage() {
           <h2 id="screener-saved" className="t-section">
             {s('savedTitle')}
           </h2>
-          <span className="num text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <span className="num text-2xs" style={{ color: 'var(--color-muted)' }}>
             {screens.length} {s('savedCount')}
           </span>
         </div>
@@ -728,7 +728,7 @@ export default function ScreenerPage() {
             enterKeyHint="done"
             placeholder={s('savePlaceholder')}
             aria-label={s('savePlaceholder')}
-            className="h-11 min-w-0 flex-1 rounded-xl px-3 text-[14px] transition-colors placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
+            className="h-11 min-w-0 flex-1 rounded-xl px-3 text-md transition-colors placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-fg"
             style={{
               border: '1px solid var(--color-line)',
               background: 'var(--color-surface)',
@@ -738,7 +738,7 @@ export default function ScreenerPage() {
           <button
             type="submit"
             disabled={name.trim() === ''}
-            className="h-11 shrink-0 rounded-xl px-4 text-[13px] font-semibold transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-40"
+            className="h-11 shrink-0 rounded-xl px-4 text-sm font-semibold transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg disabled:opacity-40"
             style={{ background: 'var(--color-accent-fill)', color: 'var(--color-bg)' }}
           >
             {s('save')}
@@ -746,13 +746,13 @@ export default function ScreenerPage() {
         </form>
 
         {status !== '' && (
-          <p role="status" className="mt-2 text-[11px]" style={{ color: 'var(--color-accent)' }}>
+          <p role="status" className="mt-2 text-2xs" style={{ color: 'var(--color-accent)' }}>
             {status}
           </p>
         )}
 
         {screens.length === 0 ? (
-          <p className="mt-3 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-3 text-xs" style={{ color: 'var(--color-muted)' }}>
             {s('savedEmpty')}
           </p>
         ) : (
@@ -774,11 +774,11 @@ export default function ScreenerPage() {
                     type="button"
                     onClick={() => openScreen(screen)}
                     aria-label={fill(s('loadAria'), { name: screen.name })}
-                    className="flex h-11 min-w-0 items-center gap-1.5 rounded-s-full ps-3.5 pe-2 text-[12px] transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+                    className="flex h-11 min-w-0 items-center gap-1.5 rounded-s-full ps-3.5 pe-2 text-xs transition-colors active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
                   >
                     <span className="max-w-[180px] truncate">{screen.name}</span>
                     <span
-                      className="num shrink-0 text-[11px]"
+                      className="num shrink-0 text-2xs"
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {screen.rules.length}
@@ -815,7 +815,7 @@ export default function ScreenerPage() {
                     }}
                   >
                     {confirmDelete === screen.id ? (
-                      <span className="whitespace-nowrap text-[11px]">{s('confirmDelete')}</span>
+                      <span className="whitespace-nowrap text-2xs">{s('confirmDelete')}</span>
                     ) : (
                       <IconX size={14} />
                     )}

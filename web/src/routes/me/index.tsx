@@ -47,18 +47,18 @@ export default function MePage() {
         <div className="flex items-center gap-4">
           <div
             aria-hidden="true"
-            className="num grid h-14 w-14 shrink-0 place-items-center rounded-full bg-surface text-[15px] font-semibold text-muted"
+            className="num grid h-14 w-14 shrink-0 place-items-center rounded-full bg-surface text-md font-semibold text-muted"
           >
             {initialsOf(name)}
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <p className="t-title truncate text-[22px] leading-tight font-semibold">{name}</p>
-              <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-[10px] leading-none text-muted">
+              <p className="t-title truncate text-xl leading-tight font-semibold">{name}</p>
+              <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-2xs leading-none text-muted">
                 {t('common.demo')}
               </span>
             </div>
-            <p className="mt-1 truncate text-[12px] leading-tight text-muted">{s('email')}</p>
+            <p className="mt-1 truncate text-xs leading-tight text-muted">{s('email')}</p>
           </div>
         </div>
       </section>
@@ -99,7 +99,7 @@ export default function MePage() {
                     </svg>
                   )}
                 </span>
-                <span className="flex-1 text-[14px]">{s(mode)}</span>
+                <span className="flex-1 text-md">{s(mode)}</span>
                 {active && (
                   <svg
                     aria-hidden="true"
@@ -140,7 +140,7 @@ export default function MePage() {
               to={row.to}
               className="row transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
             >
-              <span className="flex-1 text-[14px]">{row.label}</span>
+              <span className="flex-1 text-md">{row.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="rtl:[transform:scaleX(-1)] shrink-0 text-muted">
                 <path d="M9 6l6 6-6 6" />
               </svg>
@@ -151,7 +151,7 @@ export default function MePage() {
             onClick={replayOnboarding}
             className="row w-full text-start transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg active:bg-fg/5"
           >
-            <span className="flex-1 text-[14px]">{s('replayOnboarding')}</span>
+            <span className="flex-1 text-md">{s('replayOnboarding')}</span>
             <svg
               width="16"
               height="16"
@@ -191,10 +191,10 @@ export default function MePage() {
                 className="row w-full text-start transition-opacity active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
               >
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14px] leading-tight">{s(row.native)}</span>
+                  <span className="block truncate text-md leading-tight">{s(row.native)}</span>
                   {/* The English row would print "English" over "English". */}
                   {s(row.english) !== s(row.native) && (
-                    <span className="mt-1 block truncate text-[12px] leading-tight text-muted">
+                    <span className="mt-1 block truncate text-xs leading-tight text-muted">
                       {s(row.english)}
                     </span>
                   )}

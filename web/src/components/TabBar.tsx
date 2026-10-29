@@ -193,7 +193,7 @@ export function TabBar() {
                 ) : (
                   it.icon
                 )}
-                <span className="max-w-full truncate px-1 pb-[1px] text-[10px] leading-[1.6]">
+                <span className="line-clamp-2 max-w-full px-0.5 pb-[1px] text-center text-2xs leading-[1.25]">
                   {t(it.key)}
                 </span>
               </ItemSurface>

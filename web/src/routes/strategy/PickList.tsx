@@ -67,11 +67,11 @@ export function PickList({ strategy, ledger }: { strategy: Strategy; ledger: Led
     <section className="border-t border-line pt-5">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="t-section">{s('pickTitle')}</h2>
-        <span className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+        <span className="text-2xs" style={{ color: 'var(--color-muted)' }}>
           {fill(s('pickAsOf'), { date: fmtDate(strategy.updated, lang) })}
         </span>
       </div>
-      <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-1 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('pickHint')}
       </p>
 
@@ -79,14 +79,14 @@ export function PickList({ strategy, ledger }: { strategy: Strategy; ledger: Led
         <button
           type="button"
           onClick={() => window.print()}
-          className="flex min-h-11 items-center rounded-full border border-line px-4 text-[12px] transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="flex min-h-11 items-center rounded-full border border-line px-4 text-xs transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {s('pickPrint')}
         </button>
         <button
           type="button"
           onClick={copy}
-          className="flex min-h-11 items-center rounded-full border border-line px-4 text-[12px] transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+          className="flex min-h-11 items-center rounded-full border border-line px-4 text-xs transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
         >
           {copied ? s('pickCopied') : s('pickCopy')}
         </button>
@@ -94,12 +94,12 @@ export function PickList({ strategy, ledger }: { strategy: Strategy; ledger: Led
 
       <ol className="mt-3 space-y-1.5">
         {strategy.rules.map((rule, index) => (
-          <li key={rule.id} className="flex items-baseline gap-2.5 text-[12px] leading-snug">
-            <span className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }} aria-hidden="true">
+          <li key={rule.id} className="flex items-baseline gap-2.5 text-xs leading-snug">
+            <span className="num shrink-0 text-2xs" style={{ color: 'var(--color-muted)' }} aria-hidden="true">
               {String(index + 1).padStart(2, '0')}
             </span>
             <span className="min-w-0 flex-1">{rule.label[lang]}</span>
-            <span dir="ltr" className="num shrink-0 text-[11px]">
+            <span dir="ltr" className="num shrink-0 text-2xs">
               {rule.value}
             </span>
           </li>
@@ -108,9 +108,9 @@ export function PickList({ strategy, ledger }: { strategy: Strategy; ledger: Led
 
       {picks.length === 0 ? (
         <>
-          <p className="mt-3 text-[13px] leading-snug">{s('pickEmpty')}</p>
+          <p className="mt-3 text-sm leading-snug">{s('pickEmpty')}</p>
           {topCount > 0 && (
-            <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+            <p className="mt-1 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
               {fill(s('pickEmptyHint'), {
                 rule: topRule?.label[lang] ?? topId,
                 n: fmtNum(topCount, lang, 0),
@@ -120,11 +120,11 @@ export function PickList({ strategy, ledger }: { strategy: Strategy; ledger: Led
         </>
       ) : (
         <div className="mt-3">
-          <p className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+          <p className="text-2xs" style={{ color: 'var(--color-muted)' }}>
             {fill(s('pickEqualNote'), { pct: fmtNum(weight * 100, lang, 1, '%') })}
           </p>
           <div
-            className="mt-1.5 grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 border-y border-line py-1.5 text-[10px] sm:grid-cols-[minmax(0,1fr)_auto_auto_auto]"
+            className="mt-1.5 grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 border-y border-line py-1.5 text-2xs sm:grid-cols-[minmax(0,1fr)_auto_auto_auto]"
             style={{ color: 'var(--color-muted)' }}
           >
             <span>{s('pickNames')}</span>
@@ -140,14 +140,14 @@ export function PickList({ strategy, ledger }: { strategy: Strategy; ledger: Led
                   key={pick.symbol}
                   className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-baseline gap-x-3 border-b border-line py-2 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto]"
                 >
-                  <span className="truncate text-[12px]">{quote?.name[lang] ?? pick.symbol}</span>
-                  <span dir="ltr" className="num text-end text-[11px]">
+                  <span className="truncate text-xs">{quote?.name[lang] ?? pick.symbol}</span>
+                  <span dir="ltr" className="num text-end text-2xs">
                     {fmtNum(weight * 100, lang, 1, '%')}
                   </span>
-                  <span dir="ltr" className="num text-end text-[11px]">
+                  <span dir="ltr" className="num text-end text-2xs">
                     {fmtNum(100 * weight, lang, 2)}
                   </span>
-                  <span dir="ltr" className="num hidden text-end text-[11px] sm:block">
+                  <span dir="ltr" className="num hidden text-end text-2xs sm:block">
                     {quote ? `${fmtNum(quote.price, lang, 2)} ${quote.currency}` : '—'}
                   </span>
                 </li>
@@ -157,7 +157,7 @@ export function PickList({ strategy, ledger }: { strategy: Strategy; ledger: Led
         </div>
       )}
 
-      <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-2 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('pickDemoNote')}
       </p>
     </section>

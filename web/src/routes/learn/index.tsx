@@ -203,7 +203,7 @@ export default function LearnPage() {
   return (
     <Screen title={s('title')} leading={<BackButton fallback="/me" />}>
       <div className="pt-4">
-        <p className="text-[14px] leading-[1.5] text-muted">{s('intro')}</p>
+        <p className="text-md leading-[1.5] text-muted">{s('intro')}</p>
 
         {/* The border lives on the wrapper so focus lights the whole field. */}
         <div className="panel mt-3 flex h-14 items-center gap-1 ps-4 pe-1.5 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-fg">
@@ -223,7 +223,7 @@ export default function LearnPage() {
             autoCorrect="off"
             spellCheck={false}
             enterKeyHint="search"
-            className="h-full min-w-0 flex-1 appearance-none bg-transparent px-2 text-[16px] text-fg outline-none [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none placeholder:text-muted"
+            className="h-full min-w-0 flex-1 appearance-none bg-transparent px-2 text-lg text-fg outline-none [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none placeholder:text-muted"
           />
           <button
             type="button"
@@ -238,11 +238,11 @@ export default function LearnPage() {
         </div>
 
         <div className="mt-2.5 flex flex-wrap items-center gap-2">
-          <p className="num text-[12px] text-muted" aria-live="polite">
+          <p className="num text-xs text-muted" aria-live="polite">
             {count}
           </p>
           {locked > 0 && (
-            <span className="num rounded-full bg-fg/5 px-2 py-0.5 text-[10px] leading-[1.6] text-muted">
+            <span className="num rounded-full bg-fg/5 px-2 py-0.5 text-2xs leading-[1.6] text-muted">
               {s('lockedBadge').replace('{n}', fmtNum(locked, lang, 0))}
             </span>
           )}
@@ -259,7 +259,7 @@ export default function LearnPage() {
                   <button
                     type="button"
                     onClick={() => jumpTo(group.key)}
-                    className="num flex h-11 min-w-11 items-center justify-center rounded-full bg-fg/5 px-2 text-[13px] font-semibold text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                    className="num flex h-11 min-w-11 items-center justify-center rounded-full bg-fg/5 px-2 text-sm font-semibold text-fg transition-colors active:bg-fg/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                   >
                     {group.key}
                   </button>
@@ -283,7 +283,7 @@ export default function LearnPage() {
               }}
               tabIndex={-1}
               style={{ top: 'env(safe-area-inset-top)' }}
-              className="sticky top-0 z-20 -mx-4 scroll-mt-0 bg-bg px-4 pt-2.5 pb-1.5 text-[12px] font-semibold text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
+              className="sticky top-0 z-20 -mx-4 scroll-mt-0 bg-bg px-4 pt-2.5 pb-1.5 text-xs font-semibold text-muted focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
             >
               {group.key}
               <span className="num ms-1.5 font-normal opacity-70">
@@ -303,7 +303,7 @@ export default function LearnPage() {
                     key={item.id}
                     className={`px-3 py-4 ${item.locked ? 'opacity-60' : ''}`}
                   >
-                    <h3 className="t-title flex items-center gap-1.5 text-[15px] leading-[1.35] font-semibold text-fg">
+                    <h3 className="t-title flex items-center gap-1.5 text-md leading-[1.35] font-semibold text-fg">
                       {item.locked && <LockIcon />}
                       {item.term}
                       {item.locked && (
@@ -313,21 +313,21 @@ export default function LearnPage() {
                     {item.locked && target ? (
                       <Link
                         to={target}
-                        className="mt-1 inline-flex min-h-11 items-center gap-1 rounded-full text-[12px] text-fg underline decoration-line underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                        className="mt-1 inline-flex min-h-11 items-center gap-1 rounded-full text-xs text-fg underline decoration-line underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                       >
                         {s('unlockHint').replace('{place}', t(unlockLabels[target]))}
                         <GoIcon />
                       </Link>
                     ) : (
                       <>
-                        <p className="mt-1.5 text-[14px] leading-[1.55] text-fg/85">
+                        <p className="mt-1.5 text-md leading-[1.55] text-fg/85">
                           {item.plain}
                         </p>
                         <div className="mt-3 border-s-2 border-line ps-3">
-                          <p className="text-[11px] leading-[1.4] font-semibold text-muted">
+                          <p className="text-2xs leading-[1.4] font-semibold text-muted">
                             {s('why')}
                           </p>
-                          <p className="mt-1 text-[12px] leading-[1.5] text-muted">
+                          <p className="mt-1 text-xs leading-[1.5] text-muted">
                             {item.why}
                           </p>
                         </div>
@@ -348,7 +348,7 @@ export default function LearnPage() {
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="min-h-11 rounded-full border border-line px-4 text-[13px]"
+              className="min-h-11 rounded-full border border-line px-4 text-sm"
             >
               {s('emptyAction')}
             </button>

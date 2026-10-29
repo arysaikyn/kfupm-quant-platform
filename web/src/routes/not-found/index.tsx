@@ -12,7 +12,7 @@ export default function NotFoundPage() {
         action={
           <Link
             to="/"
-            className="flex min-h-11 items-center rounded-full border border-line px-4 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+            className="flex min-h-11 items-center rounded-full border border-line px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
           >
             {t('common.goHome')}
           </Link>

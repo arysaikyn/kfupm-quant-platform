@@ -42,7 +42,7 @@ export function DropLedger({ strategy, ledger }: { strategy: Strategy; ledger: L
   return (
     <section className="border-t border-line pt-5">
       <h2 className="t-section">{s('ledgerTitle')}</h2>
-      <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-1 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('ledgerHint')}
       </p>
 
@@ -53,10 +53,10 @@ export function DropLedger({ strategy, ledger }: { strategy: Strategy; ledger: L
           { value: ledger.ranked, label: s('ledgerRanked') },
         ].map((item, index) => (
           <div key={item.label} className={index === 0 ? 'min-w-0' : 'min-w-0 border-s border-line ps-3'}>
-            <div dir="ltr" className="num text-[19px] leading-none font-semibold">
+            <div dir="ltr" className="num text-xl leading-none font-semibold">
               {fmtNum(item.value, lang, 0)}
             </div>
-            <div className="mt-1 text-[11px] leading-tight" style={{ color: 'var(--color-muted)' }}>
+            <div className="mt-1 text-2xs leading-tight" style={{ color: 'var(--color-muted)' }}>
               {item.label}
             </div>
           </div>
@@ -94,13 +94,13 @@ export function DropLedger({ strategy, ledger }: { strategy: Strategy; ledger: L
           <li key={name.symbol} className="py-2.5">
             <div className="flex items-baseline justify-between gap-3">
               <div className="flex min-w-0 items-baseline gap-2">
-                <span dir="ltr" className="num shrink-0 text-[12px]">
+                <span dir="ltr" className="num shrink-0 text-xs">
                   {name.symbol}
                 </span>
-                <span className="truncate text-[13px]">{quoteBySymbol[name.symbol]?.name[lang] ?? name.symbol}</span>
+                <span className="truncate text-sm">{quoteBySymbol[name.symbol]?.name[lang] ?? name.symbol}</span>
               </div>
               <span
-                className="shrink-0 text-[10px] leading-none"
+                className="shrink-0 text-2xs leading-none"
                 style={{ color: 'var(--color-muted)' }}
               >
                 {name.status === 'passed'
@@ -110,14 +110,14 @@ export function DropLedger({ strategy, ledger }: { strategy: Strategy; ledger: L
                     : s('ledgerUnproven')}
               </span>
             </div>
-            <p className="mt-1 text-[11px] leading-snug" style={{ color: 'var(--color-muted)' }}>
+            <p className="mt-1 text-2xs leading-snug" style={{ color: 'var(--color-muted)' }}>
               {blockerText(name)}
             </p>
           </li>
         ))}
       </ul>
 
-      <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+      <p className="mt-2 text-2xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
         {s('ledgerDemoNote')}
       </p>
     </section>

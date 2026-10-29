@@ -18,7 +18,7 @@ Run after `screenshots.mjs`; reads `docs/screenshots/raw/*.png`.
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "docs" / "screenshots" / "raw"
-TARGET = ROOT / "docs" / "screenshots"
+TARGET = ROOT / "docs" / "screenshots" / "phones"
 
 SCALE = 2  # captures are 2x
 
@@ -152,6 +152,7 @@ def main():
     raw = sorted(SOURCE.glob("*.png"))
     if not raw:
         raise SystemExit(f"no raw captures in {SOURCE}")
+    TARGET.mkdir(parents=True, exist_ok=True)
     for path in raw:
         with Image.open(path) as screen:
             framed = wrap(screen.convert("RGBA"))

@@ -17,3 +17,6 @@ data/raw/
 .DS_Store
 
 .dev/
+
+# Raw captures; the framed set is what the README shows.
+docs/screenshots/raw/

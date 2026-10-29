@@ -25,7 +25,7 @@ test('demo answers without touching the AI backend', async ({ page }) => {
   const box = page.getByRole('textbox', { name: /Try:/ })
   await box.fill('Explain Saudi Aramco')
   await box.press('Enter')
-  await expect(page.getByText(/pre-recorded|Demo walkthrough|Demo mode returns/)).toBeVisible()
+  await expect(page.getByText(/Pre-recorded sample/)).toBeVisible()
   expect(calls).toBe(0)
 })
 

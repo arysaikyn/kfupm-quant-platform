@@ -49,54 +49,90 @@ const cancelled = new Set<string>()
 
 const now = () => new Date().toISOString()
 
-const ANSWERS = [
-  `## Demo answer
+/**
+ * What demo mode answers.
+ *
+ * These used to be three paragraphs explaining that the app was in demo mode,
+ * which is the one thing a person showing the product does not need: they say
+ * "nothing works". Each sample below instead has the shape of a real answer — a
+ * rule, the numbers, and the limit — and says once, at the top, that it was
+ * recorded. The numeral scanner then strikes every figure it cannot trace to a
+ * run, so the honesty mechanism is visible rather than asserted.
+ */
 
-This is a **pre-recorded response**. No market data was fetched and no tool ran.
+const LABEL = '**Pre-recorded sample.** No tool ran and no market data was read.'
 
-| Check | Demo result |
+const ANSWERS = {
+  value: `## Cheap and low-debt, Sharia first
+
+${LABEL}
+
+| Condition | Rule | Why |
+|---|---|---|
+| Valuation | P/E under 15× | leaves room for a miss |
+| Balance sheet | debt under 30% of assets | AAOIFI line, same as the screen |
+| Income | non-compliant income under 5% | AAOIFI line |
+| Universe | Saudi and China A-share | one engine, two rule sets |
+
+The screen runs **before** the ranking, so a name that fails any line never
+reaches the list. The list is ranked, not recommended: this app places no order.
+
+**One limit:** the debt line is what empties the list in a leveraged year, and this
+sample cannot tell you how many names clear it today.`,
+
+  backtest: `## The rule, tested
+
+${LABEL}
+
+| Metric | Sample |
 |---|---|
-| Sharia screen | illustrative only |
-| Valuation | illustrative only |
-| Backtest | not run |
+| Window | 2019 to 2026 |
+| Rebalance | monthly, exits by rank |
+| Return | 12.30% |
+| Max drawdown | -8.00% |
+| Sharpe | 1.20 |
+| Turnover | 78% a year |
 
-Connect an API in **API settings** to replace this with a real model and real tools.`,
+Exits come from the ranking, never from a price level, so a name leaves when it
+stops clearing the rules rather than when it touches a stop.
 
-  `## What this screen is showing
+**One limit:** a Sharpe of 1.20 over seven years is not evidence on its own; the
+strategy screen deflates it by the number of variants tried.`,
 
-The app is in **demo mode**. The text and workspace samples are pre-recorded so the interface can be tested without a developer API key.
+  news: `## What moved, and who it touches
 
-- Nothing is sent to an LLM.
-- No backtest runs.
-- No position or price is read.
+${LABEL}
 
-Add your own base API URL and key in **API settings** to switch to live mode.`,
+Saudi banks slipped after the central bank held the policy rate where the market
+expected a small cut. That reaches three names in the universe, all of them on the
+Sharia debt line first, because a rate move changes the debt ratio before it
+changes the price.
 
-  `## Demo walkthrough
+**What I would check next:** whether the held rate is already in the last audited
+balance sheet. If it is, the story is priced and the screen will not move.`,
 
-A real answer would load the quote, run the Sharia filter, rank the universe and cite every number.
+  walkthrough: `## What this can do
 
-Demo mode returns this fixed text instead. The surrounding session, streaming and Stop behaviour are real UI; the content is not.`,
-]
+${LABEL}
+
+- **Screen** — one sentence becomes four to five conditions you can edit, with
+  pass, fail or **missing** on every row.
+- **Test** — the rules run over history with costs, and the result carries a
+  deflated Sharpe and a grid check.
+- **Explain** — every number in an answer is traced to a run field, and the ones
+  that are not are struck through.
+
+Try: "cheap, low debt, Sharia screen" or "a dividend rule tested since 2019".`,
+}
 
 function answerFor(prompt: string): string {
   const lower = prompt.toLowerCase()
-  if (lower.includes('backtest') || lower.includes('回测') || lower.includes('sharpe')) {
-    return `## Demo backtest
-
-**No backtest ran.** This is a pre-recorded sample.
-
-| Metric | Demo value |
-|---|---|
-| Total return | 12.30% |
-| Sharpe | 1.20 |
-| Max drawdown | -8.00% |
-
-Connect a provider to execute the strategy against real history.`
+  if (/(backtest|sharpe|drawdown|回测|历史|收益)/u.test(lower)) return ANSWERS.backtest
+  if (/(news|moved|why|新闻|涨|跌|事件)/u.test(lower)) return ANSWERS.news
+  if (/(cheap|value|debt|sharia|dividend|screen|低负债|便宜|教法|股息|筛选|选股)/u.test(lower)) {
+    return ANSWERS.value
   }
-  let hash = 0
-  for (const char of prompt) hash = (hash * 31 + char.charCodeAt(0)) >>> 0
-  return ANSWERS[hash % ANSWERS.length]
+  return ANSWERS.walkthrough
 }
 
 function sessionItem(session: DemoSession): SessionItem {

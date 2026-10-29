@@ -1,41 +1,53 @@
 # KFUPM Quant Platform
 
 **Retail quant research in plain language.** Ask a question, turn it into rules,
-test it on history, and read an answer that shows its evidence.
+test it on history, and read an answer that shows its evidence. English, 简体中文
+and العربية, with full RTL.
 
-![Markets screen](docs/screenshots/markets.png)
+| Markets | Stock | News | AI |
+|---|---|---|---|
+| <img src="docs/screenshots/phone-market.png" width="170" alt="Market screen: index masthead, sector strip and the ranked list"> | <img src="docs/screenshots/phone-symbol.png" width="170" alt="Stock screen: the rules it matches"> | <img src="docs/screenshots/phone-news.png" width="170" alt="News feed for today"> | <img src="docs/screenshots/phone-ai.png" width="170" alt="AI tab: a pre-recorded answer with a rule table"> |
+| <sub>masthead, sector strip, ranked list</sub> | <sub>the rules it matches</sub> | <sub>today, and the symbols it touches</sub> | <sub>rules, then every figure marked untraced</sub> |
 
-Demo-first, no provider key required. English, 简体中文 and العربية, with RTL.
+| Strategy | Screener | Arabic | Light |
+|---|---|---|---|
+| <img src="docs/screenshots/phone-strategy.png" width="170" alt="Strategy detail: return, growth curve and rules"> | <img src="docs/screenshots/phone-screener.png" width="170" alt="Screener: conditions and the grid check"> | <img src="docs/screenshots/phone-arabic.png" width="170" alt="The market screen in Arabic, right to left"> | <img src="docs/screenshots/phone-light.png" width="170" alt="The market screen in the light theme"> |
+| <sub>return, curve, then the conditions</sub> | <sub>conditions, then the grid check</sub> | <sub>mirrored, Latin digits</sub> | <sub>same layout, same contrast floor</sub> |
+
+Demo-first, no provider key required. It is **not** a broker, an execution system,
+or investment advice, and no order is ever placed.
+
+## The demo in sixty seconds
+
+No network, no key, no login — the app opens in demo mode.
+
+1. **`/`** — the index masthead, the sector strip sized by weight, then the ranked
+   list. Tap a name.
+2. **`/m/2222`** — five pillars of checks, with the Sharia axis in the same
+   language as the rest: pass, fail, or **missing** (never a zero).
+3. **`/screener`** — press **Uptrend**: it returns nothing, and the screen says why
+   (zero-result autopsy, then the one rule to relax). Press **Cheap**: it reads
+   P/E and debt, and the grid check names the factor family.
+4. **`/strategy/low-debt-value`** — the curve, the cost row, the deflated Sharpe,
+   the grid check (path exposure, persistence) and a receipt that pins the rules
+   and the assumptions.
+5. **`/ai`** — ask "cheap, low debt, Sharia screen" and a pre-recorded answer
+   answers in the product's own shape: a rule table, then a count of numbers with
+   none traced, and every figure struck through because no run backs it. Ask for a buy call
+   instead and you get a stamped refusal receipt ([screenshot](docs/screenshots/mobile-refusal.png)).
+6. **`/ai/provider`** — connect your own model when you want the live path.
+
+Long-press any row anywhere and its symbol becomes a chip in the AI composer, so
+the question starts from the screen you were reading.
 
 ## What this is
 
 - A cross-sectional research desk for Saudi Arabia and China.
 - A **Sharia screen before ranking** product, not a compliance badge after the fact.
-- A deterministic engine plus an LLM that translates and explains — the model
-  does not invent the numbers.
-- A demo you can run with one command, and a live path where **you** supply the
-  API base URL, model and key.
-
-It is **not** a broker, an execution system, or investment advice. No order is
-ever placed.
-
-## See it
-
-| AI demo | Screener audit |
-|---|---|
-| ![AI demo](docs/screenshots/ai-demo.png) | ![Screener audit](docs/screenshots/screener-audit.png) |
-| Pre-recorded answer; numbers not traced to a run are marked. | Zero-result autopsy and the locked Sharia → rules → rank pipeline. |
-
-| Strategy evidence | Workspace paper |
-|---|---|
-| ![Strategy evidence](docs/screenshots/strategy-evidence.png) | ![Workspace paper](docs/screenshots/workspace-paper.png) |
-| Return attribution and a dated pick list; receipt, drop ledger and jar follow. | Local paper checkpoints and a read-only rebalance preview. |
-
-<p align="center">
-  <img src="docs/screenshots/mobile-refusal.png" width="270" alt="Mobile refusal receipt">
-  <br>
-  <sub>Mobile: a request for a buy/sell call gets a stamped receipt, not an answer.</sub>
-</p>
+- A deterministic engine plus an LLM that translates and explains — the model does
+  not invent the numbers.
+- A demo you can run with one command, and a live path where **you** supply the API
+  base URL, model and key.
 
 ## Quick start
 
@@ -74,11 +86,11 @@ Demo mode remains available with **Use demo mode**.
 - **Workspace** — runs, paper accounts, portfolio, alphas, schedules, model
   status, uploads, checkpoints and a weekly route sheet.
 - **Screener** — presets, saved screens, five-rule builder, Sharia tri-state,
-  zero-result autopsy, stale-data refusal, a fixed pipeline and a grid check
-  that names the factor family every rule reads.
-- **Strategies** — factor rules, equity curve, cost/significance analysis,
-  grid check (path exposure and persistence), receipts, drop ledger,
-  cross-market lens, pick list, jar and graveyard.
+  zero-result autopsy, stale-data refusal, a fixed pipeline and a grid check that
+  names the factor family every rule reads.
+- **Strategies** — factor rules, equity curve, cost/significance analysis, grid
+  check (path exposure and persistence), receipts, drop ledger, cross-market lens,
+  pick list, jar and graveyard.
 - **Review / Learn** — daily review, confidence book with Brier score, and a
   glossary that unlocks after you have actually visited the screens.
 
@@ -103,6 +115,8 @@ small set of paths the UI needs.
 - No stop-loss, take-profit or entry-price field anywhere: exits come from the
   ranking, which is what stops a rule set from collapsing into a grid bot.
 - Every screen works in English, Chinese and Arabic, including RTL.
+- One type scale, and Arabic gets its own step: nothing renders below 11px (13px
+  for Arabic meta), and no label is cut with an ellipsis at 320px.
 
 ## Develop
 
@@ -118,9 +132,20 @@ npm run build
 cd ../backend && uv run python -m unittest discover -s tests
 ```
 
+`npm run test:e2e` covers the twenty-four screens in English, Arabic and Chinese,
+in both themes, at 390px and at 320px, plus `axe` accessibility checks.
+
 The market, news and strategy universe is mock data in `web/src/data/mock.ts`;
 the deterministic engine is the next build. The AI and Workspace have a real
 backend path when you connect a provider.
+
+## On a desktop
+
+The same app, same components, at 1280px:
+
+<p align="center">
+  <img src="docs/screenshots/markets.png" width="640" alt="Market screen on a desktop shell">
+</p>
 
 ## Contributing
 
@@ -140,7 +165,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 web/         React + Vite + Tailwind UI, demo mode, local state
 backend/     FastAPI proxy, provider settings, tests
 model/       the one signals contract and example
-docs/        product notes and README screenshots
+docs/        product notes, the design reference set, screenshots
 dev.sh       one-command development stack
 ```
 

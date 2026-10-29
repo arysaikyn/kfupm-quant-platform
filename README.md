@@ -1,4 +1,4 @@
-# KFUPM Quant Platform
+# plainquant
 
 **Retail quant research in plain language.** Ask a question, turn it into rules,
 test it on history, and read an answer that shows its evidence. English, 简体中文
@@ -54,8 +54,8 @@ the question starts from the screen you were reading.
 You need macOS/Linux, Node 20+, `uv`, Python 3.12, and the Vibe-Trading CLI.
 
 ```bash
-git clone https://github.com/arysaikyn/kfupm-quant-platform.git
-cd kfupm-quant-platform
+git clone https://github.com/arysaikyn/plainquant.git
+cd plainquant
 
 uv venv ~/.venvs/vibe-trading --python 3.12
 uv pip install --python ~/.venvs/vibe-trading/bin/python "vibe-trading-ai==0.1.18"

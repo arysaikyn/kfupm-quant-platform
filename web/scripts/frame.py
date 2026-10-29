@@ -6,38 +6,32 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 """
 Wrap a raw 390x844 @2x capture in a phone body.
 
-The README shows a mobile app, so the images should read as phones: rounded
-screen, a bezel, a status bar with the clock and the battery, a home indicator
-and a shadow. Everything here is drawn, not photographed, so the same script
-reproduces the set on any machine.
+One rule makes the result correct: **everything is clipped by one silhouette.**
+The first version pasted the screen onto the body with a *screen-shaped* mask, so
+the screen's corners were less rounded than the frame's inner corners and four
+square nubs poked out past the body. Now the body, the status bar and the screen
+are all drawn as layers and then multiplied by the same rounded mask, so nothing
+can sit outside the phone no matter how the numbers change.
 
-Run after `screenshots.mjs`; it reads `docs/screenshots/raw/*.png`.
+Run after `screenshots.mjs`; reads `docs/screenshots/raw/*.png`.
 """
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "docs" / "screenshots" / "raw"
 TARGET = ROOT / "docs" / "screenshots"
 
-SCALE = 2  # the captures are 2x
+SCALE = 2  # captures are 2x
 
-# Geometry in points, multiplied by SCALE when drawn.
-BEZEL = 10
-SCREEN_RADIUS = 58
-STATUS_H = 44
-INDICATOR_H = 22
+BEZEL = 9  # points of frame around the screen
+BODY_RADIUS = 54  # outer corner radius, points
+STATUS_H = 44  # device status bar, points
+INDICATOR_H = 20  # strip under the screen for the home indicator
 SHADOW = 26
 
 BODY = (10, 10, 12, 255)
-BODY_EDGE = (46, 46, 52, 255)
-STATUS_BG = (10, 10, 12, 255)
-FS = None
-
-
-def dims(screen: Image.Image):
-    w, h = screen.size
-    inner_w = w + 2 * BEZEL * SCALE
-    inner_h = h + (STATUS_H + INDICATOR_H + 2 * BEZEL) * SCALE
-    return inner_w, inner_h
+BODY_EDGE = (52, 52, 58, 255)
+CHROME = (10, 10, 12, 255)
+INK = (245, 245, 248, 255)
 
 
 def font(size: int):
@@ -54,93 +48,104 @@ def font(size: int):
     return ImageFont.load_default(size=size)
 
 
-def rounded(size, radius, fill):
+def rounded_mask(size, radius):
+    layer = Image.new("L", size, 0)
+    ImageDraw.Draw(layer).rounded_rectangle([0, 0, size[0] - 1, size[1] - 1], radius, fill=255)
+    return layer
+
+
+def draw_chrome(size, body_w, status_top, status_h):
+    """Status bar: clock on the left, signal, wifi and battery on the right."""
     layer = Image.new("RGBA", size, (0, 0, 0, 0))
-    ImageDraw.Draw(layer).rounded_rectangle([0, 0, size[0] - 1, size[1] - 1], radius, fill=fill)
+    d = ImageDraw.Draw(layer)
+    d.rectangle([BEZEL * SCALE, status_top, body_w - BEZEL * SCALE, status_top + status_h], fill=CHROME)
+    d.text(
+        (BEZEL * SCALE + 22 * SCALE, status_top + status_h / 2),
+        "9:41",
+        font=font(17 * SCALE),
+        fill=INK,
+        anchor="lm",
+    )
+    right, mid = body_w - BEZEL * SCALE - 20 * SCALE, status_top + status_h / 2
+    bar_w, gap = 3 * SCALE, 2 * SCALE
+    for index, height in enumerate((4, 6, 8, 10)):
+        x = right - 74 * SCALE + index * (bar_w + gap)
+        d.rounded_rectangle(
+            [x, mid + 5 * SCALE - height * SCALE, x + bar_w, mid + 5 * SCALE],
+            bar_w / 2,
+            fill=INK,
+        )
+    cx, cy = right - 42 * SCALE, mid + 5 * SCALE
+    for span in (10, 6, 2):
+        d.arc(
+            [cx - span * SCALE, cy - span * SCALE, cx + span * SCALE, cy + span * SCALE],
+            200,
+            340,
+            fill=INK,
+            width=2 * SCALE,
+        )
+    battery = [right - 22 * SCALE, mid - 5 * SCALE, right, mid + 5 * SCALE]
+    d.rounded_rectangle(battery, 2 * SCALE, outline=(230, 230, 236, 210), width=SCALE)
+    d.rectangle(
+        [battery[0] + SCALE, battery[1] + SCALE, battery[0] + 13 * SCALE, battery[3] - SCALE],
+        fill=INK,
+    )
     return layer
 
 
 def wrap(screen: Image.Image) -> Image.Image:
     w, h = screen.size
-    body_w, body_h = dims(screen)
-    radius = (SCREEN_RADIUS + BEZEL) * SCALE
+    body_w = w + 2 * BEZEL * SCALE
+    body_h = h + (STATUS_H + INDICATOR_H + 2 * BEZEL) * SCALE
+    silhouette = rounded_mask((body_w, body_h), BODY_RADIUS * SCALE)
 
-    body = rounded((body_w, body_h), radius, BODY)
-    edge = rounded((body_w, body_h), radius, None)
-    ImageDraw.Draw(edge).rounded_rectangle(
-        [0, 0, body_w - 1, body_h - 1], radius, outline=BODY_EDGE, width=2
-    )
-    body = Image.alpha_composite(body, edge)
+    body = Image.new("RGBA", (body_w, body_h), (0, 0, 0, 0))
+    body.paste(Image.new("RGBA", (body_w, body_h), BODY), (0, 0), silhouette)
 
-    # The status bar is device chrome, so it is drawn, not captured.
     status_top = BEZEL * SCALE
-    draw = ImageDraw.Draw(body)
-    draw.rounded_rectangle(
-        [0, 0, body_w - 1, body_h - 1], radius, outline=None
-    )
     status_h = STATUS_H * SCALE
-    draw.rectangle(
-        [BEZEL * SCALE, status_top, body_w - BEZEL * SCALE, status_top + status_h],
-        fill=STATUS_BG,
+    body = Image.alpha_composite(
+        body, _clip(draw_chrome(body.size, body_w, status_top, status_h), silhouette)
     )
 
-    clock = font(17 * SCALE)
-    draw.text(
-        (BEZEL * SCALE + 22 * SCALE, status_top + status_h / 2),
-        "9:41",
-        font=clock,
-        fill=(245, 245, 248, 255),
-        anchor="lm",
-    )
-
-    # Signal, wifi, battery: three shapes, no font dependency.
-    right = body_w - BEZEL * SCALE - 20 * SCALE
-    mid = status_top + status_h / 2
-    bar_w, gap = 3 * SCALE, 2 * SCALE
-    for index, height in enumerate((4, 6, 8, 10)):
-        x = right - 78 * SCALE + index * (bar_w + gap)
-        draw.rounded_rectangle(
-            [x, mid + 5 * SCALE - height * SCALE, x + bar_w, mid + 5 * SCALE],
-            bar_w / 2,
-            fill=(240, 240, 245, 255),
-        )
-    wifi_cx, wifi_cy = right - 44 * SCALE, mid + 4 * SCALE
-    for span in (10, 6, 2):
-        draw.arc(
-            [wifi_cx - span * SCALE, wifi_cy - span * SCALE, wifi_cx + span * SCALE, wifi_cy + span * SCALE],
-            200,
-            340,
-            fill=(240, 240, 245, 255),
-            width=2 * SCALE,
-        )
-    battery = [right - 24 * SCALE, mid - 5 * SCALE, right, mid + 5 * SCALE]
-    draw.rounded_rectangle(battery, 2 * SCALE, outline=(240, 240, 245, 200), width=1 * SCALE)
-    draw.rectangle([battery[0] + SCALE, battery[1] + SCALE, battery[0] + 14 * SCALE, battery[3] - SCALE], fill=(240, 240, 245, 255))
-
+    # The screen is square-cornered and then clipped by the same silhouette, so
+    # its corners can never be less round than the frame's.
     screen_top = status_top + status_h
-    mask = rounded((w, h), SCREEN_RADIUS * SCALE, (255, 255, 255, 255))
-    body.paste(screen, (BEZEL * SCALE, screen_top), mask)
+    body.paste(screen, (BEZEL * SCALE, screen_top))
 
-    # Home indicator, over the 12pt gap under the floating tab bar.
-    draw = ImageDraw.Draw(body)
-    ind_w, ind_h = 120 * SCALE, 5 * SCALE
-    ind_y = body_h - BEZEL * SCALE - 8 * SCALE
-    draw.rounded_rectangle(
+    # Home indicator, in the strip under the screen, over the frame colour.
+    d = ImageDraw.Draw(body)
+    ind_w, ind_h = 116 * SCALE, 5 * SCALE
+    ind_y = screen_top + h + (INDICATOR_H * SCALE - ind_h) / 2
+    d.rounded_rectangle(
         [(body_w - ind_w) / 2, ind_y, (body_w + ind_w) / 2, ind_y + ind_h],
         ind_h / 2,
-        fill=(235, 235, 240, 120),
+        fill=(236, 236, 242, 110),
     )
 
-    canvas = Image.new("RGBA", (body_w + 2 * SHADOW * SCALE, body_h + 2 * SHADOW * SCALE), (0, 0, 0, 0))
-    shadow = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    shadow.paste(
-        rounded((body_w, body_h), radius, (0, 0, 0, 140)),
-        (SHADOW * SCALE, SHADOW * SCALE + 6 * SCALE),
-        rounded((body_w, body_h), radius, (0, 0, 0, 140)),
+    body.putalpha(Image.composite(body.getchannel("A"), Image.new("L", body.size, 0), silhouette))
+
+    edge = Image.new("RGBA", body.size, (0, 0, 0, 0))
+    ImageDraw.Draw(edge).rounded_rectangle(
+        [0, 0, body_w - 1, body_h - 1], BODY_RADIUS * SCALE, outline=BODY_EDGE, width=2
     )
+    edge.putalpha(Image.composite(edge.getchannel("A"), Image.new("L", body.size, 0), silhouette))
+    body = Image.alpha_composite(body, edge)
+
+    pad = SHADOW * SCALE
+    canvas = Image.new("RGBA", (body_w + 2 * pad, body_h + 2 * pad), (0, 0, 0, 0))
+    shadow = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    blob = Image.new("RGBA", body.size, (0, 0, 0, 0))
+    blob.paste(Image.new("RGBA", body.size, (0, 0, 0, 150)), (0, 0), silhouette)
+    shadow.paste(blob, (pad, pad + 6 * SCALE), blob)
     canvas = Image.alpha_composite(canvas, shadow.filter(ImageFilter.GaussianBlur(10 * SCALE)))
-    canvas.paste(body, (SHADOW * SCALE, SHADOW * SCALE), body)
+    canvas.paste(body, (pad, pad), body)
     return canvas
+
+
+def _clip(layer: Image.Image, mask: Image.Image) -> Image.Image:
+    layer.putalpha(Image.composite(layer.getchannel("A"), Image.new("L", layer.size, 0), mask))
+    return layer
 
 
 def main():
@@ -152,7 +157,6 @@ def main():
             framed = wrap(screen.convert("RGBA"))
         out = TARGET / f"phone-{path.stem}.png"
         framed.save(out, optimize=True)
-        # Quantise in place; alpha edges survive at 70-90 quality.
         subprocess.run(
             ["pngquant", "--quality=70-92", "--speed", "1", "--force", "--output", str(out), str(out)],
             check=False,

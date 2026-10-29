@@ -6,13 +6,20 @@ and العربية, with full RTL.
 
 | Markets | Stock | News | AI |
 |---|---|---|---|
-| <img src="docs/screenshots/phones/phone-market.png" width="200" alt="Market screen: index masthead, sector strip and the ranked list"> | <img src="docs/screenshots/phones/phone-symbol.png" width="200" alt="Stock screen: the rules it matches"> | <img src="docs/screenshots/phones/phone-news.png" width="200" alt="News feed for today"> | <img src="docs/screenshots/phones/phone-ai.png" width="200" alt="AI tab: a pre-recorded answer with a rule table"> |
-| <sub>masthead, sector strip, ranked list</sub> | <sub>the rules it matches</sub> | <sub>today, and the symbols it touches</sub> | <sub>rules, then every figure marked untraced</sub> |
+| <img src="docs/screenshots/phones/v2/phone-market.png" width="200" alt="Market screen: index masthead, sector strip and the ranked list"> | <img src="docs/screenshots/phones/v2/phone-symbol.png" width="200" alt="Stock screen: the rules it matches"> | <img src="docs/screenshots/phones/v2/phone-news.png" width="200" alt="News feed for today"> | <img src="docs/screenshots/phones/v2/phone-ai.png" width="200" alt="AI tab: a pre-recorded answer with a rule table"> |
+
+<sub>**Markets** — masthead, sector strip, ranked list · **Stock** — the rules it
+matches, five pillars and the Sharia axis · **News** — today, with the symbols each
+story touches · **AI** — a pre-recorded answer in the product's shape, every
+figure marked as untraced</sub>
 
 | Strategy | Screener | Arabic | Light |
 |---|---|---|---|
-| <img src="docs/screenshots/phones/phone-strategy.png" width="200" alt="Strategy detail: return, growth curve and rules"> | <img src="docs/screenshots/phones/phone-screener.png" width="200" alt="Screener: conditions and the grid check"> | <img src="docs/screenshots/phones/phone-arabic.png" width="200" alt="The market screen in Arabic, right to left"> | <img src="docs/screenshots/phones/phone-light.png" width="200" alt="The market screen in the light theme"> |
-| <sub>return, curve, then the conditions</sub> | <sub>conditions, then the grid check</sub> | <sub>mirrored, Latin digits</sub> | <sub>same layout, same contrast floor</sub> |
+| <img src="docs/screenshots/phones/v2/phone-strategy.png" width="200" alt="Strategy detail: return, growth curve and rules"> | <img src="docs/screenshots/phones/v2/phone-screener.png" width="200" alt="Screener: conditions and the grid check"> | <img src="docs/screenshots/phones/v2/phone-arabic.png" width="200" alt="The market screen in Arabic, right to left"> | <img src="docs/screenshots/phones/v2/phone-light.png" width="200" alt="The market screen in the light theme"> |
+
+<sub>**Strategy** — return, curve, then the conditions · **Screener** — conditions,
+then the grid check · **Arabic** — mirrored, Latin digits · **Light** — same
+layout, same contrast floor</sub>
 
 Every image above is generated: `npm run shots` in `web/` captures the eight
 screens at 390×844 and wraps each in a phone body, so the set can be rebuilt
@@ -38,7 +45,7 @@ No network, no key, no login — the app opens in demo mode.
 5. **`/ai`** — ask "cheap, low debt, Sharia screen" and a pre-recorded answer
    answers in the product's own shape: a rule table, then a count of numbers with
    none traced, and every figure struck through because no run backs it. Ask for a buy call
-   instead and you get a stamped refusal receipt ([screenshot](docs/screenshots/phones/phone-refusal.png)).
+   instead and you get a stamped refusal receipt ([screenshot](docs/screenshots/phones/v2/phone-refusal.png)).
 6. **`/ai/provider`** — connect your own model when you want the live path.
 
 Long-press any row anywhere and its symbol becomes a chip in the AI composer, so

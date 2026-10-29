@@ -18,7 +18,12 @@ Run after `screenshots.mjs`; reads `docs/screenshots/raw/*.png`.
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "docs" / "screenshots" / "raw"
-TARGET = ROOT / "docs" / "screenshots" / "phones"
+
+# Bump when the images change: GitHub serves repo images through a CDN keyed by
+# path, and it kept handing out the previous bytes after a push. A new path is
+# the only reliable cache-bust, and it keeps the filenames readable.
+VERSION = "v2"
+TARGET = ROOT / "docs" / "screenshots" / "phones" / VERSION
 
 SCALE = 2  # captures are 2x
 
@@ -138,7 +143,12 @@ def wrap(screen: Image.Image) -> Image.Image:
     blob = Image.new("RGBA", body.size, (0, 0, 0, 0))
     blob.paste(Image.new("RGBA", body.size, (0, 0, 0, 150)), (0, 0), silhouette)
     shadow.paste(blob, (pad, pad + 6 * SCALE), blob)
-    canvas = Image.alpha_composite(canvas, shadow.filter(ImageFilter.GaussianBlur(10 * SCALE)))
+    blur = shadow.filter(ImageFilter.GaussianBlur(10 * SCALE))
+    # Anything fainter than 8/255 is invisible but still changes the file's
+    # bounding box after quantisation, which made the nine images differ by a few
+    # pixels at the edges.
+    blur.putalpha(blur.getchannel("A").point(lambda a: 0 if a < 8 else a))
+    canvas = Image.alpha_composite(canvas, blur)
     canvas.paste(body, (pad, pad), body)
     return canvas
 

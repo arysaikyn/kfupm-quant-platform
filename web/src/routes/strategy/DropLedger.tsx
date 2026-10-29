@@ -1,14 +1,10 @@
 import { fill } from '../../i18n/format'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
-import { quotes } from '../../data/mock'
-import type { Quote, Strategy } from '../../data/mock'
-import type { Ledger, NameRun } from './ledger'
+import { quoteBySymbol } from '../../data/mock'
+import type { Strategy } from '../../data/mock'
+import type { Ledger, NameRun } from '../../lib/ledger'
 import { MISSING_KEY, SHARIA_FIELD_KEY, measureText } from './labels'
 import { featureStrings } from './strings'
-
-const QUOTE_OF: Record<string, Quote> = Object.fromEntries(
-  quotes.map((quote) => [quote.symbol, quote]),
-)
 
 /**
  * The excluded names, in the order the engine read them. Each row keeps the
@@ -101,7 +97,7 @@ export function DropLedger({ strategy, ledger }: { strategy: Strategy; ledger: L
                 <span dir="ltr" className="num shrink-0 text-[12px]">
                   {name.symbol}
                 </span>
-                <span className="truncate text-[13px]">{QUOTE_OF[name.symbol]?.name[lang] ?? name.symbol}</span>
+                <span className="truncate text-[13px]">{quoteBySymbol[name.symbol]?.name[lang] ?? name.symbol}</span>
               </div>
               <span
                 className="shrink-0 text-[10px] leading-none"

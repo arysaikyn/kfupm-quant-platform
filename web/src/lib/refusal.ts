@@ -1,4 +1,4 @@
-import type { MessageItem } from '../../api/ai'
+import type { MessageItem } from '../api/ai'
 
 export type RefusalRule = 'execution' | 'guarantee' | 'advice'
 

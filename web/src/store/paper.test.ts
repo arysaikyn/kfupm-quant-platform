@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { PaperAccount } from '../api/ai'
+import type { PaperPosition } from '../lib/positions'
 import {
   accountLedger,
   createPaperSnapshot,
@@ -9,7 +10,7 @@ import {
 } from './paper'
 import type { PaperLedger } from './paper'
 
-function account(positions: unknown[], cash = 100_000): PaperAccount {
+function account(positions: PaperPosition[], cash = 100_000, unreadable = 0): PaperAccount {
   return {
     id: 'acc-1',
     label: 'Demo account',
@@ -18,29 +19,17 @@ function account(positions: unknown[], cash = 100_000): PaperAccount {
     start_on: '2026-01-02',
     last_date: '2026-10-23',
     revision: 1,
-    account_state: { cash, positions },
+    account_state: { cash, positions, unreadable },
   }
 }
 
 describe('paper checkpoints', () => {
-  it('reads the position shapes a paper API can return', () => {
+  it('counts the positions it cannot name instead of dropping them silently', () => {
     const ledger = accountLedger(
-      account([
-        { symbol: '2222', quantity: 40 },
-        { code: '1120', qty: 12 },
-        { ticker: '2010' },
-        '0700',
-        { symbol: '2222', quantity: 99 },
-        { note: 'no symbol' },
-      ]),
+      account([{ symbol: '2222', quantity: 40 }], 100_000, 2),
     )
-    expect(ledger.positions).toEqual([
-      { symbol: '2222', quantity: 40 },
-      { symbol: '1120', quantity: 12 },
-      { symbol: '2010', quantity: 0 },
-      { symbol: '0700', quantity: 0 },
-    ])
-    expect(ledger.positionCount).toBe(6)
+    expect(ledger.positions).toEqual([{ symbol: '2222', quantity: 40 }])
+    expect(ledger.positionCount).toBe(3)
     expect(ledger.cash).toBe(100_000)
   })
 

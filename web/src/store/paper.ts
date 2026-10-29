@@ -1,16 +1,13 @@
 import { useSyncExternalStore } from 'react'
 import type { PaperAccount } from '../api/ai'
+import { parsePositions } from '../lib/positions'
+import type { PaperPosition } from '../lib/positions'
 
 /**
  * Local snapshots of a paper account. They never travel to the backend: a
  * checkpoint is a frozen copy of what the panel was showing, so a later
  * comparison stays deterministic even when the live account moves on.
  */
-
-export type PaperPosition = {
-  symbol: string
-  quantity: number
-}
 
 export type PaperLedger = {
   cash: number
@@ -45,9 +42,6 @@ export type PaperDiff = {
 const KEY = 'paper.checkpoints.v1'
 const LIMIT = 20
 const NAME_LIMIT = 40
-const SYMBOL_KEYS = ['symbol', 'code', 'ticker', 'asset', 'instrument'] as const
-const QUANTITY_KEYS = ['quantity', 'qty', 'shares', 'units', 'weight'] as const
-
 function cents(value: number): number {
   return Math.round(value * 100) / 100
 }
@@ -56,66 +50,21 @@ function finite(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null
 }
 
-function readSymbol(value: unknown): string | null {
-  if (typeof value === 'string') {
-    const symbol = value.trim().toUpperCase()
-    return symbol.length > 0 ? symbol : null
-  }
-  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
-  return null
-}
-
-/** Tolerates both plain strings and the object shapes paper APIs return. */
-export function toPosition(value: unknown): PaperPosition | null {
-  if (typeof value === 'string' || typeof value === 'number') {
-    const symbol = readSymbol(value)
-    return symbol ? { symbol, quantity: 0 } : null
-  }
-  if (!value || typeof value !== 'object') return null
-  const record = value as Record<string, unknown>
-  let symbol: string | null = null
-  for (const key of SYMBOL_KEYS) {
-    symbol = readSymbol(record[key])
-    if (symbol) break
-  }
-  if (!symbol) return null
-  let quantity = 0
-  for (const key of QUANTITY_KEYS) {
-    const n = finite(record[key])
-    if (n !== null) {
-      quantity = n
-      break
-    }
-  }
-  return { symbol, quantity }
-}
-
-function uniquePositions(input: unknown): PaperPosition[] {
-  if (!Array.isArray(input)) return []
-  const seen = new Set<string>()
-  const out: PaperPosition[] = []
-  for (const entry of input) {
-    const position = toPosition(entry)
-    if (!position || seen.has(position.symbol)) continue
-    seen.add(position.symbol)
-    out.push(position)
-  }
-  return out
-}
-
 export function accountLedger(account: PaperAccount): PaperLedger {
-  const raw = account.account_state?.positions
+  const state = account.account_state
   return {
-    cash: cents(finite(account.account_state?.cash) ?? 0),
-    positions: uniquePositions(raw),
-    positionCount: Array.isArray(raw) ? raw.length : 0,
+    cash: cents(state.cash),
+    positions: state.positions,
+    // Named plus unnamed: the count says how many the backend published, which
+    // is what a comparison against an older snapshot needs.
+    positionCount: state.positions.length + state.unreadable,
   }
 }
 
 export function snapshotLedger(snapshot: PaperSnapshot): PaperLedger {
   return {
     cash: cents(snapshot.cash),
-    positions: uniquePositions(snapshot.positions),
+    positions: snapshot.positions,
     positionCount: snapshot.positionCount,
   }
 }
@@ -185,7 +134,10 @@ function toSnapshot(value: unknown): PaperSnapshot | null {
     createdAt,
     currency: typeof raw.currency === 'string' ? raw.currency : '',
     cash: cents(cash),
-    positions: uniquePositions(raw.positions),
+    // A stored snapshot went through no parser, so decode it here: the same
+    // normalizer the transport uses, or a hand-edited record could inject a
+    // position the screen then renders as a real holding.
+    positions: parsePositions(raw.positions).positions,
     positionCount:
       finite(raw.positionCount) ?? (Array.isArray(raw.positions) ? raw.positions.length : 0),
     demo: true,

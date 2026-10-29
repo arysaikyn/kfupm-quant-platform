@@ -1,4 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { BarStrip } from '../../components/BarStrip'
+import { StarIcon } from '../../components/StarIcon'
 import { Link, useParams } from 'react-router-dom'
 import { Screen } from '../../components/Screen'
 import { EmptyState, ErrorState } from '../../components/states'
@@ -30,53 +32,8 @@ function toneOf(change: number): string {
   return 'var(--color-muted)'
 }
 
-function StarIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      aria-hidden="true"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
-    >
-      <path d="M12 3.6l2.55 5.17 5.7.83-4.13 4.02.98 5.68L12 16.62 6.9 19.3l.98-5.68L3.75 9.6l5.7-.83z" />
-    </svg>
-  )
-}
 
 /** Local 20-bar strip: texture at 44px, where a sparkline would turn to mush. */
-function Bars({ data, up }: { data: number[]; up: boolean }) {
-  const slice = data.slice(-20)
-  const min = Math.min(...slice)
-  const span = Math.max(...slice) - min || 1
-  const tone = up ? 'var(--color-up)' : 'var(--color-down)'
-
-  return (
-    <span
-      aria-hidden="true"
-      className="flex h-4 w-11 shrink-0 items-end gap-px"
-      style={{ direction: 'ltr' }}
-    >
-      {slice.map((value, index) => {
-        const norm = (value - min) / span
-        return (
-          <span
-            key={index}
-            className="flex-1 rounded-[1px]"
-            style={{
-              height: `${32 + norm * 60}%`,
-              background: tone,
-              opacity: 0.22 + norm * 0.32,
-            }}
-          />
-        )
-      })}
-    </span>
-  )
-}
 
 function SectionTitle({
   title,
@@ -230,7 +187,7 @@ export default function SectorPage() {
                     </span>
                   </span>
                   <span className="flex max-[400px]:hidden">
-                    <Bars data={quote.spark} up={quote.change >= 0} />
+                    <BarStrip dense data={quote.spark} up={quote.change >= 0} />
                   </span>
                   <span className="num w-[68px] shrink-0 text-end text-[14px]">
                     {fmtNum(quote.price, lang, 2)}

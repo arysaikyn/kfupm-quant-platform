@@ -17,15 +17,15 @@ import {
   cloneRules,
   createId,
   defaultRules,
-  loadScreens,
   metric,
   newRule,
   presetRules,
   ruleValue,
   sanitizeRules,
-  storeScreens,
-} from './rules'
-import type { Field, Op, PresetId, Rule, SavedScreen } from './rules'
+} from '../../lib/screener'
+import type { Field, Op, PresetId, Rule } from '../../lib/screener'
+import { loadScreens, storeScreens } from '../../store/screens'
+import type { SavedScreen } from '../../store/screens'
 import { counterfactual, funnel, relaxations, shariaBuckets } from './audit'
 import type { Relaxation } from './audit'
 import { StaleNotice, ShariaAudit, ZeroAutopsy } from './AuditPanels'

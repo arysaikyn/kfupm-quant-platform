@@ -33,11 +33,40 @@ search, sector, watchlists, settings, and a real 404.
 
 ## Structure
 
-- `src/App.tsx` — shell, route titles, focus hand-off, offline banner, 404.
-- `src/routes/<screen>/` — one folder per screen: `index.tsx` + `strings.ts`.
-- `src/components/` — shell primitives (`Screen`, `TabBar`, `Sheet`, …).
+Six folders, one job each. The rule that keeps them apart: **a module lives
+where its owner is, and an arrow only points down.** A screen may import from
+`lib`, `store`, `data`, `components` and `i18n`; none of those may import from
+`routes/`.
+
+- `src/App.tsx` — shell, focus hand-off, offline banner, 404.
+- `src/screens.ts` — the one table of screens: pattern, title key, tab, sample
+  path, chunk loader. The router, the tab bar and the e2e route matrix all read
+  it, so adding a screen is one row plus its translations.
+- `src/routes/<screen>/` — one folder per screen: `index.tsx`, `strings.ts`, and
+  the screen's own widgets. A component used by exactly one screen belongs here,
+  not in `components/`.
+- `src/components/` — UI used by more than one screen, plus shell chrome
+  (`Screen`, `TabBar`, `ErrorBoundary`, `ReceiptCard`, `GridCheck`).
+- `src/lib/` — pure logic with no React: `gridcheck` (the product's rules),
+  `ledger` (the Sharia-then-rank engine), `screener` (the screen model),
+  `refusal`, `chips`, `stats`, `positions`, `freshness`.
+- `src/store/` — persisted client state and its React binding: `prefs`, `user`,
+  `alerts`, `paper`, `screens`, `watchlists`, `aiIntake`, `aiMode` hooks.
+- `src/data/` — the fixtures and the tables that own a fact: `mock` (quotes,
+  strategies, news), `fundamentals`, `shariaCoverage` (AAOIFI limits),
+  `markets` (board → venue), `costs` (the cost model), `membership`.
+- `src/api/` — the HTTP boundary. `request(path, parse)` takes a parser from
+  `parse.ts`; nothing is cast to a type. `errors.ts` holds the one error class.
 - `src/i18n/` — typed zh/en/ar dictionaries, number/date/plural formatting.
-- `src/store/` — local-first state (`prefs`, `user`, `alerts`).
+
+Two habits this layout depends on:
+
+1. **One fact, one owner.** The AAOIFI caps live in `data/shariaCoverage`; the
+   cost model in `data/costs`; the symbol→quote lookup in `data/mock`. A second
+   copy is a bug even when the numbers match today.
+2. **Values that must agree are one record.** `Field` is the key of a single
+   `FIELD_*` table per concern, and a `Record<Field, …>` that fails to list a
+   new field fails the build.
 - `src/api/ai.ts` — the session/SSE and workspace client for the local AI backend.
 - `src/data/` — mock universe for the non-AI screens.
 - `src/theme.tsx` — dark, light, or system; resolved before first paint by

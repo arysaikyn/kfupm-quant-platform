@@ -1,5 +1,6 @@
 import { fundamentalsFor, marketConstants, marketFor } from '../../data/fundamentals'
-import type { Fundamentals, Market, MarketConstants } from '../../data/fundamentals'
+import { SHARIA_LIMITS } from '../../data/shariaCoverage'
+import type { Fundamentals, MarketConstants } from '../../data/fundamentals'
 import type { Lang } from '../../i18n'
 
 /** The five pillars Simply Wall St scores a share on, plus the Sharia screen. */
@@ -21,16 +22,19 @@ const AXES: Axis[] = ['value', 'growth', 'past', 'health', 'sharia']
 /** The model is fixed at six checks per axis, so a score is always out of six. */
 const PER_AXIS = 6
 
-const CURRENCY: Record<Market, string> = {
-  sa: 'SAR',
-  cn_a: 'CNY',
-  hk: 'HKD',
-  us: 'USD',
-}
-
 const n = (v: number, digits = 2): string => v.toFixed(digits)
 
 const pct = (v: number, digits = 1): string => `${(v * 100).toFixed(digits)}%`
+
+/**
+ * The AAOIFI caps print from the one table that owns them, so a label can never
+ * quote a threshold the screen no longer applies. `pctCap(0.3333)` is "33.33%".
+ */
+const pctCap = (v: number): string => `${Number((v * 100).toFixed(2))}%`
+
+const DEBT_CAP = pctCap(SHARIA_LIMITS.debt)
+const INCOME_CAP = pctCap(SHARIA_LIMITS.income)
+const RECEIVABLE_CAP = pctCap(SHARIA_LIMITS.receivables)
 
 type Facts = {
   price: number
@@ -331,11 +335,11 @@ const RULES: Rule[] = [
     id: 'sharia-debt-30',
     axis: 'sharia',
     label: {
-      zh: '负债率低于 30%：AAOIFI 债务门槛',
-      en: 'Debt ratio below 30%: AAOIFI debt threshold',
-      ar: 'نسبة الدين أقل من 30%: حد أيوفي للدين',
+      zh: `负债率低于 ${DEBT_CAP}：AAOIFI 债务门槛`,
+      en: `Debt ratio below ${DEBT_CAP}: AAOIFI debt threshold`,
+      ar: `نسبة الدين أقل من ${DEBT_CAP}: حد أيوفي للدين`,
     },
-    test: (x) => x.f.debtRatio < 0.3,
+    test: (x) => x.f.debtRatio < SHARIA_LIMITS.debt,
     value: (x) => `Debt ${pct(x.f.debtRatio)}`,
   },
   {
@@ -353,11 +357,11 @@ const RULES: Rule[] = [
     id: 'sharia-dividend',
     axis: 'sharia',
     label: {
-      zh: '股息率低于 5%：非合规收入占比代理',
-      en: 'Dividend yield below 5%: proxy for non-compliant income',
-      ar: 'عائد التوزيعات أقل من 5%: مؤشر بديل للدخل غير المتوافق',
+      zh: `股息率低于 ${INCOME_CAP}：非合规收入占比代理`,
+      en: `Dividend yield below ${INCOME_CAP}: proxy for non-compliant income`,
+      ar: `عائد التوزيعات أقل من ${INCOME_CAP}: مؤشر بديل للدخل غير المتوافق`,
     },
-    test: (x) => x.f.dividendYield < 0.05,
+    test: (x) => x.f.dividendYield < SHARIA_LIMITS.income,
     value: (x) => `Yield ${pct(x.f.dividendYield, 2)}`,
   },
   {
@@ -386,11 +390,11 @@ const RULES: Rule[] = [
     id: 'sharia-debt-33',
     axis: 'sharia',
     label: {
-      zh: '负债率低于 33.33%',
-      en: 'Debt ratio below 33.33%',
-      ar: 'نسبة الدين أقل من 33.33%',
+      zh: `负债率低于 ${RECEIVABLE_CAP}`,
+      en: `Debt ratio below ${RECEIVABLE_CAP}`,
+      ar: `نسبة الدين أقل من ${RECEIVABLE_CAP}`,
     },
-    test: (x) => x.f.debtRatio < 0.33,
+    test: (x) => x.f.debtRatio < SHARIA_LIMITS.receivables,
     value: (x) => `Debt ${pct(x.f.debtRatio)}`,
   },
 ]
@@ -401,7 +405,7 @@ export function checkList(symbol: string, price: number): Check[] {
     price,
     f: fundamentalsFor(symbol, price),
     mc: marketConstants(market),
-    currency: CURRENCY[market],
+    currency: marketConstants(market).currency,
   }
 
   return RULES.map((rule) => ({

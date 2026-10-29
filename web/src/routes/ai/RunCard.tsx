@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useI18n, useStrings } from '../../i18n'
-import { Sparkline } from '../../components/Sparkline'
+import { Sparkline } from './Sparkline'
 import type { RunPreview } from '../../api/ai'
 import { METRIC_LABEL, METRIC_ORDER, metricDisplay } from './metrics'
 import type { MetricKey } from './metrics'

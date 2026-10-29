@@ -1,15 +1,11 @@
 import { useState } from 'react'
 import { fill } from '../../i18n/format'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
-import { equityYears, quotes } from '../../data/mock'
-import type { Quote, Strategy } from '../../data/mock'
-import type { Ledger } from './ledger'
+import { equityYears, quoteBySymbol } from '../../data/mock'
+import type { Strategy } from '../../data/mock'
+import type { Ledger } from '../../lib/ledger'
 import { jarStacks } from './jar'
 import { featureStrings } from './strings'
-
-const QUOTE_OF: Record<string, Quote> = Object.fromEntries(
-  quotes.map((quote) => [quote.symbol, quote]),
-)
 
 /** Jar geometry, in SVG units. The body is the only region a coin can live in. */
 const BODY = { x: 40, y: 52, w: 140, h: 126, r: 26 }
@@ -31,7 +27,7 @@ export function RiyalJar({ strategy, ledger }: { strategy: Strategy; ledger: Led
   const picks = ledger.passed.map((name) => ({
     symbol: name.symbol,
     weight: ledger.passed.length > 0 ? 1 / ledger.passed.length : 0,
-    price: QUOTE_OF[name.symbol]?.price ?? 0,
+    price: quoteBySymbol[name.symbol]?.price ?? 0,
   }))
   const jar = jarStacks(picks, strategy.curve, year, priceFactor)
   const totalCoins = jar.stacks.reduce((sum, stack) => sum + stack.coins, 0)
@@ -141,7 +137,7 @@ export function RiyalJar({ strategy, ledger }: { strategy: Strategy; ledger: Led
           {jar.stacks.map((stack) => (
             <li key={stack.symbol} className="flex items-baseline justify-between gap-3 py-2">
               <span className="truncate text-[12px]">
-                {QUOTE_OF[stack.symbol]?.name[lang] ?? stack.symbol}
+                {quoteBySymbol[stack.symbol]?.name[lang] ?? stack.symbol}
               </span>
               <span dir="ltr" className="num shrink-0 text-[11px]" style={{ color: 'var(--color-muted)' }}>
                 {fmtNum(stack.weight * 100, lang, 1, '%')}

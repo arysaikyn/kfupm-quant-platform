@@ -1,14 +1,10 @@
 import { useState } from 'react'
 import { fill, fmtDate } from '../../i18n/format'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
-import { quotes } from '../../data/mock'
-import type { Quote, Strategy } from '../../data/mock'
-import type { Ledger } from './ledger'
+import { quoteBySymbol } from '../../data/mock'
+import type { Strategy } from '../../data/mock'
+import type { Ledger } from '../../lib/ledger'
 import { featureStrings } from './strings'
-
-const QUOTE_OF: Record<string, Quote> = Object.fromEntries(
-  quotes.map((quote) => [quote.symbol, quote]),
-)
 
 /**
  * A dated sheet you can print or paste: the date, the rules that were applied,
@@ -46,9 +42,9 @@ export function PickList({ strategy, ledger }: { strategy: Strategy; ledger: Led
       `${s('pickNames')}:`,
       ...(picks.length > 0
         ? picks.map((pick) => {
-            const quote = QUOTE_OF[pick.symbol]
+            const quote = quoteBySymbol[pick.symbol]
             const price = quote ? `${fmtNum(quote.price, lang, 2)} ${quote.currency}` : ''
-            return `${QUOTE_OF[pick.symbol]?.name[lang] ?? pick.symbol} — ${fmtNum(weight * 100, lang, 1, '%')} — ${fmtNum(100 * weight, lang, 2)} — ${price}`
+            return `${quoteBySymbol[pick.symbol]?.name[lang] ?? pick.symbol} — ${fmtNum(weight * 100, lang, 1, '%')} — ${fmtNum(100 * weight, lang, 2)} — ${price}`
           })
         : [s('pickEmpty')]),
       '',
@@ -138,7 +134,7 @@ export function PickList({ strategy, ledger }: { strategy: Strategy; ledger: Led
           </div>
           <ul>
             {picks.map((pick) => {
-              const quote = QUOTE_OF[pick.symbol]
+              const quote = quoteBySymbol[pick.symbol]
               return (
                 <li
                   key={pick.symbol}

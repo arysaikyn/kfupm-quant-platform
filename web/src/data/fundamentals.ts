@@ -4,6 +4,8 @@ export type Market = 'cn_a' | 'hk' | 'us' | 'sa'
 /** Long-run market aggregates used only as comparison anchors. This is static
     config, not a live feed; nothing here is presented as a measured number. */
 export type MarketConstants = {
+  /** Every quote on this venue is priced in this currency. */
+  currency: string
   marketPe: number
   marketPb: number
   marketEpsGrowth: number
@@ -35,6 +37,7 @@ export type Fundamentals = {
 
 const CONSTANTS: Record<Market, MarketConstants> = {
   sa: {
+    currency: 'SAR',
     marketPe: 17.5,
     marketPb: 2.2,
     marketEpsGrowth: 0.08,
@@ -43,6 +46,7 @@ const CONSTANTS: Record<Market, MarketConstants> = {
     yieldP75: 0.055,
   },
   cn_a: {
+    currency: 'CNY',
     marketPe: 14.2,
     marketPb: 1.6,
     marketEpsGrowth: 0.09,
@@ -51,6 +55,7 @@ const CONSTANTS: Record<Market, MarketConstants> = {
     yieldP75: 0.032,
   },
   hk: {
+    currency: 'HKD',
     marketPe: 11.4,
     marketPb: 1.1,
     marketEpsGrowth: 0.06,
@@ -59,6 +64,7 @@ const CONSTANTS: Record<Market, MarketConstants> = {
     yieldP75: 0.046,
   },
   us: {
+    currency: 'USD',
     marketPe: 22.8,
     marketPb: 4.1,
     marketEpsGrowth: 0.1,

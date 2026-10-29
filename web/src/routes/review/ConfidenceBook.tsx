@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
-import { quotes } from '../../data/mock'
+import { quoteBySymbol, quotes } from '../../data/mock'
 import {
   addCall,
   brierScore,
@@ -14,10 +14,6 @@ import {
 } from '../../store/confidence'
 import type { CallDir, CalibrationKey, Confidence } from '../../store/confidence'
 import { strings } from './strings'
-
-const QUOTE_BY_SYMBOL: Record<string, (typeof quotes)[number]> = Object.fromEntries(
-  quotes.map((q) => [q.symbol, q] as const),
-)
 
 const DIR_LABEL: Record<CallDir, 'confUp' | 'confDown' | 'confFlat'> = {
   up: 'confUp',
@@ -341,7 +337,7 @@ export function ConfidenceBook() {
 
         <ul>
           {open.map((call) => {
-            const quote = QUOTE_BY_SYMBOL[call.symbol]
+            const quote = quoteBySymbol[call.symbol]
             if (!quote) return null
             return (
               <li
@@ -382,7 +378,7 @@ export function ConfidenceBook() {
         {resolved.length > 0 && (
           <ul className="mt-1.5 divide-y divide-line border-t border-line">
             {resolved.map((row) => {
-              const quote = QUOTE_BY_SYMBOL[row.symbol]
+              const quote = quoteBySymbol[row.symbol]
               if (!quote) return null
               return (
                 <li key={row.id} className="flex min-h-12 items-center gap-2 py-2.5">

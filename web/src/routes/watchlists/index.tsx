@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { FormEvent, ReactNode } from 'react'
+import { StarIcon } from '../../components/StarIcon'
+import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
-import { quotes } from '../../data/mock'
+import { quoteBySymbol, quotes } from '../../data/mock'
 import { toggleWatch, useUser } from '../../store/user'
 import {
   RETURN_AFTER_DAYS,
@@ -19,26 +20,22 @@ import {
   useReturns,
 } from '../../store/returns'
 import type { ReturnEntry, ReturnReason } from '../../store/returns'
+import {
+  DEFAULT_ID,
+  MAX_NAME,
+  clampName,
+  loadGroups,
+  saveGroups,
+} from '../../store/watchlists'
+import type { Group } from '../../store/watchlists'
+import { CheckIcon, CloseIcon, IconBtn, MinusIcon, MoveIcon, PencilIcon, PlusIcon, TrashIcon } from './icons'
 import { strings } from './strings'
-
-type Group = {
-  id: string
-  name: string
-  symbols: string[]
-}
-
-const KEY = 'watchlists.v1'
-/** The seeded group is the one wired to the shared watchlist store. */
-const DEFAULT_ID = 'default'
-const MAX_NAME = 24
-const CONFIRM_MS = 3000
-
-const QUOTE_BY_SYMBOL: Record<string, (typeof quotes)[number]> = Object.fromEntries(
-  quotes.map((q) => [q.symbol, q] as const),
-)
 
 type S = (key: keyof (typeof strings)['en']) => string
 
+const CONFIRM_MS = 3000
+
+/** Copy keys for the reason a name was dropped; the reasons themselves live in `store/returns`. */
 const REASON_KEYS: Record<ReturnReason, keyof (typeof strings)['en']> = {
   valuation: 'reasonValuation',
   risk: 'reasonRisk',
@@ -46,235 +43,7 @@ const REASON_KEYS: Record<ReturnReason, keyof (typeof strings)['en']> = {
   other: 'reasonOther',
 }
 
-/** Accepts only symbols this build can render, and never twice in one group. */
-function cleanSymbols(value: unknown): string[] {
-  if (!Array.isArray(value)) return []
-  const out: string[] = []
-  for (const symbol of value) {
-    if (typeof symbol !== 'string') continue
-    if (!Object.hasOwn(QUOTE_BY_SYMBOL, symbol) || out.includes(symbol)) continue
-    out.push(symbol)
-  }
-  return out
-}
 
-/** Code-point slice, so a 24-character cap never splits a surrogate pair. */
-function clampName(value: string): string {
-  return Array.from(value).slice(0, MAX_NAME).join('')
-}
-
-function toGroup(value: unknown): Group | null {
-  if (!value || typeof value !== 'object') return null
-  const raw = value as Record<string, unknown>
-  if (typeof raw.id !== 'string' || raw.id.length === 0) return null
-  if (typeof raw.name !== 'string') return null
-  const name = clampName(raw.name.trim())
-  if (!name) return null
-  return { id: raw.id, name, symbols: cleanSymbols(raw.symbols) }
-}
-
-function seed(watchlist: string[], defaultName: string): Group[] {
-  return [{ id: DEFAULT_ID, name: defaultName, symbols: cleanSymbols(watchlist) }]
-}
-
-/** A stored empty array stays empty; only a missing key or bad payload reseeds. */
-function load(watchlist: string[], defaultName: string): Group[] {
-  let raw: string | null = null
-  try {
-    raw = localStorage.getItem(KEY)
-  } catch {
-    // Private browsing: seed still renders for this session.
-    return seed(watchlist, defaultName)
-  }
-  if (raw === null) return seed(watchlist, defaultName)
-  try {
-    const parsed: unknown = JSON.parse(raw)
-    if (Array.isArray(parsed)) {
-      const groups = parsed.flatMap((entry) => {
-        const group = toGroup(entry)
-        return group ? [group] : []
-      })
-      return groups
-    }
-  } catch {
-    // Corrupt payload: start from the seed rather than an unusable screen.
-  }
-  return seed(watchlist, defaultName)
-}
-
-function StarIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      aria-hidden="true"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
-    >
-      <path d="M12 3.6l2.55 5.17 5.7.83-4.13 4.02.98 5.68L12 16.62 6.9 19.3l.98-5.68L3.75 9.6l5.7-.83z" />
-    </svg>
-  )
-}
-
-function TrashIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 7h16M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7" />
-      <path d="m6.5 7 .8 12.1a1.5 1.5 0 0 0 1.5 1.4h6.4a1.5 1.5 0 0 0 1.5-1.4L17.5 7" />
-      <path d="M10 11v6M14 11v6" />
-    </svg>
-  )
-}
-
-function PencilIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4.5 19.5H8L18.5 9a2.1 2.1 0 0 0-3-3L5 16.5v3z" />
-      <path d="m13.5 6.5 4 4" />
-    </svg>
-  )
-}
-
-function MinusIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="17"
-      height="17"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-    >
-      <circle cx="12" cy="12" r="8" />
-      <path d="M8.5 12h7" />
-    </svg>
-  )
-}
-
-function MoveIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="17"
-      height="17"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3.5 7.5V6.2a1.7 1.7 0 0 1 1.7-1.7h3.4l1.7 2.1h8.5a1.7 1.7 0 0 1 1.7 1.7v9.5a1.7 1.7 0 0 1-1.7 1.7H5.2a1.7 1.7 0 0 1-1.7-1.7z" />
-      <path d="M9 13h5.5M12.5 10.5 15 13l-2.5 2.5" />
-    </svg>
-  )
-}
-
-function PlusIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="17"
-      height="17"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-    >
-      <path d="M12 5v14M5 12h14" />
-    </svg>
-  )
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="17"
-      height="17"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12.5l4.6 4.6L19 7.6" />
-    </svg>
-  )
-}
-
-function CloseIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-    >
-      <path d="M6 6l12 12M18 6L6 18" />
-    </svg>
-  )
-}
-
-function IconBtn({
-  label,
-  onClick,
-  children,
-  type = 'button',
-  disabled,
-  tone,
-}: {
-  label: string
-  onClick?: () => void
-  children: ReactNode
-  type?: 'button' | 'submit'
-  disabled?: boolean
-  tone?: string
-}) {
-  return (
-    <button
-      type={type}
-      aria-label={label}
-      onClick={onClick}
-      disabled={disabled}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors active:bg-fg/10 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-fg"
-      style={{ color: tone ?? 'var(--color-muted)' }}
-    >
-      {children}
-    </button>
-  )
-}
 
 function HeadStat({ value, label, tracking }: { value: number; label: string; tracking: number | undefined }) {
   return (
@@ -304,7 +73,7 @@ function ReturnsDock({
   onDismiss: (entry: ReturnEntry) => void
 }) {
   const [now] = useState(() => Date.now())
-  const visible = entries.filter((entry) => Object.hasOwn(QUOTE_BY_SYMBOL, entry.symbol))
+  const visible = entries.filter((entry) => Object.hasOwn(quoteBySymbol, entry.symbol))
   const { eligible, pending } = partitionReturns(visible, now)
   if (visible.length === 0) return null
   return (
@@ -318,7 +87,7 @@ function ReturnsDock({
       </p>
       <ul className="mt-2">
         {[...eligible, ...pending].map((entry) => {
-          const quote = QUOTE_BY_SYMBOL[entry.symbol]
+          const quote = quoteBySymbol[entry.symbol]
           if (!quote) return null
           const ready = isEligible(entry, now)
           return (
@@ -381,7 +150,7 @@ export default function WatchlistsPage() {
   const { watchlist } = useUser()
 
   const [groups, setGroups] = useState<Group[]>(() => {
-    const loaded = load(watchlist, s('defaultGroup'))
+    const loaded = loadGroups(watchlist, s('defaultGroup'))
     // A group seeded before localisation carries the old Chinese name. Rename
     // only that untouched seed; a user's own rename is left alone.
     return loaded.map((group) =>
@@ -408,7 +177,7 @@ export default function WatchlistsPage() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(KEY, JSON.stringify(groups))
+      saveGroups(groups)
     } catch {
       // Persistence is best-effort; the session still works.
     }
@@ -432,7 +201,7 @@ export default function WatchlistsPage() {
     const seen = new Set<string>()
     for (const group of groups) {
       for (const symbol of group.symbols) {
-        if (Object.hasOwn(QUOTE_BY_SYMBOL, symbol)) seen.add(symbol)
+        if (Object.hasOwn(quoteBySymbol, symbol)) seen.add(symbol)
       }
     }
     return seen.size
@@ -441,7 +210,7 @@ export default function WatchlistsPage() {
   const rows = useMemo(() => {
     if (!active) return []
     return active.symbols.flatMap((symbol) => {
-      const quote = QUOTE_BY_SYMBOL[symbol]
+      const quote = quoteBySymbol[symbol]
       return quote ? [quote] : []
     })
   }, [active])

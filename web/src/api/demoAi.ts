@@ -328,7 +328,7 @@ export const demoAi = {
       start_on: '2026-01-02',
       last_date: '2026-10-23',
       revision: 1,
-      account_state: { cash: 100000, positions: [] },
+      account_state: { cash: 100000, positions: [], unreadable: 0 },
     },
   ],
 

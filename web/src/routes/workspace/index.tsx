@@ -18,7 +18,8 @@ import {
   snapshotLedger,
   usePaperSnapshots,
 } from '../../store/paper'
-import type { PaperDiff, PaperPosition, PaperSnapshot } from '../../store/paper'
+import type { PaperPosition } from '../../lib/positions'
+import type { PaperDiff, PaperSnapshot } from '../../store/paper'
 import { aiApi } from '../../api/ai'
 import type {
   AlphaSummary,
@@ -28,7 +29,7 @@ import type {
   RunListItem,
   ScheduledRun,
 } from '../../api/ai'
-import { setIntake } from '../ai/intake'
+import { setIntake } from '../../store/aiIntake'
 import { buildRouteSheet, readRouteInput } from './routeSheet'
 import type { RouteSheet, RouteSkipReason, RouteStop, RouteStopKind } from './routeSheet'
 import { strings } from './strings'

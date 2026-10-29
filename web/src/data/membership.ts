@@ -1,5 +1,5 @@
 import { fundamentalsFor } from './fundamentals'
-import { quotes, sectors } from './mock'
+import { quotes, sectors, quoteBySymbol } from './mock'
 import type { Quote } from './mock'
 
 /** The three frames the map can show. A sector has no series of its own, so
@@ -53,17 +53,13 @@ export const SECTOR_OF: Record<string, string[]> = (() => {
 })()
 
 /** Symbol -> quote, built once so every lookup is a single key read. */
-const QUOTE_OF: Record<string, Quote> = Object.fromEntries(
-  quotes.map((q) => [q.symbol, q]),
-)
-
 /** The quotes in a sector. A sector the mock universe does not reach returns
     an empty list, so callers show their empty state instead of inventing
     constituents. */
 export function membersOf(sectorId: string): Quote[] {
   const out: Quote[] = []
   for (const symbol of SECTOR_OF[sectorId] ?? []) {
-    const quote = QUOTE_OF[symbol]
+    const quote = quoteBySymbol[symbol]
     if (quote) out.push(quote)
   }
   return out

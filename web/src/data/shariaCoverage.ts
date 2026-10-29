@@ -3,12 +3,34 @@ import { fundamentalsFor } from './fundamentals'
 export type ShariaField = 'debt' | 'interestBearing' | 'income' | 'receivables'
 export type ShariaStatus = 'compliant' | 'non-compliant' | 'unclassified'
 
-export type ShariaVerdict = {
-  status: ShariaStatus
-  values: Record<ShariaField, number | null>
-  failed: { field: ShariaField; value: number; limit: number }[]
-  missing: ShariaField[]
-}
+export type ShariaValues = Record<ShariaField, number | null>
+
+export type ShariaBreach = { field: ShariaField; value: number; limit: number }
+
+/**
+ * Three outcomes, and the type carries the invariant each one promises.
+ *
+ * It used to be one shape with a `status` field and two parallel arrays, which
+ * let `{ status: 'non-compliant', failed: [] }` typecheck; `lib/ledger` then read
+ * `verdict.failed[0].value` and threw inside render, taking the whole strategy
+ * screen down. Now a breach has at least one entry and an unproven name has at
+ * least one missing field, so the compiler refuses the empty case and the
+ * non-empty tuple is what the reader indexes.
+ */
+export type ShariaVerdict =
+  | { status: 'compliant'; values: ShariaValues; failed: []; missing: [] }
+  | {
+      status: 'non-compliant'
+      values: ShariaValues
+      failed: [ShariaBreach, ...ShariaBreach[]]
+      missing: []
+    }
+  | {
+      status: 'unclassified'
+      values: ShariaValues
+      failed: ShariaBreach[]
+      missing: [ShariaField, ...ShariaField[]]
+    }
 
 export const SHARIA_LIMITS: Record<ShariaField, number> = {
   debt: 0.3,
@@ -48,7 +70,11 @@ export function shariaVerdict(symbol: string, price: number): ShariaVerdict {
     return [{ field, value, limit: SHARIA_LIMITS[field] }]
   })
   // A missing input outranks a failure: the name is unproven, not condemned.
-  const status: ShariaStatus =
-    missing.length > 0 ? 'unclassified' : failed.length > 0 ? 'non-compliant' : 'compliant'
-  return { status, values, failed, missing }
+  if (missing.length > 0) {
+    return { status: 'unclassified', values, failed, missing: missing as [ShariaField, ...ShariaField[]] }
+  }
+  if (failed.length > 0) {
+    return { status: 'non-compliant', values, failed: failed as [ShariaBreach, ...ShariaBreach[]], missing: [] }
+  }
+  return { status: 'compliant', values, failed: [], missing: [] }
 }

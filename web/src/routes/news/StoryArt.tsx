@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import type { NewsItem } from '../../data/mock'
-import { quoteBySymbol } from './format'
+import { quoteBySymbol } from '../../data/mock'
 
 /* FNV-1a over the id: the same story always paints the same tile, so the feed
    never reshuffles itself between renders or reloads. */

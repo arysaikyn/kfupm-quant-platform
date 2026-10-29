@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { quotes } from '../../data/mock'
-import { applyRules, metric, presetRules, ruleValue } from './rules'
-import type { Rule } from './rules'
+import { applyRules, metric, presetRules, ruleValue } from '../../lib/screener'
+import type { Rule } from '../../lib/screener'
 
 function rule(field: Rule['field'], op: Rule['op'], value: string): Rule {
   return { id: 'r1', field, op, value }

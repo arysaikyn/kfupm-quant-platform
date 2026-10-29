@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { quotes, strategies } from '../../data/mock'
+import { quotes, strategies } from '../data/mock'
 import { crossMarket, limitOf, runLedger, runRule, sectorOfSymbol } from './ledger'
 
 const lowDebt = strategies.find((s) => s.id === 'low-debt-value')!

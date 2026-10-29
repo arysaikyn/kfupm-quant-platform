@@ -1,4 +1,5 @@
 import type { Lang } from '../i18n'
+import { costDrag } from './costs'
 
 /** A localised string: one field per supported language. */
 export type L10n = Record<Lang, string>
@@ -83,8 +84,8 @@ const curveFor = (seed: number, total: number) =>
 /** The span every curve covers; the chart axis and the report prose both read it. */
 export const equityYears = { first: 2019, last: 2026 }
 
-/** Charges a rerun pays: 78% of the book turns over a year at 15 bps fee plus 50 bps slippage. */
-const COST_DRAG = 0.78 * (0.0015 + 0.005) * (equityYears.last - equityYears.first)
+/** Charges a rerun pays, read from the one cost model in `data/costs.ts`. */
+const COST_DRAG = costDrag(equityYears.last - equityYears.first)
 
 /**
  * Both curves come from the one return figure a strategy declares, so a strategy
@@ -164,6 +165,21 @@ export const quotes: Quote[] = [
     spark: line(5, 40, -0.0005),
   },
 ]
+
+/**
+ * The one symbol -> quote lookup. Twelve screens used to rebuild this table
+ * locally, half of them typed `Record<string, Quote>`, which is a lie the
+ * moment a symbol is missing: a watchlist restored from storage can name a
+ * symbol the tape does not carry. `quoteOf` returns `undefined` for that case
+ * so the compiler makes every caller decide.
+ */
+export const quoteBySymbol: Readonly<Record<string, Quote | undefined>> = Object.fromEntries(
+  quotes.map((quote) => [quote.symbol, quote] as const),
+)
+
+export function quoteOf(symbol: string): Quote | undefined {
+  return quoteBySymbol[symbol]
+}
 
 export const sectors: Sector[] = [
   { id: 'energy', name: { zh: '能源', en: 'Energy', ar: 'الطاقة' }, change: 0.013, weight: 22 },

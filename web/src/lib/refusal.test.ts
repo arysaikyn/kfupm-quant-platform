@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { MessageItem } from '../../api/ai'
+import type { MessageItem } from '../api/ai'
 import { classifyRefusal, receiptsFromMessages, receiptFor } from './refusal'
 
 describe('refusal classification', () => {

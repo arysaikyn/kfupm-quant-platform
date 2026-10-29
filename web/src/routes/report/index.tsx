@@ -5,7 +5,7 @@ import { ErrorState } from '../../components/states'
 import { bench, equityYears, strategies } from '../../data/mock'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import { countRules, fill, fmtDate, fmtDateTime } from '../../i18n/format'
-import { setIntake } from '../ai/intake'
+import { setIntake } from '../../store/aiIntake'
 import { strings } from './strings'
 import type { ReportStrings } from './strings'
 

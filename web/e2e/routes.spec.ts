@@ -1,32 +1,9 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { SAMPLE_PATHS } from '../src/screens'
 
-const ROUTES = [
-  '/',
-  '/news',
-  '/news/n1',
-  '/ai',
-  '/ai/provider',
-  '/strategy',
-  '/strategy/low-debt-value',
-  '/strategy/sharia-income',
-  '/strategy/graveyard',
-  '/report/low-debt-value',
-  '/me',
-  '/screener',
-  '/alerts',
-  '/review',
-  '/calendar',
-  '/compare',
-  '/runs',
-  '/learn',
-  '/search',
-  '/sector/energy',
-  '/watchlists',
-  '/settings',
-  '/m/2222',
-  '/workspace',
-]
+/** Every screen, from the one table that also drives the router. */
+const ROUTES = SAMPLE_PATHS
 
 async function prime(page: Page, lang: 'en' | 'ar' | 'zh', theme: 'light' | 'dark') {
   await page.addInitScript(

@@ -6,7 +6,7 @@ import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
 import { bench, strategies } from '../../data/mock'
-import { fmtDate } from './format'
+import { fmtDate } from '../../i18n/format'
 import { countRules } from '../../i18n/format'
 import { featureStrings, listStrings, TAG_KEY } from './strings'
 

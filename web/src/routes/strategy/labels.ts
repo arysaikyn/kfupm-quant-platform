@@ -2,7 +2,7 @@ import { sectors } from '../../data/mock'
 import { fmtNum } from '../../i18n'
 import type { Lang } from '../../i18n'
 import type { ShariaField } from '../../data/shariaCoverage'
-import type { MissingKey, Measure } from './ledger'
+import type { MissingKey, Measure } from '../../lib/ledger'
 import type { FeatureStrings } from './strings'
 
 /** One figure, printed the way the ledger read it — percent, multiple or sector band. */

@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactElement, ReactNode } from 'react'
+import { tabOf } from '../screens'
 import { Link, useLocation } from 'react-router-dom'
 import { useI18n } from '../i18n'
 import type { GlobalKey } from '../i18n'
@@ -108,42 +109,11 @@ export function TabBar() {
   const { t, dir } = useI18n()
   const { pathname } = useLocation()
 
-  // A screen reached from a tab keeps that tab lit: /learn is part of 我的,
-  // /screener part of 行情, and so on. Without this the bar fell back to the
-  // first tab on every sub-route.
-  const TAB_OWNER: Record<string, string> = {
-    '/search': '/',
-    '/m': '/',
-    '/screener': '/',
-    '/review': '/news',
-    '/alerts': '/',
-    '/compare': '/',
-    '/sector': '/',
-    '/calendar': '/news',
-    '/runs': '/ai',
-    '/report': '/strategy',
-    '/learn': '/me',
-    '/watchlists': '/',
-    '/settings': '/me',
-    '/workspace': '/ai',
-  }
-  // Explicit entries first, then the tab whose own path prefixes this one.
-  // Without the second step /strategy/:id had no entry and the bar fell back to
-  // Markets, so opening a saved strategy moved the highlight to the wrong tab.
-  const owner =
-    Object.entries(TAB_OWNER).find(
-      ([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-    )?.[1] ??
-    items
-      .filter(
-        (it) =>
-          it.to !== '/' && (pathname === it.to || pathname.startsWith(`${it.to}/`)),
-      )
-      .sort((a, b) => b.to.length - a.to.length)[0]?.to ??
-    pathname
-  const activeIndex = items.findIndex((it) =>
-    it.to === '/' ? owner === '/' : owner === it.to,
-  )
+  // A screen reached from a tab keeps that tab lit: /learn is part of 我的 and
+  // /screener part of 行情. The registry owns that mapping, so a new screen
+  // cannot forget to register its owner and silently pin the pill to tab one.
+  const owner = tabOf(pathname)
+  const activeIndex = items.findIndex((it) => it.to === owner)
   const index = Math.max(activeIndex, 0)
 
   const barStyle = {

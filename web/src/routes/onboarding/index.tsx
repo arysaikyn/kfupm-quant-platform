@@ -3,7 +3,8 @@ import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useI18n, useStrings } from '../../i18n'
 import { completeOnboarding } from '../../store/prefs'
-import type { Market } from '../../store/prefs'
+import { BOARD_IDS } from '../../data/markets'
+import type { Board } from '../../data/markets'
 import { safeNext } from '../../lib/next'
 import { strings } from './strings'
 
@@ -11,9 +12,9 @@ type StringKey = keyof (typeof strings)['en']
 type S = (k: StringKey) => string
 
 const TOTAL = 5
-const MARKETS: Market[] = ['sa', 'cn', 'hk']
+const MARKETS: readonly Board[] = BOARD_IDS
 
-const MARKET_COPY: Record<Market, { name: StringKey; sub: StringKey; code: string }> = {
+const MARKET_COPY: Record<Board, { name: StringKey; sub: StringKey; code: string }> = {
   sa: { name: 'mSa', sub: 'mSaSub', code: 'SA' },
   cn: { name: 'mCn', sub: 'mCnSub', code: 'CN' },
   hk: { name: 'mHk', sub: 'mHkSub', code: 'HK' },
@@ -225,7 +226,7 @@ export default function OnboardingPage() {
   const s = useStrings(strings)
 
   const [step, setStep] = useState(1)
-  const [market, setMarket] = useState<Market | null>(null)
+  const [market, setMarket] = useState<Board | null>(null)
   // +1 slides in from the end, -1 from the start; RTL flips the offset below.
   const [slide, setSlide] = useState(1)
 

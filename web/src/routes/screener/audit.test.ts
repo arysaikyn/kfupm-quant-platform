@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { quotes } from '../../data/mock'
 import type { Quote } from '../../data/mock'
 import { counterfactual, funnel, reasonGroups, relaxations, shariaBuckets } from './audit'
-import { applyRules } from './rules'
-import type { Rule } from './rules'
+import { applyRules } from '../../lib/screener'
+import type { Rule } from '../../lib/screener'
 
 function makeQuote(symbol: string, price: number, change: number): Quote {
   return {

@@ -17,66 +17,21 @@ import { OfflineBanner } from './components/OfflineBanner'
 import { usePrefs } from './store/prefs'
 import { markRouteSeen } from './store/learn'
 import { useI18n } from './i18n'
-import type { GlobalKey } from './i18n'
 import { useOnline } from './lib/useOnline'
 import { safeNext } from './lib/next'
+import { SCREENS, TAB_PATHS, titleKeyOf } from './screens'
 
-// Every screen is its own chunk; the shell and the tab bar stay in the entry.
-const WelcomePage = lazy(() => import('./routes/onboarding'))
-const MarketPage = lazy(() => import('./routes/market'))
-const SymbolPage = lazy(() => import('./routes/market/SymbolPage'))
-const NewsPage = lazy(() => import('./routes/news'))
-const NewsDetail = lazy(() => import('./routes/news/NewsDetail'))
-const AiPage = lazy(() => import('./routes/ai'))
-const AiProviderPage = lazy(() => import('./routes/ai/ProviderPage'))
-const StrategyPage = lazy(() => import('./routes/strategy'))
-const StrategyDetail = lazy(() => import('./routes/strategy/StrategyDetail'))
-const GraveyardPage = lazy(() => import('./routes/strategy/Graveyard'))
-const MePage = lazy(() => import('./routes/me'))
-const ScreenerPage = lazy(() => import('./routes/screener'))
-const AlertsPage = lazy(() => import('./routes/alerts'))
-const ReviewPage = lazy(() => import('./routes/review'))
-const CalendarPage = lazy(() => import('./routes/calendar'))
-const ComparePage = lazy(() => import('./routes/compare'))
-const RunsPage = lazy(() => import('./routes/runs'))
-const LearnPage = lazy(() => import('./routes/learn'))
-const SearchPage = lazy(() => import('./routes/search'))
-const SectorPage = lazy(() => import('./routes/sector'))
-const ReportPage = lazy(() => import('./routes/report'))
-const WatchlistsPage = lazy(() => import('./routes/watchlists'))
-const SettingsPage = lazy(() => import('./routes/settings'))
-const WorkspacePage = lazy(() => import('./routes/workspace'))
 const NotFoundPage = lazy(() => import('./routes/not-found'))
+const WelcomePage = lazy(() => import('./routes/onboarding'))
 
-/** Every path names its screen; the map drives titles and the live announcer. */
-function routeKey(pathname: string): GlobalKey {
-  if (pathname === '/') return 'route.market'
-  if (pathname.startsWith('/m/')) return 'route.symbol'
-  if (pathname === '/news') return 'route.news'
-  if (pathname.startsWith('/news/')) return 'route.article'
-  if (pathname === '/ai/provider') return 'route.aiProvider'
-  if (pathname === '/ai') return 'route.ai'
-  if (pathname === '/strategy') return 'route.strategy'
-  if (pathname === '/strategy/graveyard') return 'route.strategy'
-  if (pathname.startsWith('/strategy/')) return 'route.strategyDetail'
-  if (pathname === '/me') return 'route.me'
-  if (pathname === '/screener') return 'route.screener'
-  if (pathname === '/alerts') return 'route.alerts'
-  if (pathname === '/review') return 'route.review'
-  if (pathname === '/calendar') return 'route.calendar'
-  if (pathname === '/compare') return 'route.compare'
-  if (pathname === '/runs') return 'route.runs'
-  if (pathname === '/learn') return 'route.learn'
-  if (pathname === '/search') return 'route.search'
-  if (pathname.startsWith('/sector/')) return 'route.sector'
-  if (pathname.startsWith('/report/')) return 'route.report'
-  if (pathname === '/watchlists') return 'route.watchlists'
-  if (pathname === '/settings') return 'route.settings'
-  if (pathname === '/workspace') return 'route.workspace'
-  return 'route.notFound'
-}
+/**
+ * Every screen is its own chunk. `src/screens` says which chunk, what the
+ * title is, and which tab stays lit; this file only assembles them.
+ */
+const PAGES = SCREENS.map((screen) => ({ ...screen, Page: lazy(screen.load) }))
 
-const TAB_DESTINATIONS = ['/', '/news', '/ai', '/strategy', '/me'] as const
+/** Chunks worth warming while the first screen is idle. */
+const WARM = SCREENS.filter((screen) => screen.warm)
 
 function isTypingTarget(target: EventTarget | null): boolean {
   return Boolean(
@@ -103,11 +58,7 @@ function Shell() {
   // resolves from memory instead of waiting on a network round trip.
   useEffect(() => {
     const warm = () => {
-      void import('./routes/news')
-      void import('./routes/ai')
-      void import('./routes/strategy')
-      void import('./routes/me')
-      void import('./routes/search')
+      for (const screen of WARM) void screen.load()
     }
     const w = window as Window & { requestIdleCallback?: (cb: () => void) => number }
     if (typeof w.requestIdleCallback === 'function') w.requestIdleCallback(warm)
@@ -140,7 +91,7 @@ function Shell() {
   // The title and the live region are the only way a screen reader learns that
   // the route changed: focus alone does not say where it went.
   useEffect(() => {
-    const label = t(routeKey(pathname))
+    const label = t(titleKeyOf(pathname))
     document.title = `${label} · Quant Desk`
     const raf = requestAnimationFrame(() => setAnnouncement(label))
     return () => cancelAnimationFrame(raf)
@@ -157,9 +108,9 @@ function Shell() {
         return
       }
       const index = Number(event.key) - 1
-      if (Number.isInteger(index) && index >= 0 && index < TAB_DESTINATIONS.length) {
+      if (Number.isInteger(index) && index >= 0 && index < TAB_PATHS.length) {
         event.preventDefault()
-        navigate(TAB_DESTINATIONS[index])
+        navigate(TAB_PATHS[index])
       }
     }
     window.addEventListener('keydown', onKey)
@@ -232,29 +183,9 @@ export default function App() {
     <Routes>
       <Route path="/welcome" element={<WelcomeGate />} />
       <Route element={<AppShell />}>
-        <Route path="/" element={<MarketPage />} />
-        <Route path="/m/:symbol" element={<SymbolPage />} />
-        <Route path="/news" element={<NewsPage />} />
-        <Route path="/news/:id" element={<NewsDetail />} />
-        <Route path="/ai" element={<AiPage />} />
-        <Route path="/ai/provider" element={<AiProviderPage />} />
-        <Route path="/strategy" element={<StrategyPage />} />
-        <Route path="/strategy/graveyard" element={<GraveyardPage />} />
-        <Route path="/strategy/:id" element={<StrategyDetail />} />
-        <Route path="/me" element={<MePage />} />
-        <Route path="/screener" element={<ScreenerPage />} />
-        <Route path="/alerts" element={<AlertsPage />} />
-        <Route path="/review" element={<ReviewPage />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/compare" element={<ComparePage />} />
-        <Route path="/runs" element={<RunsPage />} />
-        <Route path="/learn" element={<LearnPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/sector/:id" element={<SectorPage />} />
-        <Route path="/report/:id" element={<ReportPage />} />
-        <Route path="/watchlists" element={<WatchlistsPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/workspace" element={<WorkspacePage />} />
+        {PAGES.map((screen) => (
+          <Route key={screen.pattern} path={screen.pattern} element={<screen.Page />} />
+        ))}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

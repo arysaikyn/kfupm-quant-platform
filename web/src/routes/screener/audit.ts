@@ -1,8 +1,8 @@
 import type { Quote } from '../../data/mock'
 import { SHARIA_LIMITS, shariaVerdict } from '../../data/shariaCoverage'
 import type { ShariaField, ShariaVerdict } from '../../data/shariaCoverage'
-import { applyRules, ruleValue } from './rules'
-import type { Field, Rule } from './rules'
+import { applyRules, ruleValue } from '../../lib/screener'
+import type { Field, Rule } from '../../lib/screener'
 
 /** One extra step outward, in the unit each rule is typed in. */
 const RELAX_STEP: Record<Field, number> = {

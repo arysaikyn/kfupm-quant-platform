@@ -1,16 +1,19 @@
 import { useMemo, useState } from 'react'
+import { StarIcon } from '../../components/StarIcon'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { AnimatedNumber } from '../../components/AnimatedNumber'
+import { AnimatedNumber } from './AnimatedNumber'
 import { BarStrip } from '../../components/BarStrip'
 import { LongPressLink } from '../../components/LongPressLink'
-import { TickerTape } from '../../components/TickerTape'
-import { Treemap } from '../../components/Treemap'
-import type { TreemapGroup } from '../../components/Treemap'
+import { TickerTape } from './TickerTape'
+import { Treemap } from './Treemap'
+import type { TreemapGroup } from './Treemap'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import { fundamentalsFor } from '../../data/fundamentals'
 import { indices, quotes, sectors } from '../../data/mock'
+import { BOARDS, boardOf } from '../../data/markets'
+import type { Board } from '../../data/markets'
 import type { Quote } from '../../data/mock'
 import { frameChange, membersChange, membersOf } from '../../data/membership'
 import type { HeatFrame } from '../../data/membership'
@@ -90,22 +93,6 @@ function TrendArrow({ up }: { up: boolean }) {
   )
 }
 
-function StarIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      aria-hidden="true"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
-    >
-      <path d="M12 3.6l2.55 5.17 5.7.83-4.13 4.02.98 5.68L12 16.62 6.9 19.3l.98-5.68L3.75 9.6l5.7-.83z" />
-    </svg>
-  )
-}
 
 /** Sits on top of the row's trailing 44px, never inside the link: the row stays
     one tap target for /m/{symbol} and the star is a sibling, not a nested button. */
@@ -136,11 +123,12 @@ function WatchStar({
   )
 }
 
-const MARKETS = [
-  { id: 'sa', key: 'mSaudi', index: 'TASI' },
-  { id: 'cn', key: 'mCn', index: '000001' },
-  { id: 'hk', key: 'mHk', index: 'HSI' },
-] as const
+/** The picker's copy keys; the board identities live in `data/markets`. */
+const BOARD_KEY: Record<Board, 'mSaudi' | 'mCn' | 'mHk'> = {
+  sa: 'mSaudi',
+  cn: 'mCn',
+  hk: 'mHk',
+}
 
 export default function MarketPage() {
   const { t, lang } = useI18n()
@@ -154,7 +142,8 @@ export default function MarketPage() {
   const { view, sort, frame, sector } = boardFrom(params)
   const [picked, setPicked] = useState<string | null>(null)
   const { market: prefMarket } = usePrefs()
-  const heroIndex = indices.find((ix) => ix.symbol === MARKETS.find((m) => m.id === prefMarket)?.index) ?? indices[0]
+  const heroIndex =
+    indices.find((ix) => ix.symbol === boardOf(prefMarket).indexSymbol) ?? indices[0]
   const restIndices = indices.filter((ix) => ix.symbol !== heroIndex.symbol)
 
   /** Patch the board in place. replace keeps history as destination → destination,
@@ -313,7 +302,7 @@ export default function MarketPage() {
         aria-label={s('marketFocus')}
         className="mt-3 flex gap-1 rounded-full border border-line bg-surface p-1"
       >
-        {MARKETS.map((m) => {
+        {BOARDS.map((m) => {
           const active = prefMarket === m.id
           return (
             <button
@@ -328,7 +317,7 @@ export default function MarketPage() {
                   : { color: 'var(--color-muted)' }
               }
             >
-              {s(m.key)}
+              {s(BOARD_KEY[m.id])}
             </button>
           )
         })}

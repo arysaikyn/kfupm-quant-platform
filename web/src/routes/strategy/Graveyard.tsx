@@ -3,15 +3,10 @@ import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { fill, fmtDate } from '../../i18n/format'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
-import { quotes } from '../../data/mock'
-import type { Quote } from '../../data/mock'
+import { quoteBySymbol } from '../../data/mock'
 import { postMortem, retired, reviveDiff } from './graveyardData'
 import { measureText } from './labels'
 import { featureStrings } from './strings'
-
-const QUOTE_OF: Record<string, Quote> = Object.fromEntries(
-  quotes.map((quote) => [quote.symbol, quote]),
-)
 
 /**
  * Where dead strategies sit. The post-mortem is recomputed from the demo tape
@@ -80,7 +75,7 @@ export default function GraveyardPage() {
                     ? fill(s('graveNames'), {
                         n: fmtNum(pm.failing.length, lang, 0),
                         total: fmtNum(pm.total, lang, 0),
-                        symbol: QUOTE_OF[pm.worst.symbol]?.name[lang] ?? pm.worst.symbol,
+                        symbol: quoteBySymbol[pm.worst.symbol]?.name[lang] ?? pm.worst.symbol,
                         value: measureText(pm.worst.measure, lang),
                       })
                     : pm.measurable

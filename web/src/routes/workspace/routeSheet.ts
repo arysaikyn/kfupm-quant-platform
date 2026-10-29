@@ -1,6 +1,6 @@
 import type { Lang } from '../../i18n'
 import { news, strategies } from '../../data/mock'
-import { loadScreens } from '../screener/rules'
+import { loadScreens } from '../../store/screens'
 
 /**
  * The weekly route is a fixed, ordered demo walk over things this build

@@ -1,20 +1,16 @@
 import { useSyncExternalStore } from 'react'
+import { BOARD_IDS, isBoard } from '../data/markets'
+import type { Board } from '../data/markets'
 
-/** The three boards the first run offers. One is required before the app opens. */
-export type Market = 'sa' | 'cn' | 'hk'
 
 export type PrefsState = {
   /** True once the welcome screens have been completed on this device. */
   onboarded: boolean
   /** The market picked on the last step; the default board after that. */
-  market: Market
+  market: Board
 }
 
 const KEY = 'app.prefs'
-
-function isMarket(v: unknown): v is Market {
-  return v === 'sa' || v === 'cn' || v === 'hk'
-}
 
 function load(): PrefsState {
   try {
@@ -23,14 +19,14 @@ function load(): PrefsState {
       const parsed = JSON.parse(raw) as Partial<PrefsState>
       // Anything malformed falls back to the first run instead of locking the
       // user out of the app behind a half-written record.
-      if (typeof parsed.onboarded === 'boolean' && isMarket(parsed.market)) {
+      if (typeof parsed.onboarded === 'boolean' && isBoard(parsed.market)) {
         return { onboarded: parsed.onboarded, market: parsed.market }
       }
     }
   } catch {
     // Private browsing: start at the welcome screens, keep working in memory.
   }
-  return { onboarded: false, market: 'sa' }
+  return { onboarded: false, market: BOARD_IDS[0] ?? 'sa' }
 }
 
 let state: PrefsState = load()
@@ -55,12 +51,12 @@ export function usePrefs(): PrefsState {
   return useSyncExternalStore(subscribe, () => state, () => state)
 }
 
-export function completeOnboarding(market: Market) {
+export function completeOnboarding(market: Board) {
   set({ onboarded: true, market })
 }
 
 /** The board's market switch writes the same field onboarding sets. */
-export function setMarket(market: Market) {
+export function setMarket(market: Board) {
   set({ ...state, market })
 }
 

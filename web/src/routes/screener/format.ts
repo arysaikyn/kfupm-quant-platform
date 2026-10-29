@@ -1,6 +1,6 @@
 import type { Lang } from '../../i18n'
 import { fmtNum } from '../../i18n'
-import type { Field, Op, Rule } from './rules'
+import type { Field, Op, Rule } from '../../lib/screener'
 import type { ScreenerStrings } from './strings'
 
 export const FIELD_ORDER: readonly Field[] = ['pe', 'debt', 'yield', 'change', 'price', 'turnover']

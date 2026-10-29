@@ -1,5 +1,24 @@
-import { isDemoMode } from '../store/aiMode'
+import { isDemoMode } from '../lib/aiMode'
+import type { PaperPosition } from '../lib/positions'
 import { demoAi } from './demoAi'
+import { AiApiError } from './errors'
+import {
+  parseAlphaList,
+  parseHealth,
+  parseLlmSettings,
+  parseMessageList,
+  parsePaperAccounts,
+  parsePortfolio,
+  parseRunList,
+  parseRunPreview,
+  parseScheduledRuns,
+  parseSession,
+  parseSessionList,
+  parseStatus,
+  parseUploadResult,
+} from './parse'
+
+export { AiApiError } from './errors'
 
 /** Events the Vibe agent stream can emit. */
 export const AGENT_EVENTS = [
@@ -44,7 +63,8 @@ export type SessionItem = {
 export type MessageItem = {
   message_id: string
   session_id: string
-  role: 'user' | 'assistant' | 'system' | string
+  /** Narrow on purpose: the parser drops a role this build cannot render. */
+  role: 'user' | 'assistant' | 'system'
   content: string
   created_at: string
   linked_attempt_id: string | null
@@ -78,7 +98,12 @@ export type PaperAccount = {
   start_on: string
   last_date: string | null
   revision: number
-  account_state: { cash: number; positions: unknown[] }
+  account_state: {
+    cash: number
+    positions: PaperPosition[]
+    /** Positions the backend published that could not be named. */
+    unreadable: number
+  }
 }
 
 export type PortfolioSnapshot = {
@@ -87,7 +112,7 @@ export type PortfolioSnapshot = {
   complete: boolean
   display_currency?: string
   totals: { usd: number; cny: number; display?: number }
-  positions: unknown[]
+  positions: PaperPosition[]
   warnings: string[]
 }
 
@@ -119,18 +144,13 @@ export type LlmSettings = {
 
 export type UploadResult = { status: string; file_path: string; filename: string }
 
-export class AiApiError extends Error {
-  status: number
-  constructor(message: string, status: number) {
-    super(message)
-    this.name = 'AiApiError'
-    this.status = status
-  }
-}
-
 const BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? ''
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(
+  path: string,
+  parse: (raw: unknown) => T,
+  init?: RequestInit,
+): Promise<T> {
   const controller = new AbortController()
   const timer = window.setTimeout(() => controller.abort(), 120_000)
   try {
@@ -149,60 +169,87 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       }
       throw new AiApiError(detail, response.status)
     }
-    if (response.status === 204) return undefined as T
-    return (await response.json()) as T
+    const raw: unknown = await response.json()
+    return parse(raw)
   } catch (error) {
     if (error instanceof AiApiError) throw error
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw new AiApiError('The agent took too long to respond.', 0)
     }
-    throw new AiApiError('The local AI backend is not reachable.', 0)
+    // Name the cause: a body this build cannot read is a shape change, not an
+    // outage, and telling the two apart is the difference between a useful
+    // retry and a wasted one.
+    if (error instanceof SyntaxError) {
+      throw new AiApiError('The agent returned a response this app cannot read.', 0)
+    }
+    if (error instanceof TypeError) {
+      throw new AiApiError('The local AI backend is not reachable.', 0)
+    }
+    console.warn('ai transport failure', error)
+    throw new AiApiError('The agent request failed.', 0)
   } finally {
     window.clearTimeout(timer)
   }
 }
 
+/** The message envelope a send returns; the stream follows on its own channel. */
+const parseSendAck = (raw: unknown): { message_id: string; attempt_id: string } => {
+  if (!raw || typeof raw !== 'object') throw new AiApiError('The agent returned an unreadable response (send).', 0)
+  const record = raw as Record<string, unknown>
+  return {
+    message_id: typeof record.message_id === 'string' ? record.message_id : '',
+    attempt_id: typeof record.attempt_id === 'string' ? record.attempt_id : '',
+  }
+}
+
+const parseTitleAck = (raw: unknown): { status: string; title?: string } => {
+  if (!raw || typeof raw !== 'object') throw new AiApiError('The agent returned an unreadable response (title).', 0)
+  const record = raw as Record<string, unknown>
+  return {
+    status: typeof record.status === 'string' ? record.status : 'ok',
+    ...(typeof record.title === 'string' ? { title: record.title } : {}),
+  }
+}
+
 const liveApi = {
-  health: () => request<{ ok: boolean; upstream: string }>('/api/ai/health'),
-  listSessions: () => request<SessionItem[]>('/api/ai/sessions'),
+  health: () => request('/api/ai/health', parseHealth),
+  listSessions: () => request('/api/ai/sessions', parseSessionList),
   createSession: (title: string) =>
-    request<SessionItem>('/api/ai/sessions', {
+    request('/api/ai/sessions', parseSession, {
       method: 'POST',
       body: JSON.stringify({ title }),
     }),
   renameSession: (id: string, title: string) =>
-    request<{ status: string }>(`/api/ai/sessions/${encodeURIComponent(id)}`, {
+    request(`/api/ai/sessions/${encodeURIComponent(id)}`, parseStatus, {
       method: 'PATCH',
       body: JSON.stringify({ title }),
     }),
   deleteSession: (id: string) =>
-    request<{ status: string }>(`/api/ai/sessions/${encodeURIComponent(id)}`, {
+    request(`/api/ai/sessions/${encodeURIComponent(id)}`, parseStatus, {
       method: 'DELETE',
     }),
   messages: (id: string) =>
-    request<MessageItem[]>(`/api/ai/sessions/${encodeURIComponent(id)}/messages?limit=200`),
+    request(`/api/ai/sessions/${encodeURIComponent(id)}/messages?limit=200`, parseMessageList),
   sendMessage: (id: string, content: string) =>
-    request<{ message_id: string; attempt_id: string }>(
-      `/api/ai/sessions/${encodeURIComponent(id)}/messages`,
-      { method: 'POST', body: JSON.stringify({ content }) },
-    ),
+    request(`/api/ai/sessions/${encodeURIComponent(id)}/messages`, parseSendAck, {
+      method: 'POST',
+      body: JSON.stringify({ content }),
+    }),
   cancel: (id: string) =>
-    request<{ status: string }>(`/api/ai/sessions/${encodeURIComponent(id)}/cancel`, {
+    request(`/api/ai/sessions/${encodeURIComponent(id)}/cancel`, parseStatus, {
       method: 'POST',
     }),
   autoTitle: (id: string) =>
-    request<{ status: string; title?: string }>(
-      `/api/ai/sessions/${encodeURIComponent(id)}/title/auto`,
-      { method: 'POST' },
-    ),
-  runPreview: (runId: string) =>
-    request<RunPreview>(`/api/ai/runs/${encodeURIComponent(runId)}/preview`),
-  runs: () => request<RunListItem[]>('/api/ai/runs'),
-  paperAccounts: () => request<PaperAccount[]>('/api/ai/api/paper-accounts'),
-  portfolio: () => request<{ status: string; snapshot: PortfolioSnapshot | null }>('/api/ai/api/portfolio'),
-  alphas: (limit = 60) => request<{ alphas: AlphaSummary[]; total: number }>(`/api/ai/alpha/list?limit=${limit}`),
-  scheduled: () => request<ScheduledRun[]>('/api/ai/scheduled-runs'),
-  llm: () => request<LlmSettings>('/api/ai/settings/llm'),
+    request(`/api/ai/sessions/${encodeURIComponent(id)}/title/auto`, parseTitleAck, {
+      method: 'POST',
+    }),
+  runPreview: (runId: string) => request(`/api/ai/runs/${encodeURIComponent(runId)}/preview`, parseRunPreview),
+  runs: () => request('/api/ai/runs', parseRunList),
+  paperAccounts: () => request('/api/ai/api/paper-accounts', parsePaperAccounts),
+  portfolio: () => request('/api/ai/api/portfolio', parsePortfolio),
+  alphas: (limit = 60) => request(`/api/ai/alpha/list?limit=${limit}`, parseAlphaList),
+  scheduled: () => request('/api/ai/scheduled-runs', parseScheduledRuns),
+  llm: () => request('/api/ai/settings/llm', parseLlmSettings),
   upload: async (file: File): Promise<UploadResult> => {
     const form = new FormData()
     form.append('file', file)
@@ -217,10 +264,10 @@ const liveApi = {
       }
       throw new AiApiError(detail, response.status)
     }
-    return (await response.json()) as UploadResult
+    return parseUploadResult(await response.json())
   },
   configureProvider: (config: ProviderConfig) =>
-    request<LlmSettings>('/api/ai/settings/llm', {
+    request('/api/ai/settings/llm', parseLlmSettings, {
       method: 'PUT',
       body: JSON.stringify({
         provider: 'openai',
@@ -253,37 +300,36 @@ function subscribeLiveSession(
   return () => source.close()
 }
 
+const transport = () => (isDemoMode() ? demoAi : liveApi)
+
 /**
  * One transport for both modes. Demo methods are local and never touch the
  * backend, so a developer key in the environment cannot be consumed by default.
  */
 export const aiApi = {
-  health: () => (isDemoMode() ? demoAi.health() : liveApi.health()),
-  listSessions: () => (isDemoMode() ? demoAi.listSessions() : liveApi.listSessions()),
-  createSession: (title: string) =>
-    isDemoMode() ? demoAi.createSession(title) : liveApi.createSession(title),
-  renameSession: (id: string, title: string) =>
-    isDemoMode() ? demoAi.renameSession(id, title) : liveApi.renameSession(id, title),
-  deleteSession: (id: string) =>
-    isDemoMode() ? demoAi.deleteSession(id) : liveApi.deleteSession(id),
-  messages: (id: string) => (isDemoMode() ? demoAi.messages(id) : liveApi.messages(id)),
-  sendMessage: (id: string, content: string) =>
-    isDemoMode() ? demoAi.sendMessage(id, content) : liveApi.sendMessage(id, content),
-  cancel: (id: string) => (isDemoMode() ? demoAi.cancel(id) : liveApi.cancel(id)),
-  autoTitle: (id: string) => (isDemoMode() ? demoAi.autoTitle(id) : liveApi.autoTitle(id)),
-  runPreview: (runId: string) =>
-    isDemoMode() ? demoAi.runPreview() : liveApi.runPreview(runId),
-  runs: () => (isDemoMode() ? demoAi.runs() : liveApi.runs()),
-  paperAccounts: () => (isDemoMode() ? demoAi.paperAccounts() : liveApi.paperAccounts()),
-  portfolio: () => (isDemoMode() ? demoAi.portfolio() : liveApi.portfolio()),
-  alphas: (limit = 60) => (isDemoMode() ? demoAi.alphas(limit) : liveApi.alphas(limit)),
-  scheduled: () => (isDemoMode() ? demoAi.scheduled() : liveApi.scheduled()),
-  llm: () => (isDemoMode() ? demoAi.llm() : liveApi.llm()),
-  upload: (file: File) => (isDemoMode() ? demoAi.upload(file) : liveApi.upload(file)),
+  /** Resolved per call so switching mode mid-session needs no re-wiring. */
+  health: () => transport().health(),
+  listSessions: () => transport().listSessions(),
+  createSession: (title: string) => transport().createSession(title),
+  renameSession: (id: string, title: string) => transport().renameSession(id, title),
+  deleteSession: (id: string) => transport().deleteSession(id),
+  messages: (id: string) => transport().messages(id),
+  sendMessage: (id: string, content: string) => transport().sendMessage(id, content),
+  cancel: (id: string) => transport().cancel(id),
+  autoTitle: (id: string) => transport().autoTitle(id),
+  runPreview: (runId: string) => transport().runPreview(runId),
+  runs: () => transport().runs(),
+  paperAccounts: () => transport().paperAccounts(),
+  portfolio: () => transport().portfolio(),
+  alphas: (limit = 60) => transport().alphas(limit),
+  scheduled: () => transport().scheduled(),
+  llm: () => transport().llm(),
+  upload: (file: File) => transport().upload(file),
+  // The live stream has a different shape (SSE polling), so it keeps its own arm.
   subscribeSession: (id: string, handlers: AgentStreamHandlers) =>
     isDemoMode()
       ? demoAi.subscribeSession(id, handlers)
       : subscribeLiveSession(id, handlers),
-  configureProvider: (config: ProviderConfig) =>
-    liveApi.configureProvider(config),
+  configureProvider: (config: ProviderConfig) => liveApi.configureProvider(config),
 }
+

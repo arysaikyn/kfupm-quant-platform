@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useReducedMotion } from '../hooks/useReducedMotion'
+import { useReducedMotion } from '../../hooks/useReducedMotion'
 
 type Props = {
   value: number

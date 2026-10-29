@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { mergeChips } from './chat'
-import type { CtxRef } from './chat'
-import { setIntake, takeIntake } from './intake'
+import { mergeChips } from './chips'
+import type { CtxRef } from './chips'
+import { setIntake, takeIntake } from '../store/aiIntake'
 
 beforeEach(() => {
   sessionStorage.clear()

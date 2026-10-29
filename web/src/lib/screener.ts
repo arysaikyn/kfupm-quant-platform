@@ -1,8 +1,11 @@
-import { fundamentalsFor } from '../../data/fundamentals'
-import type { Quote } from '../../data/mock'
-import type { FactorFamily } from '../../lib/gridcheck'
+import { fundamentalsFor } from '../data/fundamentals'
+import type { Quote } from '../data/mock'
+import type { FactorFamily } from './gridcheck'
 
 /**
+ * The screen model: what a rule is, what it reads, and how it is applied. Pure:
+ * no storage, no React. Persistence lives in `store/screens.ts`.
+ *
  * Price, volume and the three fundamentals the tape actually carries. The split
  * matters: a screen built only on the first three reads the measured-dead factor
  * block, which is why `lib/gridcheck` exists.
@@ -27,17 +30,9 @@ export type Rule = {
   value: string
 }
 
-export type SavedScreen = {
-  id: string
-  name: string
-  rules: Rule[]
-}
-
 export type PresetId = 'value' | 'momentum' | 'calm'
 
 export const MAX_RULES = 5
-
-const STORAGE_KEY = 'screener.screens'
 
 const FIELDS: readonly Field[] = ['pe', 'debt', 'yield', 'change', 'price', 'turnover']
 const OPS: readonly Op[] = ['lt', 'gt']
@@ -160,39 +155,4 @@ export function sanitizeRules(input: unknown[]): Rule[] {
     out.push({ id: createId('r'), field: record.field, op: record.op, value })
   }
   return out
-}
-
-/** Never throws: a corrupt or blocked store reads as "no saved screens". */
-export function loadScreens(): SavedScreen[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed: unknown = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return []
-    const out: SavedScreen[] = []
-    const ids = new Set<string>()
-    for (const entry of parsed) {
-      if (!entry || typeof entry !== 'object') continue
-      const record = entry as Record<string, unknown>
-      const name = typeof record.name === 'string' ? record.name.trim().slice(0, 40) : ''
-      if (!name) continue
-      const rules = Array.isArray(record.rules) ? sanitizeRules(record.rules) : []
-      let id =
-        typeof record.id === 'string' && record.id.trim() ? record.id.trim() : createId('s')
-      if (ids.has(id)) id = createId('s')
-      ids.add(id)
-      out.push({ id, name, rules })
-    }
-    return out
-  } catch {
-    return []
-  }
-}
-
-export function storeScreens(screens: readonly SavedScreen[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(screens))
-  } catch {
-    // Private browsing: the in-memory list still works until reload.
-  }
 }

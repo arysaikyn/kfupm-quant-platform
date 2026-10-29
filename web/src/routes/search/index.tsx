@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { StarIcon } from '../../components/StarIcon'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BackButton } from '../../components/BackButton'
@@ -6,7 +7,7 @@ import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
-import { quotes } from '../../data/mock'
+import { quoteBySymbol, quotes } from '../../data/mock'
 import type { Quote } from '../../data/mock'
 import { toggleWatch, useUser } from '../../store/user'
 import { strings } from './strings'
@@ -15,10 +16,6 @@ const RECENT_KEY = 'search.recent'
 const MAX_RECENT = 5
 
 /** The quote table is fixed at import time; symbols are the only keys. */
-const QUOTE_BY_SYMBOL: Record<string, Quote | undefined> = Object.fromEntries(
-  quotes.map((quote) => [quote.symbol, quote] as const),
-)
-
 /** DOM id of one result row, referenced by aria-activedescendant. */
 const optionId = (symbol: string) => `search-option-${symbol}`
 
@@ -73,22 +70,6 @@ function loadRecent(): string[] {
   }
 }
 
-function StarIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      aria-hidden="true"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
-    >
-      <path d="M12 3.6l2.55 5.17 5.7.83-4.13 4.02.98 5.68L12 16.62 6.9 19.3l.98-5.68L3.75 9.6l5.7-.83z" />
-    </svg>
-  )
-}
 
 function QuoteRow({
   quote,
@@ -215,7 +196,7 @@ export default function SearchPage() {
   const watchedQuotes = useMemo(
     () =>
       watchlist
-        .map((symbol) => QUOTE_BY_SYMBOL[symbol])
+        .map((symbol) => quoteBySymbol[symbol])
         .filter((quote): quote is Quote => quote !== undefined),
     [watchlist],
   )

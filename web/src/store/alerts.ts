@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { quotes } from '../data/mock'
+import { quoteBySymbol, quotes } from '../data/mock'
 
 export type AlertDir = 'above' | 'below'
 
@@ -11,8 +11,6 @@ export type PriceAlert = {
 }
 
 const KEY = 'alerts.v1'
-
-const QUOTE_BY_SYMBOL = Object.fromEntries(quotes.map((q) => [q.symbol, q] as const))
 
 /** One already met and one still waiting, so both states show on first open. */
 const SEED: PriceAlert[] = [
@@ -26,7 +24,7 @@ function isAlert(v: unknown): v is PriceAlert {
   return (
     typeof a.id === 'string' &&
     typeof a.symbol === 'string' &&
-    Object.hasOwn(QUOTE_BY_SYMBOL, a.symbol) &&
+    Object.hasOwn(quoteBySymbol, a.symbol) &&
     (a.dir === 'above' || a.dir === 'below') &&
     typeof a.threshold === 'number' &&
     Number.isFinite(a.threshold) &&
@@ -100,7 +98,7 @@ export type AlertRow = PriceAlert & {
 /** Trigger state is read off the live quote every time; it is never stored. */
 export function rowsFor(alerts: PriceAlert[]): AlertRow[] {
   return alerts.flatMap((a) => {
-    const quote = QUOTE_BY_SYMBOL[a.symbol]
+    const quote = quoteBySymbol[a.symbol]
     if (!quote) return []
     const triggered = a.dir === 'above' ? quote.price >= a.threshold : quote.price <= a.threshold
     return [{ ...a, quote, triggered }]

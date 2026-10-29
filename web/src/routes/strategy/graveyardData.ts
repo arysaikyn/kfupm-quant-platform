@@ -1,7 +1,7 @@
 import { quotes } from '../../data/mock'
 import type { L10n, StrategyRule } from '../../data/mock'
-import { limitOf, runRule } from './ledger'
-import type { Measure } from './ledger'
+import { limitOf, runRule } from '../../lib/ledger'
+import type { Measure } from '../../lib/ledger'
 import { diffRules } from './plain'
 import type { DiffRow } from './plain'
 

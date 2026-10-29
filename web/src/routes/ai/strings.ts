@@ -93,19 +93,6 @@ export type AiStrings = {
   numeralLegend: string
   numeralTracedHint: string
   numeralUntraced: string
-  receiptStamp: string
-  receiptTitle: string
-  receiptTrigger: string
-  receiptRule: string
-  receiptRewrite: string
-  receiptAsked: string
-  receiptAnswered: string
-  ruleAdvice: string
-  ruleExecution: string
-  ruleGuarantee: string
-  rewriteAdvice: string
-  rewriteExecution: string
-  rewriteGuarantee: string
 }
 
 export const strings = {
@@ -195,20 +182,6 @@ export const strings = {
     numeralLegend: '划掉的数字没有对到本次运行。',
     numeralTracedHint: '在结果卡上高亮这个数字',
     numeralUntraced: '未对到本次运行',
-    receiptStamp: '超出范围',
-    receiptTitle: '超出这个 App 的范围',
-    receiptTrigger: '触发说法',
-    receiptRule: '规则类别',
-    receiptRewrite: '可以改成',
-    receiptAsked: '你的提问',
-    receiptAnswered: '这次回答',
-    ruleAdvice: '投资建议',
-    ruleExecution: '代下单',
-    ruleGuarantee: '保证收益',
-    rewriteAdvice: '我可以按你的条件筛出候选，并标出每条规则的通过、不通过和缺失；买不买由你决定。',
-    rewriteExecution: '这里不连接券商、不下单。我可以跑一次历史回测，让你看这条规则过去的表现。',
-    rewriteGuarantee:
-      '没有任何收益能被保证。我能给的是历史区间、最大回撤和样本量，以及它们在什么条件下失效。',
   },
   en: {
     promise: 'Ask in plain words. See what fits and why.',
@@ -296,22 +269,6 @@ export const strings = {
     numeralLegend: 'Struck numbers are not traced to this run.',
     numeralTracedHint: 'Highlight this number on the run card',
     numeralUntraced: 'Not traced to this run',
-    receiptStamp: 'Out of scope',
-    receiptTitle: 'Outside what this app does',
-    receiptTrigger: 'Trigger phrase',
-    receiptRule: 'Rule class',
-    receiptRewrite: 'Compliant rewrite',
-    receiptAsked: 'Your request',
-    receiptAnswered: 'This answer',
-    ruleAdvice: 'Investment advice',
-    ruleExecution: 'Order execution',
-    ruleGuarantee: 'Guaranteed returns',
-    rewriteAdvice:
-      'I can screen names against your rules and mark every condition pass, fail or missing. The buy decision stays with you.',
-    rewriteExecution:
-      'This app has no broker connection and places no orders. I can run a historical backtest so you can see how the rule behaved.',
-    rewriteGuarantee:
-      'No return can be guaranteed. What I can show is the historical range, the worst drawdown, the sample size, and the conditions where it breaks.',
   },
   ar: {
     promise: 'اسأل بكلمات بسيطة، وشاهد ما يناسبك ولماذا.',
@@ -399,21 +356,5 @@ export const strings = {
     numeralLegend: 'الأرقام المشطوبة غير متتبَّعة لهذا التشغيل.',
     numeralTracedHint: 'أظهر هذا الرقم في بطاقة التشغيل',
     numeralUntraced: 'غير متتبَّع لهذا التشغيل',
-    receiptStamp: 'خارج النطاق',
-    receiptTitle: 'خارج ما يفعله هذا التطبيق',
-    receiptTrigger: 'العبارة المسبِّبة',
-    receiptRule: 'فئة القاعدة',
-    receiptRewrite: 'صياغة مقبولة',
-    receiptAsked: 'طلبك',
-    receiptAnswered: 'هذه الإجابة',
-    ruleAdvice: 'نصيحة استثمارية',
-    ruleExecution: 'تنفيذ أمر',
-    ruleGuarantee: 'عوائد مضمونة',
-    rewriteAdvice:
-      'أستطيع فرز الأسهم وفق شروطك وتحديد كل شرط: ناجح أو فاشل أو بياناته ناقصة. قرار الشراء يبقى لك.',
-    rewriteExecution:
-      'هذا التطبيق لا يتصل بوسيط ولا ينفّذ أوامر. أستطيع تشغيل اختبار تاريخي لترى كيف تصرّفت القاعدة سابقًا.',
-    rewriteGuarantee:
-      'لا يمكن ضمان أي عائد. ما أستطيع عرضه هو النطاق التاريخي وأسوأ تراجع وحجم العينة والشروط التي تتعطّل عندها.',
   },
 } satisfies Dict<AiStrings>

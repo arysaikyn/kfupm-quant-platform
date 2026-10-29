@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLongPress } from '../hooks/useLongPress'
-import { setIntake } from '../routes/ai/intake'
-import type { CtxRef } from '../routes/ai/chat'
+import { setIntake } from '../store/aiIntake'
+import type { CtxRef } from '../lib/chips'
 
 type Props = {
   to: string

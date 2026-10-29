@@ -6,25 +6,23 @@ import { Screen } from '../../components/Screen'
 import { ErrorState } from '../../components/states'
 import { fmtNum, fmtPct, useI18n, useStrings } from '../../i18n'
 import type { Lang } from '../../i18n'
+import { DEMO_COSTS } from '../../data/costs'
 import { bench, strategies } from '../../data/mock'
 import { fill } from '../../i18n/format'
 import { gridCheck, returnsOf } from '../../lib/gridcheck'
 import type { FactorFamily } from '../../lib/gridcheck'
 import { expectedMaxZ, mean, normCdf, sd } from '../../lib/stats'
-import { fmtDate } from './format'
+import { fmtDate } from '../../i18n/format'
 import { EquityChart } from './EquityChart'
 import { CrossMarket } from './CrossMarket'
 import { DropLedger } from './DropLedger'
 import { PickList } from './PickList'
 import { RiyalJar } from './RiyalJar'
 import { StrategyReceipt } from './StrategyReceipt'
-import { crossMarket, runLedger } from './ledger'
+import { crossMarket, runLedger } from '../../lib/ledger'
 import { plainSummaryOf } from './plain'
 import type { ReceiptCosts } from './receipt'
 import { detailStrings, featureStrings, listStrings, TAG_KEY } from './strings'
-
-/** No turnover field in the mock contract; a fixed figure keeps the row honest. */
-const TURNOVER = 0.78
 
 /** Each rule was tried at three variants before it was fixed; the deflation pays for that search. */
 const VARIANTS_PER_RULE = 3
@@ -45,17 +43,12 @@ const RULE_FAMILY: Record<string, FactorFamily> = {
   sharia: 'sharia',
 }
 
-/** Cost row: one unit of starting capital, plus the two charges a rerun would pay. */
-const INITIAL_CAPITAL = 10000
-const FEE_RATE = 0.0015
-const SLIP_RATE = 0.005
-
-/** The same four constants the receipt pins, so the claim and the row cannot drift. */
+/** The one cost model: the receipt, the cost row and the gross curve all read it. */
 const RECEIPT_COSTS: ReceiptCosts = {
-  capital: INITIAL_CAPITAL,
-  feeBps: Math.round(FEE_RATE * 10_000),
-  slipBps: Math.round(SLIP_RATE * 10_000),
-  turnoverPct: Math.round(TURNOVER * 100),
+  capital: DEMO_COSTS.capital,
+  feeBps: Math.round(DEMO_COSTS.feeRate * 10_000),
+  slipBps: Math.round(DEMO_COSTS.slipRate * 10_000),
+  turnoverPct: Math.round(DEMO_COSTS.turnover * 100),
 }
 
 /** Same year as the chart's first axis label; kept whole because word order differs. */
@@ -204,7 +197,7 @@ export default function StrategyDetail() {
             rankExit: true,
             curve: st.curve,
             bench,
-            turnover: TURNOVER,
+            turnover: DEMO_COSTS.turnover,
           })
         : null,
     [st],
@@ -233,9 +226,9 @@ export default function StrategyDetail() {
   const lab = LAB[lang]
 
   // The cost row prices the same total the headline prints, so the two cannot disagree.
-  const finalValue = Math.round(INITIAL_CAPITAL * (1 + total) * 100) / 100
-  const feesCost = Math.round(finalValue * FEE_RATE * 100) / 100
-  const slippageCost = Math.round(finalValue * SLIP_RATE * 100) / 100
+  const finalValue = Math.round(DEMO_COSTS.capital * (1 + total) * 100) / 100
+  const feesCost = Math.round(finalValue * DEMO_COSTS.feeRate * 100) / 100
+  const slippageCost = Math.round(finalValue * DEMO_COSTS.slipRate * 100) / 100
   const oosText = s('oosFrom').replace('{date}', fmtDate(st.updated, lang))
 
   // Attribution walks from benchmark -> gross -> net, so the four parts close on total.
@@ -383,7 +376,7 @@ export default function StrategyDetail() {
               divided
             />
             <Metric
-              value={fmtNum(TURNOVER * 100, lang, 0, '%')}
+              value={fmtNum(DEMO_COSTS.turnover * 100, lang, 0, '%')}
               name={s('mTurnover')}
               hint={s('mTurnoverHint')}
               divided
@@ -427,7 +420,7 @@ export default function StrategyDetail() {
           <div className="mt-3 grid grid-cols-2">
             <div className="min-w-0 pe-3 pb-3">
               <div dir="ltr" className="num text-[17px] leading-tight font-semibold">
-                {fmtNum(INITIAL_CAPITAL, lang, 0)}
+                {fmtNum(DEMO_COSTS.capital, lang, 0)}
               </div>
               <div className="mt-1 text-[12px] leading-tight">{s('costStart')}</div>
             </div>
@@ -463,7 +456,7 @@ export default function StrategyDetail() {
               ? fill(f('plainCost'), {
                   fees: fmtNum(feesCost, lang, 2),
                   slip: fmtNum(slippageCost, lang, 2),
-                  pct: fmtNum((FEE_RATE + SLIP_RATE) * 100, lang, 2, '%'),
+                  pct: fmtNum((DEMO_COSTS.feeRate + DEMO_COSTS.slipRate) * 100, lang, 2, '%'),
                 })
               : s('costNote')}
           </p>

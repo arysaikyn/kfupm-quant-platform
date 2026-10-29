@@ -5,7 +5,7 @@ import { BackButton } from '../../components/BackButton'
 import { Screen } from '../../components/Screen'
 import { EmptyState } from '../../components/states'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
-import { quotes } from '../../data/mock'
+import { quoteBySymbol, quotes } from '../../data/mock'
 import { addAlert, removeAlert, rowsFor, updateAlert, useAlerts } from '../../store/alerts'
 import type { AlertDir, AlertRow } from '../../store/alerts'
 import { strings } from './strings'
@@ -13,10 +13,6 @@ import { strings } from './strings'
 type Dir = AlertDir
 /** An armed delete disarms itself, so a stray second tap much later cannot fire. */
 const CONFIRM_MS = 3000
-
-const QUOTE_BY_SYMBOL: Record<string, (typeof quotes)[number]> = Object.fromEntries(
-  quotes.map((q) => [q.symbol, q] as const),
-)
 
 /** 12px arrow: the text glyphs sit on different baselines in each locale. */
 function DirIcon({ dir }: { dir: Dir }) {
@@ -87,16 +83,16 @@ export default function AlertsPage() {
   const alerts = useAlerts()
   const [params] = useSearchParams()
   const requested = params.get('symbol')
-  const initialSymbol = requested && QUOTE_BY_SYMBOL[requested] ? requested : quotes[0].symbol
+  const initialSymbol = requested && quoteBySymbol[requested] ? requested : quotes[0].symbol
   const [symbol, setSymbol] = useState(initialSymbol)
   const [dir, setDir] = useState<Dir>('above')
-  const [threshold, setThreshold] = useState(() => String(QUOTE_BY_SYMBOL[initialSymbol]?.price ?? quotes[0].price))
+  const [threshold, setThreshold] = useState(() => String(quoteBySymbol[initialSymbol]?.price ?? quotes[0].price))
   const [error, setError] = useState<'invalid' | Dir | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const panelRef = useRef<HTMLElement>(null)
 
-  const quote = QUOTE_BY_SYMBOL[symbol] ?? quotes[0]
+  const quote = quoteBySymbol[symbol] ?? quotes[0]
 
   const rows = useMemo(() => rowsFor(alerts), [alerts])
 
@@ -118,7 +114,7 @@ export default function AlertsPage() {
 
   function pickSymbol(next: string) {
     setSymbol(next)
-    const q = QUOTE_BY_SYMBOL[next]
+    const q = quoteBySymbol[next]
     if (q) setThreshold(String(q.price))
     setError(null)
   }

@@ -1,7 +1,7 @@
 import { fill } from '../../i18n/format'
 import { fmtNum, useI18n, useStrings } from '../../i18n'
 import type { Market } from '../../data/fundamentals'
-import type { CrossRun, MarketReason } from './ledger'
+import type { CrossRun, MarketReason } from '../../lib/ledger'
 import { featureStrings } from './strings'
 import type { FeatureStrings } from './strings'
 

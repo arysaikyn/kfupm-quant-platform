@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { quotes } from '../data/mock'
+import { quoteBySymbol } from '../data/mock'
 
 export type CallDir = 'up' | 'down' | 'flat'
 
@@ -31,8 +31,6 @@ export type ConfidenceCall = {
 
 const KEY = 'confidence.v1'
 
-const QUOTE_BY_SYMBOL = Object.fromEntries(quotes.map((q) => [q.symbol, q] as const))
-
 /**
  * Three settled calls with a mixed record, plus one still open, so the book
  * reads as a book on first open instead of an empty form.
@@ -47,7 +45,7 @@ const SEED: ConfidenceCall[] = [
 function isCall(v: unknown): v is ConfidenceCall {
   if (!v || typeof v !== 'object') return false
   const c = v as Record<string, unknown>
-  const quote = typeof c.symbol === 'string' ? QUOTE_BY_SYMBOL[c.symbol] : undefined
+  const quote = typeof c.symbol === 'string' ? quoteBySymbol[c.symbol] : undefined
   if (!quote) return false
   if (c.dir !== 'up' && c.dir !== 'down' && c.dir !== 'flat') return false
   if (
@@ -110,7 +108,7 @@ export function useCalls(): ConfidenceCall[] {
 }
 
 export function addCall(input: { symbol: string; dir: CallDir; confidence: Confidence }) {
-  if (!QUOTE_BY_SYMBOL[input.symbol]) return
+  if (!quoteBySymbol[input.symbol]) return
   const id = `c-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
   set([{ ...input, id, windowEnd: null }, ...state])
 }
@@ -123,7 +121,7 @@ export function addCall(input: { symbol: string; dir: CallDir; confidence: Confi
 export function resolveCall(id: string) {
   const call = state.find((c) => c.id === id)
   if (!call || call.windowEnd !== null) return
-  const quote = QUOTE_BY_SYMBOL[call.symbol]
+  const quote = quoteBySymbol[call.symbol]
   if (!quote) return
   const end = quote.spark.length - 1
   if (end < HORIZON) return
@@ -132,7 +130,7 @@ export function resolveCall(id: string) {
 
 /** The move the call's week produced, or null while it is still open. */
 export function moveOf(call: ConfidenceCall): number | null {
-  const quote = QUOTE_BY_SYMBOL[call.symbol]
+  const quote = quoteBySymbol[call.symbol]
   const end = call.windowEnd
   if (!quote || end === null) return null
   const start = end - HORIZON

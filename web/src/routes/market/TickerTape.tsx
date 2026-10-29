@@ -1,4 +1,4 @@
-import type { Quote } from '../data/mock'
+import type { Quote } from '../../data/mock'
 
 type Props = {
   quotes: Quote[]

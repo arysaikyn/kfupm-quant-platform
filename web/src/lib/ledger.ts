@@ -1,10 +1,10 @@
-import { fundamentalsFor, marketFor } from '../../data/fundamentals'
-import type { Market } from '../../data/fundamentals'
-import { quotes, sectors } from '../../data/mock'
-import type { Quote, Strategy, StrategyRule } from '../../data/mock'
-import { SECTOR_OF } from '../../data/membership'
-import { shariaVerdict } from '../../data/shariaCoverage'
-import type { ShariaField } from '../../data/shariaCoverage'
+import { fundamentalsFor, marketFor } from '../data/fundamentals'
+import type { Market } from '../data/fundamentals'
+import { quotes, sectors } from '../data/mock'
+import type { Quote, Strategy, StrategyRule } from '../data/mock'
+import { SECTOR_OF } from '../data/membership'
+import { shariaVerdict } from '../data/shariaCoverage'
+import type { ShariaField } from '../data/shariaCoverage'
 
 /**
  * The demo screen. Every rule in a strategy is applied to the mock tape in the

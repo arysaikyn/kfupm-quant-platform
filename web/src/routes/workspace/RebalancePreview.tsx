@@ -4,7 +4,7 @@ import { fmtDate } from '../../i18n/format'
 import { fmtNum } from '../../i18n'
 import { useI18n } from '../../i18n'
 import { strategies } from '../../data/mock'
-import { runLedger } from '../strategy/ledger'
+import { runLedger } from '../../lib/ledger'
 import { accountLedger } from '../../store/paper'
 import type { WorkspaceStrings } from './strings'
 

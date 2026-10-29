@@ -1,4 +1,4 @@
-import type { CtxRef } from './chat'
+import type { CtxRef } from '../lib/chips'
 
 /**
  * Carries a question and its context from another screen into the AI tab.
